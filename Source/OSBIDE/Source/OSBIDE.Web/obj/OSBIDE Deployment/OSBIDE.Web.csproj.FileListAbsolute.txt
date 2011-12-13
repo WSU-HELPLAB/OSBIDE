@@ -1,0 +1,11 @@
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\OSBIDE.Web.dll
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\OSBIDE.Web.pdb
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\EntityFramework.dll
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\OSBIDE.Library.dll
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\Ionic.Zip.dll
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\OSBIDE.Library.pdb
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\EntityFramework.xml
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\bin\Ionic.Zip.xml
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\obj\OSBIDE Deployment\ResolveAssemblyReference.cache
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\obj\OSBIDE Deployment\OSBIDE.Web.dll
+D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Web\obj\OSBIDE Deployment\OSBIDE.Web.pdb
