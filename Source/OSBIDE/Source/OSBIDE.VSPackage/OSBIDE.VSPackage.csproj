@@ -63,6 +63,8 @@
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
@@ -109,7 +111,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyToolWindow.cs" />
+    <Compile Include="OsbideStatusToolWindow.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -120,6 +122,11 @@
     <Compile Include="OSBIDEPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="Service References\WebServices\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -133,7 +140,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Service References\WebServices\OsbideWebService.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService1.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -152,6 +168,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Package.ico" />
+    <None Include="Service References\WebServices\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Service References\WebServices\configuration.svcinfo" />
+    <None Include="Service References\WebServices\configuration91.svcinfo" />
+    <None Include="Service References\WebServices\OsbideWebService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
+      <Project>{9EA09E78-0541-4233-B189-EE1DBD56520D}</Project>
+      <Name>OSBIDE.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
+      <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
+      <Name>OSBIDE.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\WebServices\" />
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

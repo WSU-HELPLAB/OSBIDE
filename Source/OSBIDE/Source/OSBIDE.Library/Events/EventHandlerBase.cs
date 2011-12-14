@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace OSBIDE.Library.Events
 {
@@ -28,8 +29,18 @@ namespace OSBIDE.Library.Events
         /// </summary>
         public event EventHandler<EventCreatedArgs> EventCreated = delegate { };
 
-        protected DTE2 dte { get; set; }
-
+        protected DTE2 dte {
+            get
+            {
+                DTE2 dteRef = null;
+                if (ServiceProvider != null)
+                {
+                    dteRef = (DTE2)ServiceProvider.GetService(typeof(SDTE));
+                }
+                return dteRef;
+            }
+        }
+        public IServiceProvider ServiceProvider { get; set; }
         private BuildEvents buildEvents = null;
         private DebuggerEvents debuggerEvents = null;
         private DocumentEvents documentEvents = null;
@@ -41,9 +52,9 @@ namespace OSBIDE.Library.Events
         private ProjectItemsEvents solutionItemsEvents = null;
         private TextEditorEvents textEditorEvents = null;
 
-        public EventHandlerBase(DTE2 dte)
+        public EventHandlerBase(IServiceProvider serviceProvider)
         {
-            this.dte = dte;
+            ServiceProvider = serviceProvider;
 
             //save references to dte events
             buildEvents = dte.Events.BuildEvents;

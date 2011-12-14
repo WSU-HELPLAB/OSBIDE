@@ -11,6 +11,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OSBIDE.Library;
+using OSBIDE.Library.Events;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
+using OSBIDE.Controls.WebServices;
 
 namespace OSBIDE.Controls
 {
@@ -19,9 +24,11 @@ namespace OSBIDE.Controls
     /// </summary>
     public partial class OsbideStatusControl : UserControl
     {
+
         public OsbideStatusControl()
         {
             InitializeComponent();
         }
+
     }
 }

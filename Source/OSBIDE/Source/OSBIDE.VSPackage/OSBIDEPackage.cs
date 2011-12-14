@@ -8,6 +8,12 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using OSBIDE.VSPackage.WebServices;
+using System.ServiceModel.Channels;
+using System.ServiceModel;
+using OSBIDE.Library;
+using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.VSPackage
 {
@@ -30,10 +36,15 @@ namespace OSBIDE.VSPackage
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
-    [ProvideToolWindow(typeof(MyToolWindow))]
+    [ProvideToolWindow(typeof(OsbideStatusToolWindow))]
     [Guid(GuidList.guidOSBIDE_VSPackagePkgString)]
+    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     public sealed class OSBIDEPackage : Package
     {
+        private OsbideWebServiceClient webServiceClient = null;
+        private OsbideEventHandler eventHandler = null;
+        private OsbideContext localDb = new OsbideContext("Data Source=osbide_local.sdf;Persist Security Info=False;");
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -56,7 +67,7 @@ namespace OSBIDE.VSPackage
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.FindToolWindow(typeof(MyToolWindow), 0, true);
+            ToolWindowPane window = this.FindToolWindow(typeof(OsbideStatusToolWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
@@ -92,7 +103,20 @@ namespace OSBIDE.VSPackage
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
             }
+
+            //create our web service
+            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+
+            //and our event handler
+            eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
+            eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(eventHandler_EventCreated);
         }
+
+        void eventHandler_EventCreated(object sender, EventCreatedArgs e)
+        {
+            Enums.ServiceCode result = (Enums.ServiceCode) webServiceClient.SubmitLog(e.OsbideEvent.EventName, EventFactory.ToZippedBinary(e.OsbideEvent));
+        }
+
         #endregion
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace OSBIDE.Library.Events
 {
+    [Serializable]
     public class SaveEvent : IOsbideEvent
     {
         public DateTime EventDate { get; set; }

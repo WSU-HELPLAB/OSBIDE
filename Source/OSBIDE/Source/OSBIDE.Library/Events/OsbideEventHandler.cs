@@ -10,8 +10,8 @@ namespace OSBIDE.Library.Events
 {
     public class OsbideEventHandler : EventHandlerBase
     {
-        public OsbideEventHandler(DTE2 dte)
-            : base(dte)
+        public OsbideEventHandler(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         {
 
         }
