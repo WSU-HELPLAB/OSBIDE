@@ -53,8 +53,8 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -68,8 +68,8 @@
     <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
+    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -93,9 +93,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Events\BuildEvent.cs" />
+    <Compile Include="Events\DebugEvent.cs" />
     <Compile Include="Events\EventCreatedArgs.cs" />
     <Compile Include="Events\EventFactory.cs" />
     <Compile Include="Events\EventHandlerBase.cs" />
+    <Compile Include="Events\ExceptionThrownEvent.cs" />
     <Compile Include="Events\IBuildEventHandler.cs" />
     <Compile Include="Events\IDebuggerEventHandler.cs" />
     <Compile Include="Events\IDocumentEventHandler.cs" />
@@ -107,6 +109,7 @@
     <Compile Include="Events\ISolutionItemsEventHandler.cs" />
     <Compile Include="Events\ITextEditorEventHandler.cs" />
     <Compile Include="Events\OsbideEventHandler.cs" />
+    <Compile Include="FilePaths.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ErrorListItem.cs" />
     <Compile Include="Events\IOsbideEvent.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Models\OsbideContext.cs" />
     <Compile Include="Models\OutputWindow.cs" />
     <Compile Include="Events\SaveEvent.cs" />
+    <Compile Include="Models\OsbideUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceBindings.cs" />
   </ItemGroup>

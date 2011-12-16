@@ -21,6 +21,12 @@ namespace OSBIDE.Library.Models
         [Required]
         public byte[] Data { get; set; }
 
+        [Required]
+        public int SenderId { get; set; }
+
+        [ForeignKey("SenderId")]
+        public virtual OsbideUser Sender { get; set; }
+
         /// <summary>
         /// Whether or not the log item has been handled (sent to the server)
         /// </summary>

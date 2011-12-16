@@ -12,6 +12,7 @@ namespace OSBIDE.Library.Models
     public class OsbideContext : DbContext
     {
         public DbSet<EventLog> EventLogs { get; set; }
+        public DbSet<OsbideUser> Users { get; set; }
 
         public OsbideContext() : base()
         {

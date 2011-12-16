@@ -14,6 +14,11 @@ using System.ServiceModel;
 using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
+using OSBIDE.Controls;
+using System.Windows;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.CompilerServices;
 
 namespace OSBIDE.VSPackage
 {
@@ -44,6 +49,7 @@ namespace OSBIDE.VSPackage
         private OsbideWebServiceClient webServiceClient = null;
         private OsbideEventHandler eventHandler = null;
         private OsbideContext localDb = new OsbideContext("Data Source=osbide_local.sdf;Persist Security Info=False;");
+        private OsbideUser activeUser = new OsbideUser();
 
         /// <summary>
         /// Default constructor of the package.
@@ -76,6 +82,73 @@ namespace OSBIDE.VSPackage
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
+        /// <summary>
+        /// This function is the callback used to execute a command when the a menu item is clicked.
+        /// See the Initialize method to see how the menu item is associated to this function using
+        /// the OleMenuCommandService service and the MenuCommand class.
+        /// </summary>
+        private void MenuItemCallback(object sender, EventArgs e)
+        {
+            // Show a Message Box to prove we were here
+            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            Guid clsid = Guid.Empty;
+            MessageBoxResult result = AccountWindow.ShowModalDialog(activeUser);
+            
+            //assume that data was changed and needs to be saved
+            if (result == MessageBoxResult.OK)
+            {
+                SaveUserData(activeUser);
+            }
+        }
+
+        /// <summary>
+        /// Called whenever OSBIDE detects an event change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void eventHandler_EventCreated(object sender, EventCreatedArgs e)
+        {
+            Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(e.OsbideEvent.EventName, EventFactory.ToZippedBinary(e.OsbideEvent));
+        }
+
+        /// <summary>
+        /// Retrieves saved user data
+        /// </summary>
+        /// <returns></returns>
+        private OsbideUser GetSavedUserData()
+        {
+            string userDataPath = FilePaths.UserDataPath;
+            OsbideUser savedUser = new OsbideUser();
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            if (File.Exists(userDataPath))
+            {
+                FileStream data = File.Open(userDataPath, FileMode.Open);
+                try
+                {
+                    savedUser = (OsbideUser)formatter.Deserialize(data);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            return savedUser;
+        }
+
+        /// <summary>
+        /// Saves current user data to disk
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool SaveUserData(OsbideUser user)
+        {
+            string userDataPath = FilePaths.UserDataPath;
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream file = File.Open(userDataPath, FileMode.Create);
+            formatter.Serialize(file, user);
+            file.Close();
+            return true;
+        }
 
         /////////////////////////////////////////////////////////////////////////////
         // Overriden Package Implementation
@@ -87,21 +160,21 @@ namespace OSBIDE.VSPackage
         /// </summary>
         protected override void Initialize()
         {
-            Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if ( null != mcs )
+            if (null != mcs)
             {
                 // Create the command for the menu item.
                 CommandID menuCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCommand);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID );
-                mcs.AddCommand( menuItem );
+                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                mcs.AddCommand(menuItem);
                 // Create the command for the tool window
                 CommandID toolwndCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideStatusTool);
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
-                mcs.AddCommand( menuToolWin );
+                mcs.AddCommand(menuToolWin);
             }
 
             //create our web service
@@ -110,39 +183,10 @@ namespace OSBIDE.VSPackage
             //and our event handler
             eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
             eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(eventHandler_EventCreated);
-        }
 
-        void eventHandler_EventCreated(object sender, EventCreatedArgs e)
-        {
-            Enums.ServiceCode result = (Enums.ServiceCode) webServiceClient.SubmitLog(e.OsbideEvent.EventName, EventFactory.ToZippedBinary(e.OsbideEvent));
         }
 
         #endregion
-
-        /// <summary>
-        /// This function is the callback used to execute a command when the a menu item is clicked.
-        /// See the Initialize method to see how the menu item is associated to this function using
-        /// the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-            // Show a Message Box to prove we were here
-            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-                       0,
-                       ref clsid,
-                       "VSPackage",
-                       string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.ToString()),
-                       string.Empty,
-                       0,
-                       OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                       OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                       OLEMSGICON.OLEMSGICON_INFO,
-                       0,        // false
-                       out result));
-        }
 
     }
 }

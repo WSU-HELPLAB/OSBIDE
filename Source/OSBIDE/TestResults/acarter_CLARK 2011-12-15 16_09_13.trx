@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRun id="98837061-9c4f-4b81-b622-3e501e10793e" name="acarter@CLARK 2011-12-15 16:09:13" runUser="clark\acarter" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <TestSettings name="Default Test Settings" id="ce7495b0-d35e-4b23-a0ea-a357d4404c6d">
+    <Deployment userDeploymentRoot="D:\code\osbide\Main\Source\OSBIDE\TestResults" useDefaultDeploymentRoot="false" runDeploymentRoot="acarter_CLARK 2011-12-15 16_09_13">
+      <DeploymentItem filename="C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\PublicAssemblies\Microsoft.VSSDK.TestHostFramework.dll" />
+      <DeploymentItem filename="C:\Program Files (x86)\Microsoft Visual Studio 2010 SDK SP1\VisualStudioIntegration\Common\Assemblies\v4.0\Microsoft.VSSDK.UnitTestLibrary.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\Source\OSBIDE.Controls\bin\Debug\OSBIDE.Controls.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\Source\OSBIDE.Web\bin\OSBIDE.Web.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\Source\OSBIDE.Library\bin\Debug\OSBIDE.Library.dll" />
+      <DeploymentItem filename="D:\code\osbide\Main\Source\OSBIDE\Source\OSBIDE.VSPackage\bin\Debug\OSBIDE.VSPackage.dll" />
+    </Deployment>
+    <Execution>
+      <TestTypeSpecific />
+      <AgentRule name="Execution Agents">
+      </AgentRule>
+    </Execution>
+  </TestSettings>
+  <Times creation="2011-12-15T16:09:13.6445500-08:00" queuing="2011-12-15T16:09:14.9136226-08:00" start="2011-12-15T16:09:15.1016334-08:00" finish="2011-12-15T16:09:31.6565803-08:00" />
+  <ResultSummary outcome="Error">
+    <Counters total="1" executed="1" error="0" failed="0" timeout="0" aborted="1" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" passed="0" completed="0" inProgress="0" pending="0" />
+    <RunInfos>
+      <RunInfo computerName="CLARK" outcome="Error" timestamp="2011-12-15T16:09:31.6545802-08:00">
+        <Text>Test host process exited unexpectedly.</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+  <TestDefinitions>
+    <UnitTest name="UserDataFileTest" storage="d:\code\osbide\main\source\osbide\unittests\osbide.unittests\bin\debug\osbide.unittests.dll" id="e93ebe7e-132a-22e1-eb96-8f589ead88cd">
+      <DeploymentItems>
+        <DeploymentItem filename="OSBIDE.VSPackage.dll" />
+      </DeploymentItems>
+      <Execution id="0e33436c-ddfb-406d-85cd-97009ba07823" />
+      <TestMethod codeBase="D:/code/osbide/Main/Source/OSBIDE/UnitTests/OSBIDE.UnitTests/bin/Debug/OSBIDE.UnitTests.DLL" adapterTypeName="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestAdapter, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.Adapter, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" className="OSBIDE.VSPackage.UnitTests.OSBIDEPackageTest, OSBIDE.UnitTests, Version=0.0.0.0, Culture=neutral, PublicKeyToken=d1d626f0cd820a8c" name="UserDataFileTest" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <TestEntries>
+    <TestEntry testId="e93ebe7e-132a-22e1-eb96-8f589ead88cd" executionId="0e33436c-ddfb-406d-85cd-97009ba07823" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <Results>
+    <UnitTestResult executionId="0e33436c-ddfb-406d-85cd-97009ba07823" testId="e93ebe7e-132a-22e1-eb96-8f589ead88cd" testName="UserDataFileTest" computerName="CLARK" duration="00:00:16.3829371" startTime="2011-12-15T16:09:15.2736432-08:00" endTime="2011-12-15T16:09:31.6565803-08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Aborted" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0e33436c-ddfb-406d-85cd-97009ba07823">
+    </UnitTestResult>
+  </Results>
+</TestRun>

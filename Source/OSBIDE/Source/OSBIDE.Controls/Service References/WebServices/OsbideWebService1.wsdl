@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="/Imports">
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd0" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="OsbideWebService_Echo_InputMessage">
+    <wsdl:part name="parameters" element="Echo" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_Echo_OutputMessage">
+    <wsdl:part name="parameters" element="EchoResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitLog_InputMessage">
+    <wsdl:part name="parameters" element="SubmitLog" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitLog_OutputMessage">
+    <wsdl:part name="parameters" element="SubmitLogResponse" />
+  </wsdl:message>
+  <wsdl:portType name="OsbideWebService">
+    <wsdl:operation name="Echo">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/Echo" message="OsbideWebService_Echo_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/EchoResponse" message="OsbideWebService_Echo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SubmitLog">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitLogResponse" message="OsbideWebService_SubmitLog_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

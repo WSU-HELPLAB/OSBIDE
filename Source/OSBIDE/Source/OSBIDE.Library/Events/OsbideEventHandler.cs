@@ -53,29 +53,53 @@ namespace OSBIDE.Library.Events
 
         public override void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction)
         {
-            
+            DebugEvent debug = new DebugEvent();
+            debug.SolutionName = dte.Solution.FullName;
+            debug.EventDate = DateTime.Now;
+            debug.EventReason = (int)Reason;
+            debug.ExecutionAction = (int)ExecutionAction;
+            debug.DocumentName = dte.ActiveDocument.FullName;
+
+            //let others know that we have created a new event
+            NotifyEventCreated(this, new EventCreatedArgs(debug));
         }
 
         public override void OnEnterDesignMode(dbgEventReason Reason)
         {
-            
+            dbgExecutionAction action = dbgExecutionAction.dbgExecutionActionDefault;
+            OnEnterBreakMode(Reason, ref action);
         }
 
         public override void OnEnterRunMode(dbgEventReason Reason)
         {
-            
+            dbgExecutionAction action = dbgExecutionAction.dbgExecutionActionDefault;
+            OnEnterBreakMode(Reason, ref action);
         }
 
         public override void OnExceptionNotHandled(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
         {
-            
+            OnExceptionThrown(ExceptionType, Name, Code, Description, ref ExceptionAction);
         }
 
         public override void OnExceptionThrown(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
         {
-            
+            ExceptionEvent ext = new ExceptionEvent()
+            {
+                EventDate = DateTime.Now,
+                ExceptionAction = (int)ExceptionAction,
+                ExceptionCode = Code,
+                ExceptionDescription = Description,
+                ExceptionName = Name,
+                ExceptionType = ExceptionType,
+                SolutionName = dte.Solution.FullName,
+                DocumentName = dte.ActiveDocument.FullName
+            };
+
+            //let others know that we have created a new event
+            NotifyEventCreated(this, new EventCreatedArgs(ext));
         }
 
+        //TODO: Handle ling change events
         public override void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {
             
