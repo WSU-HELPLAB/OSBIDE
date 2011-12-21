@@ -6,7 +6,7 @@ using System.IO;
 
 namespace OSBIDE.Library
 {
-    public static class FilePaths
+    public static class StringConstants
     {
         public static string DataRoot
         {
@@ -26,6 +26,22 @@ namespace OSBIDE.Library
             get
             {
                 return Path.Combine(DataRoot, "UserData.dat");
+            }
+        }
+
+        public static string LocalDatabasePath
+        {
+            get
+            {
+                return Path.Combine(DataRoot, "LocalDb.sdf");
+            }
+        }
+
+        public static string LocalDataConnectionString
+        {
+            get
+            {
+                return string.Format("Data Source={0};Persist Security Info=False;", LocalDatabasePath);
             }
         }
     }

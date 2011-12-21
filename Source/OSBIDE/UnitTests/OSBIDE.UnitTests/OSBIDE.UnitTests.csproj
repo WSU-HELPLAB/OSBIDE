@@ -129,6 +129,7 @@
   <ItemGroup>
     <Compile Include="Controls\AccountWindowTest.cs" />
     <Compile Include="Library\Events\EventFactoryTest.cs" />
+    <Compile Include="Library\Model\EventLogTest.cs" />
     <Compile Include="VSPackage\OSBIDEPackageTest.cs" />
     <Compile Include="Web\OsbideWebServiceTest.cs" />
     <Compile Include="PackageTest.cs" />

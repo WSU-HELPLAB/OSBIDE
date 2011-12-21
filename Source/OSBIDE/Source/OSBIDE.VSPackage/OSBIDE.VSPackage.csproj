@@ -148,12 +148,16 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
     <None Include="Service References\WebServices\OsbideWebService.wsdl" />
     <None Include="Service References\WebServices\OsbideWebService.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\WebServices\OsbideWebService1.wsdl" />
     <None Include="Service References\WebServices\OsbideWebService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService2.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="source.extension.vsixmanifest">

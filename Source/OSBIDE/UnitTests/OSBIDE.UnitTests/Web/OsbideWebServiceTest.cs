@@ -75,6 +75,15 @@ namespace OSBIDE.UnitTests.Web
             Assert.AreEqual(send, target.Echo(send));
         }
 
+        [TestMethod()]
+        public void SaveUserTest()
+        {
+            OsbideWebService target = new OsbideWebService(); 
+            OsbideUser testUser = new OsbideUser() { FirstName = "Test", LastName = "User", InstitutionId = "123" };
+            OsbideUser result = target.SaveUser(testUser);
+            Assert.AreNotEqual(0, result.Id);
+        }
+
         /// <summary>
         ///A test for SubmitLog
         ///</summary>
@@ -84,23 +93,22 @@ namespace OSBIDE.UnitTests.Web
             //setup values
             OsbideWebService target = new OsbideWebService(); 
             string LogType = string.Empty; 
-            byte[] data = null; 
-            Enums.ServiceCode expected = new Enums.ServiceCode();
             Enums.ServiceCode actual;
+            OsbideUser testUser = new OsbideUser() { FirstName = "Test", LastName = "User", InstitutionId = "123" };
 
             //create a new BuildEvent to save
             BuildEvent build = new BuildEvent()
             {
                 SolutionName = "foo"
             };
-            data = EventFactory.ToZippedBinary(build);
             LogType = build.EventName;
 
             //send it off to the service for saving
-            actual = (Enums.ServiceCode)target.SubmitLog(LogType, data);
+            EventLog logToSend = new EventLog(build, testUser);
+            actual = (Enums.ServiceCode)target.SubmitLog(logToSend);
 
             //we should get an OK result back from the server
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(Enums.ServiceCode.Ok, actual);
 
             //pull the last record from the DB
             OsbideContext db = new OsbideContext();
@@ -111,7 +119,7 @@ namespace OSBIDE.UnitTests.Web
  
             //assume byte arrays of the same length are the same.  Kind of
             //meh but it's probably okay
-            Assert.AreEqual(data.Length, log.Data.Length);
+            Assert.AreEqual(logToSend.Data.Length, log.Data.Length);
         }
     }
 }

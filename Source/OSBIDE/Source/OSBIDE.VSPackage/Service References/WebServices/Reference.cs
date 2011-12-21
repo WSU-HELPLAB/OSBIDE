@@ -23,11 +23,19 @@ namespace OSBIDE.VSPackage.WebServices {
         
         string EndEcho(System.IAsyncResult result);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SaveUser", ReplyAction="urn:OsbideWebService/SaveUserResponse")]
+        OSBIDE.Library.Models.OsbideUser SaveUser(OSBIDE.Library.Models.OsbideUser userToSave);
+        
+        [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="urn:OsbideWebService/SaveUser", ReplyAction="urn:OsbideWebService/SaveUserResponse")]
+        System.IAsyncResult BeginSaveUser(OSBIDE.Library.Models.OsbideUser userToSave, System.AsyncCallback callback, object asyncState);
+        
+        OSBIDE.Library.Models.OsbideUser EndSaveUser(System.IAsyncResult result);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SubmitLog", ReplyAction="urn:OsbideWebService/SubmitLogResponse")]
-        int SubmitLog(string LogType, byte[] data);
+        int SubmitLog(OSBIDE.Library.Models.EventLog log);
         
         [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="urn:OsbideWebService/SubmitLog", ReplyAction="urn:OsbideWebService/SubmitLogResponse")]
-        System.IAsyncResult BeginSubmitLog(string LogType, byte[] data, System.AsyncCallback callback, object asyncState);
+        System.IAsyncResult BeginSubmitLog(OSBIDE.Library.Models.EventLog log, System.AsyncCallback callback, object asyncState);
         
         int EndSubmitLog(System.IAsyncResult result);
     }
@@ -51,6 +59,25 @@ namespace OSBIDE.VSPackage.WebServices {
             get {
                 base.RaiseExceptionIfNecessary();
                 return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class SaveUserCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        public SaveUserCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        public OSBIDE.Library.Models.OsbideUser Result {
+            get {
+                base.RaiseExceptionIfNecessary();
+                return ((OSBIDE.Library.Models.OsbideUser)(this.results[0]));
             }
         }
     }
@@ -84,6 +111,12 @@ namespace OSBIDE.VSPackage.WebServices {
         
         private System.Threading.SendOrPostCallback onEchoCompletedDelegate;
         
+        private BeginOperationDelegate onBeginSaveUserDelegate;
+        
+        private EndOperationDelegate onEndSaveUserDelegate;
+        
+        private System.Threading.SendOrPostCallback onSaveUserCompletedDelegate;
+        
         private BeginOperationDelegate onBeginSubmitLogDelegate;
         
         private EndOperationDelegate onEndSubmitLogDelegate;
@@ -110,6 +143,8 @@ namespace OSBIDE.VSPackage.WebServices {
         }
         
         public event System.EventHandler<EchoCompletedEventArgs> EchoCompleted;
+        
+        public event System.EventHandler<SaveUserCompletedEventArgs> SaveUserCompleted;
         
         public event System.EventHandler<SubmitLogCompletedEventArgs> SubmitLogCompleted;
         
@@ -163,13 +198,63 @@ namespace OSBIDE.VSPackage.WebServices {
                         toEcho}, this.onEndEchoDelegate, this.onEchoCompletedDelegate, userState);
         }
         
-        public int SubmitLog(string LogType, byte[] data) {
-            return base.Channel.SubmitLog(LogType, data);
+        public OSBIDE.Library.Models.OsbideUser SaveUser(OSBIDE.Library.Models.OsbideUser userToSave) {
+            return base.Channel.SaveUser(userToSave);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        public System.IAsyncResult BeginSubmitLog(string LogType, byte[] data, System.AsyncCallback callback, object asyncState) {
-            return base.Channel.BeginSubmitLog(LogType, data, callback, asyncState);
+        public System.IAsyncResult BeginSaveUser(OSBIDE.Library.Models.OsbideUser userToSave, System.AsyncCallback callback, object asyncState) {
+            return base.Channel.BeginSaveUser(userToSave, callback, asyncState);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public OSBIDE.Library.Models.OsbideUser EndSaveUser(System.IAsyncResult result) {
+            return base.Channel.EndSaveUser(result);
+        }
+        
+        private System.IAsyncResult OnBeginSaveUser(object[] inValues, System.AsyncCallback callback, object asyncState) {
+            OSBIDE.Library.Models.OsbideUser userToSave = ((OSBIDE.Library.Models.OsbideUser)(inValues[0]));
+            return this.BeginSaveUser(userToSave, callback, asyncState);
+        }
+        
+        private object[] OnEndSaveUser(System.IAsyncResult result) {
+            OSBIDE.Library.Models.OsbideUser retVal = this.EndSaveUser(result);
+            return new object[] {
+                    retVal};
+        }
+        
+        private void OnSaveUserCompleted(object state) {
+            if ((this.SaveUserCompleted != null)) {
+                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+                this.SaveUserCompleted(this, new SaveUserCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+            }
+        }
+        
+        public void SaveUserAsync(OSBIDE.Library.Models.OsbideUser userToSave) {
+            this.SaveUserAsync(userToSave, null);
+        }
+        
+        public void SaveUserAsync(OSBIDE.Library.Models.OsbideUser userToSave, object userState) {
+            if ((this.onBeginSaveUserDelegate == null)) {
+                this.onBeginSaveUserDelegate = new BeginOperationDelegate(this.OnBeginSaveUser);
+            }
+            if ((this.onEndSaveUserDelegate == null)) {
+                this.onEndSaveUserDelegate = new EndOperationDelegate(this.OnEndSaveUser);
+            }
+            if ((this.onSaveUserCompletedDelegate == null)) {
+                this.onSaveUserCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnSaveUserCompleted);
+            }
+            base.InvokeAsync(this.onBeginSaveUserDelegate, new object[] {
+                        userToSave}, this.onEndSaveUserDelegate, this.onSaveUserCompletedDelegate, userState);
+        }
+        
+        public int SubmitLog(OSBIDE.Library.Models.EventLog log) {
+            return base.Channel.SubmitLog(log);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public System.IAsyncResult BeginSubmitLog(OSBIDE.Library.Models.EventLog log, System.AsyncCallback callback, object asyncState) {
+            return base.Channel.BeginSubmitLog(log, callback, asyncState);
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -178,9 +263,8 @@ namespace OSBIDE.VSPackage.WebServices {
         }
         
         private System.IAsyncResult OnBeginSubmitLog(object[] inValues, System.AsyncCallback callback, object asyncState) {
-            string LogType = ((string)(inValues[0]));
-            byte[] data = ((byte[])(inValues[1]));
-            return this.BeginSubmitLog(LogType, data, callback, asyncState);
+            OSBIDE.Library.Models.EventLog log = ((OSBIDE.Library.Models.EventLog)(inValues[0]));
+            return this.BeginSubmitLog(log, callback, asyncState);
         }
         
         private object[] OnEndSubmitLog(System.IAsyncResult result) {
@@ -196,11 +280,11 @@ namespace OSBIDE.VSPackage.WebServices {
             }
         }
         
-        public void SubmitLogAsync(string LogType, byte[] data) {
-            this.SubmitLogAsync(LogType, data, null);
+        public void SubmitLogAsync(OSBIDE.Library.Models.EventLog log) {
+            this.SubmitLogAsync(log, null);
         }
         
-        public void SubmitLogAsync(string LogType, byte[] data, object userState) {
+        public void SubmitLogAsync(OSBIDE.Library.Models.EventLog log, object userState) {
             if ((this.onBeginSubmitLogDelegate == null)) {
                 this.onBeginSubmitLogDelegate = new BeginOperationDelegate(this.OnBeginSubmitLog);
             }
@@ -211,8 +295,7 @@ namespace OSBIDE.VSPackage.WebServices {
                 this.onSubmitLogCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnSubmitLogCompleted);
             }
             base.InvokeAsync(this.onBeginSubmitLogDelegate, new object[] {
-                        LogType,
-                        data}, this.onEndSubmitLogDelegate, this.onSubmitLogCompletedDelegate, userState);
+                        log}, this.onEndSubmitLogDelegate, this.onSubmitLogCompletedDelegate, userState);
         }
     }
 }

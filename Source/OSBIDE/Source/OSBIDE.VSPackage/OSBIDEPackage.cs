@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
@@ -19,6 +18,9 @@ using System.Windows;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.CompilerServices;
+using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace OSBIDE.VSPackage
 {
@@ -48,8 +50,8 @@ namespace OSBIDE.VSPackage
     {
         private OsbideWebServiceClient webServiceClient = null;
         private OsbideEventHandler eventHandler = null;
-        private OsbideContext localDb = new OsbideContext("Data Source=osbide_local.sdf;Persist Security Info=False;");
-        private OsbideUser activeUser = new OsbideUser();
+        private OsbideContext localDb = new OsbideContext(StringConstants.LocalDataConnectionString);
+        public OsbideUser CurrentUser { get; private set; }
 
         /// <summary>
         /// Default constructor of the package.
@@ -60,8 +62,9 @@ namespace OSBIDE.VSPackage
         /// </summary>
         public OSBIDEPackage()
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+            CurrentUser = new OsbideUser();
         }
+
 
         /// <summary>
         /// This function is called when the user clicks the menu item that shows the 
@@ -89,15 +92,16 @@ namespace OSBIDE.VSPackage
         /// </summary>
         private void MenuItemCallback(object sender, EventArgs e)
         {
-            // Show a Message Box to prove we were here
             IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             Guid clsid = Guid.Empty;
-            MessageBoxResult result = AccountWindow.ShowModalDialog(activeUser);
+            MessageBoxResult result = AccountWindow.ShowModalDialog(CurrentUser);
             
             //assume that data was changed and needs to be saved
             if (result == MessageBoxResult.OK)
             {
-                SaveUserData(activeUser);
+                CurrentUser = webServiceClient.SaveUser(CurrentUser);
+                SaveUserData(CurrentUser);
+                
             }
         }
 
@@ -106,9 +110,44 @@ namespace OSBIDE.VSPackage
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void eventHandler_EventCreated(object sender, EventCreatedArgs e)
+        private void OsbideEventCreated(object sender, EventCreatedArgs e)
         {
-            Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(e.OsbideEvent.EventName, EventFactory.ToZippedBinary(e.OsbideEvent));
+            //add the log to the local db
+            EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
+            localDb.EventLogs.Add(eventLog);
+            localDb.SaveChanges();
+
+            //find all logs that haven't been handled (submitted)
+            List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
+
+            //send all unsubmitted logs to the server
+            foreach (EventLog log in logs)
+            {
+                try
+                {
+                    Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(log);
+                    if (result == Enums.ServiceCode.Ok)
+                    {
+                        log.Handled = true;
+                        localDb.Entry(log).State = System.Data.EntityState.Modified;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //TODO: Handle exception?
+                }
+            }
+
+            //update the Db with handled cases
+            localDb.SaveChanges();
+
+            //finally, delete all handled events from our local db to save space
+            logs = localDb.EventLogs.Where(model => model.Handled == true).ToList();
+            foreach (EventLog log in logs)
+            {
+                localDb.Entry(log).State = System.Data.EntityState.Deleted;
+            }
+            localDb.SaveChanges();
         }
 
         /// <summary>
@@ -117,22 +156,7 @@ namespace OSBIDE.VSPackage
         /// <returns></returns>
         private OsbideUser GetSavedUserData()
         {
-            string userDataPath = FilePaths.UserDataPath;
-            OsbideUser savedUser = new OsbideUser();
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            if (File.Exists(userDataPath))
-            {
-                FileStream data = File.Open(userDataPath, FileMode.Open);
-                try
-                {
-                    savedUser = (OsbideUser)formatter.Deserialize(data);
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-            return savedUser;
+            return OsbideUser.ReadUserFromFile(StringConstants.UserDataPath);
         }
 
         /// <summary>
@@ -142,11 +166,7 @@ namespace OSBIDE.VSPackage
         /// <returns></returns>
         private bool SaveUserData(OsbideUser user)
         {
-            string userDataPath = FilePaths.UserDataPath;
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream file = File.Open(userDataPath, FileMode.Create);
-            formatter.Serialize(file, user);
-            file.Close();
+            OsbideUser.SaveUserToFile(user, StringConstants.UserDataPath);
             return true;
         }
 
@@ -160,8 +180,11 @@ namespace OSBIDE.VSPackage
         /// </summary>
         protected override void Initialize()
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
+
+            //AC: Explicity load in assemblies.  Necessary for serialization (why?)
+            Assembly.Load("OSBIDE.Library");
+            Assembly.Load("OSBIDE.Controls");
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
@@ -182,8 +205,20 @@ namespace OSBIDE.VSPackage
 
             //and our event handler
             eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
-            eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(eventHandler_EventCreated);
+            eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
 
+            //pull saved user data
+            CurrentUser = GetSavedUserData();
+
+            //display a user notification if we don't have any user on file
+            if (CurrentUser.Id == 0)
+            {
+                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    MenuItemCallback(this, EventArgs.Empty);
+                }
+            }
         }
 
         #endregion

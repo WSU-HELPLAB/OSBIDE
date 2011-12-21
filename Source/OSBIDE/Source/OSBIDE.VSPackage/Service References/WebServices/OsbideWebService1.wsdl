@@ -4,6 +4,7 @@
     <xsd:schema targetNamespace="/Imports">
       <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd0" />
       <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="OsbideWebService_Echo_InputMessage">
@@ -11,6 +12,12 @@
   </wsdl:message>
   <wsdl:message name="OsbideWebService_Echo_OutputMessage">
     <wsdl:part name="parameters" element="EchoResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SaveUser_InputMessage">
+    <wsdl:part name="parameters" element="SaveUser" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SaveUser_OutputMessage">
+    <wsdl:part name="parameters" element="SaveUserResponse" />
   </wsdl:message>
   <wsdl:message name="OsbideWebService_SubmitLog_InputMessage">
     <wsdl:part name="parameters" element="SubmitLog" />
@@ -22,6 +29,10 @@
     <wsdl:operation name="Echo">
       <wsdl:input wsaw:Action="urn:OsbideWebService/Echo" message="OsbideWebService_Echo_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/EchoResponse" message="OsbideWebService_Echo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SaveUser">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/SaveUser" message="OsbideWebService_SaveUser_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/SaveUserResponse" message="OsbideWebService_SaveUser_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SubmitLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" />
   <xs:element name="Echo">
     <xs:complexType>
       <xs:sequence>
@@ -14,11 +15,24 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="SaveUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="userToSave" nillable="true" type="q1:OsbideUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SaveUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="SaveUserResult" nillable="true" type="q2:OsbideUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="SubmitLog">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="LogType" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="data" nillable="true" type="xs:base64Binary" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q3:EventLog" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

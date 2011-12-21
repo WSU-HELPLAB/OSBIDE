@@ -115,7 +115,7 @@
     <Compile Include="Events\ISolutionItemsEventHandler.cs" />
     <Compile Include="Events\ITextEditorEventHandler.cs" />
     <Compile Include="Events\OsbideEventHandler.cs" />
-    <Compile Include="FilePaths.cs" />
+    <Compile Include="StringConstants.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ErrorListItem.cs" />
     <Compile Include="Events\IOsbideEvent.cs" />

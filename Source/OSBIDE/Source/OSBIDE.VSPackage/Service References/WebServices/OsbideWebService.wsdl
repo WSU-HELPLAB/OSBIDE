@@ -22,6 +22,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="SaveUser">
+      <soap12:operation soapAction="urn:OsbideWebService/SaveUser" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SubmitLog">
       <soap12:operation soapAction="urn:OsbideWebService/SubmitLog" style="document" />
       <wsdl:input>

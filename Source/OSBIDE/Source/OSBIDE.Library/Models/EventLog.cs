@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using OSBIDE.Library.Events;
 
 namespace OSBIDE.Library.Models
 {
@@ -37,6 +38,19 @@ namespace OSBIDE.Library.Models
         {
             Handled = false;
             DateReceived = DateTime.Now;
+        }
+
+        public EventLog(IOsbideEvent evt, OsbideUser sender) 
+        {
+            Handled = false;
+            DateReceived = DateTime.Now;
+            LogType = evt.EventName;
+            Data = EventFactory.ToZippedBinary(evt);
+            Sender = sender;
+            if (sender.Id != 0)
+            {
+                SenderId = sender.Id;
+            }
         }
     }
 }
