@@ -27,6 +27,7 @@ namespace OSBIDE.Library.Models
         {
             OsbideUser savedUser = new OsbideUser();
             BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Binder = new OsbideDeserializationBinder();
 
             if (File.Exists(filePath))
             {
