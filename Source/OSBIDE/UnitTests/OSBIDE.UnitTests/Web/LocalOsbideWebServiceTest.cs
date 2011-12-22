@@ -15,7 +15,7 @@ namespace OSBIDE.UnitTests.Web
     ///to contain all OsbideWebServiceTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class OsbideWebServiceTest
+    public class LocalOsbideWebServiceTest
     {
 
 
@@ -111,7 +111,7 @@ namespace OSBIDE.UnitTests.Web
             Assert.AreEqual(Enums.ServiceCode.Ok, actual);
 
             //pull the last record from the DB
-            OsbideContext db = new OsbideContext();
+            OsbideContext db = target.Db;
             EventLog log = db.EventLogs.OrderByDescending(l => l.Id).FirstOrDefault();
             
             //make sure that the log matches what we originally inserted

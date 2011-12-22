@@ -20,6 +20,7 @@ namespace OSBIDE.Library.Events
         {
             //create the osbide event
             TextSelection selection = Document.Selection;
+            
             selection.StartOfDocument();
             selection.EndOfDocument(true);
             string document = selection.Text;
@@ -29,6 +30,8 @@ namespace OSBIDE.Library.Events
             save.DocumentName = Document.FullName;
             save.DocumentContent = document;
 
+            //TODO: Reset cursor position
+            
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
         }

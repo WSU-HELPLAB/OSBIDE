@@ -52,5 +52,16 @@ namespace OSBIDE.Library.Models
                 SenderId = sender.Id;
             }
         }
+
+        public EventLog(EventLog copyLog)
+        {
+            Handled = copyLog.Handled;
+            DateReceived = copyLog.DateReceived;
+            Id = copyLog.Id;
+            LogType = copyLog.LogType;
+            Data = copyLog.Data;
+            Sender = new OsbideUser(copyLog.Sender);
+            SenderId = copyLog.SenderId;
+        }
     }
 }

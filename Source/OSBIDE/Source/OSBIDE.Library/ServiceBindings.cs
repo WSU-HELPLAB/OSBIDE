@@ -15,11 +15,28 @@ namespace OSBIDE.Library
             {
 #if DEBUG
                 //go to the debug endpoint address if we're in debug mode
-                EndpointAddress endpoint = new EndpointAddress("http://localhost:49263/OsbideWebService.svc");
+                return LocalOsbideServiceEndpoint;
 #else
                 //otherwise, hit the real server
-                EndpointAddress endpoint = new EndpointAddress("http://osbide.osble.org/OsbideWebService.svc");
+                return RemoteOsbideServiceEndpoint;
 #endif
+            }
+        }
+
+        public static EndpointAddress LocalOsbideServiceEndpoint
+        {
+            get
+            {
+                EndpointAddress endpoint = new EndpointAddress("http://localhost:49263/OsbideWebService.svc");
+                return endpoint;
+            }
+        }
+
+        public static EndpointAddress RemoteOsbideServiceEndpoint
+        {
+            get
+            {
+                EndpointAddress endpoint = new EndpointAddress("http://osbide.osble.org/OsbideWebService.svc");
                 return endpoint;
             }
         }

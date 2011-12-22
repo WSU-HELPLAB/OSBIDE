@@ -130,19 +130,38 @@
     <Compile Include="Controls\AccountWindowTest.cs" />
     <Compile Include="Library\Events\EventFactoryTest.cs" />
     <Compile Include="Library\Model\EventLogTest.cs" />
+    <Compile Include="Service References\WebServices\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="VSPackage\OSBIDEPackageTest.cs" />
-    <Compile Include="Web\OsbideWebServiceTest.cs" />
+    <Compile Include="Web\LocalOsbideWebServiceTest.cs" />
     <Compile Include="PackageTest.cs" />
     <!---->
     <Compile Include="MenuItemTests\MenuItemCallback.cs" />
     <Compile Include="MenuItemTests\UIShellServiceMock.cs" />
+    <Compile Include="Web\RemoteOsbideWebServiceTest.cs" />
     <!---->
     <!---->
     <!---->
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
+    <None Include="Service References\WebServices\OsbideWebService.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService1.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <Shadow Include="Test References\OSBIDE.VSPackage.accessor" />
     <Shadow Include="Test References\OSBIDE.Library.accessor" />
   </ItemGroup>
@@ -164,7 +183,27 @@
       <Name>OSBIDE.VSPackage</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\WebServices\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WebServices\OsbideWebService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WebServices\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WebServices\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\WebServices\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

@@ -23,6 +23,18 @@ namespace OSBIDE.Library.Models
         [Required]
         public string InstitutionId { get; set; }
 
+        public OsbideUser()
+        {
+        }
+
+        public OsbideUser(OsbideUser copyUser)
+        {
+            Id = copyUser.Id;
+            FirstName = copyUser.FirstName;
+            LastName = copyUser.LastName;
+            InstitutionId = copyUser.InstitutionId;
+        }
+
         public static OsbideUser ReadUserFromFile(string filePath)
         {
             OsbideUser savedUser = new OsbideUser();
@@ -51,5 +63,6 @@ namespace OSBIDE.Library.Models
             formatter.Serialize(file, user);
             file.Close();
         }
+
     }
 }

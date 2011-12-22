@@ -13,30 +13,38 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.IntegrationTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.UnitTests", "UnitTests\OSBIDE.UnitTests\OSBIDE.UnitTests.csproj", "{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA888830-EB1D-4825-88A3-5BADB0A9F2AC}"
+	ProjectSection(SolutionItems) = preProject
+		OSBIDE.vsmdi = OSBIDE.vsmdi
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
-		SccProjectUniqueName0 = UnitTests\\OSBIDE.UnitTests\\OSBIDE.UnitTests.csproj
-		SccProjectName0 = UnitTests/OSBIDE.UnitTests
-		SccLocalPath0 = UnitTests\\OSBIDE.UnitTests
-		SccProjectUniqueName1 = UnitTests\\OSBIDE.IntegrationTests\\OSBIDE.IntegrationTests.csproj
-		SccProjectName1 = UnitTests/OSBIDE.IntegrationTests
-		SccLocalPath1 = UnitTests\\OSBIDE.IntegrationTests
-		SccProjectUniqueName2 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
-		SccProjectName2 = Source/OSBIDE.Web
-		SccLocalPath2 = Source\\OSBIDE.Web
-		SccProjectUniqueName3 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
-		SccProjectName3 = Source/OSBIDE.Library
-		SccLocalPath3 = Source\\OSBIDE.Library
-		SccProjectUniqueName4 = Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
-		SccProjectName4 = Source/OSBIDE.Controls
-		SccLocalPath4 = Source\\OSBIDE.Controls
-		SccProjectUniqueName5 = Source\\OSBIDE.VSPackage\\OSBIDE.VSPackage.csproj
-		SccProjectName5 = Source/OSBIDE.VSPackage
-		SccLocalPath5 = Source\\OSBIDE.VSPackage
-		SccLocalPath6 = .
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = UnitTests\\OSBIDE.UnitTests\\OSBIDE.UnitTests.csproj
+		SccProjectName1 = UnitTests/OSBIDE.UnitTests
+		SccLocalPath1 = UnitTests\\OSBIDE.UnitTests
+		SccProjectUniqueName2 = UnitTests\\OSBIDE.IntegrationTests\\OSBIDE.IntegrationTests.csproj
+		SccProjectName2 = UnitTests/OSBIDE.IntegrationTests
+		SccLocalPath2 = UnitTests\\OSBIDE.IntegrationTests
+		SccProjectUniqueName3 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
+		SccProjectName3 = Source/OSBIDE.Web
+		SccLocalPath3 = Source\\OSBIDE.Web
+		SccProjectUniqueName4 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
+		SccProjectName4 = Source/OSBIDE.Library
+		SccLocalPath4 = Source\\OSBIDE.Library
+		SccProjectUniqueName5 = Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
+		SccProjectName5 = Source/OSBIDE.Controls
+		SccLocalPath5 = Source\\OSBIDE.Controls
+		SccProjectUniqueName6 = Source\\OSBIDE.VSPackage\\OSBIDE.VSPackage.csproj
+		SccProjectName6 = Source/OSBIDE.VSPackage
+		SccLocalPath6 = Source\\OSBIDE.VSPackage
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = OSBIDE.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

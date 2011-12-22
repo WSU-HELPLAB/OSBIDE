@@ -128,7 +128,18 @@ namespace OSBIDE.VSPackage
             {
                 try
                 {
-                    Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(log);
+                    //AC: EF attaches a bunch of crap to POCO objects for change tracking.  Said additions
+                    //ruin WCF transfers.  There are supposidly fixes (see http://msdn.microsoft.com/en-us/library/dd456853.aspx)
+                    //but for now, I'm just being lazy and using copy constructors to convert back to 
+                    //standard objects.
+                    EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
+
+                    //reset the log's ID and sending user
+                    cleanLog.Id = 0;
+                    cleanLog.SenderId = 0;
+                    cleanLog.Sender = CurrentUser;
+
+                    Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(cleanLog);
                     if (result == Enums.ServiceCode.Ok)
                     {
                         log.Handled = true;
