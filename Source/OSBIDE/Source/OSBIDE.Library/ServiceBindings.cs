@@ -18,7 +18,7 @@ namespace OSBIDE.Library
                 EndpointAddress endpoint = new EndpointAddress("http://localhost:49263/OsbideWebService.svc");
 #else
                 //otherwise, hit the real server
-                //TODO: add real server address
+                EndpointAddress endpoint = new EndpointAddress("http://osbide.osble.org/OsbideWebService.svc");
 #endif
                 return endpoint;
             }

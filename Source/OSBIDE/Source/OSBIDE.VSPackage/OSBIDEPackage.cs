@@ -21,6 +21,8 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Data.Common;
+using System.Data.SqlServerCe;
 
 namespace OSBIDE.VSPackage
 {
@@ -50,7 +52,7 @@ namespace OSBIDE.VSPackage
     {
         private OsbideWebServiceClient webServiceClient = null;
         private OsbideEventHandler eventHandler = null;
-        private OsbideContext localDb = new OsbideContext(StringConstants.LocalDataConnectionString);
+        private OsbideContext localDb;
         public OsbideUser CurrentUser { get; private set; }
 
         /// <summary>
@@ -63,6 +65,8 @@ namespace OSBIDE.VSPackage
         public OSBIDEPackage()
         {
             CurrentUser = new OsbideUser();
+            SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+            localDb = new OsbideContext(conn, true);
         }
 
 
@@ -101,7 +105,6 @@ namespace OSBIDE.VSPackage
             {
                 CurrentUser = webServiceClient.SaveUser(CurrentUser);
                 SaveUserData(CurrentUser);
-                
             }
         }
 
@@ -116,7 +119,7 @@ namespace OSBIDE.VSPackage
             EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
             localDb.EventLogs.Add(eventLog);
             localDb.SaveChanges();
-
+            
             //find all logs that haven't been handled (submitted)
             List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
 
@@ -134,7 +137,7 @@ namespace OSBIDE.VSPackage
                 }
                 catch (Exception ex)
                 {
-                    //TODO: Handle exception?
+                    string message = ex.Message;
                 }
             }
 

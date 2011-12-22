@@ -39,6 +39,7 @@ namespace OSBIDE.Library.Models
                 catch (Exception ex)
                 {
                 }
+                data.Close();
             }
             return savedUser;
         }

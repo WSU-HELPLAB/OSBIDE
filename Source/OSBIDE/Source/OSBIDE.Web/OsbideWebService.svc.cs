@@ -16,7 +16,11 @@ namespace OSBIDE.Web
 
         public OsbideWebService()
         {
-            Db = new OsbideContext();
+#if DEBUG
+            Db = new OsbideContext("OsbideDebugContext");
+#else
+            Db = new OsbideContext("OsbideReleaseContext");
+#endif
         }
 
         [OperationContract]
@@ -47,6 +51,7 @@ namespace OSBIDE.Web
                 else
                 {
                     Db.Users.Add(userToSave);
+                    Db.SaveChanges();
                 }
             }
             return userToSave;

@@ -41,7 +41,7 @@ namespace OSBIDE.Library
         {
             get
             {
-                return string.Format("Data Source={0};Persist Security Info=False;providerName=System.Data.SqlServerCe.4.0", LocalDatabasePath);
+                return string.Format("Data Source={0}", LocalDatabasePath);
             }
         }
     }

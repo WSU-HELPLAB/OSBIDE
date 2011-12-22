@@ -16,7 +16,6 @@ namespace OSBIDE.Library.Models
 
         public OsbideContext() : base()
         {
-
         }
 
         public OsbideContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
@@ -47,6 +46,14 @@ namespace OSBIDE.Library.Models
         public OsbideContext(DbCompiledModel model)
             : base(model)
         {
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+#if !DEBUG
+            modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
+#endif
         }
     }
 }
