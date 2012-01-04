@@ -38,6 +38,14 @@ namespace OSBIDE.VSPackage.WebServices {
         System.IAsyncResult BeginSubmitLog(OSBIDE.Library.Models.EventLog log, System.AsyncCallback callback, object asyncState);
         
         int EndSubmitLog(System.IAsyncResult result);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/OsbidePackageUrl", ReplyAction="urn:OsbideWebService/OsbidePackageUrlResponse")]
+        string OsbidePackageUrl();
+        
+        [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="urn:OsbideWebService/OsbidePackageUrl", ReplyAction="urn:OsbideWebService/OsbidePackageUrlResponse")]
+        System.IAsyncResult BeginOsbidePackageUrl(System.AsyncCallback callback, object asyncState);
+        
+        string EndOsbidePackageUrl(System.IAsyncResult result);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -103,6 +111,25 @@ namespace OSBIDE.VSPackage.WebServices {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class OsbidePackageUrlCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        public OsbidePackageUrlCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        public string Result {
+            get {
+                base.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class OsbideWebServiceClient : System.ServiceModel.ClientBase<OSBIDE.VSPackage.WebServices.OsbideWebService>, OSBIDE.VSPackage.WebServices.OsbideWebService {
         
         private BeginOperationDelegate onBeginEchoDelegate;
@@ -122,6 +149,12 @@ namespace OSBIDE.VSPackage.WebServices {
         private EndOperationDelegate onEndSubmitLogDelegate;
         
         private System.Threading.SendOrPostCallback onSubmitLogCompletedDelegate;
+        
+        private BeginOperationDelegate onBeginOsbidePackageUrlDelegate;
+        
+        private EndOperationDelegate onEndOsbidePackageUrlDelegate;
+        
+        private System.Threading.SendOrPostCallback onOsbidePackageUrlCompletedDelegate;
         
         public OsbideWebServiceClient() {
         }
@@ -147,6 +180,8 @@ namespace OSBIDE.VSPackage.WebServices {
         public event System.EventHandler<SaveUserCompletedEventArgs> SaveUserCompleted;
         
         public event System.EventHandler<SubmitLogCompletedEventArgs> SubmitLogCompleted;
+        
+        public event System.EventHandler<OsbidePackageUrlCompletedEventArgs> OsbidePackageUrlCompleted;
         
         public string Echo(string toEcho) {
             return base.Channel.Echo(toEcho);
@@ -296,6 +331,54 @@ namespace OSBIDE.VSPackage.WebServices {
             }
             base.InvokeAsync(this.onBeginSubmitLogDelegate, new object[] {
                         log}, this.onEndSubmitLogDelegate, this.onSubmitLogCompletedDelegate, userState);
+        }
+        
+        public string OsbidePackageUrl() {
+            return base.Channel.OsbidePackageUrl();
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public System.IAsyncResult BeginOsbidePackageUrl(System.AsyncCallback callback, object asyncState) {
+            return base.Channel.BeginOsbidePackageUrl(callback, asyncState);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public string EndOsbidePackageUrl(System.IAsyncResult result) {
+            return base.Channel.EndOsbidePackageUrl(result);
+        }
+        
+        private System.IAsyncResult OnBeginOsbidePackageUrl(object[] inValues, System.AsyncCallback callback, object asyncState) {
+            return this.BeginOsbidePackageUrl(callback, asyncState);
+        }
+        
+        private object[] OnEndOsbidePackageUrl(System.IAsyncResult result) {
+            string retVal = this.EndOsbidePackageUrl(result);
+            return new object[] {
+                    retVal};
+        }
+        
+        private void OnOsbidePackageUrlCompleted(object state) {
+            if ((this.OsbidePackageUrlCompleted != null)) {
+                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+                this.OsbidePackageUrlCompleted(this, new OsbidePackageUrlCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+            }
+        }
+        
+        public void OsbidePackageUrlAsync() {
+            this.OsbidePackageUrlAsync(null);
+        }
+        
+        public void OsbidePackageUrlAsync(object userState) {
+            if ((this.onBeginOsbidePackageUrlDelegate == null)) {
+                this.onBeginOsbidePackageUrlDelegate = new BeginOperationDelegate(this.OnBeginOsbidePackageUrl);
+            }
+            if ((this.onEndOsbidePackageUrlDelegate == null)) {
+                this.onEndOsbidePackageUrlDelegate = new EndOperationDelegate(this.OnEndOsbidePackageUrl);
+            }
+            if ((this.onOsbidePackageUrlCompletedDelegate == null)) {
+                this.onOsbidePackageUrlCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnOsbidePackageUrlCompleted);
+            }
+            base.InvokeAsync(this.onBeginOsbidePackageUrlDelegate, null, this.onEndOsbidePackageUrlDelegate, this.onOsbidePackageUrlCompletedDelegate, userState);
         }
     }
 }

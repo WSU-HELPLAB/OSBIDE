@@ -25,6 +25,12 @@
   <wsdl:message name="OsbideWebService_SubmitLog_OutputMessage">
     <wsdl:part name="parameters" element="SubmitLogResponse" />
   </wsdl:message>
+  <wsdl:message name="OsbideWebService_OsbidePackageUrl_InputMessage">
+    <wsdl:part name="parameters" element="OsbidePackageUrl" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_OsbidePackageUrl_OutputMessage">
+    <wsdl:part name="parameters" element="OsbidePackageUrlResponse" />
+  </wsdl:message>
   <wsdl:portType name="OsbideWebService">
     <wsdl:operation name="Echo">
       <wsdl:input wsaw:Action="urn:OsbideWebService/Echo" message="OsbideWebService_Echo_InputMessage" />
@@ -37,6 +43,10 @@
     <wsdl:operation name="SubmitLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitLogResponse" message="OsbideWebService_SubmitLog_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="OsbidePackageUrl">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/OsbidePackageUrl" message="OsbideWebService_OsbidePackageUrl_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/OsbidePackageUrlResponse" message="OsbideWebService_OsbidePackageUrl_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>
