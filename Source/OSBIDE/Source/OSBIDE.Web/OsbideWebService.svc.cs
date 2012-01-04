@@ -58,6 +58,15 @@ namespace OSBIDE.Web
         [ApplyDataContractResolver]
         public int SubmitLog(EventLog log)
         {
+            //AC: kind of hackish, but event logs that we receive should already have an ID
+            //attached to them from being stored in the machine's local DB.  We can use 
+            //that ID to track the success/failure of asynchronous calls.
+            int localId = log.Id;
+
+            //we don't want the local id, so be sure to clear
+            log.Id = 0;
+
+            //also, reset the sender if necessary
             if (log.SenderId == 0)
             {
                 log.Sender = SaveUser(log.Sender);
@@ -77,7 +86,10 @@ namespace OSBIDE.Web
             {
                 return (int)Enums.ServiceCode.Error;
             }
-            return (int)Enums.ServiceCode.Ok;
+
+            //Return the ID number of the local object so that the caller knows that it's been successfully
+            //saved into the main system.
+            return localId;
         }
 
         [OperationBehavior]

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Data.Common;
 using System.Data.SqlServerCe;
+using System.Windows.Threading;
 
 namespace OSBIDE.VSPackage
 {
@@ -54,6 +55,7 @@ namespace OSBIDE.VSPackage
         private OsbideEventHandler eventHandler = null;
         private OsbideContext localDb;
         public OsbideUser CurrentUser { get; private set; }
+        private DispatcherTimer logSaveTimer = new DispatcherTimer();
 
         /// <summary>
         /// Default constructor of the package.
@@ -67,8 +69,16 @@ namespace OSBIDE.VSPackage
             CurrentUser = new OsbideUser();
             SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
             localDb = new OsbideContext(conn, true);
-        }
+            logSaveTimer.Interval = new TimeSpan(0, 1, 0);
 
+            //create our web service
+            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+
+            //and our event handler
+            webServiceClient.SubmitLogCompleted += new EventHandler<SubmitLogCompletedEventArgs>(SubmitLogCompleted);
+            logSaveTimer.Tick += new EventHandler(SaveLogs);
+            logSaveTimer.Start();
+        }
 
         /// <summary>
         /// This function is called when the user clicks the menu item that shows the 
@@ -108,18 +118,23 @@ namespace OSBIDE.VSPackage
             }
         }
 
-        /// <summary>
-        /// Called whenever OSBIDE detects an event change
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OsbideEventCreated(object sender, EventCreatedArgs e)
+        private void SubmitLogCompleted(object sender, SubmitLogCompletedEventArgs e)
         {
-            //add the log to the local db
-            EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
-            localDb.EventLogs.Add(eventLog);
-            localDb.SaveChanges();
-            
+            //The number coming back from the web service should be the ID number of the local log that
+            //was saved.
+            int logId = e.Result;
+
+            EventLog log = localDb.EventLogs.Find(logId);
+
+            if (log != null)
+            {
+                localDb.Entry(log).State = System.Data.EntityState.Deleted;
+                localDb.SaveChanges();
+            }
+        }
+
+        private void SaveLogs(object sender, EventArgs e)
+        {
             //find all logs that haven't been handled (submitted)
             List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
 
@@ -134,34 +149,33 @@ namespace OSBIDE.VSPackage
                     //standard objects.
                     EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
 
-                    //reset the log's ID and sending user
-                    cleanLog.Id = 0;
+                    //reset the log's sending user just to be safe
                     cleanLog.SenderId = 0;
                     cleanLog.Sender = CurrentUser;
-
-                    Enums.ServiceCode result = (Enums.ServiceCode)webServiceClient.SubmitLog(cleanLog);
-                    if (result == Enums.ServiceCode.Ok)
-                    {
-                        log.Handled = true;
-                        localDb.Entry(log).State = System.Data.EntityState.Modified;
-                    }
+                    webServiceClient.SubmitLogAsync(cleanLog);
                 }
                 catch (Exception ex)
                 {
                     string message = ex.Message;
                 }
             }
+        }
 
-            //update the Db with handled cases
+        /// <summary>
+        /// Called whenever OSBIDE detects an event change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OsbideEventCreated(object sender, EventCreatedArgs e)
+        {
+            //add the log to the local db
+            EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
+            localDb.EventLogs.Add(eventLog);
             localDb.SaveChanges();
 
-            //finally, delete all handled events from our local db to save space
-            logs = localDb.EventLogs.Where(model => model.Handled == true).ToList();
-            foreach (EventLog log in logs)
-            {
-                localDb.Entry(log).State = System.Data.EntityState.Deleted;
-            }
-            localDb.SaveChanges();
+            //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
+            //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 
+            //any race conditions (hopefully?)
         }
 
         /// <summary>
@@ -214,10 +228,7 @@ namespace OSBIDE.VSPackage
                 mcs.AddCommand(menuToolWin);
             }
 
-            //create our web service
-            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
-
-            //and our event handler
+            //attach event listeners to user actions
             eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
             eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
 

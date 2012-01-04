@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VSPackage", "Source\OSBIDE.VSPackage\OSBIDE.VSPackage.csproj", "{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876} = {A79BCD54-BE94-4E90-8670-B2CDE3DCA876}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "Source\OSBIDE.Controls\OSBIDE.Controls.csproj", "{9EA09E78-0541-4233-B189-EE1DBD56520D}"
 EndProject

@@ -7,6 +7,6 @@ namespace OSBIDE.Library.Models
 {
     public static class Enums
     {
-        public enum ServiceCode { Ok, Error }
+        public enum ServiceCode { Error = -1, Ok }
     }
 }

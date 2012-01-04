@@ -150,15 +150,15 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
-    <None Include="Service References\WebServices\OsbideWebService2.wsdl" />
-    <None Include="Service References\WebServices\OsbideWebService21.wsdl" />
-    <None Include="Service References\WebServices\OsbideWebService3.xsd">
+    <None Include="Service References\WebServices\OsbideWebService.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WebServices\OsbideWebService31.xsd">
+    <None Include="Service References\WebServices\OsbideWebService1.wsdl" />
+    <None Include="Service References\WebServices\OsbideWebService1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\WebServices\OsbideWebService32.xsd">
+    <None Include="Service References\WebServices\OsbideWebService2.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="source.extension.vsixmanifest">
@@ -179,7 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Package.ico" />
-    <None Include="Service References\WebServices\OsbideWebService.disco" />
+    <None Include="Service References\WebServices\OsbideWebService1.disco" />
     <None Include="Service References\WebServices\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
