@@ -20,17 +20,21 @@ namespace OSBIDE.Library.Events
         {
             //create the osbide event
             TextSelection selection = Document.Selection;
-            
+            int currentLine = selection.ActivePoint.Line;
+            int offset = selection.ActivePoint.DisplayColumn;
+
             selection.StartOfDocument();
             selection.EndOfDocument(true);
             string document = selection.Text;
+
+            //Reset cursor position
+            selection.MoveToDisplayColumn(currentLine, offset);
+
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
             save.DocumentName = Document.FullName;
             save.DocumentContent = document;
-
-            //TODO: Reset cursor position
             
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
