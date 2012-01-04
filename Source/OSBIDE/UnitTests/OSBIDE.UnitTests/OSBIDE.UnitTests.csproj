@@ -130,6 +130,7 @@
     <Compile Include="Controls\AccountWindowTest.cs" />
     <Compile Include="Library\Events\EventFactoryTest.cs" />
     <Compile Include="Library\Model\EventLogTest.cs" />
+    <Compile Include="Library\StringConstantTests.cs" />
     <Compile Include="Service References\WebServices\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

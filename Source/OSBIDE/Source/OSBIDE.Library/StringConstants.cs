@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Reflection;
 
 namespace OSBIDE.Library
 {
@@ -42,6 +43,30 @@ namespace OSBIDE.Library
             get
             {
                 return string.Format("Data Source={0}", LocalDatabasePath);
+            }
+        }
+
+        public static string LibraryVersion
+        {
+            get
+            {
+                string versionNumber = "";
+                Assembly asm = Assembly.GetAssembly(typeof(StringConstants));
+                if (asm.FullName != null)
+                {
+                    AssemblyName assemblyName = new AssemblyName(asm.FullName);
+                    versionNumber = assemblyName.Version.ToString();
+                }
+                return versionNumber;
+
+            }
+        }
+
+        public static string OsbidePackageUrl
+        {
+            get
+            {
+                return "http://osble.org";
             }
         }
     }

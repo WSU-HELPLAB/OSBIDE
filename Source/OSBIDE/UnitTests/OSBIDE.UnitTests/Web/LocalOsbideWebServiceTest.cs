@@ -84,6 +84,13 @@ namespace OSBIDE.UnitTests.Web
             Assert.AreNotEqual(0, result.Id);
         }
 
+        [TestMethod()]
+        public void LibraryVersionNumberTest()
+        {
+            OsbideWebService target = new OsbideWebService();
+            Assert.AreEqual(OSBIDE.Library.StringConstants.LibraryVersion, target.LibraryVersionNumber());
+        }
+
         /// <summary>
         ///A test for SubmitLog
         ///</summary>

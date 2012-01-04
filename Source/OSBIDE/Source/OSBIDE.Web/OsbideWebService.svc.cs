@@ -79,5 +79,17 @@ namespace OSBIDE.Web
             }
             return (int)Enums.ServiceCode.Ok;
         }
+
+        [OperationBehavior]
+        public string LibraryVersionNumber()
+        {
+            return OSBIDE.Library.StringConstants.LibraryVersion;
+        }
+
+        [OperationContract]
+        public string OsbidePackageUrl()
+        {
+            return OSBIDE.Library.StringConstants.OsbidePackageUrl;
+        }
     }
 }
