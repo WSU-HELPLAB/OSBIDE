@@ -57,6 +57,10 @@ namespace OSBIDE.VSPackage
         public OsbideUser CurrentUser { get; private set; }
         private DispatcherTimer logSaveTimer = new DispatcherTimer();
 
+        //Whether or not to allow the client to send web service calls.  This will get set to false if the
+        //client and server libraries are out of sync.
+        private bool allowLogServiceCalls = true;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -78,6 +82,21 @@ namespace OSBIDE.VSPackage
             webServiceClient.SubmitLogCompleted += new EventHandler<SubmitLogCompletedEventArgs>(SubmitLogCompleted);
             logSaveTimer.Tick += new EventHandler(SaveLogs);
             logSaveTimer.Start();
+
+            //check web service version number against ours
+            CheckServiceVersion();
+        }
+
+        private void CheckServiceVersion()
+        {
+            string remoteVersionNumber = webServiceClient.LibraryVersionNumber();
+
+            //we have a version mismatch, stop sending data to the server
+            if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
+            {
+                allowLogServiceCalls = false;
+                UpdateAvailableWindow.ShowModalDialog(webServiceClient.OsbidePackageUrl());
+            }
         }
 
         /// <summary>
@@ -109,7 +128,7 @@ namespace OSBIDE.VSPackage
             IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             Guid clsid = Guid.Empty;
             MessageBoxResult result = AccountWindow.ShowModalDialog(CurrentUser);
-            
+
             //assume that data was changed and needs to be saved
             if (result == MessageBoxResult.OK)
             {
@@ -135,28 +154,32 @@ namespace OSBIDE.VSPackage
 
         private void SaveLogs(object sender, EventArgs e)
         {
-            //find all logs that haven't been handled (submitted)
-            List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
-
-            //send all unsubmitted logs to the server
-            foreach (EventLog log in logs)
+            if (allowLogServiceCalls)
             {
-                try
-                {
-                    //AC: EF attaches a bunch of crap to POCO objects for change tracking.  Said additions
-                    //ruin WCF transfers.  There are supposidly fixes (see http://msdn.microsoft.com/en-us/library/dd456853.aspx)
-                    //but for now, I'm just being lazy and using copy constructors to convert back to 
-                    //standard objects.
-                    EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
 
-                    //reset the log's sending user just to be safe
-                    cleanLog.SenderId = 0;
-                    cleanLog.Sender = CurrentUser;
-                    webServiceClient.SubmitLogAsync(cleanLog);
-                }
-                catch (Exception ex)
+                //find all logs that haven't been handled (submitted)
+                List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
+
+                //send all unsubmitted logs to the server
+                foreach (EventLog log in logs)
                 {
-                    string message = ex.Message;
+                    try
+                    {
+                        //AC: EF attaches a bunch of crap to POCO objects for change tracking.  Said additions
+                        //ruin WCF transfers.  There are supposidly fixes (see http://msdn.microsoft.com/en-us/library/dd456853.aspx)
+                        //but for now, I'm just being lazy and using copy constructors to convert back to 
+                        //standard objects.
+                        EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
+
+                        //reset the log's sending user just to be safe
+                        cleanLog.SenderId = 0;
+                        cleanLog.Sender = CurrentUser;
+                        webServiceClient.SubmitLogAsync(cleanLog);
+                    }
+                    catch (Exception ex)
+                    {
+                        string message = ex.Message;
+                    }
                 }
             }
         }
