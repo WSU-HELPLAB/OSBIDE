@@ -106,6 +106,12 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(ext));
         }
 
+        //TODO: May be able to detect debug events using this?
+        public override void AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
+        {
+            
+        }
+
         //TODO: Handle ling change events
         public override void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {

@@ -105,6 +105,7 @@
     <Compile Include="Events\EventHandlerBase.cs" />
     <Compile Include="Events\ExceptionThrownEvent.cs" />
     <Compile Include="Events\IBuildEventHandler.cs" />
+    <Compile Include="Events\ICommandEvents.cs" />
     <Compile Include="Events\IDebuggerEventHandler.cs" />
     <Compile Include="Events\IDocumentEventHandler.cs" />
     <Compile Include="Events\IFindEventHandler.cs" />

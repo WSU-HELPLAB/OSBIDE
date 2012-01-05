@@ -14,6 +14,7 @@ namespace OSBIDE.Library.Events
     /// </summary>
     public abstract class EventHandlerBase : 
         IBuildEventHandler, 
+        ICommandEvents,
         IDebuggerEventHandler, 
         IDocumentEventHandler, 
         IFindEventHandler, 
@@ -42,6 +43,7 @@ namespace OSBIDE.Library.Events
         }
         public IServiceProvider ServiceProvider { get; set; }
         private BuildEvents buildEvents = null;
+        private CommandEvents commandEvents = null;
         private DebuggerEvents debuggerEvents = null;
         private DocumentEvents documentEvents = null;
         private FindEvents findEvents = null;
@@ -55,9 +57,10 @@ namespace OSBIDE.Library.Events
         public EventHandlerBase(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
-
+            
             //save references to dte events
             buildEvents = dte.Events.BuildEvents;
+            commandEvents = dte.Events.CommandEvents;
             debuggerEvents = dte.Events.DebuggerEvents;
             documentEvents = dte.Events.DocumentEvents;
             findEvents = dte.Events.FindEvents;
@@ -73,6 +76,9 @@ namespace OSBIDE.Library.Events
             buildEvents.OnBuildBegin += new _dispBuildEvents_OnBuildBeginEventHandler(OnBuildBegin);
             buildEvents.OnBuildDone += new _dispBuildEvents_OnBuildDoneEventHandler(OnBuildDone);
 
+            //command events
+            commandEvents.AfterExecute += new _dispCommandEvents_AfterExecuteEventHandler(AfterCommandExecute);
+            commandEvents.BeforeExecute += new _dispCommandEvents_BeforeExecuteEventHandler(BeforeCommandExecute);
             //debugger events
             debuggerEvents.OnEnterBreakMode += new _dispDebuggerEvents_OnEnterBreakModeEventHandler(OnEnterBreakMode);
             debuggerEvents.OnEnterDesignMode += new _dispDebuggerEvents_OnEnterDesignModeEventHandler(OnEnterDesignMode);
@@ -122,6 +128,10 @@ namespace OSBIDE.Library.Events
         //build event handlers
         public virtual void OnBuildBegin(vsBuildScope Scope, vsBuildAction Action) { }
         public virtual void OnBuildDone(vsBuildScope Scope, vsBuildAction Action) { }
+
+        //command event handlers
+        public virtual void AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut) { }
+        public virtual void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault) { }
 
         //debugger event handlers
         public virtual void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction) { }
