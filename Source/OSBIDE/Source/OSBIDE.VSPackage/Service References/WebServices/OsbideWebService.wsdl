@@ -40,6 +40,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="LibraryVersionNumber">
+      <soap12:operation soapAction="urn:OsbideWebService/LibraryVersionNumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="OsbidePackageUrl">
       <soap12:operation soapAction="urn:OsbideWebService/OsbidePackageUrl" style="document" />
       <wsdl:input>

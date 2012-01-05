@@ -92,7 +92,7 @@ namespace OSBIDE.Web
             return localId;
         }
 
-        [OperationBehavior]
+        [OperationContract]
         public string LibraryVersionNumber()
         {
             return OSBIDE.Library.StringConstants.LibraryVersion;

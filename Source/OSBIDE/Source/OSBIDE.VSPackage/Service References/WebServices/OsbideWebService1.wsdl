@@ -25,6 +25,12 @@
   <wsdl:message name="OsbideWebService_SubmitLog_OutputMessage">
     <wsdl:part name="parameters" element="SubmitLogResponse" />
   </wsdl:message>
+  <wsdl:message name="OsbideWebService_LibraryVersionNumber_InputMessage">
+    <wsdl:part name="parameters" element="LibraryVersionNumber" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_LibraryVersionNumber_OutputMessage">
+    <wsdl:part name="parameters" element="LibraryVersionNumberResponse" />
+  </wsdl:message>
   <wsdl:message name="OsbideWebService_OsbidePackageUrl_InputMessage">
     <wsdl:part name="parameters" element="OsbidePackageUrl" />
   </wsdl:message>
@@ -43,6 +49,10 @@
     <wsdl:operation name="SubmitLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitLogResponse" message="OsbideWebService_SubmitLog_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="LibraryVersionNumber">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/LibraryVersionNumber" message="OsbideWebService_LibraryVersionNumber_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/LibraryVersionNumberResponse" message="OsbideWebService_LibraryVersionNumber_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="OsbidePackageUrl">
       <wsdl:input wsaw:Action="urn:OsbideWebService/OsbidePackageUrl" message="OsbideWebService_OsbidePackageUrl_InputMessage" />

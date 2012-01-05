@@ -39,6 +39,14 @@ namespace OSBIDE.VSPackage.WebServices {
         
         int EndSubmitLog(System.IAsyncResult result);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/LibraryVersionNumber", ReplyAction="urn:OsbideWebService/LibraryVersionNumberResponse")]
+        string LibraryVersionNumber();
+        
+        [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="urn:OsbideWebService/LibraryVersionNumber", ReplyAction="urn:OsbideWebService/LibraryVersionNumberResponse")]
+        System.IAsyncResult BeginLibraryVersionNumber(System.AsyncCallback callback, object asyncState);
+        
+        string EndLibraryVersionNumber(System.IAsyncResult result);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/OsbidePackageUrl", ReplyAction="urn:OsbideWebService/OsbidePackageUrlResponse")]
         string OsbidePackageUrl();
         
@@ -111,6 +119,25 @@ namespace OSBIDE.VSPackage.WebServices {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class LibraryVersionNumberCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        public LibraryVersionNumberCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        public string Result {
+            get {
+                base.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class OsbidePackageUrlCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
@@ -150,6 +177,12 @@ namespace OSBIDE.VSPackage.WebServices {
         
         private System.Threading.SendOrPostCallback onSubmitLogCompletedDelegate;
         
+        private BeginOperationDelegate onBeginLibraryVersionNumberDelegate;
+        
+        private EndOperationDelegate onEndLibraryVersionNumberDelegate;
+        
+        private System.Threading.SendOrPostCallback onLibraryVersionNumberCompletedDelegate;
+        
         private BeginOperationDelegate onBeginOsbidePackageUrlDelegate;
         
         private EndOperationDelegate onEndOsbidePackageUrlDelegate;
@@ -180,6 +213,8 @@ namespace OSBIDE.VSPackage.WebServices {
         public event System.EventHandler<SaveUserCompletedEventArgs> SaveUserCompleted;
         
         public event System.EventHandler<SubmitLogCompletedEventArgs> SubmitLogCompleted;
+        
+        public event System.EventHandler<LibraryVersionNumberCompletedEventArgs> LibraryVersionNumberCompleted;
         
         public event System.EventHandler<OsbidePackageUrlCompletedEventArgs> OsbidePackageUrlCompleted;
         
@@ -331,6 +366,54 @@ namespace OSBIDE.VSPackage.WebServices {
             }
             base.InvokeAsync(this.onBeginSubmitLogDelegate, new object[] {
                         log}, this.onEndSubmitLogDelegate, this.onSubmitLogCompletedDelegate, userState);
+        }
+        
+        public string LibraryVersionNumber() {
+            return base.Channel.LibraryVersionNumber();
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public System.IAsyncResult BeginLibraryVersionNumber(System.AsyncCallback callback, object asyncState) {
+            return base.Channel.BeginLibraryVersionNumber(callback, asyncState);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public string EndLibraryVersionNumber(System.IAsyncResult result) {
+            return base.Channel.EndLibraryVersionNumber(result);
+        }
+        
+        private System.IAsyncResult OnBeginLibraryVersionNumber(object[] inValues, System.AsyncCallback callback, object asyncState) {
+            return this.BeginLibraryVersionNumber(callback, asyncState);
+        }
+        
+        private object[] OnEndLibraryVersionNumber(System.IAsyncResult result) {
+            string retVal = this.EndLibraryVersionNumber(result);
+            return new object[] {
+                    retVal};
+        }
+        
+        private void OnLibraryVersionNumberCompleted(object state) {
+            if ((this.LibraryVersionNumberCompleted != null)) {
+                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+                this.LibraryVersionNumberCompleted(this, new LibraryVersionNumberCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+            }
+        }
+        
+        public void LibraryVersionNumberAsync() {
+            this.LibraryVersionNumberAsync(null);
+        }
+        
+        public void LibraryVersionNumberAsync(object userState) {
+            if ((this.onBeginLibraryVersionNumberDelegate == null)) {
+                this.onBeginLibraryVersionNumberDelegate = new BeginOperationDelegate(this.OnBeginLibraryVersionNumber);
+            }
+            if ((this.onEndLibraryVersionNumberDelegate == null)) {
+                this.onEndLibraryVersionNumberDelegate = new EndOperationDelegate(this.OnEndLibraryVersionNumber);
+            }
+            if ((this.onLibraryVersionNumberCompletedDelegate == null)) {
+                this.onLibraryVersionNumberCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnLibraryVersionNumberCompleted);
+            }
+            base.InvokeAsync(this.onBeginLibraryVersionNumberDelegate, null, this.onEndLibraryVersionNumberDelegate, this.onLibraryVersionNumberCompletedDelegate, userState);
         }
         
         public string OsbidePackageUrl() {
