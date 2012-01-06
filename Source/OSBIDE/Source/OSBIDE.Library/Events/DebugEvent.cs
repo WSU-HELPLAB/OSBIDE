@@ -6,6 +6,8 @@ using EnvDTE;
 
 namespace OSBIDE.Library.Events
 {
+    public enum ExecutionActions { Start, StepOver, StepInto, StepOut };
+
     [Serializable]
     public class DebugEvent : IOsbideEvent
     {

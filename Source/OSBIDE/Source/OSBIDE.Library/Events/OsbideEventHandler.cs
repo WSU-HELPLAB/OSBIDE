@@ -10,6 +10,8 @@ namespace OSBIDE.Library.Events
 {
     public class OsbideEventHandler : EventHandlerBase
     {
+        private List<string> commandsWeCareAbout = (new string[] { "Debug.Start", "Debug.StepOver", "Debug.StepInto", "Debug.StepOut" }).ToList();
+
         public OsbideEventHandler(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -58,6 +60,7 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
+        //AC: Debug-related events don't seem to be firing.  Not sure why.
         public override void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction)
         {
             DebugEvent debug = new DebugEvent();
@@ -107,9 +110,33 @@ namespace OSBIDE.Library.Events
         }
 
         //TODO: May be able to detect debug events using this?
-        public override void AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
+        public override void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
-            
+            Command cmd = dte.Commands.Item(Guid, ID);
+            string commandName = "";
+            if (cmd != null)
+            {
+                commandName = cmd.Name;
+
+                //AC: Maybe throw into some sort of factory or separate method at some point
+                if (commandsWeCareAbout.Contains(commandName))
+                {
+                    ExecutionActions action = (ExecutionActions)commandsWeCareAbout.IndexOf(commandName);
+                    DebugEvent debug = new DebugEvent();
+                    debug.SolutionName = dte.Solution.FullName;
+                    debug.EventDate = DateTime.Now;
+
+                    //we don't really use this, so set to -1 so that it stands out
+                    debug.EventReason = -1;
+
+                    //kind of reappropriating this for our current use.  Consider refactoring.
+                    debug.ExecutionAction = (int)action;                
+                    debug.DocumentName = dte.ActiveDocument.FullName;
+
+                    //let others know that we have created a new event
+                    NotifyEventCreated(this, new EventCreatedArgs(debug));
+                }
+            }
         }
 
         //TODO: Handle ling change events
