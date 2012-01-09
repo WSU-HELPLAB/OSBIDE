@@ -60,32 +60,6 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
-        //AC: Debug-related events don't seem to be firing.  Not sure why.
-        public override void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction)
-        {
-            DebugEvent debug = new DebugEvent();
-            debug.SolutionName = dte.Solution.FullName;
-            debug.EventDate = DateTime.Now;
-            debug.EventReason = (int)Reason;
-            debug.ExecutionAction = (int)ExecutionAction;
-            debug.DocumentName = dte.ActiveDocument.FullName;
-
-            //let others know that we have created a new event
-            NotifyEventCreated(this, new EventCreatedArgs(debug));
-        }
-
-        public override void OnEnterDesignMode(dbgEventReason Reason)
-        {
-            dbgExecutionAction action = dbgExecutionAction.dbgExecutionActionDefault;
-            OnEnterBreakMode(Reason, ref action);
-        }
-
-        public override void OnEnterRunMode(dbgEventReason Reason)
-        {
-            dbgExecutionAction action = dbgExecutionAction.dbgExecutionActionDefault;
-            OnEnterBreakMode(Reason, ref action);
-        }
-
         public override void OnExceptionNotHandled(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
         {
             OnExceptionThrown(ExceptionType, Name, Code, Description, ref ExceptionAction);
