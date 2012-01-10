@@ -10,7 +10,6 @@ namespace OSBIDE.Library.Events
 {
     public class OsbideEventHandler : EventHandlerBase
     {
-        private List<string> commandsWeCareAbout = (new string[] { "Debug.Start", "Debug.StepOver", "Debug.StepInto", "Debug.StepOut" }).ToList();
 
         public OsbideEventHandler(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -60,30 +59,6 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
-        public override void OnExceptionNotHandled(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
-        {
-            OnExceptionThrown(ExceptionType, Name, Code, Description, ref ExceptionAction);
-        }
-
-        public override void OnExceptionThrown(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
-        {
-            ExceptionEvent ext = new ExceptionEvent()
-            {
-                EventDate = DateTime.Now,
-                ExceptionAction = (int)ExceptionAction,
-                ExceptionCode = Code,
-                ExceptionDescription = Description,
-                ExceptionName = Name,
-                ExceptionType = ExceptionType,
-                SolutionName = dte.Solution.FullName,
-                DocumentName = dte.ActiveDocument.FullName
-            };
-
-            //let others know that we have created a new event
-            NotifyEventCreated(this, new EventCreatedArgs(ext));
-        }
-
-        //TODO: May be able to detect debug events using this?
         public override void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
             Command cmd = dte.Commands.Item(Guid, ID);
@@ -92,23 +67,18 @@ namespace OSBIDE.Library.Events
             {
                 commandName = cmd.Name;
 
-                //AC: Maybe throw into some sort of factory or separate method at some point
-                if (commandsWeCareAbout.Contains(commandName))
+                //These events constantly fire and are of no use to us.  As such, speed up the process by always ignoring
+                //them
+                if (commandName.CompareTo("Build.SolutionConfigurations") != 0 && commandName.CompareTo("Edit.GoToFindCombo") != 0)
                 {
-                    ExecutionActions action = (ExecutionActions)commandsWeCareAbout.IndexOf(commandName);
-                    DebugEvent debug = new DebugEvent();
-                    debug.SolutionName = dte.Solution.FullName;
-                    debug.EventDate = DateTime.Now;
+                    IOsbideEvent oEvent = EventFactory.FromCommand(commandName, dte);
 
-                    //we don't really use this, so set to -1 so that it stands out
-                    debug.EventReason = -1;
-
-                    //kind of reappropriating this for our current use.  Consider refactoring.
-                    debug.ExecutionAction = (int)action;                
-                    debug.DocumentName = dte.ActiveDocument.FullName;
-
-                    //let others know that we have created a new event
-                    NotifyEventCreated(this, new EventCreatedArgs(debug));
+                    //protect against the off-chance that we'll get a null return value
+                    if (oEvent != null)
+                    {
+                        //let others know that we have created a new event
+                        NotifyEventCreated(this, new EventCreatedArgs(oEvent));
+                    }
                 }
             }
         }

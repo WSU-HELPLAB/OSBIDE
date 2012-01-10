@@ -5,34 +5,54 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Ionic.Zip;
+using EnvDTE;
+using EnvDTE80;
 
 namespace OSBIDE.Library.Events
 {
+    public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging };
     public class EventFactory
     {
-        /// <summary>
-        /// Converts the supplied IOsbideEvent into a zipped, binary format
-        /// </summary>
-        /// <param name="evt"></param>
-        /// <returns></returns>
-        public static byte[] ToZippedBinary(IOsbideEvent evt)
+        private static List<string> debugCommands = (new string[] { "Debug.Start", "Debug.StepOver", "Debug.StepInto", "Debug.StepOut", "Debug.StopDebugging" }).ToList();
+
+        public static IOsbideEvent FromCommand(string commandName, DTE2 dte)
         {
-            MemoryStream memStream = new MemoryStream();
-            MemoryStream zipStream = new MemoryStream();
-            BinaryFormatter serializer = new BinaryFormatter();
-            serializer.Serialize(memStream, evt);
+            IOsbideEvent oEvent = null;
 
-            //go back to position zero so that the zip file can read the memory stream
-            memStream.Position = 0;
-
-            //zip up to save space
-            using (ZipFile zip = new ZipFile())
+            //debugging events
+            if (debugCommands.Contains(commandName))
             {
-                ZipEntry entry = zip.AddEntry(evt.EventName, memStream);
-                zip.Save(zipStream);
-                zipStream.Position = 0;
+                DebugActions action = (DebugActions)debugCommands.IndexOf(commandName);
+                DebugEvent debug = new DebugEvent();
+                debug.SolutionName = dte.Solution.FullName;
+                debug.EventDate = DateTime.Now;
+
+                //we don't really use this, so set to -1 so that it stands out
+                debug.EventReason = -1;
+
+                //kind of reappropriating this for our current use.  Consider refactoring.
+                debug.ExecutionAction = (int)action;
+                debug.DocumentName = dte.ActiveDocument.FullName;
+
+                //throw the content of the output window into the event if we just stopped debugging
+                if (action == DebugActions.StopDebugging)
+                {
+                    OutputWindowPane debugWindow = dte.ToolWindows.OutputWindow.OutputWindowPanes.Item("Debug");
+                    if (debugWindow != null)
+                    {
+                        TextDocument text = debugWindow.TextDocument;
+                        TextSelection selection = text.Selection;
+                        selection.StartOfDocument();
+                        selection.EndOfDocument(true);
+                        debug.DebugOutput = selection.Text;
+                        selection.EndOfDocument();
+                    }
+                }
+
+                oEvent = debug;
             }
-            return zipStream.ToArray();
+
+            return oEvent;
         }
 
         /// <summary>
@@ -66,6 +86,31 @@ namespace OSBIDE.Library.Events
             //figure out what needs to be deserialized
             IOsbideEvent evt = (IOsbideEvent)formatter.Deserialize(rawStream);            
             return evt;
+        }
+
+        /// <summary>
+        /// Converts the supplied IOsbideEvent into a zipped, binary format
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <returns></returns>
+        public static byte[] ToZippedBinary(IOsbideEvent evt)
+        {
+            MemoryStream memStream = new MemoryStream();
+            MemoryStream zipStream = new MemoryStream();
+            BinaryFormatter serializer = new BinaryFormatter();
+            serializer.Serialize(memStream, evt);
+
+            //go back to position zero so that the zip file can read the memory stream
+            memStream.Position = 0;
+
+            //zip up to save space
+            using (ZipFile zip = new ZipFile())
+            {
+                ZipEntry entry = zip.AddEntry(evt.EventName, memStream);
+                zip.Save(zipStream);
+                zipStream.Position = 0;
+            }
+            return zipStream.ToArray();
         }
     }
 }
