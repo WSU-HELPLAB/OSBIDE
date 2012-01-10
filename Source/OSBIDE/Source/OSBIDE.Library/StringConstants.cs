@@ -66,7 +66,7 @@ namespace OSBIDE.Library
         {
             get
             {
-                return "http://osble.org";
+                return "http://osbide.codeplex.com/releases";
             }
         }
     }
