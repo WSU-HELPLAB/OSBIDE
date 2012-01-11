@@ -150,6 +150,7 @@ namespace OSBIDE.VSPackage
             {
                 localDb.Entry(log).State = System.Data.EntityState.Deleted;
                 localDb.SaveChanges();
+                MessageBox.Show("Event sent to server and deleted locally");
             }
         }
 
@@ -157,6 +158,7 @@ namespace OSBIDE.VSPackage
         {
             if (allowLogServiceCalls)
             {
+                MessageBox.Show("About to send events to server");
 
                 //find all logs that haven't been handled (submitted)
                 List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
@@ -196,6 +198,8 @@ namespace OSBIDE.VSPackage
             EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
             localDb.EventLogs.Add(eventLog);
             localDb.SaveChanges();
+
+            MessageBox.Show("Event created");
 
             //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
             //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 
