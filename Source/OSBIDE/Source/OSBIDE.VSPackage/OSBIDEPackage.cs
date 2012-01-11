@@ -185,6 +185,7 @@ namespace OSBIDE.VSPackage
 
             if (log != null)
             {
+                WriteToLog(string.Format("Removing log ID {0} from local DB", log.Id));
                 localDb.Entry(log).State = System.Data.EntityState.Deleted;
                 localDb.SaveChanges();
             }
@@ -208,10 +209,11 @@ namespace OSBIDE.VSPackage
                         //but for now, I'm just being lazy and using copy constructors to convert back to 
                         //standard objects.
                         EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
-
+                        
                         //reset the log's sending user just to be safe
                         cleanLog.SenderId = 0;
                         cleanLog.Sender = CurrentUser;
+                        WriteToLog(string.Format("Sending log with ID {0} to the server", cleanLog.Id));
                         webServiceClient.SubmitLogAsync(cleanLog);
                     }
                     catch (Exception ex)
@@ -233,6 +235,7 @@ namespace OSBIDE.VSPackage
             EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
             localDb.EventLogs.Add(eventLog);
             localDb.SaveChanges();
+            WriteToLog(string.Format("Event of type {0} created and saved to DB", e.OsbideEvent.GetType().Name));
 
             //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
             //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 

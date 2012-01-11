@@ -18,16 +18,15 @@ namespace OSBIDE.Library.Models
         public static ErrorListItem FromErrorItem(ErrorItem item)
         {
             ErrorListItem eli = new ErrorListItem();
-            eli.Column = item.Column;
-            eli.Line = item.Line;
-            eli.File = item.FileName;
-            eli.Description = item.Description;
 
-            //Sometimes project references are invalid.  Not sure why.
-            eli.Project = "Unknown";
+            //Sometimes ErrorItem references are invalid.  Not sure why.
             try
             {
                 eli.Project = item.Project;
+                eli.Column = item.Column;
+                eli.Line = item.Line;
+                eli.File = item.FileName;
+                eli.Description = item.Description;
             }
             catch (Exception ex)
             {
