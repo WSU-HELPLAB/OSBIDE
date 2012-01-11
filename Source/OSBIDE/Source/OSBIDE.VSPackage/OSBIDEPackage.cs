@@ -89,13 +89,43 @@ namespace OSBIDE.VSPackage
 
         private void CheckServiceVersion()
         {
-            string remoteVersionNumber = webServiceClient.LibraryVersionNumber();
+            string remoteVersionNumber = "";
+            string packageUrl = "";
+
+            //wrap web service calls in a try/catch just in case the endpoint can't be found
+            try
+            {
+                remoteVersionNumber = webServiceClient.LibraryVersionNumber();
+                packageUrl = webServiceClient.OsbidePackageUrl();
+            }
+            catch (Exception ex)
+            {
+                //write to the log file
+                WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
+
+                //turn off future service calls for now
+                allowLogServiceCalls = false;
+
+                return;
+            }
 
             //we have a version mismatch, stop sending data to the server
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
                 allowLogServiceCalls = false;
-                UpdateAvailableWindow.ShowModalDialog(webServiceClient.OsbidePackageUrl());
+                UpdateAvailableWindow.ShowModalDialog(packageUrl);
+            }
+        }
+
+        /// <summary>
+        /// Writes the supplied text to OSBIDE's log file.
+        /// </summary>
+        /// <param name="content"></param>
+        private void WriteToLog(string content)
+        {
+            using (StreamWriter writer = File.AppendText(StringConstants.LocalErrorLogPath))
+            {
+                writer.WriteLine("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
             }
         }
 
@@ -140,6 +170,13 @@ namespace OSBIDE.VSPackage
 
         private void SubmitLogCompleted(object sender, SubmitLogCompletedEventArgs e)
         {
+            //were we not successful?
+            if (e.Error != null)
+            {
+                WriteToLog(string.Format("SubmitLogCompleted error: {0}", e.Error.Message));
+                return;
+            }
+
             //The number coming back from the web service should be the ID number of the local log that
             //was saved.
             int logId = e.Result;
@@ -150,7 +187,6 @@ namespace OSBIDE.VSPackage
             {
                 localDb.Entry(log).State = System.Data.EntityState.Deleted;
                 localDb.SaveChanges();
-                MessageBox.Show("Event sent to server and deleted locally");
             }
         }
 
@@ -158,7 +194,6 @@ namespace OSBIDE.VSPackage
         {
             if (allowLogServiceCalls)
             {
-                MessageBox.Show("About to send events to server");
 
                 //find all logs that haven't been handled (submitted)
                 List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
@@ -181,7 +216,7 @@ namespace OSBIDE.VSPackage
                     }
                     catch (Exception ex)
                     {
-                        string message = ex.Message;
+                        WriteToLog(string.Format("SaveLogs error: {0}", ex.Message));
                     }
                 }
             }
@@ -198,8 +233,6 @@ namespace OSBIDE.VSPackage
             EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
             localDb.EventLogs.Add(eventLog);
             localDb.SaveChanges();
-
-            MessageBox.Show("Event created");
 
             //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
             //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 

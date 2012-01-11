@@ -46,6 +46,14 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string LocalErrorLogPath
+        {
+            get
+            {
+                return Path.Combine(DataRoot, DateTime.Today.ToString("yyyy-MM-dd") + ".log");
+            }
+        }
+
         public static string LibraryVersion
         {
             get
