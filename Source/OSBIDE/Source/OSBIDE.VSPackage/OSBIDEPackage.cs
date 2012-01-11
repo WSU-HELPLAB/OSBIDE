@@ -58,7 +58,7 @@ namespace OSBIDE.VSPackage
         private DispatcherTimer logSaveTimer = new DispatcherTimer();
 
         //Whether or not to allow the client to send web service calls.  This will get set to false if the
-        //client and server libraries are out of sync.
+        //client and server libraries are out of sync or if we don't have a valid user.
         private bool allowLogServiceCalls = true;
 
         /// <summary>
@@ -134,6 +134,7 @@ namespace OSBIDE.VSPackage
             {
                 CurrentUser = webServiceClient.SaveUser(CurrentUser);
                 SaveUserData(CurrentUser);
+                allowLogServiceCalls = true;
             }
         }
 
@@ -261,6 +262,7 @@ namespace OSBIDE.VSPackage
             //display a user notification if we don't have any user on file
             if (CurrentUser.Id == 0)
             {
+                allowLogServiceCalls = false;
                 MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {

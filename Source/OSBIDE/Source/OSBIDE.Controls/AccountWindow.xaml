@@ -33,11 +33,16 @@
         <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold">Student/Institution ID:</TextBlock>
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="InstitutionIdTextBox" Text="{Binding Path=InstitutionId, Mode=TwoWay}" />
         
-        <!--4,0 and 4,1-->
+        <!--4,0-->
+        <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">
+            <Hyperlink x:Name="PrivacyPolicyLink" NavigateUri="http://osbide.codeplex.com/wikipage?title=Privacy%20Policy" >
+                Privacy Policy
+            </Hyperlink>
+        </TextBlock>
+        <!--4,1-->
         <StackPanel 
             Grid.Row="4" 
-            Grid.Column="0" 
-            Grid.ColumnSpan="2" 
+            Grid.Column="1" 
             Orientation="Horizontal" 
             HorizontalAlignment="Right"
             Margin="0,5,0,0"

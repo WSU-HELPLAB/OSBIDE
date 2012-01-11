@@ -46,6 +46,13 @@ namespace OSBIDE.Library.Models
             DateReceived = DateTime.Now;
             LogType = evt.EventName;
             Data = EventFactory.ToZippedBinary(evt);
+
+            //were we sent a null user?
+            if (sender.FirstName == null && sender.LastName == null && sender.InstitutionId == null)
+            {
+                //replace with a generic user
+                sender = OsbideUser.GenericUser();
+            }
             Sender = sender;
             if (sender.Id != 0)
             {

@@ -76,7 +76,7 @@
 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideStatusTool" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic2" />
+        <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <CommandName>cmdidOsbideStatusTool</CommandName>
           <ButtonText>OSBIDE Status</ButtonText>

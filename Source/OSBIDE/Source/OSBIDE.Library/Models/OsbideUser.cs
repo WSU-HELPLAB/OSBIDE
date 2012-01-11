@@ -23,6 +23,16 @@ namespace OSBIDE.Library.Models
         [Required]
         public string InstitutionId { get; set; }
 
+        public static OsbideUser GenericUser()
+        {
+            return new OsbideUser()
+            {
+                FirstName = "Ann",
+                LastName = "Onymous",
+                InstitutionId = "0000"
+            };
+        }
+
         public OsbideUser()
         {
         }

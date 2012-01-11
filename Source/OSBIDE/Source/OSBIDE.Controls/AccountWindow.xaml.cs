@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using OSBIDE.Library.Models;
+using System.Diagnostics;
 
 namespace OSBIDE.Controls
 {
@@ -47,6 +48,13 @@ namespace OSBIDE.Controls
             //register events
             OkayButton.Click += new RoutedEventHandler(OkayButton_Click);
             CancelButton.Click += new RoutedEventHandler(CancelButton_Click);
+            PrivacyPolicyLink.RequestNavigate += new System.Windows.Navigation.RequestNavigateEventHandler(PrivacyPolicyLink_RequestNavigate);
+        }
+
+        void PrivacyPolicyLink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
 
         void CancelButton_Click(object sender, RoutedEventArgs e)
