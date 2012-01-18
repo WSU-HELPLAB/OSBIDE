@@ -33,6 +33,27 @@ namespace OSBIDE.Web
         [ApplyDataContractResolver]
         public OsbideUser SaveUser(OsbideUser userToSave)
         {
+            //reset sender id
+            userToSave.Id = 0;
+
+            //make sure that the user is valid
+            if (
+                    userToSave.FirstName == null 
+                    || 
+                    userToSave.LastName == null
+                    ||
+                    userToSave.InstitutionId == null
+                    ||
+                    userToSave.FirstName.Length == 0 
+                    || 
+                    userToSave.LastName.Length == 0 
+                    || 
+                    userToSave.InstitutionId.Length == 0
+                )
+            {
+                return userToSave;
+            }
+
             //try to find the user in the DB before creating a new record
             OsbideUser dbUser = (from user in Db.Users
                                  where

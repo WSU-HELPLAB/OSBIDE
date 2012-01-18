@@ -162,9 +162,29 @@ namespace OSBIDE.VSPackage
             //assume that data was changed and needs to be saved
             if (result == MessageBoxResult.OK)
             {
-                CurrentUser = webServiceClient.SaveUser(CurrentUser);
-                SaveUserData(CurrentUser);
-                allowLogServiceCalls = true;
+                try
+                {
+                    CurrentUser = webServiceClient.SaveUser(CurrentUser);
+                }
+                catch (Exception ex)
+                {
+                    //write to the log file
+                    WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
+
+                    //turn off future service calls for now
+                    allowLogServiceCalls = false;
+                }
+
+                //If we got back a valid user, turn on log saving
+                if (CurrentUser.Id != 0)
+                {
+                    SaveUserData(CurrentUser);
+                    allowLogServiceCalls = true;
+                }
+                else
+                {
+                    allowLogServiceCalls = false;
+                }
             }
         }
 
