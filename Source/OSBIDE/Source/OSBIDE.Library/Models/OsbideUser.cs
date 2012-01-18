@@ -15,13 +15,46 @@ namespace OSBIDE.Library.Models
         public int Id { get; set; }
 
         [Required]
-        public string FirstName { get; set; }
+        private string _firstName = "";
+        public string FirstName
+        {
+            get
+            {
+                return _firstName;
+            }
+            set
+            {
+                _firstName = value.Trim();
+            }
+        }
 
         [Required]
-        public string LastName { get; set; }
+        private string _lastName = "";
+        public string LastName
+        {
+            get
+            {
+                return _lastName;
+            }
+            set
+            {
+                _lastName = value.Trim();
+            }
+        }
 
         [Required]
-        public string InstitutionId { get; set; }
+        private string _institutionId = "";
+        public string InstitutionId
+        {
+            get
+            {
+                return _institutionId;
+            }
+            set
+            {
+                _institutionId = value.Trim();
+            }
+        }
 
         public static OsbideUser GenericUser()
         {

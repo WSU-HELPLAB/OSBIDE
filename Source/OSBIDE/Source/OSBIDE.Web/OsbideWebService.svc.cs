@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
 using OSBIDE.Library.Models;
+using System.Data.Entity;
 
 namespace OSBIDE.Web
 {
@@ -18,6 +19,7 @@ namespace OSBIDE.Web
         {
 #if DEBUG
             Db = new OsbideContext("OsbideDebugContext");
+            Database.SetInitializer<OsbideContext>(new DropCreateDatabaseIfModelChanges<OsbideContext>());
 #else
             Db = new OsbideContext("OsbideReleaseContext");
 #endif
