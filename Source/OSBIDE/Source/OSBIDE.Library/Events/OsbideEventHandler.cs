@@ -10,6 +10,18 @@ namespace OSBIDE.Library.Events
 {
     public class OsbideEventHandler : EventHandlerBase
     {
+        /// <summary>
+        /// These events constantly fire and are of no use to us.
+        /// </summary>
+        private List<string> boringCommands =
+            (new string[] 
+                {
+                    "Build.SolutionConfigurations",
+                    "Edit.GoToFindCombo",
+                    ""
+                }
+            ).ToList();
+        private DateTime LastEditorActivityEvent = DateTime.MinValue;
 
         public OsbideEventHandler(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -67,9 +79,8 @@ namespace OSBIDE.Library.Events
             {
                 commandName = cmd.Name;
 
-                //These events constantly fire and are of no use to us.  As such, speed up the process by always ignoring
-                //them
-                if (commandName.CompareTo("Build.SolutionConfigurations") != 0 && commandName.CompareTo("Edit.GoToFindCombo") != 0)
+                //Speed up the process by always ignoring boring commands
+                if (boringCommands.Contains(commandName) == false)
                 {
                     IOsbideEvent oEvent = EventFactory.FromCommand(commandName, dte);
 
@@ -83,10 +94,23 @@ namespace OSBIDE.Library.Events
             }
         }
 
-        //TODO: Handle ling change events
+        /// <summary>
+        /// Called whenever the current line gets modified (text added / deleted).  Only raised at a maximum of
+        /// once per minute in order to undercut the potential flood of event notifications.
+        /// </summary>
+        /// <param name="StartPoint"></param>
+        /// <param name="EndPoint"></param>
+        /// <param name="Hint"></param>
         public override void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {
-            
+            if (LastEditorActivityEvent < DateTime.Now.Subtract(new TimeSpan(0, 1, 0)))
+            {
+                LastEditorActivityEvent = DateTime.Now;
+                EditorActivityEvent activity = new EditorActivityEvent();
+                activity.EventDate = DateTime.Now;
+                activity.SolutionName = dte.Solution.FullName;
+                NotifyEventCreated(this, new EventCreatedArgs(activity));
+            }
         }
     }
 }

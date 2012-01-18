@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Events\BuildEvent.cs" />
     <Compile Include="Events\DebugEvent.cs" />
+    <Compile Include="Events\EditorActivityEvent.cs" />
     <Compile Include="Events\EventCreatedArgs.cs" />
     <Compile Include="Events\EventFactory.cs" />
     <Compile Include="Events\EventHandlerBase.cs" />

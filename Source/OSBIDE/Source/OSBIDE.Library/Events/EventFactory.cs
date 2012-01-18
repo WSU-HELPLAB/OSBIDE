@@ -10,10 +10,20 @@ using EnvDTE80;
 
 namespace OSBIDE.Library.Events
 {
-    public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging };
+    public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging, StartWithoutDebugging };
     public class EventFactory
     {
-        private static List<string> debugCommands = (new string[] { "Debug.Start", "Debug.StepOver", "Debug.StepInto", "Debug.StepOut", "Debug.StopDebugging" }).ToList();
+        //position of strings must match position in DebugActions enumeration
+        private static List<string> debugCommands = 
+            (new string[] 
+                { 
+                    "Debug.Start", 
+                    "Debug.StepOver", 
+                    "Debug.StepInto", 
+                    "Debug.StepOut", 
+                    "Debug.StopDebugging",
+                    "Debug.StartWithoutDebugging"
+                }).ToList();
 
         public static IOsbideEvent FromCommand(string commandName, DTE2 dte)
         {
