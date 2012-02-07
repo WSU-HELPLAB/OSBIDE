@@ -61,6 +61,9 @@ namespace OSBIDE.VSPackage
         //client and server libraries are out of sync or if we don't have a valid user.
         private bool allowLogServiceCalls = true;
 
+        //Wether or not the system has SQL Server CE installed (assume it does)
+        private bool hasSqlServerCe = true;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -71,20 +74,37 @@ namespace OSBIDE.VSPackage
         public OSBIDEPackage()
         {
             CurrentUser = new OsbideUser();
-            SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
-            localDb = new OsbideContext(conn, true);
-            logSaveTimer.Interval = new TimeSpan(0, 1, 0);
 
             //create our web service
             webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
-            //and our event handler
-            webServiceClient.SubmitLogCompleted += new EventHandler<SubmitLogCompletedEventArgs>(SubmitLogCompleted);
-            logSaveTimer.Tick += new EventHandler(SaveLogs);
-            logSaveTimer.Start();
-
             //check web service version number against ours
             CheckServiceVersion();
+
+            try
+            {
+                SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+                localDb = new OsbideContext(conn, true);
+                logSaveTimer.Interval = new TimeSpan(0, 1, 0);
+
+                //event handlers
+                webServiceClient.SubmitLogCompleted += new EventHandler<SubmitLogCompletedEventArgs>(SubmitLogCompleted);
+                logSaveTimer.Tick += new EventHandler(SaveLogs);
+                logSaveTimer.Start();
+            }
+            catch (BadImageFormatException ex)
+            {
+                hasSqlServerCe = false;
+                MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
+                                            "Missing Component",
+                                            MessageBoxButton.YesNo
+                                            );
+                if (result == MessageBoxResult.Yes)
+                {
+
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.microsoft.com/download/en/details.aspx?id=17876"));
+                }
+            }
         }
 
         private void CheckServiceVersion()
@@ -251,12 +271,14 @@ namespace OSBIDE.VSPackage
         /// <param name="e"></param>
         private void OsbideEventCreated(object sender, EventCreatedArgs e)
         {
-            //add the log to the local db
-            EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
-            localDb.EventLogs.Add(eventLog);
-            localDb.SaveChanges();
-            WriteToLog(string.Format("Event of type {0} created and saved to DB", e.OsbideEvent.GetType().Name));
-
+            if (hasSqlServerCe)
+            {
+                //add the log to the local db
+                EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
+                localDb.EventLogs.Add(eventLog);
+                localDb.SaveChanges();
+                WriteToLog(string.Format("Event of type {0} created and saved to DB", e.OsbideEvent.GetType().Name));
+            }
             //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
             //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 
             //any race conditions (hopefully?)
