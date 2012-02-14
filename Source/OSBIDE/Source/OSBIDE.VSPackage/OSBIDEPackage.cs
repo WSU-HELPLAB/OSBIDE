@@ -73,7 +73,19 @@ namespace OSBIDE.VSPackage
         /// </summary>
         public OSBIDEPackage()
         {
-            CurrentUser = new OsbideUser();
+            //pull saved user data
+            CurrentUser = GetSavedUserData();
+
+            //display a user notification if we don't have any user on file
+            if (CurrentUser.Id == 0)
+            {
+                allowLogServiceCalls = false;
+                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    MenuItemCallback(this, EventArgs.Empty);
+                }
+            }
 
             //create our web service
             webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
@@ -83,8 +95,14 @@ namespace OSBIDE.VSPackage
 
             try
             {
+                WriteToLog("Initializing SQL CE Database Connection...", false);
                 SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+                WriteToLog("done!");
+
+                WriteToLog("Initializing OsbideContext...", false);
                 localDb = new OsbideContext(conn, true);
+                WriteToLog("done!");
+
                 logSaveTimer.Interval = new TimeSpan(0, 1, 0);
 
                 //event handlers
@@ -92,8 +110,10 @@ namespace OSBIDE.VSPackage
                 logSaveTimer.Tick += new EventHandler(SaveLogs);
                 logSaveTimer.Start();
             }
-            catch (BadImageFormatException ex)
+            catch (Exception ex)
             {
+                WriteToLog("failed!");
+                WriteToLog("Exception during startup: " + ex.Message);
                 hasSqlServerCe = false;
                 MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
                                             "Missing Component",
@@ -141,11 +161,19 @@ namespace OSBIDE.VSPackage
         /// Writes the supplied text to OSBIDE's log file.
         /// </summary>
         /// <param name="content"></param>
-        private void WriteToLog(string content)
+        private void WriteToLog(string content, bool newLine = true)
         {
             using (StreamWriter writer = File.AppendText(StringConstants.LocalErrorLogPath))
             {
-                writer.WriteLine("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
+                string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
+                if(newLine)
+                {
+                    writer.WriteLine(text);
+                }
+                else
+                {
+                    writer.Write(text);
+                }
             }
         }
 
@@ -337,20 +365,6 @@ namespace OSBIDE.VSPackage
             //attach event listeners to user actions
             eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
             eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
-
-            //pull saved user data
-            CurrentUser = GetSavedUserData();
-
-            //display a user notification if we don't have any user on file
-            if (CurrentUser.Id == 0)
-            {
-                allowLogServiceCalls = false;
-                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    MenuItemCallback(this, EventArgs.Empty);
-                }
-            }
         }
 
         #endregion
