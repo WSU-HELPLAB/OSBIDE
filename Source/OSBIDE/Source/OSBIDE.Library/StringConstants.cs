@@ -34,7 +34,11 @@ namespace OSBIDE.Library
         {
             get
             {
+#if DEBUG
+                return Path.Combine(DataRoot, "LocalDb_debug.sdf");
+#else
                 return Path.Combine(DataRoot, "LocalDb.sdf");
+#endif
             }
         }
 
