@@ -162,6 +162,9 @@ namespace OSBIDE.VSPackage
                 mcs.AddCommand(menuToolWin);
             }
 
+            //create our web service
+            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+
             //pull saved user data
             CurrentUser = GetSavedUserData();
 
@@ -175,9 +178,6 @@ namespace OSBIDE.VSPackage
                     MenuItemCallback(this, EventArgs.Empty);
                 }
             }
-
-            //create our web service
-            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //check web service version number against ours
             CheckServiceVersion();
