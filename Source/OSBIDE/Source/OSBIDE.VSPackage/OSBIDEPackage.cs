@@ -53,16 +53,13 @@ namespace OSBIDE.VSPackage
     {
         private OsbideWebServiceClient webServiceClient = null;
         private OsbideEventHandler eventHandler = null;
-        private OsbideContext localDb;
+        private ILogger errorLogger = new LocalErrorLogger();
         public OsbideUser CurrentUser { get; private set; }
-        private DispatcherTimer logSaveTimer = new DispatcherTimer();
+        private ServiceClient client;
 
-        //Whether or not to allow the client to send web service calls.  This will get set to false if the
-        //client and server libraries are out of sync or if we don't have a valid user.
-        private bool allowLogServiceCalls = true;
-
-        //Wether or not the system has SQL Server CE installed (assume it does)
-        private bool hasSqlServerCe = true;
+        //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
+        //changed the way the web service operates
+        private bool isOsbideUpToDate = true;
 
         /// <summary>
         /// Default constructor of the package.
@@ -73,108 +70,7 @@ namespace OSBIDE.VSPackage
         /// </summary>
         public OSBIDEPackage()
         {
-            //pull saved user data
-            CurrentUser = GetSavedUserData();
-
-            //display a user notification if we don't have any user on file
-            if (CurrentUser.Id == 0)
-            {
-                allowLogServiceCalls = false;
-                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    MenuItemCallback(this, EventArgs.Empty);
-                }
-            }
-
-            //create our web service
-            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
-
-            //check web service version number against ours
-            CheckServiceVersion();
-
-            try
-            {
-                WriteToLog("Initializing SQL CE Database Connection...", false);
-                SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
-                WriteToLog("done!");
-
-                WriteToLog("Initializing OsbideContext...", false);
-                localDb = new OsbideContext(conn, true);
-                WriteToLog("done!");
-
-                logSaveTimer.Interval = new TimeSpan(0, 1, 0);
-
-                //event handlers
-                webServiceClient.SubmitLogCompleted += new EventHandler<SubmitLogCompletedEventArgs>(SubmitLogCompleted);
-                logSaveTimer.Tick += new EventHandler(SaveLogs);
-                logSaveTimer.Start();
-            }
-            catch (Exception ex)
-            {
-                WriteToLog("failed!");
-                WriteToLog("Exception during startup: " + ex.Message);
-                hasSqlServerCe = false;
-                MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
-                                            "Missing Component",
-                                            MessageBoxButton.YesNo
-                                            );
-                if (result == MessageBoxResult.Yes)
-                {
-
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.microsoft.com/download/en/details.aspx?id=17876"));
-                }
-            }
-        }
-
-        private void CheckServiceVersion()
-        {
-            string remoteVersionNumber = "";
-            string packageUrl = "";
-
-            //wrap web service calls in a try/catch just in case the endpoint can't be found
-            try
-            {
-                remoteVersionNumber = webServiceClient.LibraryVersionNumber();
-                packageUrl = webServiceClient.OsbidePackageUrl();
-            }
-            catch (Exception ex)
-            {
-                //write to the log file
-                WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
-
-                //turn off future service calls for now
-                allowLogServiceCalls = false;
-
-                return;
-            }
-
-            //we have a version mismatch, stop sending data to the server
-            if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
-            {
-                allowLogServiceCalls = false;
-                UpdateAvailableWindow.ShowModalDialog(packageUrl);
-            }
-        }
-
-        /// <summary>
-        /// Writes the supplied text to OSBIDE's log file.
-        /// </summary>
-        /// <param name="content"></param>
-        private void WriteToLog(string content, bool newLine = true)
-        {
-            using (StreamWriter writer = File.AppendText(StringConstants.LocalErrorLogPath))
-            {
-                string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
-                if(newLine)
-                {
-                    writer.WriteLine(text);
-                }
-                else
-                {
-                    writer.Write(text);
-                }
-            }
+            //AC: For consoliation purposes, I've just thrown everything inside the Initialize method.
         }
 
         /// <summary>
@@ -217,119 +113,23 @@ namespace OSBIDE.VSPackage
                 catch (Exception ex)
                 {
                     //write to the log file
-                    WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
+                    errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
 
                     //turn off future service calls for now
-                    allowLogServiceCalls = false;
+                    isOsbideUpToDate = false;
                 }
 
                 //If we got back a valid user, turn on log saving
                 if (CurrentUser.Id != 0)
                 {
                     SaveUserData(CurrentUser);
-                    allowLogServiceCalls = true;
+                    isOsbideUpToDate = true;
                 }
                 else
                 {
-                    allowLogServiceCalls = false;
+                    isOsbideUpToDate = false;
                 }
             }
-        }
-
-        private void SubmitLogCompleted(object sender, SubmitLogCompletedEventArgs e)
-        {
-            //were we not successful?
-            if (e.Error != null)
-            {
-                WriteToLog(string.Format("SubmitLogCompleted error: {0}", e.Error.Message));
-                return;
-            }
-
-            //The number coming back from the web service should be the ID number of the local log that
-            //was saved.
-            int logId = e.Result;
-
-            EventLog log = localDb.EventLogs.Find(logId);
-
-            if (log != null)
-            {
-                WriteToLog(string.Format("Removing log ID {0} from local DB", log.Id));
-                localDb.Entry(log).State = System.Data.EntityState.Deleted;
-                localDb.SaveChanges();
-            }
-        }
-
-        private void SaveLogs(object sender, EventArgs e)
-        {
-            if (allowLogServiceCalls)
-            {
-
-                //find all logs that haven't been handled (submitted)
-                List<EventLog> logs = localDb.EventLogs.Where(model => model.Handled == false).ToList();
-
-                //send all unsubmitted logs to the server
-                foreach (EventLog log in logs)
-                {
-                    try
-                    {
-                        //AC: EF attaches a bunch of crap to POCO objects for change tracking.  Said additions
-                        //ruin WCF transfers.  There are supposidly fixes (see http://msdn.microsoft.com/en-us/library/dd456853.aspx)
-                        //but for now, I'm just being lazy and using copy constructors to convert back to 
-                        //standard objects.
-                        EventLog cleanLog = new EventLog(log); //who doesn't like a clean log? :)
-                        
-                        //reset the log's sending user just to be safe
-                        cleanLog.SenderId = 0;
-                        cleanLog.Sender = CurrentUser;
-                        WriteToLog(string.Format("Sending log with ID {0} to the server", cleanLog.Id));
-                        webServiceClient.SubmitLogAsync(cleanLog);
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteToLog(string.Format("SaveLogs error: {0}", ex.Message));
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called whenever OSBIDE detects an event change
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OsbideEventCreated(object sender, EventCreatedArgs e)
-        {
-            if (hasSqlServerCe)
-            {
-                //add the log to the local db
-                EventLog eventLog = new EventLog(e.OsbideEvent, CurrentUser);
-                localDb.EventLogs.Add(eventLog);
-                localDb.SaveChanges();
-                WriteToLog(string.Format("Event of type {0} created and saved to DB", e.OsbideEvent.GetType().Name));
-            }
-            //The method "SaveLogs" takes care of the actual saving.  It is triggered periodically by
-            //a DispatcherTimer.  As DispatcherTimer's aren't true multi-threading, we shouldn't have 
-            //any race conditions (hopefully?)
-        }
-
-        /// <summary>
-        /// Retrieves saved user data
-        /// </summary>
-        /// <returns></returns>
-        private OsbideUser GetSavedUserData()
-        {
-            return OsbideUser.ReadUserFromFile(StringConstants.UserDataPath);
-        }
-
-        /// <summary>
-        /// Saves current user data to disk
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private bool SaveUserData(OsbideUser user)
-        {
-            OsbideUser.SaveUserToFile(user, StringConstants.UserDataPath);
-            return true;
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -362,11 +162,99 @@ namespace OSBIDE.VSPackage
                 mcs.AddCommand(menuToolWin);
             }
 
-            //attach event listeners to user actions
-            eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
-            eventHandler.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
+            //pull saved user data
+            CurrentUser = GetSavedUserData();
+
+            //display a user notification if we don't have any user on file
+            if (CurrentUser.Id == 0)
+            {
+                isOsbideUpToDate = false;
+                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    MenuItemCallback(this, EventArgs.Empty);
+                }
+            }
+
+            //create our web service
+            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+
+            //check web service version number against ours
+            CheckServiceVersion();
+
+            if (!OsbideContext.HasSqlServerCE)
+            {
+                errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...");
+                MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
+                                            "Missing Component",
+                                            MessageBoxButton.YesNo
+                                            );
+                if (result == MessageBoxResult.Yes)
+                {
+
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.microsoft.com/download/en/details.aspx?id=17876"));
+                }
+            }
+
+            if (isOsbideUpToDate)
+            {
+                eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
+                client = new ServiceClient(eventHandler, CurrentUser, errorLogger);
+            }            
         }
 
+        #endregion
+
+        #region AC Code
+        private void CheckServiceVersion()
+        {
+            string remoteVersionNumber = "";
+            string packageUrl = "";
+
+            //wrap web service calls in a try/catch just in case the endpoint can't be found
+            try
+            {
+                remoteVersionNumber = webServiceClient.LibraryVersionNumber();
+                packageUrl = webServiceClient.OsbidePackageUrl();
+            }
+            catch (Exception ex)
+            {
+                //write to the log file
+                errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
+
+                //turn off future service calls for now
+                isOsbideUpToDate = false;
+
+                return;
+            }
+
+            //we have a version mismatch, stop sending data to the server
+            if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
+            {
+                isOsbideUpToDate = false;
+                UpdateAvailableWindow.ShowModalDialog(packageUrl);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves saved user data
+        /// </summary>
+        /// <returns></returns>
+        private OsbideUser GetSavedUserData()
+        {
+            return OsbideUser.ReadUserFromFile(StringConstants.UserDataPath);
+        }
+
+        /// <summary>
+        /// Saves current user data to disk
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private bool SaveUserData(OsbideUser user)
+        {
+            OsbideUser.SaveUserToFile(user, StringConstants.UserDataPath);
+            return true;
+        }
         #endregion
 
     }

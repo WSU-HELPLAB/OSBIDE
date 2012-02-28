@@ -6,6 +6,8 @@ using System.Data.Entity;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
 using System.Data.Objects;
+using System.Data.SqlServerCe;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OSBIDE.Library.Models
 {
@@ -14,12 +16,13 @@ namespace OSBIDE.Library.Models
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
 
-        public OsbideContext() : base()
+        public OsbideContext()
+            : base()
         {
         }
 
         public OsbideContext(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection)
-            :base(existingConnection, model, contextOwnsConnection)
+            : base(existingConnection, model, contextOwnsConnection)
         {
         }
 
@@ -54,6 +57,29 @@ namespace OSBIDE.Library.Models
 #if !DEBUG
             modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
 #endif
+        }
+
+        /// <summary>
+        /// Returns true if the client has SQL Server CE installed.
+        /// </summary>
+        /// <returns></returns>
+        public static bool HasSqlServerCE
+        {
+            get
+            {
+                bool success = true;
+                try
+                {
+                    SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+                    OsbideContext localDb = new OsbideContext(conn, true);
+                    conn.Close();
+                }
+                catch (Exception ex)
+                {
+                    success = false;
+                }
+                return success;
+            }
         }
     }
 }
