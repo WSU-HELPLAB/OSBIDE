@@ -22,16 +22,19 @@ namespace OSBIDE.Library
 
         public void WriteToLog(string content, bool newLine = true)
         {
-            using (StreamWriter writer = File.AppendText(filePath))
+            lock (this)
             {
-                string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
-                if (newLine)
+                using (StreamWriter writer = File.AppendText(filePath))
                 {
-                    writer.WriteLine(text);
-                }
-                else
-                {
-                    writer.Write(text);
+                    string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
+                    if (newLine)
+                    {
+                        writer.WriteLine(text);
+                    }
+                    else
+                    {
+                        writer.Write(text);
+                    }
                 }
             }
         }
