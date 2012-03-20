@@ -24,17 +24,24 @@ namespace OSBIDE.Library
         {
             lock (this)
             {
-                using (StreamWriter writer = File.AppendText(filePath))
+                try
                 {
-                    string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
-                    if (newLine)
+                    using (StreamWriter writer = File.AppendText(filePath))
                     {
-                        writer.WriteLine(text);
+                        string text = string.Format("{0}:\t{1}", DateTime.Now.ToString("HH:mm:ss"), content);
+                        if (newLine)
+                        {
+                            writer.WriteLine(text);
+                        }
+                        else
+                        {
+                            writer.Write(text);
+                        }
                     }
-                    else
-                    {
-                        writer.Write(text);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    //ignore exception.
                 }
             }
         }
