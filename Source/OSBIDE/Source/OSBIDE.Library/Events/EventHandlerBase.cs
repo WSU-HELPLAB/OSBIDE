@@ -56,6 +56,11 @@ namespace OSBIDE.Library.Events
 
         public EventHandlerBase(IServiceProvider serviceProvider)
         {
+            if (serviceProvider == null)
+            {
+                throw new Exception("Service provider is null");
+            }
+
             ServiceProvider = serviceProvider;
             
             //save references to dte events

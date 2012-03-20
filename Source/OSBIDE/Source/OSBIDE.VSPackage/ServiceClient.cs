@@ -37,8 +37,11 @@ namespace OSBIDE.VSPackage
             SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
             localDb = new OsbideContext(conn, true);
 
-            //listen for new events
-            events.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
+            //AC: "events" ends up being null during unit testing.  Otherwise, it should never happen.
+            if (events != null)
+            {
+                events.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
+            }
         }
 
         private void SendLogToServer(object data)

@@ -137,6 +137,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="VSPackage\OSBIDEPackageTest.cs" />
+    <Compile Include="VSPackage\ServiceClientTest.cs" />
     <Compile Include="Web\LocalOsbideWebServiceTest.cs" />
     <Compile Include="PackageTest.cs" />
     <!---->

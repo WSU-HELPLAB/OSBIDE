@@ -8,6 +8,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Objects;
 using System.Data.SqlServerCe;
 using System.Diagnostics.CodeAnalysis;
+using OSBIDE.Library.Events;
 
 namespace OSBIDE.Library.Models
 {
@@ -15,6 +16,11 @@ namespace OSBIDE.Library.Models
     {
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
+        public DbSet<BuildEvent> BuildEvents { get; set; }
+        public DbSet<DebugEvent> DebugEvents { get; set; }
+        public DbSet<EditorActivityEvent> EditorActivityEvents { get; set; }
+        public DbSet<ExceptionEvent> ExceptionEvents { get; set; }
+        public DbSet<SaveEvent> SaveEvents { get; set; }
 
         public OsbideContext()
             : base()

@@ -51,15 +51,15 @@ namespace OSBIDE.VSPackage
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     public sealed class OSBIDEPackage : Package
     {
-        private OsbideWebServiceClient webServiceClient = null;
-        private OsbideEventHandler eventHandler = null;
-        private ILogger errorLogger = new LocalErrorLogger();
+        private OsbideWebServiceClient _webServiceClient = null;
+        private OsbideEventHandler _eventHandler = null;
+        private ILogger _errorLogger = new LocalErrorLogger();
         public OsbideUser CurrentUser { get; private set; }
-        private ServiceClient client;
+        private ServiceClient _client;
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
-        private bool isOsbideUpToDate = true;
+        private bool _isOsbideUpToDate = true;
 
         /// <summary>
         /// Default constructor of the package.
@@ -108,26 +108,26 @@ namespace OSBIDE.VSPackage
             {
                 try
                 {
-                    CurrentUser = webServiceClient.SaveUser(CurrentUser);
+                    CurrentUser = _webServiceClient.SaveUser(CurrentUser);
                 }
                 catch (Exception ex)
                 {
                     //write to the log file
-                    errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
+                    _errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
 
                     //turn off future service calls for now
-                    isOsbideUpToDate = false;
+                    _isOsbideUpToDate = false;
                 }
 
                 //If we got back a valid user, turn on log saving
                 if (CurrentUser.Id != 0)
                 {
                     SaveUserData(CurrentUser);
-                    isOsbideUpToDate = true;
+                    _isOsbideUpToDate = true;
                 }
                 else
                 {
-                    isOsbideUpToDate = false;
+                    _isOsbideUpToDate = false;
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace OSBIDE.VSPackage
             }
 
             //create our web service
-            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+            _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //pull saved user data
             CurrentUser = GetSavedUserData();
@@ -171,7 +171,7 @@ namespace OSBIDE.VSPackage
             //display a user notification if we don't have any user on file
             if (CurrentUser.Id == 0)
             {
-                isOsbideUpToDate = false;
+                _isOsbideUpToDate = false;
                 MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
@@ -184,7 +184,7 @@ namespace OSBIDE.VSPackage
 
             if (!OsbideContext.HasSqlServerCE)
             {
-                errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...");
+                _errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...");
                 MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
                                             "Missing Component",
                                             MessageBoxButton.YesNo
@@ -196,10 +196,10 @@ namespace OSBIDE.VSPackage
                 }
             }
 
-            if (isOsbideUpToDate)
+            if (_isOsbideUpToDate)
             {
-                eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
-                client = new ServiceClient(eventHandler, CurrentUser, errorLogger);
+                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
+                _client = new ServiceClient(_eventHandler, CurrentUser, _errorLogger);
             }            
         }
 
@@ -214,16 +214,16 @@ namespace OSBIDE.VSPackage
             //wrap web service calls in a try/catch just in case the endpoint can't be found
             try
             {
-                remoteVersionNumber = webServiceClient.LibraryVersionNumber();
-                packageUrl = webServiceClient.OsbidePackageUrl();
+                remoteVersionNumber = _webServiceClient.LibraryVersionNumber();
+                packageUrl = _webServiceClient.OsbidePackageUrl();
             }
             catch (Exception ex)
             {
                 //write to the log file
-                errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
+                _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
 
                 //turn off future service calls for now
-                isOsbideUpToDate = false;
+                _isOsbideUpToDate = false;
 
                 return;
             }
@@ -231,7 +231,7 @@ namespace OSBIDE.VSPackage
             //we have a version mismatch, stop sending data to the server
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
-                isOsbideUpToDate = false;
+                _isOsbideUpToDate = false;
                 UpdateAvailableWindow.ShowModalDialog(packageUrl);
             }
         }
