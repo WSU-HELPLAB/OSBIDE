@@ -21,9 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		OSBIDE.vsmdi = OSBIDE.vsmdi
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\..\..\filecache\fc\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -45,6 +47,9 @@ Global
 		SccProjectUniqueName6 = Source\\OSBIDE.VSPackage\\OSBIDE.VSPackage.csproj
 		SccProjectName6 = Source/OSBIDE.VSPackage
 		SccLocalPath6 = Source\\OSBIDE.VSPackage
+		SccProjectUniqueName7 = ..\\..\\..\\..\\filecache\\fc\\Main\\Source\\FileCache\\FileCache.csproj
+		SccProjectName7 = ../../../../fc/Main/Source/FileCache
+		SccLocalPath7 = ..\\..\\..\\..\\filecache\\fc\\Main\\Source\\FileCache
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OSBIDE.vsmdi
@@ -78,6 +83,10 @@ Global
 		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

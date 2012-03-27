@@ -30,6 +30,19 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string LocalCacheDirectory
+        {
+            get
+            {
+                string path = Path.Combine(DataRoot, "cache");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
+        }
+
         public static string LocalDatabasePath
         {
             get

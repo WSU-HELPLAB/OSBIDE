@@ -72,6 +72,7 @@
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -202,6 +203,10 @@
     <None Include="Service References\WebServices\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\filecache\fc\Main\Source\FileCache\FileCache.csproj">
+      <Project>{E13FD5FE-7D45-4A90-8FBB-C498BD144940}</Project>
+      <Name>FileCache</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
       <Project>{9EA09E78-0541-4233-B189-EE1DBD56520D}</Project>
       <Name>OSBIDE.Controls</Name>

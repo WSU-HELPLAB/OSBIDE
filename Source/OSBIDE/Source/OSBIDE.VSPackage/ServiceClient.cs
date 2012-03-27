@@ -8,44 +8,57 @@ using OSBIDE.Library.Events;
 using OSBIDE.Library;
 using System.Data.SqlServerCe;
 using System.Threading;
+using System.Runtime.Caching;
 
 namespace OSBIDE.VSPackage
 {
     public class ServiceClient
     {
-        private OsbideWebServiceClient webServiceClient = null;
-        private OsbideContext localDb;
-        private OsbideUser currentUser;
-        private EventHandlerBase events;
-        private List<EventLog> pendingLogs = new List<EventLog>();
-        private ILogger logger;
+        private OsbideWebServiceClient _webServiceClient = null;
+        private OsbideUser _currentUser;
+        private EventHandlerBase _events;
+        private List<EventLog> _pendingLogs = new List<EventLog>();
+        private ILogger _logger;
+        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        private string _cacheRegion = "ServiceClient";
+        private string _cacheKey = "logs";
+
+        public bool HasWebServiceError { get; private set; }
+
+        private void SaveToCache(List<EventLog> logs)
+        {
+            _cache.Set(_cacheKey, logs.ToArray(), new CacheItemPolicy(), _cacheRegion);
+        }
+
+        private List<EventLog> GetFromCache()
+        {
+            return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
+        }
 
         public ServiceClient(EventHandlerBase dteEventHandler, OsbideUser user, ILogger logger)
         {
-            events = dteEventHandler;
-            currentUser = user;
-            this.logger = logger;
-
-            //no point in continuing if we don't have SQL Server CE set up
-            if (!OsbideContext.HasSqlServerCE)
-            {
-                logger.WriteToLog("ServiceClient did not detect SQL Server CE.  Will not log local events.");
-                return;
-            }
+            _events = dteEventHandler;
+            _currentUser = user;
+            this._logger = logger;
             
-            webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
-            SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
-            localDb = new OsbideContext(conn, true);
+            _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //AC: "events" ends up being null during unit testing.  Otherwise, it should never happen.
-            if (events != null)
+            if (_events != null)
             {
-                events.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
+                _events.EventCreated += new EventHandler<EventCreatedArgs>(OsbideEventCreated);
+            }
+
+            //if we don't have a cache record of pending logs when we start, create a dummy list
+            if (!_cache.Contains(_cacheKey, _cacheRegion))
+            {
+                SaveToCache(new List<EventLog>());
             }
         }
 
         private void SendLogToServer(object data)
         {
+
             //only accept eventlog data
             if (!(data is EventLog))
             {
@@ -57,14 +70,26 @@ namespace OSBIDE.VSPackage
 
             //find all logs that haven't been handled (submitted)
             List<EventLog> logsToBeSaved = null;
-            lock (localDb)
+            
+            //request exclusive access to our cache of existing logs
+            lock (_cache)
             {
-                //add the new log to the local db
-                localDb.EventLogs.Add(newLog);
-                localDb.SaveChanges();
+                //get pending records
+                logsToBeSaved = GetFromCache();
 
-                //then, get all pending logs
-                logsToBeSaved = localDb.EventLogs.Where(model => model.Handled == false).ToList();
+                //add new log to list
+                logsToBeSaved.Add(newLog);
+
+                //clear out cache
+                SaveToCache(new List<EventLog>());
+            }
+
+            //loop through each log to be saved, give a dummy ID number
+            int counter = 1;
+            foreach (EventLog log in logsToBeSaved)
+            {
+                log.Id = counter;
+                counter++;
             }
 
             //will hold the list of saved logs
@@ -73,45 +98,43 @@ namespace OSBIDE.VSPackage
             //send logs to the server
             foreach (EventLog log in logsToBeSaved)
             {
-                //AC: EF attaches a bunch of crap to POCO objects for change tracking.  Said additions
-                //ruin WCF transfers.  There are supposidly fixes (see http://msdn.microsoft.com/en-us/library/dd456853.aspx)
-                //but for now, I'm just being lazy and using copy constructors to convert back to 
-                //standard objects.
-                EventLog cleanLog = new EventLog(newLog); //who doesn't like a clean log? :)
-
                 //reset the log's sending user just to be safe
-                cleanLog.SenderId = 0;
-                cleanLog.Sender = currentUser;
-                logger.WriteToLog(string.Format("Sending log with ID {0} to the server", cleanLog.Id));
+                log.SenderId = _currentUser.Id;
+                log.Sender = _currentUser;
+                _logger.WriteToLog(string.Format("Sending log with ID {0} to the server", log.Id));
 
                 try
                 {
                     //the number that comes back from the web service is the log's local ID number.  Save
                     //for later when we clean up our local db.
-                    int result = webServiceClient.SubmitLog(cleanLog);
+                    int result = _webServiceClient.SubmitLog(log);
                     savedLogs.Add(result);
                 }
                 catch (Exception ex)
                 {
                     //Log any error that we might've received.  Most likely an issue finding the endpoint (server)
-                    logger.WriteToLog(string.Format("SaveLogs error: {0}", ex.Message));
+                    _logger.WriteToLog(string.Format("SaveLogs error: {0}", ex.Message));
+
+                    //turn off logging for this session so that we don't bog down the client with tons of failed
+                    //service calls.
+                    HasWebServiceError = true;
                 }
             }
 
-            //finally clear our successfully saved logs
-            logsToBeSaved = null;
-            lock (localDb)
+            //any logs that weren't saved successfully get added back into the cache
+            foreach (int logId in savedLogs)
             {
-                foreach (int logId in savedLogs)
+                EventLog log = logsToBeSaved.Where(l => l.Id == logId).FirstOrDefault();
+                if (log != null)
                 {
-                    EventLog log = localDb.EventLogs.Find(logId);
-                    if (log != null)
-                    {
-                        logger.WriteToLog(string.Format("Removing log ID {0} from local DB", log.Id));
-                        localDb.Entry(log).State = System.Data.EntityState.Deleted;
-                        localDb.SaveChanges();
-                    }
+                    logsToBeSaved.Remove(log);
                 }
+            }
+
+            //save the modified list back into the cache
+            lock (_cache)
+            {
+                SaveToCache(logsToBeSaved);
             }
         }
 
@@ -124,11 +147,24 @@ namespace OSBIDE.VSPackage
         private void OsbideEventCreated(object sender, EventCreatedArgs e)
         {
             //create a new event log...
-            EventLog eventLog = new EventLog(e.OsbideEvent, currentUser);
+            EventLog eventLog = new EventLog(e.OsbideEvent, _currentUser);
             
-            //...and send it off to the server thread for saving
-            Thread serverThread = new Thread(this.SendLogToServer);
-            serverThread.Start(eventLog);
+            //if we haven't gotten a service error this session, send it off.  Otherwise,
+            //save to cache and try again next session
+            if (HasWebServiceError == false)
+            {
+                Thread serverThread = new Thread(this.SendLogToServer);
+                serverThread.Start(eventLog);
+            }
+            else
+            {
+                lock (_cache)
+                {
+                    List<EventLog> cachedLogs = GetFromCache();
+                    cachedLogs.Add(eventLog);
+                    SaveToCache(cachedLogs);
+                }
+            }
         }
     }
 }

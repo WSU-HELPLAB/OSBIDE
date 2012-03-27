@@ -73,7 +73,15 @@ namespace OSBIDE.Library.Events
 
         public override void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
-            Command cmd = dte.Commands.Item(Guid, ID);
+            Command cmd = null;
+            try
+            {
+                cmd = dte.Commands.Item(Guid, ID);
+            }
+            catch (Exception ex)
+            {
+                //do nothing
+            }
             string commandName = "";
             if (cmd != null)
             {

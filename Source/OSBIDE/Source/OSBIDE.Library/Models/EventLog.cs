@@ -7,6 +7,7 @@ using OSBIDE.Library.Events;
 
 namespace OSBIDE.Library.Models
 {
+    [Serializable]
     public class EventLog
     {
         [Key]
