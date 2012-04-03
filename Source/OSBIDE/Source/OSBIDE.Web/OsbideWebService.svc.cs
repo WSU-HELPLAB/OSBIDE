@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
@@ -89,7 +90,18 @@ namespace OSBIDE.Web
             //we don't want the local id, so be sure to clear
             log.Id = 0;
 
-            //also, reset the sender if necessary
+            //check to see if the user exists in the database.  If not, reset sender and try again
+            //(next IF statement)
+            if (log.SenderId != 0)
+            {
+                OsbideUser userCheck = Db.Users.Find(log.SenderId);
+                if (userCheck == null)
+                {
+                    log.SenderId = 0;
+                }
+            }
+
+            //reset the sender if necessary
             if (log.SenderId == 0)
             {
                 log.Sender = SaveUser(log.Sender);
@@ -113,6 +125,26 @@ namespace OSBIDE.Web
             //Return the ID number of the local object so that the caller knows that it's been successfully
             //saved into the main system.
             return localId;
+        }
+
+        /// <summary>
+        /// Returns all events between "start" and "cutoff"
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="cutoff">Optional</param>
+        /// <returns></returns>
+        public List<EventLog> GetPastEvents(DateTime start, DateTime? cutoff = null)
+        {
+            if (cutoff == null)
+            {
+                cutoff = DateTime.Now;
+            }
+            var query = from log in Db.EventLogs
+                        where log.DateReceived > start
+                              &&
+                              log.DateReceived < cutoff
+                        select log;
+            return query.ToList();
         }
 
         [OperationContract]

@@ -23,7 +23,7 @@ namespace OSBIDE.VSPackage
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
 
-        public bool HasWebServiceError { get; private set; }
+        public bool HasWebServiceError { get; set; }
 
         private void SaveToCache(List<EventLog> logs)
         {

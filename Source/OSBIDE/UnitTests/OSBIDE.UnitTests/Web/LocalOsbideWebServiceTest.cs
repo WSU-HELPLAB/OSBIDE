@@ -5,6 +5,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting.Web;
 using OSBIDE.Library.Models;
 using OSBIDE.Library.Events;
 using System.Linq;
+using OSBIDE.Library;
+using System.Collections.Generic;
+using System.Data.SqlServerCe;
+using System.Data.Entity;
+using System.Data.Objects;
 
 namespace OSBIDE.UnitTests.Web
 {
@@ -127,6 +132,22 @@ namespace OSBIDE.UnitTests.Web
             //assume byte arrays of the same length are the same.  Kind of
             //meh but it's probably okay
             Assert.AreEqual(logToSend.Data.Length, log.Data.Length);
+        }
+
+        [TestMethod()]
+        public void GetPastEventsTest()
+        {
+            OsbideWebService target = new OsbideWebService();
+
+            //AC note: This goes to the SQL Server Express database named "OsbideDebugContext" and does not use the connection string by that name.
+            //This is how the OsbideWebService does things in testing (kind of odd).
+            OsbideContext db = new OsbideContext("OsbideDebugContext");
+            DateTime start = DateTime.Now.Subtract(new TimeSpan(360, 0, 0, 0, 0));
+            DateTime end = DateTime.Now;
+            List<EventLog> localQueryLogs = db.EventLogs.Where(log => log.DateReceived > start && log.DateReceived < end).ToList();
+            List<EventLog> serviceQuery = target.GetPastEvents(start, end);
+
+            Assert.AreEqual(serviceQuery.Count, localQueryLogs.Count);
         }
     }
 }

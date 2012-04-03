@@ -90,5 +90,214 @@ namespace OSBIDE.Library.Models
                 return success;
             }
         }
+
+
+        /// <summary>
+        /// Inserts a user that has a preexisting ID into the database context.  Most likely to be used
+        /// when inserting a user that already exists in another context.
+        /// </summary>
+        /// <param name="user">The user to insert</param>
+        /// <returns>TRUE if everything went okay
+        ///          FALSE if: User ID is 0
+        ///                    User already exists
+        ///                    Random query error
+        /// </returns>
+        public bool InsertUserWithId(OsbideUser user)
+        {
+            //ignore users with an empty ID
+            if (user.Id == 0)
+            {
+                return false;
+            }
+
+            //check to see if we already have a user with that ID
+            OsbideUser dbUser = Users.Find(user.Id);
+            if (dbUser != null)
+            {
+                return false;
+            }
+
+            //finally, we can do a raw insert
+            SqlCeConnection conn = new SqlCeConnection(this.Database.Connection.ConnectionString);
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            string query = "SET IDENTITY_INSERT OsbideUsers ON";
+            SqlCeCommand cmd = new SqlCeCommand(query, conn);
+
+            try
+            {
+                object result = cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            query = "INSERT INTO OsbideUsers " +
+                  "(Id, FirstName, LastName, InstitutionId) " +
+                  "VALUES (@id, @first, @last, @institutionId) ";
+            cmd = new SqlCeCommand(query, conn);
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "id",
+                Value = user.Id,
+                SqlDbType = System.Data.SqlDbType.Int
+            });
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "first",
+                Value = user.FirstName,
+                SqlDbType = System.Data.SqlDbType.NVarChar
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "last",
+                Value = user.LastName,
+                SqlDbType = System.Data.SqlDbType.NVarChar
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "institutionId",
+                Value = user.InstitutionId,
+                SqlDbType = System.Data.SqlDbType.Int
+            });
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+
+                //turn off identity inserts
+                query = "SET IDENTITY_INSERT OsbideUsers OFF";
+                cmd = new SqlCeCommand(query, conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Inserts an EventLog that has a preexisting ID into the database context.  Most likely to be used
+        /// when inserting a log that already exists in another context.
+        /// </summary>
+        /// <param name="log">The EventLog to insert</param>
+        /// <returns>TRUE if everything went okay
+        ///          FALSE if: Log ID is 0
+        ///                    Log already exists
+        ///                    Random query error
+        /// </returns>
+        public bool InsertEventLogWithId(EventLog log)
+        {
+            //log must have a valid id
+            if (log.Id == 0)
+            {
+                return false;
+            }
+
+            //log must not already exist
+            EventLog dbLog = this.EventLogs.Find(log.Id);
+            if (dbLog != null)
+            {
+                return false;
+            }
+
+            //finally, we can do a raw insert
+            SqlCeConnection conn = new SqlCeConnection(this.Database.Connection.ConnectionString);
+
+            try
+            {
+                conn.Open();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            string query = "SET IDENTITY_INSERT EventLogs ON";
+            SqlCeCommand cmd = new SqlCeCommand(query, conn);
+
+            try
+            {
+                object result = cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            query = "INSERT INTO EventLogs " +
+                  "(Id, SenderId, LogType, DateReceived, Data, Handled) " +
+                  "VALUES (@id, @senderId, @logType, @dateReceived, @data, @handled) ";
+            cmd = new SqlCeCommand(query, conn);
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "id",
+                Value = log.Id,
+                SqlDbType = System.Data.SqlDbType.Int
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "senderId",
+                Value = log.SenderId,
+                SqlDbType = System.Data.SqlDbType.Int
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "logType",
+                Value = log.LogType,
+                SqlDbType = System.Data.SqlDbType.NVarChar
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "dateReceived",
+                Value = log.DateReceived,
+                SqlDbType = System.Data.SqlDbType.DateTime
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "data",
+                Value = log.Data,
+                SqlDbType = System.Data.SqlDbType.VarBinary
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "handled",
+                Value = log.Handled,
+                SqlDbType = System.Data.SqlDbType.Bit
+            });
+
+            try
+            {
+                cmd.ExecuteNonQuery();
+
+                //turn off identity inserts
+                query = "SET IDENTITY_INSERT EventLogs OFF";
+                cmd = new SqlCeCommand(query, conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }
