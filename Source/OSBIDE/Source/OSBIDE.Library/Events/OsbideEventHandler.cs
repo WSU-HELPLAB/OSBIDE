@@ -59,6 +59,8 @@ namespace OSBIDE.Library.Events
             build.SolutionName = dte.Solution.FullName;
             build.EventDate = DateTime.Now;
 
+            Breakpoints pts = dte.Debugger.Breakpoints;
+
             //start at 1 when iterating through Error List
             for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
             {
@@ -71,7 +73,7 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
-        public override void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
+        public override void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
             Command cmd = null;
             try
@@ -120,5 +122,7 @@ namespace OSBIDE.Library.Events
                 NotifyEventCreated(this, new EventCreatedArgs(activity));
             }
         }
+
+        //private void 
     }
 }

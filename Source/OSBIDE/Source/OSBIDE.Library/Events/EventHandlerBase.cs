@@ -8,27 +8,22 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace OSBIDE.Library.Events
 {
+
     /// <summary>
     /// The EventHandlerBase class consolidates all of the various event handler types into a single class for
     /// easy inheritance.  By default, each event handler does nothing.  
     /// </summary>
-    public abstract class EventHandlerBase : 
-        IBuildEventHandler, 
-        ICommandEvents,
-        IDebuggerEventHandler, 
-        IDocumentEventHandler, 
-        IFindEventHandler, 
-        IMiscFileEventHandler, 
-        IOutputWindowEventHandler, 
-        ISelectionEventHandler, 
-        ISolutionEventHandler, 
-        ISolutionItemsEventHandler, 
-        ITextEditorEventHandler
+    public abstract class EventHandlerBase 
     {
         /// <summary>
         /// This event is raised whenever a new event log has been created and is ready for consumption
         /// </summary>
         public event EventHandler<EventCreatedArgs> EventCreated = delegate { };
+
+        /// <summary>
+        /// The GUID that contains menu event actions
+        /// </summary>
+        public static string MenuEventGuid = "{5EFC7975-14BC-11CF-9B2B-00AA00573819}";
 
         protected DTE2 dte {
             get
@@ -43,7 +38,9 @@ namespace OSBIDE.Library.Events
         }
         public IServiceProvider ServiceProvider { get; set; }
         private BuildEvents buildEvents = null;
-        private CommandEvents commandEvents = null;
+        private CommandEvents genericCommandEvents = null;
+        private CommandEvents menuCommandEvents = null;
+
         private DebuggerEvents debuggerEvents = null;
         private DocumentEvents documentEvents = null;
         private FindEvents findEvents = null;
@@ -65,7 +62,8 @@ namespace OSBIDE.Library.Events
             
             //save references to dte events
             buildEvents = dte.Events.BuildEvents;
-            commandEvents = dte.Events.CommandEvents;
+            genericCommandEvents = dte.Events.CommandEvents;
+            menuCommandEvents = dte.Events.get_CommandEvents(MenuEventGuid);
             debuggerEvents = dte.Events.DebuggerEvents;
             documentEvents = dte.Events.DocumentEvents;
             findEvents = dte.Events.FindEvents;
@@ -81,9 +79,14 @@ namespace OSBIDE.Library.Events
             buildEvents.OnBuildBegin += new _dispBuildEvents_OnBuildBeginEventHandler(OnBuildBegin);
             buildEvents.OnBuildDone += new _dispBuildEvents_OnBuildDoneEventHandler(OnBuildDone);
 
-            //command events
-            commandEvents.AfterExecute += new _dispCommandEvents_AfterExecuteEventHandler(AfterCommandExecute);
-            commandEvents.BeforeExecute += new _dispCommandEvents_BeforeExecuteEventHandler(BeforeCommandExecute);
+            //generic command events
+            genericCommandEvents.AfterExecute += new _dispCommandEvents_AfterExecuteEventHandler(GenericCommand_AfterCommandExecute);
+            genericCommandEvents.BeforeExecute += new _dispCommandEvents_BeforeExecuteEventHandler(GenericCommand_BeforeCommandExecute);
+
+            //menu-related command command
+            menuCommandEvents.AfterExecute += new _dispCommandEvents_AfterExecuteEventHandler(MenuCommand_AfterExecute);
+            menuCommandEvents.BeforeExecute += new _dispCommandEvents_BeforeExecuteEventHandler(MenuCommand_BeforeExecute);
+
             //debugger events
             debuggerEvents.OnEnterBreakMode += new _dispDebuggerEvents_OnEnterBreakModeEventHandler(OnEnterBreakMode);
             debuggerEvents.OnEnterDesignMode += new _dispDebuggerEvents_OnEnterDesignModeEventHandler(OnEnterDesignMode);
@@ -135,8 +138,12 @@ namespace OSBIDE.Library.Events
         public virtual void OnBuildDone(vsBuildScope Scope, vsBuildAction Action) { }
 
         //command event handlers
-        public virtual void AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut) { }
-        public virtual void BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault) { }
+        public virtual void GenericCommand_AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut) { }
+        public virtual void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault) { }
+
+        //generic command event handlers
+        public virtual void MenuCommand_BeforeExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault) { }
+        public virtual void MenuCommand_AfterExecute(string Guid, int ID, object CustomIn, object CustomOut) { }
 
         //debugger event handlers
         public virtual void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction) { }
