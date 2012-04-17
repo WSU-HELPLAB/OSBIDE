@@ -24,6 +24,7 @@ namespace OSBIDE.Library.Events
         private DateTime LastEditorActivityEvent = DateTime.MinValue;
         public enum BreakpointIDs
         {
+            ToggleBreakpoint = 255,
             BreakAtFunction = 311,
             EditorClick = 769
         };

@@ -16,6 +16,7 @@ namespace OSBIDE.Library.Models
         public int FunctionLineOffset { get; set; }
         public string FunctionName { get; set; }
         public string Name { get; set; }
+        public bool Enabled { get; set; }
 
 
         public BreakPoint(EnvDTE.Breakpoint bp)
@@ -28,6 +29,7 @@ namespace OSBIDE.Library.Models
             this.FunctionLineOffset = bp.FunctionLineOffset;
             this.FunctionName = bp.FunctionName;
             this.Name = bp.Name;
+            this.Enabled = bp.Enabled;
         }
 
         public int CompareTo(object obj)
