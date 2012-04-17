@@ -12,11 +12,13 @@ namespace OSBIDE.Library.Events
         public DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
         public IList<ErrorListItem> ErrorItems { get; set; }
+        public IList<BreakPoint> Breakpoints { get; set; }
         public string EventName { get { return BuildEvent.Name; } }
         public static string Name { get { return "BuildEvent"; } }
         public BuildEvent()
         {
             ErrorItems = new List<ErrorListItem>();
+            Breakpoints = new List<BreakPoint>();
             EventDate = DateTime.Now;
         }
 

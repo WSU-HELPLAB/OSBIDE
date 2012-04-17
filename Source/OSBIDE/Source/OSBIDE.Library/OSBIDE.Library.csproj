@@ -103,6 +103,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
     <Compile Include="Events\DebugEvent.cs" />
     <Compile Include="Events\EditorActivityEvent.cs" />

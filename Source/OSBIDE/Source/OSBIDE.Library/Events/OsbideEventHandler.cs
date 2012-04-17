@@ -22,12 +22,33 @@ namespace OSBIDE.Library.Events
                 }
             ).ToList();
         private DateTime LastEditorActivityEvent = DateTime.MinValue;
+        public enum BreakpointIDs
+        {
+            BreakAtFunction = 311,
+            EditorClick = 769
+        };
 
         public OsbideEventHandler(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
 
         }
+
+        private Command GetCommand(string guid, int id)
+        {
+            Command cmd = null;
+            try
+            {
+                cmd = dte.Commands.Item(guid, id);
+            }
+            catch (Exception ex)
+            {
+                //do nothing
+            }
+            return cmd;
+        }
+
+        #region EventHandlerBase Overrides
 
         public override void DocumentSaved(Document Document)
         {
@@ -59,31 +80,39 @@ namespace OSBIDE.Library.Events
             build.SolutionName = dte.Solution.FullName;
             build.EventDate = DateTime.Now;
 
-            Breakpoints pts = dte.Debugger.Breakpoints;
-
             //start at 1 when iterating through Error List
             for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
             {
                 ErrorItem item = dte.ToolWindows.ErrorList.ErrorItems.Item(i);
                 build.ErrorItems.Add(ErrorListItem.FromErrorItem(item));
             }
+
+            //add in breakpoint information
+            for (int i = 1; i < dte.Debugger.Breakpoints.Count; i++)
+            {
+                BreakPoint bp = new BreakPoint(dte.Debugger.Breakpoints.Item(i));
+                build.Breakpoints.Add(bp);
+            }
+
             byte[] data = EventFactory.ToZippedBinary(build);
 
             //let others know that we have created a new event
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
+        public override void MenuCommand_BeforeExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
+        {
+            Command cmd = GetCommand(Guid, ID);
+            List<int> breakpointIds = Enum.GetValues(typeof(BreakpointIDs)).Cast<int>().ToList();
+            if (breakpointIds.Contains(cmd.ID))
+            {
+
+            }
+        }
+
         public override void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
-            Command cmd = null;
-            try
-            {
-                cmd = dte.Commands.Item(Guid, ID);
-            }
-            catch (Exception ex)
-            {
-                //do nothing
-            }
+            Command cmd = GetCommand(Guid, ID);
             string commandName = "";
             if (cmd != null)
             {
@@ -123,6 +152,6 @@ namespace OSBIDE.Library.Events
             }
         }
 
-        //private void 
+        #endregion
     }
 }
