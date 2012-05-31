@@ -25,6 +25,11 @@ namespace OSBIDE.Library.Events
         /// </summary>
         public static string MenuEventGuid = "{5EFC7975-14BC-11CF-9B2B-00AA00573819}";
 
+        /// <summary>
+        /// GUID for physical files and folders
+        /// </summary>
+        public static string PhysicalFileGuid =  "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}";
+
         protected DTE2 dte {
             get
             {
@@ -37,6 +42,9 @@ namespace OSBIDE.Library.Events
             }
         }
         public IServiceProvider ServiceProvider { get; set; }
+
+        private IOsbideEventGenerator _osbideEvents;
+
         private BuildEvents buildEvents = null;
         private CommandEvents genericCommandEvents = null;
         private CommandEvents menuCommandEvents = null;
@@ -51,7 +59,7 @@ namespace OSBIDE.Library.Events
         private ProjectItemsEvents solutionItemsEvents = null;
         private TextEditorEvents textEditorEvents = null;
 
-        public EventHandlerBase(IServiceProvider serviceProvider)
+        public EventHandlerBase(IServiceProvider serviceProvider, IOsbideEventGenerator osbideEvents)
         {
             if (serviceProvider == null)
             {
@@ -73,6 +81,11 @@ namespace OSBIDE.Library.Events
             solutionEvents = dte.Events.SolutionEvents;
             solutionItemsEvents = dte.Events.SolutionItemsEvents;
             textEditorEvents = dte.Events.TextEditorEvents;
+
+            //attach osbide requests
+            _osbideEvents = osbideEvents;
+            _osbideEvents.SolutionSubmitRequest += new EventHandler<SubmitEventArgs>(OsbideSolutionSubmitted);
+            _osbideEvents.SolutionDownloaded += new EventHandler<SolutionDownloadedEventArgs>(OsbideSolutionDownloaded);
 
             //attach listeners for dte events
             //build events
@@ -128,10 +141,15 @@ namespace OSBIDE.Library.Events
             textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(EditorLineChanged);
         }
 
+
         protected void NotifyEventCreated(object sender, EventCreatedArgs eventArgs)
         {
             EventCreated(sender, eventArgs);
         }
+
+        //OSBIDE-specific event handlers 
+        public virtual void OsbideSolutionSubmitted(object sender, SubmitEventArgs e) { }
+        public virtual void OsbideSolutionDownloaded(object sender, SolutionDownloadedEventArgs e) { }
 
         //build event handlers
         public virtual void OnBuildBegin(vsBuildScope Scope, vsBuildAction Action) { }

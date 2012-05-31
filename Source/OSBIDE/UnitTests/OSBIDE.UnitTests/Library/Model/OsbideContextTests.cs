@@ -32,8 +32,14 @@ namespace OSBIDE.UnitTests.Library.Model
                 FirstName = "Joe",
                 LastName = "User",
                 Id = 10,
+                OsbleId = 0,
                 InstitutionId = "0"
             };
+            if (localDb.Users.Where(u => u.Id == testUser.Id).Count() > 0)
+            {
+                localDb.Users.Remove(localDb.Users.Where(u => u.Id == testUser.Id).FirstOrDefault());
+                localDb.SaveChanges();
+            }
             bool result = localDb.InsertUserWithId(testUser);
             OsbideUser user = localDb.Users.FirstOrDefault();
             Assert.AreEqual(true, result);
@@ -61,7 +67,6 @@ namespace OSBIDE.UnitTests.Library.Model
             {
                 Data = new byte[1],
                 DateReceived = DateTime.Now,
-                Handled = true,
                 Id = 5,
                 LogType = "test",
                 SenderId = 10 //ID of the test user generated in InsertUserWithIdTest()
@@ -71,6 +76,8 @@ namespace OSBIDE.UnitTests.Library.Model
             EventLog log = localDb.EventLogs.FirstOrDefault();
             Assert.AreEqual(true, result);
             Assert.AreEqual(testLog.Id, log.Id);
+            localDb.EventLogs.Remove(log);
+            localDb.SaveChanges();
         }
     }
 }

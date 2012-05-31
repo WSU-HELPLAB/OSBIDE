@@ -10,10 +10,8 @@ namespace OSBIDE.Library.Events
     {
         public DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
-        public string EventName
-        {
-            get { return "ExceptionThrownEvent"; }
-        }
+        public string EventName { get { return ExceptionEvent.Name; } }
+        public static string Name { get { return "ExceptionEvent"; } }
         public string ExceptionType { get; set; }
         public string ExceptionName { get; set; }
         public int ExceptionCode { get; set; }

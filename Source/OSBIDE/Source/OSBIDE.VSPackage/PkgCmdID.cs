@@ -8,6 +8,6 @@ namespace OSBIDE.VSPackage
     {
         public const uint cmdidOsbideCommand =        0x100;
         public const uint cmdidOsbideStatusTool =    0x101;
-
+        public const uint cmdidOsbideSubmitAssignmentCommand = 0x102;
     };
 }

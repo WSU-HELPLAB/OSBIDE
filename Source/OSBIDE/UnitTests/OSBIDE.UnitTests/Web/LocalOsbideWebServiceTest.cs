@@ -143,9 +143,8 @@ namespace OSBIDE.UnitTests.Web
             //This is how the OsbideWebService does things in testing (kind of odd).
             OsbideContext db = new OsbideContext("OsbideDebugContext");
             DateTime start = DateTime.Now.Subtract(new TimeSpan(360, 0, 0, 0, 0));
-            DateTime end = DateTime.Now;
-            List<EventLog> localQueryLogs = db.EventLogs.Where(log => log.DateReceived > start && log.DateReceived < end).ToList();
-            List<EventLog> serviceQuery = target.GetPastEvents(start, end);
+            List<EventLog> localQueryLogs = db.EventLogs.Where(log => log.DateReceived > start).ToList();
+            List<EventLog> serviceQuery = target.GetPastEvents(start, false);
 
             Assert.AreEqual(serviceQuery.Count, localQueryLogs.Count);
         }

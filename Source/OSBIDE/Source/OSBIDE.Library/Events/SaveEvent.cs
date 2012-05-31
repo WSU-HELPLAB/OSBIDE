@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Library.Events
 {
@@ -10,9 +11,9 @@ namespace OSBIDE.Library.Events
     {
         public DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
-        public string DocumentContent { get; set; }
-        public string DocumentName { get; set; }
-        public string EventName { get { return "SaveEvent"; } }
+        public string EventName { get { return SaveEvent.Name; } }
+        public static string Name { get { return "SaveEvent"; } }
+        public IVSDocument Document { get; set; }
 
         public SaveEvent()
         {

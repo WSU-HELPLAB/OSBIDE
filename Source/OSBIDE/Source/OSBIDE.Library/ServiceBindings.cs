@@ -45,45 +45,22 @@ namespace OSBIDE.Library
         {
             get
             {
-                CustomBinding serviceBinding = new CustomBinding();
+                BasicHttpBinding serviceBinding = new BasicHttpBinding();
                 serviceBinding.Name = "OsbideWebServiceBinding";
+                
+                //match values with those found in web.config file inside of OSBIDE.Web
+                serviceBinding.SendTimeout = new TimeSpan(0, 0, 15, 0, 0);
+                serviceBinding.ReceiveTimeout = new TimeSpan(0, 0, 15, 0, 0);
 
-                //transport values are pulled from the ones auto generated inside app.config
-                HttpTransportBindingElement transportElement = new HttpTransportBindingElement()
-                {
-                    ManualAddressing = false,
-                    MaxBufferPoolSize = 524288,
-                    MaxReceivedMessageSize = 65536,
-                    AllowCookies = false,
-                    AuthenticationScheme = System.Net.AuthenticationSchemes.Anonymous,
-                    BypassProxyOnLocal = false,
-                    DecompressionEnabled = true,
-                    HostNameComparisonMode = System.ServiceModel.HostNameComparisonMode.StrongWildcard,
-                    KeepAliveEnabled = true,
-                    MaxBufferSize = 65536,
-                    ProxyAuthenticationScheme = System.Net.AuthenticationSchemes.Anonymous,
-                    Realm = "",
-                    TransferMode = System.ServiceModel.TransferMode.Buffered,
-                    UnsafeConnectionNtlmAuthentication = false,
-                    UseDefaultWebProxy = true
-                };
+                serviceBinding.MaxBufferSize = 2147483647;
+                serviceBinding.MaxReceivedMessageSize = 2147483647;
+                serviceBinding.MaxBufferPoolSize = 2147483647;
 
-                BinaryMessageEncodingBindingElement messageElement = new BinaryMessageEncodingBindingElement()
-                {
-                    MaxReadPoolSize = 64,
-                    MaxWritePoolSize = 16,
-                    MaxSessionSize = 2048,
-                };
-                messageElement.ReaderQuotas = new System.Xml.XmlDictionaryReaderQuotas()
-                {
-                    MaxDepth = 32,
-                    MaxStringContentLength = 8192,
-                    MaxArrayLength = 16384,
-                    MaxBytesPerRead = 4096,
-                    MaxNameTableCharCount = 16384
-                };
-                serviceBinding.Elements.Add(messageElement);
-                serviceBinding.Elements.Add(transportElement);
+                serviceBinding.ReaderQuotas.MaxDepth = 2147483647;
+                serviceBinding.ReaderQuotas.MaxStringContentLength = 2147483647;
+                serviceBinding.ReaderQuotas.MaxArrayLength = 2147483647;
+                serviceBinding.ReaderQuotas.MaxBytesPerRead = 2147483647;
+                serviceBinding.ReaderQuotas.MaxNameTableCharCount = 2147483647;
 
                 return serviceBinding;
             }

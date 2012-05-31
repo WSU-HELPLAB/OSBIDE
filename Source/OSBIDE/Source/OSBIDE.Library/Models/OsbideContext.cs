@@ -16,7 +16,7 @@ namespace OSBIDE.Library.Models
     {
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
-
+        public DbSet<SubmitEvent> SubmitEvents { get; set; }
         /*
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<DebugEvent> DebugEvents { get; set; }
@@ -68,6 +68,20 @@ namespace OSBIDE.Library.Models
 #endif
         }
 
+        protected override bool ShouldValidateEntity(DbEntityEntry entityEntry)
+        {
+            // Required to prevent bug - http://stackoverflow.com/questions/5737733
+            if (entityEntry.Entity is SubmitEvent)
+            {
+                return false;
+            }
+            if (entityEntry.Entity is EventLog)
+            {
+                return false;
+            }
+            return base.ShouldValidateEntity(entityEntry);
+        }
+
         /// <summary>
         /// Returns true if the client has SQL Server CE installed.
         /// </summary>
@@ -90,7 +104,6 @@ namespace OSBIDE.Library.Models
                 return success;
             }
         }
-
 
         /// <summary>
         /// Inserts a user that has a preexisting ID into the database context.  Most likely to be used
@@ -142,8 +155,8 @@ namespace OSBIDE.Library.Models
             }
 
             query = "INSERT INTO OsbideUsers " +
-                  "(Id, FirstName, LastName, InstitutionId) " +
-                  "VALUES (@id, @first, @last, @institutionId) ";
+                  "(Id, FirstName, LastName, InstitutionId, OsbleId) " +
+                  "VALUES (@id, @first, @last, @institutionId, @osbleId) ";
             cmd = new SqlCeCommand(query, conn);
             cmd.Parameters.Add(new SqlCeParameter()
             {
@@ -169,6 +182,13 @@ namespace OSBIDE.Library.Models
             {
                 ParameterName = "institutionId",
                 Value = user.InstitutionId,
+                SqlDbType = System.Data.SqlDbType.NVarChar
+            });
+
+            cmd.Parameters.Add(new SqlCeParameter()
+            {
+                ParameterName = "osbleId",
+                Value = user.OsbleId,
                 SqlDbType = System.Data.SqlDbType.Int
             });
 
@@ -238,8 +258,8 @@ namespace OSBIDE.Library.Models
             }
 
             query = "INSERT INTO EventLogs " +
-                  "(Id, SenderId, LogType, DateReceived, Data, Handled) " +
-                  "VALUES (@id, @senderId, @logType, @dateReceived, @data, @handled) ";
+                  "(Id, SenderId, LogType, DateReceived, Data) " +
+                  "VALUES (@id, @senderId, @logType, @dateReceived, @data) ";
             cmd = new SqlCeCommand(query, conn);
             cmd.Parameters.Add(new SqlCeParameter()
             {
@@ -273,14 +293,7 @@ namespace OSBIDE.Library.Models
             {
                 ParameterName = "data",
                 Value = log.Data,
-                SqlDbType = System.Data.SqlDbType.VarBinary
-            });
-
-            cmd.Parameters.Add(new SqlCeParameter()
-            {
-                ParameterName = "handled",
-                Value = log.Handled,
-                SqlDbType = System.Data.SqlDbType.Bit
+                SqlDbType = System.Data.SqlDbType.Image
             });
 
             try

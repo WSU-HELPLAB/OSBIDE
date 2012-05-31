@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Ionic.Zip;
 using EnvDTE;
 using EnvDTE80;
+using System.Runtime.Serialization;
 
 namespace OSBIDE.Library.Events
 {
@@ -70,7 +71,7 @@ namespace OSBIDE.Library.Events
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static IOsbideEvent FromZippedBinary(byte[] data)
+        public static IOsbideEvent FromZippedBinary(byte[] data, SerializationBinder binder = null)
         {
             MemoryStream zippedStream = new MemoryStream(data);
             MemoryStream rawStream = new MemoryStream();
@@ -91,6 +92,11 @@ namespace OSBIDE.Library.Events
                 {
                     throw new Exception("Expecting a zip file with exactly one item.");
                 }
+            }
+
+            if (binder != null)
+            {
+                formatter.Binder = binder;
             }
 
             //figure out what needs to be deserialized

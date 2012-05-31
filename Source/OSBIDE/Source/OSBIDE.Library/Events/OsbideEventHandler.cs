@@ -5,6 +5,8 @@ using System.Text;
 using EnvDTE;
 using EnvDTE80;
 using OSBIDE.Library.Models;
+using System.IO;
+using Ionic.Zip;
 
 namespace OSBIDE.Library.Events
 {
@@ -29,8 +31,8 @@ namespace OSBIDE.Library.Events
             EditorClick = 769
         };
 
-        public OsbideEventHandler(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        public OsbideEventHandler(IServiceProvider serviceProvider, IOsbideEventGenerator osbideEvents)
+            : base(serviceProvider, osbideEvents)
         {
 
         }
@@ -51,26 +53,36 @@ namespace OSBIDE.Library.Events
 
         #region EventHandlerBase Overrides
 
+        public override void OsbideSolutionSubmitted(object sender, SubmitEventArgs e)
+        {
+            SubmitEvent submit = new SubmitEvent(dte);
+            submit.AssignmentName = e.AssignmentName;
+
+            //let others know that we have a new event
+            NotifyEventCreated(this, new EventCreatedArgs(submit));
+        }
+
+        public override void OsbideSolutionDownloaded(object sender, SolutionDownloadedEventArgs e)
+        {
+            SolutionDownloadEvent download = new SolutionDownloadEvent()
+            {
+                AssignmentName = e.DownloadedSubmission.AssignmentName,
+                AuthorId = e.DownloadedSubmission.EventLog.SenderId,
+                DownloadingUserId = e.DownloadingUser.Id,
+                SolutionName = e.DownloadedSubmission.SolutionName
+            };
+
+            //let others know that we have a new event
+            NotifyEventCreated(this, new EventCreatedArgs(download));
+        }
+
         public override void DocumentSaved(Document Document)
         {
-            //create the osbide event
-            TextSelection selection = Document.Selection;
-            int currentLine = selection.ActivePoint.Line;
-            int offset = selection.ActivePoint.DisplayColumn;
-
-            selection.StartOfDocument();
-            selection.EndOfDocument(true);
-            string document = selection.Text;
-
-            //Reset cursor position
-            selection.MoveToDisplayColumn(currentLine, offset);
-
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
-            save.DocumentName = Document.FullName;
-            save.DocumentContent = document;
-            
+            save.Document = DocumentFactory.FromDteDocument(Document);
+
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
         }
@@ -89,7 +101,7 @@ namespace OSBIDE.Library.Events
             }
 
             //add in breakpoint information
-            for (int i = 1; i < dte.Debugger.Breakpoints.Count; i++)
+            for (int i = 1; i <= dte.Debugger.Breakpoints.Count; i++)
             {
                 BreakPoint bp = new BreakPoint(dte.Debugger.Breakpoints.Item(i));
                 build.Breakpoints.Add(bp);
@@ -104,10 +116,13 @@ namespace OSBIDE.Library.Events
         public override void MenuCommand_BeforeExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
             Command cmd = GetCommand(Guid, ID);
-            List<int> breakpointIds = Enum.GetValues(typeof(BreakpointIDs)).Cast<int>().ToList();
-            if (breakpointIds.Contains(cmd.ID))
+            if (cmd != null)
             {
+                List<int> breakpointIds = Enum.GetValues(typeof(BreakpointIDs)).Cast<int>().ToList();
+                if (breakpointIds.Contains(cmd.ID))
+                {
 
+                }
             }
         }
 

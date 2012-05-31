@@ -10,7 +10,8 @@ namespace OSBIDE.Library.Events
     {
         public DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
-        public string EventName { get { return "EditorActivityEvent"; } }
+        public string EventName { get { return EditorActivityEvent.Name; } }
+        public static string Name { get { return "EditorActivityEvent"; } }
 
         public EditorActivityEvent()
         {

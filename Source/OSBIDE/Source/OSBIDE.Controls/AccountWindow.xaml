@@ -32,6 +32,7 @@
         <!--3,0 and 3,1-->
         <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold">Student/Institution ID:</TextBlock>
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="InstitutionIdTextBox" Text="{Binding Path=InstitutionId, Mode=TwoWay}" />
+
         
         <!--4,0-->
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">

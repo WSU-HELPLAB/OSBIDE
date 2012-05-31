@@ -9,6 +9,7 @@ using OSBIDE.Library;
 using System.Data.SqlServerCe;
 using System.Threading;
 using System.Runtime.Caching;
+using System.Data.Entity.Validation;
 
 namespace OSBIDE.VSPackage
 {
@@ -20,17 +21,19 @@ namespace OSBIDE.VSPackage
         private List<EventLog> _pendingLogs = new List<EventLog>();
         private ILogger _logger;
         private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        private Thread _eventLogThread;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
+        public bool _runEventsLoop = true;
 
         public bool HasWebServiceError { get; set; }
 
-        private void SaveToCache(List<EventLog> logs)
+        private void SaveLogsToCache(List<EventLog> logs)
         {
             _cache.Set(_cacheKey, logs.ToArray(), new CacheItemPolicy(), _cacheRegion);
         }
 
-        private List<EventLog> GetFromCache()
+        private List<EventLog> GetLogsFromCache()
         {
             return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
         }
@@ -40,7 +43,7 @@ namespace OSBIDE.VSPackage
             _events = dteEventHandler;
             _currentUser = user;
             this._logger = logger;
-            
+
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //AC: "events" ends up being null during unit testing.  Otherwise, it should never happen.
@@ -52,8 +55,12 @@ namespace OSBIDE.VSPackage
             //if we don't have a cache record of pending logs when we start, create a dummy list
             if (!_cache.Contains(_cacheKey, _cacheRegion))
             {
-                SaveToCache(new List<EventLog>());
+                SaveLogsToCache(new List<EventLog>());
             }
+
+            //set up and begin event log thread
+            _eventLogThread = new Thread(new ThreadStart(EventsFromServerLoop));
+            _eventLogThread.Start();
         }
 
         private void SendLogToServer(object data)
@@ -75,13 +82,13 @@ namespace OSBIDE.VSPackage
             lock (_cache)
             {
                 //get pending records
-                logsToBeSaved = GetFromCache();
+                logsToBeSaved = GetLogsFromCache();
 
                 //add new log to list
                 logsToBeSaved.Add(newLog);
 
                 //clear out cache
-                SaveToCache(new List<EventLog>());
+                SaveLogsToCache(new List<EventLog>());
             }
 
             //loop through each log to be saved, give a dummy ID number
@@ -134,10 +141,9 @@ namespace OSBIDE.VSPackage
             //save the modified list back into the cache
             lock (_cache)
             {
-                SaveToCache(logsToBeSaved);
+                SaveLogsToCache(logsToBeSaved);
             }
         }
-
 
         /// <summary>
         /// Called whenever OSBIDE detects an event change
@@ -160,11 +166,101 @@ namespace OSBIDE.VSPackage
             {
                 lock (_cache)
                 {
-                    List<EventLog> cachedLogs = GetFromCache();
+                    List<EventLog> cachedLogs = GetLogsFromCache();
                     cachedLogs.Add(eventLog);
-                    SaveToCache(cachedLogs);
+                    SaveLogsToCache(cachedLogs);
                 }
             }
+        }
+
+        private void EventsFromServerLoop()
+        {
+            //start with a really long time ago
+            DateTime startDate = DateTime.Now.Subtract(new TimeSpan(365, 0, 0, 0, 0));
+            SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+            OsbideContext db = new OsbideContext(conn, true);
+
+            while (_runEventsLoop)
+            {
+                //use most recent event log as a basis for determining where we need to fill in potential gaps in data
+                EventLog mostRecentLog = (from log in db.EventLogs
+                                          orderby log.DateReceived descending
+                                          select log).FirstOrDefault();
+                if (mostRecentLog != null)
+                {
+                    startDate = mostRecentLog.DateReceived;
+                }
+
+                EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
+                
+                //find all unique User Ids
+                List<int> eventLogIds = new List<int>();
+                foreach (EventLog log in logs)
+                {
+                    int index = eventLogIds.BinarySearch(log.SenderId);
+                    if(index < 0)
+                    {
+                        //from http://msdn.microsoft.com/en-us/library/w4e7fxsh.aspx:
+                        //taking the bitwise NOT of the index returns the first element that
+                        //is larger than the supplied index, thereby inserting the current
+                        //element in the right place.
+                        eventLogIds.Insert(~index, log.SenderId);
+                    }
+                }
+
+                //see if we're missing any ids in our local DB
+                var eventLogQuery = from id in eventLogIds
+                                    select id;
+                var idQuery = from user in db.Users
+                              where eventLogIds.Contains(user.Id)
+                              select user.Id;
+                int[] foundIds = idQuery.ToArray();
+
+                foreach (int id in foundIds)
+                {
+                    eventLogIds.Remove(id);
+                }
+
+                //if we have any remaining ids, then we need to make the appropriate db call
+                if (eventLogIds.Count > 0)
+                {
+                    OsbideUser[] missingUsers = _webServiceClient.GetUsers(eventLogIds.ToArray());
+                    foreach (OsbideUser user in missingUsers)
+                    {
+                        db.InsertUserWithId(user);
+                    }
+                }
+
+                //finally, insert the event logs
+                foreach (EventLog log in logs)
+                {
+                    bool successfulInsert = db.InsertEventLogWithId(log);
+
+                    if (successfulInsert && log.LogType == SubmitEvent.Name)
+                    {
+                        SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data, new OsbideDeserializationBinder());
+                        submit.EventLogId = log.Id;
+                        db.SubmitEvents.Add(submit);
+                        try
+                        {
+                            db.SaveChanges();
+                        }
+                        catch (DbEntityValidationException ex)
+                        {
+                            foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
+                            {
+                                foreach (DbValidationError error in result.ValidationErrors)
+                                {
+                                    System.Diagnostics.Trace.Write(error.ErrorMessage);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            db.Dispose();
         }
     }
 }

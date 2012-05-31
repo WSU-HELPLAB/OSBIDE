@@ -21,10 +21,8 @@ namespace OSBIDE.Library.Events
         /// reason to set this unless you're dealing with a "StopDebugging" event
         /// </summary>
         public string DebugOutput { get; set; }
-        public string EventName
-        {
-            get { return "DebugEvent"; }
-        }
+        public string EventName { get { return DebugEvent.Name; } }
+        public static string Name { get { return "DebugEvent"; } }
         public DebugEvent()
         {
             EventDate = DateTime.Now;

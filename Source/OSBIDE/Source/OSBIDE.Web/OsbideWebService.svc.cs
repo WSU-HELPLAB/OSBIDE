@@ -6,6 +6,7 @@ using System.ServiceModel;
 using System.ServiceModel.Activation;
 using OSBIDE.Library.Models;
 using System.Data.Entity;
+using System.Threading;
 
 namespace OSBIDE.Web
 {
@@ -34,6 +35,13 @@ namespace OSBIDE.Web
 
         [OperationContract]
         [ApplyDataContractResolver]
+        public OsbideUser GetUserById(int id)
+        {
+            return Db.Users.Find(id);
+        }
+
+        [OperationContract]
+        [ApplyDataContractResolver]
         public OsbideUser SaveUser(OsbideUser userToSave)
         {
             //reset sender id
@@ -45,13 +53,9 @@ namespace OSBIDE.Web
                     || 
                     userToSave.LastName == null
                     ||
-                    userToSave.InstitutionId == null
-                    ||
                     userToSave.FirstName.Length == 0 
                     || 
                     userToSave.LastName.Length == 0 
-                    || 
-                    userToSave.InstitutionId.Length == 0
                 )
             {
                 return userToSave;
@@ -63,8 +67,6 @@ namespace OSBIDE.Web
                                  user.FirstName.CompareTo(userToSave.FirstName) == 0
                                  &&
                                  user.LastName.CompareTo(userToSave.LastName) == 0
-                                 &&
-                                 user.InstitutionId.CompareTo(userToSave.InstitutionId) == 0
                                  select user).FirstOrDefault();
             if (dbUser != null)
             {
@@ -108,10 +110,6 @@ namespace OSBIDE.Web
                 log.SenderId = log.Sender.Id;
             }
             log.Sender = null;
-
-            //if we've gotten this far, we're probably okay to mark the log as being
-            //handled
-            log.Handled = true;
             Db.EventLogs.Add(log);
             try
             {
@@ -128,23 +126,58 @@ namespace OSBIDE.Web
         }
 
         /// <summary>
-        /// Returns all events between "start" and "cutoff"
+        /// Returns all events that occur after "start"
         /// </summary>
         /// <param name="start"></param>
-        /// <param name="cutoff">Optional</param>
+        /// <param name="waitForContent">Whether or not the web service should wait for new content before returning</param>
         /// <returns></returns>
-        public List<EventLog> GetPastEvents(DateTime start, DateTime? cutoff = null)
+        [OperationContract]
+        public List<EventLog> GetPastEvents(DateTime start, bool waitForContent = true)
         {
-            if (cutoff == null)
+            bool foundData = false;
+            int timeoutCount = 0;
+            List<EventLog> logs = new List<EventLog>();
+            while (foundData == false)
             {
-                cutoff = DateTime.Now;
-            }
-            var query = from log in Db.EventLogs
+                timeoutCount++;
+                logs = (from log in Db.EventLogs
                         where log.DateReceived > start
-                              &&
-                              log.DateReceived < cutoff
-                        select log;
-            return query.ToList();
+                        select log).ToList();
+                if (logs.Count > 0 || waitForContent == false || timeoutCount > 4)
+                {
+                    foundData = true;
+                }
+                else
+                {
+                    //sleep 20 seconds before making another request
+                    Thread.Sleep(new TimeSpan(0, 0, 10));
+                }
+            }
+
+            //Remove all of the dynamic EF crap before sending over the wire.
+            //Needed or else an connection exception will get thrown.
+            List<EventLog> staticLogs = new List<EventLog>(logs.Count);
+            foreach (EventLog log in logs)
+            {
+                staticLogs.Add(new EventLog(log));
+            }
+            return staticLogs;
+        }
+
+        [OperationContract]
+        public List<OsbideUser> GetUsers(int[] osbideIds)
+        {
+            List<OsbideUser> users = new List<OsbideUser>();
+            var query = from user in Db.Users
+                        where osbideIds.Contains(user.Id)
+                        select user;
+            
+            foreach (OsbideUser user in query)
+            {
+                user.InstitutionId = "withheld";
+                users.Add(new OsbideUser(user));
+            }
+            return users;
         }
 
         [OperationContract]

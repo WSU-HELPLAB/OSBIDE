@@ -14,8 +14,9 @@ namespace OSBIDE.Library.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
         private string _firstName = "";
+
+        [Required]
         public string FirstName
         {
             get
@@ -28,8 +29,9 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        [Required]
         private string _lastName = "";
+
+        [Required]
         public string LastName
         {
             get
@@ -42,7 +44,6 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        [Required]
         private string _institutionId = "";
         public string InstitutionId
         {
@@ -56,13 +57,28 @@ namespace OSBIDE.Library.Models
             }
         }
 
+        public int OsbleId { get; set; }
+
+        /// <summary>
+        /// Returns the User's full name in "Last, First" format.
+        /// </summary>
+        [NotMapped]
+        public string FullName
+        {
+            get
+            {
+                return string.Format("{0}, {1}", LastName, FirstName);
+            }
+        }
+
         public static OsbideUser GenericUser()
         {
             return new OsbideUser()
             {
                 FirstName = "Ann",
                 LastName = "Onymous",
-                InstitutionId = "0000"
+                InstitutionId = "0000",
+                OsbleId = 0
             };
         }
 
@@ -76,6 +92,7 @@ namespace OSBIDE.Library.Models
             FirstName = copyUser.FirstName;
             LastName = copyUser.LastName;
             InstitutionId = copyUser.InstitutionId;
+            OsbleId = copyUser.OsbleId;
         }
 
         public static OsbideUser ReadUserFromFile(string filePath)
@@ -105,7 +122,22 @@ namespace OSBIDE.Library.Models
             FileStream file = File.Open(filePath, FileMode.Create);
             formatter.Serialize(file, user);
             file.Close();
+
+            //reset current user property after a save
+            _currentUser = null;
         }
 
+        private static OsbideUser _currentUser;
+        public static OsbideUser CurrentUser
+        {
+            get
+            {
+                if (_currentUser == null)
+                {
+                    _currentUser = ReadUserFromFile(StringConstants.UserDataPath);
+                }
+                return _currentUser;
+            }
+        }
     }
 }

@@ -47,6 +47,9 @@
     <Reference Include="EnvDTE80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="FileCache.Signed">
+      <HintPath>..\..\packages\FileCache.Signed.1.1.1\lib\FileCache.Signed.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
@@ -160,6 +163,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.EventLog.datasource" />
     <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
     <None Include="Service References\WebServices\OsbideWebService.wsdl" />
     <None Include="Service References\WebServices\OsbideWebService.xsd">
@@ -170,6 +174,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\WebServices\OsbideWebService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService3.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="source.extension.vsixmanifest">
@@ -203,10 +210,6 @@
     <None Include="Service References\WebServices\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\filecache\fc\Main\Source\FileCache\FileCache.csproj">
-      <Project>{E13FD5FE-7D45-4A90-8FBB-C498BD144940}</Project>
-      <Name>FileCache</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
       <Project>{9EA09E78-0541-4233-B189-EE1DBD56520D}</Project>
       <Name>OSBIDE.Controls</Name>

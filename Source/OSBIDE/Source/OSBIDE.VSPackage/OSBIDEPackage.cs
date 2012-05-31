@@ -24,6 +24,9 @@ using System.Reflection;
 using System.Data.Common;
 using System.Data.SqlServerCe;
 using System.Windows.Threading;
+using OSBIDE.Controls.Views;
+using OSBIDE.Controls.ViewModels;
+using EnvDTE80;
 
 namespace OSBIDE.VSPackage
 {
@@ -56,6 +59,7 @@ namespace OSBIDE.VSPackage
         private ILogger _errorLogger = new LocalErrorLogger();
         public OsbideUser CurrentUser { get; private set; }
         private ServiceClient _client;
+        private OsbideContext _db;
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
@@ -87,6 +91,11 @@ namespace OSBIDE.VSPackage
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
+            }
+            if (_db != null)
+            {
+                AssignmentSubmissionsViewModel vm = new AssignmentSubmissionsViewModel(_db);
+                (window.Content as AssignmentSubmissions).ViewModel = vm;
             }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
@@ -156,6 +165,12 @@ namespace OSBIDE.VSPackage
                 CommandID menuCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCommand);
                 MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
                 mcs.AddCommand(menuItem);
+                
+                //create submit assignment command
+                CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
+                MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
+                mcs.AddCommand(submitMenuItem);
+
                 // Create the command for the tool window
                 CommandID toolwndCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideStatusTool);
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
@@ -178,6 +193,16 @@ namespace OSBIDE.VSPackage
                     MenuItemCallback(this, EventArgs.Empty);
                 }
             }
+            else
+            {
+                //make sure that the saved user has the right ID
+                OsbideUser webUser = _webServiceClient.GetUserById(CurrentUser.Id);
+                if (webUser == null)
+                {
+                    CurrentUser = _webServiceClient.SaveUser(CurrentUser);
+                    SaveUserData(CurrentUser);
+                }
+            }
 
             //check web service version number against ours
             CheckServiceVersion();
@@ -195,10 +220,15 @@ namespace OSBIDE.VSPackage
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.microsoft.com/download/en/details.aspx?id=17876"));
                 }
             }
+            else
+            {
+                SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+                _db = new OsbideContext(conn, true);
+            }
 
             if (_isOsbideUpToDate)
             {
-                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider);
+                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
                 _client = new ServiceClient(_eventHandler, CurrentUser, _errorLogger);
             }            
         }
@@ -228,10 +258,11 @@ namespace OSBIDE.VSPackage
                 return;
             }
 
-            //we have a version mismatch, stop sending data to the server
+            //we have a version mismatch, stop sending data to the server & delete localDb
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
                 _isOsbideUpToDate = false;
+                File.Delete(StringConstants.LocalDatabasePath);
                 UpdateAvailableWindow.ShowModalDialog(packageUrl);
             }
         }
@@ -254,6 +285,30 @@ namespace OSBIDE.VSPackage
         {
             OsbideUser.SaveUserToFile(user, StringConstants.UserDataPath);
             return true;
+        }
+
+        /// <summary>
+        /// Called when the user selects the "submit assignment" menu option
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SubmitAssignmentCallback(object sender, EventArgs e)
+        {
+            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+            Guid clsid = Guid.Empty;
+            SubmitEvent evt = new SubmitEvent();
+            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+            evt.SolutionName = dte.Solution.FullName;
+            SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(CurrentUser, evt);
+            MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
+            
+            //assume that data was changed and needs to be saved
+            if (result == MessageBoxResult.OK)
+            {
+                EventGenerator generator = EventGenerator.GetInstance();
+                generator.RequestSolutionSubmit(CurrentUser, vm.SelectedAssignment);    
+
+            }
         }
         #endregion
 

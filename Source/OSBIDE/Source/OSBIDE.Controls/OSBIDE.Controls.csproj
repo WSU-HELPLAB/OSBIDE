@@ -72,6 +72,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -109,6 +110,20 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AssignmentSubmissionsViewModel.cs" />
+    <Compile Include="ViewModels\SubmissionEntryViewModel.cs" />
+    <Compile Include="ViewModels\SubmissionList.cs" />
+    <Compile Include="ViewModels\SubmitAssignmentViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\AssignmentSubmissions.xaml.cs">
+      <DependentUpon>AssignmentSubmissions.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SubmissionEntry.xaml.cs">
+      <DependentUpon>SubmissionEntry.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SubmitAssignmentWindow.xaml.cs">
+      <DependentUpon>SubmitAssignmentWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UpdateAvailableWindow.xaml.cs">
       <DependentUpon>UpdateAvailableWindow.xaml</DependentUpon>
     </Compile>
@@ -139,6 +154,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="OsbideStatusControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AssignmentSubmissions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SubmissionEntry.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SubmitAssignmentWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -174,6 +201,7 @@
       <Name>OSBIDE.Library</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

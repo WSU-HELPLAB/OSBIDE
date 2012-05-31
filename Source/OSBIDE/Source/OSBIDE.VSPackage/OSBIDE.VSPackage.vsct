@@ -73,6 +73,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideSubmitAssignmentCommand" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideSubmitAssignmentCommand</CommandName>
+          <ButtonText>Submit Assignment</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideStatusTool" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
@@ -113,6 +121,7 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidOsbideCommand" value="0x0100" />
       <IDSymbol name="cmdidOsbideStatusTool" value="0x0101" />
+      <IDSymbol name="cmdidOsbideSubmitAssignmentCommand" value="0x0102" />
     </GuidSymbol>
     
     
