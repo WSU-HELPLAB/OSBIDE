@@ -7,6 +7,7 @@ using System.ServiceModel.Activation;
 using OSBIDE.Library.Models;
 using System.Data.Entity;
 using System.Threading;
+using OSBIDE.Library.Events;
 
 namespace OSBIDE.Web
 {
@@ -141,8 +142,10 @@ namespace OSBIDE.Web
             {
                 timeoutCount++;
                 logs = (from log in Db.EventLogs
-                        where log.DateReceived > start
-                        select log).ToList();
+                        where log.DateReceived > start && log.LogType == SubmitEvent.Name
+                        orderby log.DateReceived ascending
+                        select log
+                        ).Take(10).ToList();
                 if (logs.Count > 0 || waitForContent == false || timeoutCount > 4)
                 {
                     foundData = true;
