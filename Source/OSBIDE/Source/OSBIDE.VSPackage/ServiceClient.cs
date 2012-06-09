@@ -196,6 +196,11 @@ namespace OSBIDE.VSPackage
                 {
                     logs = _webServiceClient.GetPastEvents(startDate, true);
                 }
+                catch (TimeoutException tex)
+                {
+                    _logger.WriteToLog("EventsFromServerLoop timeout error: " + tex.Message);
+                    HasWebServiceError = true;
+                }
                 catch (Exception ex)
                 {
                     _logger.WriteToLog("EventsFromServerLoop error: " + ex.Message);
@@ -260,7 +265,7 @@ namespace OSBIDE.VSPackage
                             {
                                 foreach (DbValidationError error in result.ValidationErrors)
                                 {
-                                    System.Diagnostics.Trace.Write(error.ErrorMessage);
+                                    _logger.WriteToLog("EventLog insert error: " + error.ErrorMessage);
                                 }
                             }
                         }
