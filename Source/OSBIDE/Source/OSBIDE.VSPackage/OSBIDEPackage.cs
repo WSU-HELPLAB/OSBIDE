@@ -55,6 +55,7 @@ namespace OSBIDE.VSPackage
     public sealed class OSBIDEPackage : Package
     {
         private OsbideWebServiceClient _webServiceClient = null;
+        private bool _hasWebServiceError = false;
         private OsbideEventHandler _eventHandler = null;
         private ILogger _errorLogger = new LocalErrorLogger();
         public OsbideUser CurrentUser { get; private set; }
@@ -196,8 +197,17 @@ namespace OSBIDE.VSPackage
             else
             {
                 //make sure that the saved user has the right ID
-                OsbideUser webUser = _webServiceClient.GetUserById(CurrentUser.Id);
-                if (webUser == null)
+                OsbideUser webUser = null;
+                try
+                {
+                    webUser = _webServiceClient.GetUserById(CurrentUser.Id);
+                }
+                catch (EndpointNotFoundException notFoundException)
+                {
+                    _errorLogger.WriteToLog("Web service error: " + notFoundException.Message);
+                    _hasWebServiceError = true;
+                }
+                if (webUser == null && _hasWebServiceError == false)
                 {
                     CurrentUser = _webServiceClient.SaveUser(CurrentUser);
                     SaveUserData(CurrentUser);

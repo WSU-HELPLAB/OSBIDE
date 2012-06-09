@@ -191,8 +191,17 @@ namespace OSBIDE.VSPackage
                     startDate = mostRecentLog.DateReceived;
                 }
 
-                EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
-                
+                EventLog[] logs = new EventLog[0];
+                try
+                {
+                    logs = _webServiceClient.GetPastEvents(startDate, true);
+                }
+                catch (Exception ex)
+                {
+                    _logger.WriteToLog("EventsFromServerLoop error: " + ex.Message);
+                    HasWebServiceError = true;
+                }
+
                 //find all unique User Ids
                 List<int> eventLogIds = new List<int>();
                 foreach (EventLog log in logs)
