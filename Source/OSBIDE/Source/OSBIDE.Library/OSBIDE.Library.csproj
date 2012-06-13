@@ -131,6 +131,7 @@
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\IVSDocument.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
+    <Compile Include="OsbideState.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ErrorListItem.cs" />

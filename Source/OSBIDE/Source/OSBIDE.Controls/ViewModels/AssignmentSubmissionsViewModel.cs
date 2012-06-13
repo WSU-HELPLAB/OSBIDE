@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using System.IO;
 using Ionic.Zip;
 using System.Windows.Forms;
+using OSBIDE.Library;
 
 namespace OSBIDE.Controls.ViewModels
 {
@@ -19,6 +20,8 @@ namespace OSBIDE.Controls.ViewModels
         private string _selectedAssignment = "";
         private OsbideContext _db;
         private List<EventLog> _allSubmissions = new List<EventLog>();
+        private string _errorMessage = "";
+        private OsbideState _osbideState = null;
 
         public ObservableCollection<string> AvailableAssignments { get; set; }
         public ObservableCollection<SubmissionEntryViewModel> SubmissionEntries { get; set; }
@@ -37,17 +40,44 @@ namespace OSBIDE.Controls.ViewModels
             }
         }
 
+        public string ErrorMessage
+        {
+            get
+            {
+                return _errorMessage;
+            }
+            private set
+            {
+                _errorMessage = value;
+                OnPropertyChanged("ErrorMessage");
+            }
+        }
+
         public AssignmentSubmissionsViewModel(OsbideContext db)
         {
             DownloadCommand = new DelegateCommand(Download, CanIssueCommand);
             AvailableAssignments = new ObservableCollection<string>();
             SubmissionEntries = new ObservableCollection<SubmissionEntryViewModel>();
+            _osbideState = OsbideState.Instance;
+            _osbideState.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(osbideState_PropertyChanged);
             _db = db;
             var names = (from submit in db.SubmitEvents
                          select submit.AssignmentName).Distinct().ToList();
             foreach (string name in names)
             {
                 AvailableAssignments.Add(name);
+            }
+        }
+
+        void osbideState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "HasSqlServerError")
+            {
+                ErrorMessage = "Error retrieving record...";
+            }
+            else if (e.PropertyName == "HasWebServiceError")
+            {
+                ErrorMessage = "Error contacting server...";
             }
         }
 

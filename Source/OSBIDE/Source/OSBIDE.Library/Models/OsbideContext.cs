@@ -95,9 +95,14 @@ namespace OSBIDE.Library.Models
                 {
                     SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
                     OsbideContext localDb = new OsbideContext(conn, true);
+                    EventLog log = localDb.EventLogs.FirstOrDefault();
+                    if (log != null)
+                    {
+                        string type = log.LogType;
+                    }
                     conn.Close();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     success = false;
                 }

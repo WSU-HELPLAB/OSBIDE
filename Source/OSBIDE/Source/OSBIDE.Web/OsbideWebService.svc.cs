@@ -54,9 +54,13 @@ namespace OSBIDE.Web
                     || 
                     userToSave.LastName == null
                     ||
+                    userToSave.InstitutionId == null
+                    ||
                     userToSave.FirstName.Length == 0 
                     || 
                     userToSave.LastName.Length == 0 
+                    ||
+                    userToSave.InstitutionId.Length == 0
                 )
             {
                 return userToSave;
@@ -68,6 +72,8 @@ namespace OSBIDE.Web
                                  user.FirstName.CompareTo(userToSave.FirstName) == 0
                                  &&
                                  user.LastName.CompareTo(userToSave.LastName) == 0
+                                 &&
+                                 user.InstitutionId.CompareTo(userToSave.InstitutionId) == 0
                                  select user).FirstOrDefault();
             if (dbUser != null)
             {
