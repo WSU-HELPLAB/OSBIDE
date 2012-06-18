@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="OSBIDE.Controls.Views.OsbideStatus"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:OSBIDE.Controls.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Downloads">
+                <views:AssignmentSubmissions x:Name="SubmissionsTab" />
+            </TabItem>
+            <TabItem Header="Status">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="139" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0">Send status:</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=SendStatus, Mode=OneWay}" />
+                    <Button Grid.Row="0" Grid.Column="2" Content="Activate" IsEnabled="{Binding Path=CanActivateSend}" Command="{Binding Path=ActivateSendCommand}" Width="75" Height="25" />
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0">Receive status:</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ReceiveStatus}" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="Activate" IsEnabled="{Binding Path=CanActivateReceive}" Command="{Binding Path=ActivateReceiveCommand}" Width="75" Height="25" />
+                    
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

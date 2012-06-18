@@ -11,6 +11,8 @@ using System.Threading;
 using System.Runtime.Caching;
 using System.Data.Entity.Validation;
 using System.ComponentModel;
+using OSBIDE.Library.Logging;
+using System.Threading.Tasks;
 
 namespace OSBIDE.VSPackage
 {
@@ -22,19 +24,19 @@ namespace OSBIDE.VSPackage
         private List<EventLog> _pendingLogs = new List<EventLog>();
         private ILogger _logger;
         private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
-        private Thread _eventLogThread;
+        private Task _eventLogTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
-        public bool _runEventsLoop = true;
-        private OsbideState _osbideState = null;
+        private ServiceClientState _clientState = null;
+        private int _pushErrorCounter = 0;
+        private int _getErrorCounter = 0;
 
         public ServiceClient(EventHandlerBase dteEventHandler, OsbideUser user, ILogger logger)
         {
             _events = dteEventHandler;
             _currentUser = user;
             this._logger = logger;
-            _osbideState = OsbideState.Instance;
-
+            _clientState = ServiceClientState.Instance;
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //AC: "events" ends up being null during unit testing.  Otherwise, it should never happen.
@@ -49,11 +51,52 @@ namespace OSBIDE.VSPackage
                 SaveLogsToCache(new List<EventLog>());
             }
 
+            _clientState.PropertyChanged += new PropertyChangedEventHandler(ClientStatePropertyChanged);
+
             //set up and begin event log thread
-            _eventLogThread = new Thread(new ThreadStart(PullFromServer));
-            _eventLogThread.Start();
+            _eventLogTask = Task.Factory.StartNew(
+                () =>
+                {
+                    PullFromServer();
+                }
+                );
         }
 
+        void ClientStatePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "IsPerformingWebGets")
+            {
+                if (_clientState.IsPerformingWebGets == true)
+                {
+                    _eventLogTask = Task.Factory.StartNew(
+                        () =>
+                        {
+                            PullFromServer();
+                        }
+                        );
+                }
+            }
+            else if (e.PropertyName == "IsPerformingWebPushes")
+            {
+                if (_clientState.IsPerformingWebPushes == true)
+                {
+                    _pushErrorCounter = 0;
+                }
+            }
+        }
+
+        private void PushToServerError(Exception ex)
+        {
+            _logger.WriteToLog(string.Format("Push error: {0}", ex.Message), LogPriority.HighPriority);
+            _pushErrorCounter++;
+
+            //if we've received more than 10 errors, tell everyone that we give up
+            if (_pushErrorCounter > 10)
+            {
+                _clientState.IsPerformingWebPushes = false;
+                _pushErrorCounter = 0;
+            }
+        }
 
         private void SaveLogsToCache(List<EventLog> logs)
         {
@@ -110,7 +153,7 @@ namespace OSBIDE.VSPackage
                 //reset the log's sending user just to be safe
                 log.SenderId = _currentUser.Id;
                 log.Sender = _currentUser;
-                _logger.WriteToLog(string.Format("Sending log with ID {0} to the server", log.Id));
+                _logger.WriteToLog(string.Format("Sending log with ID {0} to the server", log.Id), LogPriority.LowPriority);
 
                 try
                 {
@@ -118,15 +161,11 @@ namespace OSBIDE.VSPackage
                     //for later when we clean up our local db.
                     int result = _webServiceClient.SubmitLog(log);
                     savedLogs.Add(result);
+                    _clientState.LastWebPush = DateTime.Now;
                 }
                 catch (Exception ex)
                 {
-                    //Log any error that we might've received.  Most likely an issue finding the endpoint (server)
-                    _logger.WriteToLog(string.Format("SaveLogs error: {0}", ex.Message));
-
-                    //turn off logging for this session so that we don't bog down the client with tons of failed
-                    //service calls.
-                    _osbideState.HasWebServiceError = true;
+                    PushToServerError(ex);
                     break;
                 }
             }
@@ -158,12 +197,16 @@ namespace OSBIDE.VSPackage
             //create a new event log...
             EventLog eventLog = new EventLog(e.OsbideEvent, _currentUser);
 
-            //if we haven't gotten a service error this session, send it off.  Otherwise,
-            //save to cache and try again next session
-            if (_osbideState.HasWebServiceError == false)
+            //if the system is allowing web pushes, send it off.  Otherwise,
+            //save to cache and try again later
+            if (_clientState.IsPerformingWebPushes)
             {
-                Thread serverThread = new Thread(this.SendLogToServer);
-                serverThread.Start(eventLog);
+                Task.Factory.StartNew(
+                    () =>
+                    {
+                        this.SendLogToServer(eventLog);
+                    }
+                    );
             }
             else
             {
@@ -184,24 +227,24 @@ namespace OSBIDE.VSPackage
             }
             catch (TimeoutException tex)
             {
-                _osbideState.HasWebServiceError = true;
-                _logger.WriteToLog("EventsFromServerLoop timeout exception: " + tex.Message);
+                _clientState.IsPerformingWebGets = false;
+                _logger.WriteToLog("EventsFromServerLoop timeout exception: " + tex.Message, LogPriority.HighPriority);
             }
             catch (DbEntityValidationException ex)
             {
-                _osbideState.HasSqlServerError = true;
+                _clientState.IsPerformingWebGets = false;
                 foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
                 {
                     foreach (DbValidationError error in result.ValidationErrors)
                     {
-                        _logger.WriteToLog("EventsFromServerLoop insert log exception: " + error.ErrorMessage);
+                        _logger.WriteToLog("EventsFromServerLoop insert log exception: " + error.ErrorMessage, LogPriority.HighPriority);
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.WriteToLog("ServiceClient EventsFromServerLoop exception: " + ex.Message);
-                _osbideState.HasSqlServerError = true;
+                _logger.WriteToLog("EventsFromServerLoop exception: " + ex.Message, LogPriority.HighPriority);
+                _clientState.IsPerformingWebGets = false;
             }
         }
 
@@ -221,11 +264,10 @@ namespace OSBIDE.VSPackage
             }
             else
             {
-                _osbideState.HasSqlServerError = true;
-                _runEventsLoop = false;
+                throw new Exception("Error connecting to SQL Server CE database");
             }
 
-            while (_runEventsLoop)
+            while (_clientState.IsPerformingWebGets)
             {
                 //use most recent event log as a basis for determining where we need to fill in potential gaps in data
                 EventLog mostRecentLog = (from log in db.EventLogs
@@ -238,6 +280,7 @@ namespace OSBIDE.VSPackage
                 }
 
                 EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
+                _clientState.LastWebPull = DateTime.Now;
 
                 //find all unique User Ids
                 List<int> eventLogIds = new List<int>();
@@ -255,27 +298,16 @@ namespace OSBIDE.VSPackage
                 }
 
                 //see if we're missing any ids in our local DB
-                try
-                {
-                    var eventLogQuery = from id in eventLogIds
-                                        select id;
-                    var idQuery = from user in db.Users
-                                  where eventLogIds.Contains(user.Id)
-                                  select user.Id;
-                    int[] foundIds = idQuery.ToArray();
+                var eventLogQuery = from id in eventLogIds
+                                    select id;
+                var idQuery = from user in db.Users
+                              where eventLogIds.Contains(user.Id)
+                              select user.Id;
+                int[] foundIds = idQuery.ToArray();
 
-                    foreach (int id in foundIds)
-                    {
-                        eventLogIds.Remove(id);
-                    }
-                }
-                catch (Exception ex)
+                foreach (int id in foundIds)
                 {
-                    //log the message and stop the loop
-                    _logger.WriteToLog("ServiceClient eventsLoop eventLogQuery exception: " + ex.Message);
-                    _osbideState.HasSqlServerError = true;
-                    _runEventsLoop = false;
-                    break;
+                    eventLogIds.Remove(id);
                 }
 
                 //if we have any remaining ids, then we need to make the appropriate db call

@@ -122,6 +122,9 @@
     <Compile Include="Views\AssignmentSubmissions.xaml.cs">
       <DependentUpon>AssignmentSubmissions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OsbideStatus.xaml.cs">
+      <DependentUpon>OsbideStatus.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SubmissionEntry.xaml.cs">
       <DependentUpon>SubmissionEntry.xaml</DependentUpon>
     </Compile>
@@ -162,6 +165,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AssignmentSubmissions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OsbideStatus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

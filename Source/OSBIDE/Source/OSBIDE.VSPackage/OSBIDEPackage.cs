@@ -27,6 +27,7 @@ using System.Windows.Threading;
 using OSBIDE.Controls.Views;
 using OSBIDE.Controls.ViewModels;
 using EnvDTE80;
+using OSBIDE.Library.Logging;
 
 namespace OSBIDE.VSPackage
 {
@@ -75,7 +76,7 @@ namespace OSBIDE.VSPackage
         /// </summary>
         public OSBIDEPackage()
         {
-            //AC: For consoliation purposes, I've just thrown everything inside the Initialize method.
+            //AC: For consolidation purposes, I've just thrown everything inside the Initialize method.
         }
 
         /// <summary>
@@ -123,7 +124,7 @@ namespace OSBIDE.VSPackage
                 catch (Exception ex)
                 {
                     //write to the log file
-                    _errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message));
+                    _errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message), LogPriority.HighPriority);
 
                     //turn off future service calls for now
                     _isOsbideUpToDate = false;
@@ -204,7 +205,7 @@ namespace OSBIDE.VSPackage
                 }
                 catch (EndpointNotFoundException notFoundException)
                 {
-                    _errorLogger.WriteToLog("Web service error: " + notFoundException.Message);
+                    _errorLogger.WriteToLog("Web service error: " + notFoundException.Message, LogPriority.HighPriority);
                     _hasWebServiceError = true;
                 }
                 if (webUser == null && _hasWebServiceError == false)
@@ -219,7 +220,7 @@ namespace OSBIDE.VSPackage
 
             if (!OsbideContext.HasSqlServerCE)
             {
-                _errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...");
+                _errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...", LogPriority.MediumPriority);
                 MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
                                             "Missing Component",
                                             MessageBoxButton.YesNo
@@ -260,7 +261,7 @@ namespace OSBIDE.VSPackage
             catch (Exception ex)
             {
                 //write to the log file
-                _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message));
+                _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message), LogPriority.HighPriority);
 
                 //turn off future service calls for now
                 _isOsbideUpToDate = false;

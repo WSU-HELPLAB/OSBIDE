@@ -8,6 +8,7 @@ using OSBIDE.Library.Events;
 using OSBIDE.Library;
 using OSBIDE.Library.Models;
 using System.Threading;
+using OSBIDE.Library.Logging;
 
 namespace OSBIDE.UnitTests.VSPackage
 {
@@ -69,8 +70,8 @@ namespace OSBIDE.UnitTests.VSPackage
         [DeploymentItem("OSBIDE.VSPackage.dll")]
         public void OsbideEventCreatedTest()
         {
-            ILogger logger = new LocalErrorLogger();
             OsbideUser dummyUser = new OsbideUser() { FirstName = "foo", LastName = "bar", InstitutionId = "000" };
+            ILogger logger = new LocalErrorLogger();
             ServiceClient_Accessor client = new ServiceClient_Accessor(null, dummyUser, logger);
 
             try
@@ -86,7 +87,7 @@ namespace OSBIDE.UnitTests.VSPackage
                 //if we got here, then we must be okay
                 Assert.AreEqual(true, true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //oops, something went wrong!
                 Assert.AreEqual(true, false);

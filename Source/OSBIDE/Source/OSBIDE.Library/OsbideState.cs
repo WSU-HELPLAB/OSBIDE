@@ -10,66 +10,126 @@ namespace OSBIDE.Library
     /// Contains a list of global states that may be of interest to a variety of
     /// OSBIDE components
     /// </summary>
-    public class OsbideState : INotifyPropertyChanged
+    public class ServiceClientState : INotifyPropertyChanged
     {
         #region instance variables
-        private static OsbideState _instance = null;
+        private static ServiceClientState _instance = null;
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
-        private bool _hasSqlServerError = false;
-        private bool _hasWebServiceError = false;
+        private bool _isPerformingWebPushes = true;
+        private bool _isPerformingWebGets = true;
+        private DateTime _lastWebPull = DateTime.Now;
+        private DateTime _lastWebPush = DateTime.Now;
         #endregion
 
         #region properties
 
         /// <summary>
-        /// Gets or sets whether or not the system has encountered a web service error
+        /// Whether or not OSBIDE is actively attempting to get information from
+        /// the server.
         /// </summary>
-        public bool HasWebServiceError
+        public bool IsPerformingWebGets
         {
             get
             {
-                return _hasWebServiceError;
+                lock (this)
+                {
+                    return _isPerformingWebGets;
+                }
             }
             set
             {
-                _hasWebServiceError = value;
-                OnPropertyChanged("HasWebServiceError");
+                lock (this)
+                {
+                    _isPerformingWebGets = value;
+                }
+                OnPropertyChanged("IsPerformingWebGets");
             }
         }
 
         /// <summary>
-        /// Gets or sets whether or not the system has encountered a SQL Server CE Error
+        /// Whether or not OSBIDE is actively attempting to send information to the
+        /// server.
         /// </summary>
-        public bool HasSqlServerError
+        public bool IsPerformingWebPushes
         {
             get
             {
-                return _hasSqlServerError;
+                lock (this)
+                {
+                    return _isPerformingWebPushes;
+                }
             }
             set
             {
-                _hasSqlServerError = value;
-                OnPropertyChanged("HasSqlServerError");
+                lock (this)
+                {
+                    _isPerformingWebPushes = value;
+                }
+                OnPropertyChanged("IsPerformingWebPushes");
+            }
+        }
+
+        /// <summary>
+        /// The last time that OSBIDE successfully received items from the server
+        /// </summary>
+        public DateTime LastWebPull
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _lastWebPull;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    _lastWebPull = value;
+                }
+                OnPropertyChanged("LastWebPull");
+            }
+        }
+
+        /// <summary>
+        /// The last time that OSBIDE successfully sent items to the server
+        /// </summary>
+        public DateTime LastWebPush
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _lastWebPush;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    _lastWebPush = value;
+                }
+                OnPropertyChanged("LastWebPush");
             }
         }
 
         /// <summary>
         /// Singleton pattern implementation, C# style
         /// </summary>
-        public static OsbideState Instance
+        public static ServiceClientState Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new OsbideState();
+                    _instance = new ServiceClientState();
                 }
                 return _instance;
             }
         }
         #endregion
 
-        private OsbideState()
+        private ServiceClientState()
         {
         }
 

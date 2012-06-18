@@ -116,6 +116,7 @@
     <Compile Include="Events\EventGenerator.cs" />
     <Compile Include="Events\SolutionDownloadEvent.cs" />
     <Compile Include="Events\SubmitEvent.cs" />
+    <Compile Include="Logging\LogMessage.cs" />
     <Compile Include="Models\CodeFile.cs" />
     <Compile Include="Events\DebugEvent.cs" />
     <Compile Include="Events\EditorActivityEvent.cs" />
@@ -124,9 +125,9 @@
     <Compile Include="Events\EventHandlerBase.cs" />
     <Compile Include="Events\ExceptionEvent.cs" />
     <Compile Include="Events\OsbideEventHandler.cs" />
-    <Compile Include="ILogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
     <Compile Include="LibraryBinder.cs" />
-    <Compile Include="LocalErrorLogger.cs" />
+    <Compile Include="Logging\LocalErrorLogger.cs" />
     <Compile Include="Models\BreakPoint.cs" />
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\IVSDocument.cs" />
