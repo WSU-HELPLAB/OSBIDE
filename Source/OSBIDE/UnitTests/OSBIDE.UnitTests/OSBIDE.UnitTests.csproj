@@ -177,6 +177,10 @@
       <Project>{9EA09E78-0541-4233-B189-EE1DBD56520D}</Project>
       <Name>OSBIDE.Controls</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj">
+      <Project>{5AAF5126-7931-40F4-9B46-92CE15C47CCA}</Project>
+      <Name>OSBIDE.Library.ServiceClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Source\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
       <Name>OSBIDE.Library</Name>

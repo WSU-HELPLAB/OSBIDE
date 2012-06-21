@@ -7,6 +7,7 @@ using OSBIDE.UnitTests.WebServices;
 using OSBIDE.Library;
 using OSBIDE.Library.Models;
 using OSBIDE.Library.Events;
+using OSBIDE.Library.ServiceClient;
 
 namespace OSBIDE.UnitTests.Web
 {

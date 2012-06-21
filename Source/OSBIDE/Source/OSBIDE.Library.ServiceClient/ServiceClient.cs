@@ -27,16 +27,14 @@ namespace OSBIDE.VSPackage
         private Task _eventLogTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
-        private ServiceClientState _clientState = null;
-        private int _pushErrorCounter = 0;
-        private int _getErrorCounter = 0;
+        private bool _isPerformingWebPuts = true;
+        private bool _isPerformingWebGets = true;
 
         public ServiceClient(EventHandlerBase dteEventHandler, OsbideUser user, ILogger logger)
         {
             _events = dteEventHandler;
             _currentUser = user;
             this._logger = logger;
-            _clientState = ServiceClientState.Instance;
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
             //AC: "events" ends up being null during unit testing.  Otherwise, it should never happen.
@@ -51,8 +49,6 @@ namespace OSBIDE.VSPackage
                 SaveLogsToCache(new List<EventLog>());
             }
 
-            _clientState.PropertyChanged += new PropertyChangedEventHandler(ClientStatePropertyChanged);
-
             //set up and begin event log thread
             _eventLogTask = Task.Factory.StartNew(
                 () =>
@@ -62,25 +58,32 @@ namespace OSBIDE.VSPackage
                 );
         }
 
-        void ClientStatePropertyChanged(object sender, PropertyChangedEventArgs e)
+        public bool IsPerformingWebPuts
         {
-            if (e.PropertyName == "IsPerformingWebGets")
+            get
             {
-                if (_clientState.IsPerformingWebGets == true)
+                return _isPerformingWebPuts;
+            }
+            private set
+            {
+                lock (this)
                 {
-                    _eventLogTask = Task.Factory.StartNew(
-                        () =>
-                        {
-                            PullFromServer();
-                        }
-                        );
+                    _isPerformingWebPuts = value;
                 }
             }
-            else if (e.PropertyName == "IsPerformingWebPushes")
+        }
+
+        public bool IsPerformingWebGets
+        {
+            get
             {
-                if (_clientState.IsPerformingWebPushes == true)
+                return _isPerformingWebGets;
+            }
+            private set
+            {
+                lock (this)
                 {
-                    _pushErrorCounter = 0;
+                    _isPerformingWebGets = value;
                 }
             }
         }
@@ -88,14 +91,7 @@ namespace OSBIDE.VSPackage
         private void PushToServerError(Exception ex)
         {
             _logger.WriteToLog(string.Format("Push error: {0}", ex.Message), LogPriority.HighPriority);
-            _pushErrorCounter++;
-
-            //if we've received more than 10 errors, tell everyone that we give up
-            if (_pushErrorCounter > 10)
-            {
-                _clientState.IsPerformingWebPushes = false;
-                _pushErrorCounter = 0;
-            }
+            IsPerformingWebPuts = false;
         }
 
         private void SaveLogsToCache(List<EventLog> logs)
@@ -106,6 +102,27 @@ namespace OSBIDE.VSPackage
         private List<EventLog> GetLogsFromCache()
         {
             return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
+        }
+
+        public void ActivateWebGet()
+        {
+            IsPerformingWebGets = true;
+
+            //only start a new thread if the existing one has finished
+            if (_eventLogTask.IsCompleted == true)
+            {
+                _eventLogTask = Task.Factory.StartNew(
+                () =>
+                {
+                    PullFromServer();
+                }
+                );
+            }
+        }
+
+        public void ActivateWebPut()
+        {
+            IsPerformingWebPuts = true;
         }
 
         private void SendLogToServer(object data)
@@ -161,7 +178,7 @@ namespace OSBIDE.VSPackage
                     //for later when we clean up our local db.
                     int result = _webServiceClient.SubmitLog(log);
                     savedLogs.Add(result);
-                    _clientState.LastWebPush = DateTime.Now;
+                    //LastWebPush = DateTime.Now;
                 }
                 catch (Exception ex)
                 {
@@ -199,7 +216,7 @@ namespace OSBIDE.VSPackage
 
             //if the system is allowing web pushes, send it off.  Otherwise,
             //save to cache and try again later
-            if (_clientState.IsPerformingWebPushes)
+            if (IsPerformingWebPuts)
             {
                 Task.Factory.StartNew(
                     () =>
@@ -227,12 +244,12 @@ namespace OSBIDE.VSPackage
             }
             catch (TimeoutException tex)
             {
-                _clientState.IsPerformingWebGets = false;
+                IsPerformingWebGets = false;
                 _logger.WriteToLog("EventsFromServerLoop timeout exception: " + tex.Message, LogPriority.HighPriority);
             }
             catch (DbEntityValidationException ex)
             {
-                _clientState.IsPerformingWebGets = false;
+                IsPerformingWebGets = false;
                 foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
                 {
                     foreach (DbValidationError error in result.ValidationErrors)
@@ -244,7 +261,7 @@ namespace OSBIDE.VSPackage
             catch (Exception ex)
             {
                 _logger.WriteToLog("EventsFromServerLoop exception: " + ex.Message, LogPriority.HighPriority);
-                _clientState.IsPerformingWebGets = false;
+                IsPerformingWebGets = false;
             }
         }
 
@@ -267,7 +284,7 @@ namespace OSBIDE.VSPackage
                 throw new Exception("Error connecting to SQL Server CE database");
             }
 
-            while (_clientState.IsPerformingWebGets)
+            while (IsPerformingWebGets)
             {
                 //use most recent event log as a basis for determining where we need to fill in potential gaps in data
                 EventLog mostRecentLog = (from log in db.EventLogs
@@ -280,7 +297,7 @@ namespace OSBIDE.VSPackage
                 }
 
                 EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
-                _clientState.LastWebPull = DateTime.Now;
+                //LastWebGet = DateTime.Now;
 
                 //find all unique User Ids
                 List<int> eventLogIds = new List<int>();

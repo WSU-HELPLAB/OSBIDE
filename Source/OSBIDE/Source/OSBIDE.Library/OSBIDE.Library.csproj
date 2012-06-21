@@ -132,7 +132,6 @@
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\IVSDocument.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
-    <Compile Include="OsbideState.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ErrorListItem.cs" />
@@ -143,7 +142,6 @@
     <Compile Include="Events\SaveEvent.cs" />
     <Compile Include="Models\OsbideUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceBindings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

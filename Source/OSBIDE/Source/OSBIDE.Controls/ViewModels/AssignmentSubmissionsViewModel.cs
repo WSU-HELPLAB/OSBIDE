@@ -21,7 +21,6 @@ namespace OSBIDE.Controls.ViewModels
         private OsbideContext _db;
         private List<EventLog> _allSubmissions = new List<EventLog>();
         private string _errorMessage = "";
-        private ServiceClientState _osbideState = null;
 
         public ObservableCollection<string> AvailableAssignments { get; set; }
         public ObservableCollection<SubmissionEntryViewModel> SubmissionEntries { get; set; }
@@ -58,8 +57,7 @@ namespace OSBIDE.Controls.ViewModels
             DownloadCommand = new DelegateCommand(Download, CanIssueCommand);
             AvailableAssignments = new ObservableCollection<string>();
             SubmissionEntries = new ObservableCollection<SubmissionEntryViewModel>();
-            _osbideState = ServiceClientState.Instance;
-            _osbideState.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(osbideState_PropertyChanged);
+            
             _db = db;
             var names = (from submit in db.SubmitEvents
                          select submit.AssignmentName).Distinct().ToList();
