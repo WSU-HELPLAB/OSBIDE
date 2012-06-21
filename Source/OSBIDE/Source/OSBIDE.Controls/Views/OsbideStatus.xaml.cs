@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OSBIDE.Controls.ViewModels;
 
 namespace OSBIDE.Controls.Views
 {
@@ -19,7 +20,17 @@ namespace OSBIDE.Controls.Views
     /// </summary>
     public partial class OsbideStatus : UserControl
     {
-        
+        public OsbideStatusViewModel ViewModel
+        {
+            get
+            {
+                return this.DataContext as OsbideStatusViewModel;
+            }
+            set
+            {
+                this.DataContext = value;
+            }
+        }
 
         public OsbideStatus()
         {

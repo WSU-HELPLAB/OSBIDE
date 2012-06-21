@@ -20,17 +20,23 @@ namespace OSBIDE.Controls.Views
     /// </summary>
     public partial class AssignmentSubmissions : UserControl
     {
+
         public AssignmentSubmissionsViewModel ViewModel
         {
-            get
+            get 
             {
-                return this.DataContext as AssignmentSubmissionsViewModel;
+                return this.DataContext as AssignmentSubmissionsViewModel; 
             }
-            set
-            {
+            set 
+            { 
                 this.DataContext = value;
             }
         }
+
+        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register("ViewModel", typeof(AssignmentSubmissionsViewModel), typeof(AssignmentSubmissions), new UIPropertyMetadata(new AssignmentSubmissionsViewModel()));
+        
 
         public AssignmentSubmissions()
         {

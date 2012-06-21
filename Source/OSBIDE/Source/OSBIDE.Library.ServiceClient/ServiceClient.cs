@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using OSBIDE.VSPackage.WebServices;
 using OSBIDE.Library.Models;
 using OSBIDE.Library.Events;
 using OSBIDE.Library;
@@ -13,11 +12,16 @@ using System.Data.Entity.Validation;
 using System.ComponentModel;
 using OSBIDE.Library.Logging;
 using System.Threading.Tasks;
+using OSBIDE.Library.ServiceClient.OsbideWebService;
 
-namespace OSBIDE.VSPackage
+namespace OSBIDE.Library.ServiceClient
 {
-    public class ServiceClient
+    public class ServiceClient : INotifyPropertyChanged
     {
+        private static ServiceClient _instance;
+
+        #region instance variables
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
         private OsbideWebServiceClient _webServiceClient = null;
         private OsbideUser _currentUser;
         private EventHandlerBase _events;
@@ -27,13 +31,79 @@ namespace OSBIDE.VSPackage
         private Task _eventLogTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
-        private bool _isPerformingWebPuts = true;
-        private bool _isPerformingWebGets = true;
+        private bool _isSendingData = true;
+        private bool _isReceivingData = true;
+        private TransmissionStatus _sendStatus = new TransmissionStatus();
+        private TransmissionStatus _receiveStatus = new TransmissionStatus();
 
-        public ServiceClient(EventHandlerBase dteEventHandler, OsbideUser user, ILogger logger)
+        #endregion
+
+        #region properties
+
+        public bool IsSendingData
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _isSendingData;
+                }
+            }
+            private set
+            {
+                lock (this)
+                {
+                    _isSendingData = value;
+                }
+                OnPropertyChanged("IsSendingData");
+            }
+        }
+        public bool IsReceivingData
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _isReceivingData;
+                }
+            }
+            private set
+            {
+                lock (this)
+                {
+                    _isReceivingData = value;
+                }
+                OnPropertyChanged("IsSendingData");
+            }
+        }
+        public TransmissionStatus SendStatus
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _sendStatus;
+                }
+            }
+        }
+        public TransmissionStatus ReceiveStatus
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _receiveStatus;
+                }
+            }
+        }
+        #endregion
+
+        #region constructor
+
+        private ServiceClient(EventHandlerBase dteEventHandler, ILogger logger)
         {
             _events = dteEventHandler;
-            _currentUser = user;
+            _currentUser = OsbideUser.CurrentUser;
             this._logger = logger;
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
@@ -58,55 +128,45 @@ namespace OSBIDE.VSPackage
                 );
         }
 
-        public bool IsPerformingWebPuts
+        #endregion
+
+        #region public methods
+
+        protected void OnPropertyChanged(string propertyName)
         {
-            get
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        /// Returns a singleton instance of <see cref="ServiceClient"/>.  Unlike a normal
+        /// singleton pattern, this will return NULL if GetInstance(EventHandlerBase dteEventHandler, ILogger logger)
+        /// was not called first.
+        /// </summary>
+        /// <returns></returns>
+        public static ServiceClient GetInstance()
+        {
+            return _instance;
+        }
+
+        /// <summary>
+        /// Returns a singleton instance of <see cref="ServiceClient"/>.  Parameters are only 
+        /// used during the first instantiation of the <see cref="ServiceClient"/>.
+        /// </summary>
+        /// <param name="dteEventHandler"></param>
+        /// <param name="logger"></param>
+        /// <returns></returns>
+        public static ServiceClient GetInstance(EventHandlerBase dteEventHandler, ILogger logger)
+        {
+            if (_instance == null)
             {
-                return _isPerformingWebPuts;
+                _instance = new ServiceClient(dteEventHandler, logger);
             }
-            private set
-            {
-                lock (this)
-                {
-                    _isPerformingWebPuts = value;
-                }
-            }
+            return _instance;
         }
 
-        public bool IsPerformingWebGets
+        public void TurnOnReceiving()
         {
-            get
-            {
-                return _isPerformingWebGets;
-            }
-            private set
-            {
-                lock (this)
-                {
-                    _isPerformingWebGets = value;
-                }
-            }
-        }
-
-        private void PushToServerError(Exception ex)
-        {
-            _logger.WriteToLog(string.Format("Push error: {0}", ex.Message), LogPriority.HighPriority);
-            IsPerformingWebPuts = false;
-        }
-
-        private void SaveLogsToCache(List<EventLog> logs)
-        {
-            _cache.Set(_cacheKey, logs.ToArray(), new CacheItemPolicy(), _cacheRegion);
-        }
-
-        private List<EventLog> GetLogsFromCache()
-        {
-            return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
-        }
-
-        public void ActivateWebGet()
-        {
-            IsPerformingWebGets = true;
+            IsReceivingData = true;
 
             //only start a new thread if the existing one has finished
             if (_eventLogTask.IsCompleted == true)
@@ -120,9 +180,18 @@ namespace OSBIDE.VSPackage
             }
         }
 
-        public void ActivateWebPut()
+        public void TurnOnSending()
         {
-            IsPerformingWebPuts = true;
+            IsSendingData = true;
+        }
+
+        #endregion
+
+        #region private send methods
+        private void SendError(Exception ex)
+        {
+            _logger.WriteToLog(string.Format("Push error: {0}", ex.Message), LogPriority.HighPriority);
+            IsSendingData = false;
         }
 
         private void SendLogToServer(object data)
@@ -133,6 +202,7 @@ namespace OSBIDE.VSPackage
             {
                 return;
             }
+            SendStatus.IsActive = true;
 
             //cast generic data to what we actually need
             EventLog newLog = data as EventLog;
@@ -161,6 +231,10 @@ namespace OSBIDE.VSPackage
                 counter++;
             }
 
+            //update our send status with the number of logs that we
+            //plan to submit
+            SendStatus.NumberOfTransmissions = logsToBeSaved.Count;
+
             //will hold the list of saved logs
             List<int> savedLogs = new List<int>(logsToBeSaved.Count);
 
@@ -171,6 +245,7 @@ namespace OSBIDE.VSPackage
                 log.SenderId = _currentUser.Id;
                 log.Sender = _currentUser;
                 _logger.WriteToLog(string.Format("Sending log with ID {0} to the server", log.Id), LogPriority.LowPriority);
+                SendStatus.CurrentTransmission = log;
 
                 try
                 {
@@ -178,11 +253,15 @@ namespace OSBIDE.VSPackage
                     //for later when we clean up our local db.
                     int result = _webServiceClient.SubmitLog(log);
                     savedLogs.Add(result);
-                    //LastWebPush = DateTime.Now;
+
+                    //update our submission status
+                    SendStatus.LastTransmissionTime = DateTime.Now;
+                    SendStatus.LastTransmission = log;
+                    SendStatus.CompletedTransmissions++;
                 }
                 catch (Exception ex)
                 {
-                    PushToServerError(ex);
+                    SendError(ex);
                     break;
                 }
             }
@@ -202,6 +281,7 @@ namespace OSBIDE.VSPackage
             {
                 SaveLogsToCache(logsToBeSaved);
             }
+            SendStatus.IsActive = false;
         }
 
         /// <summary>
@@ -213,10 +293,11 @@ namespace OSBIDE.VSPackage
         {
             //create a new event log...
             EventLog eventLog = new EventLog(e.OsbideEvent, _currentUser);
+            SendStatus.IsActive = false;
 
             //if the system is allowing web pushes, send it off.  Otherwise,
             //save to cache and try again later
-            if (IsPerformingWebPuts)
+            if (IsSendingData)
             {
                 Task.Factory.StartNew(
                     () =>
@@ -236,20 +317,24 @@ namespace OSBIDE.VSPackage
             }
         }
 
+        #endregion
+
+        #region private receive methods
         private void PullFromServer()
         {
             try
             {
+                ReceiveStatus.IsActive = true;
                 EventsFromServerLoop();
             }
             catch (TimeoutException tex)
             {
-                IsPerformingWebGets = false;
+                IsReceivingData = false;
                 _logger.WriteToLog("EventsFromServerLoop timeout exception: " + tex.Message, LogPriority.HighPriority);
             }
             catch (DbEntityValidationException ex)
             {
-                IsPerformingWebGets = false;
+                IsReceivingData = false;
                 foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
                 {
                     foreach (DbValidationError error in result.ValidationErrors)
@@ -261,8 +346,9 @@ namespace OSBIDE.VSPackage
             catch (Exception ex)
             {
                 _logger.WriteToLog("EventsFromServerLoop exception: " + ex.Message, LogPriority.HighPriority);
-                IsPerformingWebGets = false;
+                IsReceivingData = false;
             }
+            ReceiveStatus.IsActive = false;
         }
 
         private void EventsFromServerLoop()
@@ -284,7 +370,7 @@ namespace OSBIDE.VSPackage
                 throw new Exception("Error connecting to SQL Server CE database");
             }
 
-            while (IsPerformingWebGets)
+            while (IsReceivingData)
             {
                 //use most recent event log as a basis for determining where we need to fill in potential gaps in data
                 EventLog mostRecentLog = (from log in db.EventLogs
@@ -297,7 +383,7 @@ namespace OSBIDE.VSPackage
                 }
 
                 EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
-                //LastWebGet = DateTime.Now;
+                ReceiveStatus.LastTransmissionTime = DateTime.Now;
 
                 //find all unique User Ids
                 List<int> eventLogIds = new List<int>();
@@ -353,7 +439,21 @@ namespace OSBIDE.VSPackage
                 }
             }
 
+            ReceiveStatus.IsActive = false;
             db.Dispose();
         }
+        #endregion
+
+        #region private helpers
+        private void SaveLogsToCache(List<EventLog> logs)
+        {
+            _cache.Set(_cacheKey, logs.ToArray(), new CacheItemPolicy(), _cacheRegion);
+        }
+
+        private List<EventLog> GetLogsFromCache()
+        {
+            return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
+        }
+        #endregion
     }
 }

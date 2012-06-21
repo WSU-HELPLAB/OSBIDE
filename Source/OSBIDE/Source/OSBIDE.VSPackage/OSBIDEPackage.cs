@@ -28,6 +28,7 @@ using OSBIDE.Controls.Views;
 using OSBIDE.Controls.ViewModels;
 using EnvDTE80;
 using OSBIDE.Library.Logging;
+using OSBIDE.Library.ServiceClient;
 
 namespace OSBIDE.VSPackage
 {
@@ -96,8 +97,11 @@ namespace OSBIDE.VSPackage
             }
             if (_db != null)
             {
-                AssignmentSubmissionsViewModel vm = new AssignmentSubmissionsViewModel(_db);
-                (window.Content as AssignmentSubmissions).ViewModel = vm;
+                AssignmentSubmissionsViewModel avm = new AssignmentSubmissionsViewModel(_db);
+                OsbideStatusViewModel vm = new OsbideStatusViewModel();
+                vm.SubmissionViewModel = avm;
+                vm.StatusViewModel = new TransmissionStatusViewModel();
+                (window.Content as OsbideStatus).ViewModel = vm;
             }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
@@ -240,7 +244,7 @@ namespace OSBIDE.VSPackage
             if (_isOsbideUpToDate)
             {
                 _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
-                _client = new ServiceClient(_eventHandler, CurrentUser, _errorLogger);
+                _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
             }            
         }
 

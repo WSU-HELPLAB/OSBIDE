@@ -5,6 +5,6 @@
     Renaming the file extension or editing the content of this file may   
     cause the file to be unrecognizable by the program.
 -->
-<GenericObjectDataSource DisplayName="EventLog" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-   <TypeInfo>OSBIDE.Library.ServiceClient.OsbideWebService.EventLog, Service References.OsbideWebService.Reference.cs, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
+<GenericObjectDataSource DisplayName="OsbideUser" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+   <TypeInfo>OSBIDE.Library.Models.OsbideUser, OSBIDE.Library, Version=1.2.2.0, Culture=neutral, PublicKeyToken=7c7b9ff0e17dca53</TypeInfo>
 </GenericObjectDataSource>

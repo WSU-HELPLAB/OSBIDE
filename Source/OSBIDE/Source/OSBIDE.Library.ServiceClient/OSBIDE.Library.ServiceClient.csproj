@@ -34,6 +34,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>OSBIDE.Library.ServiceClient.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.4.3.1\lib\net40\EntityFramework.dll</HintPath>
@@ -69,19 +75,17 @@
     </Compile>
     <Compile Include="ServiceBindings.cs" />
     <Compile Include="ServiceClient.cs" />
+    <Compile Include="TransmissionStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="OSBIDE.Library.ServiceClient.snk" />
     <None Include="packages.config" />
-    <None Include="Service References\OsbideWebService\OSBIDE.Library.ServiceClient.OsbideWebService.EventLog.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\OsbideWebService\OSBIDE.Library.ServiceClient.OsbideWebService.OsbideUser.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.EventLog.datasource" />
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
     <None Include="Service References\OsbideWebService\OsbideWebService.wsdl" />
     <None Include="Service References\OsbideWebService\OsbideWebService.xsd">
       <SubType>Designer</SubType>
@@ -96,6 +100,12 @@
     <None Include="Service References\OsbideWebService\OsbideWebService3.xsd">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
+      <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
+      <Name>OSBIDE.Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\OsbideWebService\" />
@@ -114,12 +124,6 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
-      <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
-      <Name>OSBIDE.Library</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

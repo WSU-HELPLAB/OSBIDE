@@ -52,6 +52,10 @@ namespace OSBIDE.Controls.ViewModels
             }
         }
 
+        public AssignmentSubmissionsViewModel()
+        {
+        }
+
         public AssignmentSubmissionsViewModel(OsbideContext db)
         {
             DownloadCommand = new DelegateCommand(Download, CanIssueCommand);

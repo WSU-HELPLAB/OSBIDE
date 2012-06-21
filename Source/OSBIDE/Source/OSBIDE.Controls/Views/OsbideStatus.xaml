@@ -9,29 +9,10 @@
     <Grid>
         <TabControl>
             <TabItem Header="Downloads">
-                <views:AssignmentSubmissions x:Name="SubmissionsTab" />
+                <views:AssignmentSubmissions x:Name="SubmissionsTab" ViewModel="{Binding Path=SubmissionViewModel, Mode=TwoWay}" />
             </TabItem>
             <TabItem Header="Status">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="139" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0">Send status:</TextBlock>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=SendStatus, Mode=OneWay}" />
-                    <Button Grid.Row="0" Grid.Column="2" Content="Activate" IsEnabled="{Binding Path=CanActivateSend}" Command="{Binding Path=ActivateSendCommand}" Width="75" Height="25" />
-                    
-                    <TextBlock Grid.Row="1" Grid.Column="0">Receive status:</TextBlock>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=ReceiveStatus}" />
-                    <Button Grid.Row="1" Grid.Column="2" Content="Activate" IsEnabled="{Binding Path=CanActivateReceive}" Command="{Binding Path=ActivateReceiveCommand}" Width="75" Height="25" />
-                    
-                </Grid>
+                <views:TransmissionStatus x:Name="TransmissionStatusTab" ViewModel="{Binding Path=StatusViewModel, Mode=TwoWay}" />
             </TabItem>
         </TabControl>
     </Grid>
