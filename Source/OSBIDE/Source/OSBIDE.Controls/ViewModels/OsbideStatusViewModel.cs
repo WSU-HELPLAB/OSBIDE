@@ -35,5 +35,11 @@ namespace OSBIDE.Controls.ViewModels
                 OnPropertyChanged("StatusViewModel");
             }
         }
+
+        public OsbideStatusViewModel()
+        {
+            SubmissionViewModel = new AssignmentSubmissionsViewModel();
+            StatusViewModel = new TransmissionStatusViewModel();
+        }
     }
 }

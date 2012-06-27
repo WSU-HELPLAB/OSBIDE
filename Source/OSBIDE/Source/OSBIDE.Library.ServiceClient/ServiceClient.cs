@@ -308,6 +308,7 @@ namespace OSBIDE.Library.ServiceClient
             }
             else
             {
+                SendStatus.IsActive = false;
                 lock (_cache)
                 {
                     List<EventLog> cachedLogs = GetLogsFromCache();

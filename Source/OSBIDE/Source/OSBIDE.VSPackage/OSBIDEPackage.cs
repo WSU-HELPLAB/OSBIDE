@@ -313,7 +313,15 @@ namespace OSBIDE.VSPackage
             Guid clsid = Guid.Empty;
             SubmitEvent evt = new SubmitEvent();
             DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+
+            if (dte.Solution.FullName.Length == 0)
+            {
+                MessageBox.Show("No solution is currently open.");
+                return;
+            }
+
             evt.SolutionName = dte.Solution.FullName;
+            
             SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(CurrentUser, evt);
             MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
             

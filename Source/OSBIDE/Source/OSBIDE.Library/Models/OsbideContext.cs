@@ -9,6 +9,7 @@ using System.Data.Objects;
 using System.Data.SqlServerCe;
 using System.Diagnostics.CodeAnalysis;
 using OSBIDE.Library.Events;
+using System.IO;
 
 namespace OSBIDE.Library.Models
 {
@@ -60,6 +61,19 @@ namespace OSBIDE.Library.Models
         {
         }
 
+        /// <summary>
+        /// Returns an instance of the the default, local (SQL Server CE) server
+        /// </summary>
+        public static OsbideContext DefaultLocalInstance
+        {
+            get
+            {
+                SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
+                OsbideContext localDb = new OsbideContext(conn, true);
+                return localDb;
+            }
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -102,7 +116,14 @@ namespace OSBIDE.Library.Models
                     }
                     conn.Close();
                 }
-                catch (Exception)
+                catch (InvalidOperationException)
+                {
+                    //SQL Server is available, but the local DB is up to date.
+                    //Delete the current DB and then return true.
+                    File.Delete(StringConstants.LocalDatabasePath);
+                    success = true;
+                }
+                catch (Exception ex)
                 {
                     success = false;
                 }

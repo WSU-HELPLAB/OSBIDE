@@ -12,7 +12,7 @@
                 <views:AssignmentSubmissions x:Name="SubmissionsTab" ViewModel="{Binding Path=SubmissionViewModel, Mode=TwoWay}" />
             </TabItem>
             <TabItem Header="Status">
-                <views:TransmissionStatus x:Name="TransmissionStatusTab" ViewModel="{Binding Path=StatusViewModel, Mode=TwoWay}" />
+                <views:TransmissionStatus x:Name="TransmissionTab" ViewModel="{Binding Path=StatusViewModel, Mode=TwoWay}" />
             </TabItem>
         </TabControl>
     </Grid>

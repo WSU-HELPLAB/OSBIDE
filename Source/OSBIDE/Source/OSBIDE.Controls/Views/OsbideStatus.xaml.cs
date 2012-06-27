@@ -29,12 +29,19 @@ namespace OSBIDE.Controls.Views
             set
             {
                 this.DataContext = value;
+
+                //AC: this shouldn't be necessary.  Todo: figure out why this won't
+                //happen automatically
+                TransmissionTab.ViewModel = ViewModel.StatusViewModel;
+                SubmissionsTab.ViewModel = ViewModel.SubmissionViewModel;
             }
         }
 
         public OsbideStatus()
         {
             InitializeComponent();
+
+            this.ViewModel = new OsbideStatusViewModel();
         }
     }
 }

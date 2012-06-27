@@ -20,6 +20,23 @@ namespace OSBIDE.Controls.Views
     /// </summary>
     public partial class AssignmentSubmissions : UserControl
     {
+        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register(
+                                        "ViewModel", 
+                                        typeof(AssignmentSubmissionsViewModel), 
+                                        typeof(AssignmentSubmissions), 
+                                        new UIPropertyMetadata(
+                                            new AssignmentSubmissionsViewModel(),
+                                            new PropertyChangedCallback(OnViewModelPropertyChange)
+                                            )
+                                        );
+        
+        private static void OnViewModelPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AssignmentSubmissions submission = (AssignmentSubmissions)d;
+            submission.ViewModel = e.NewValue as AssignmentSubmissionsViewModel;
+        }
 
         public AssignmentSubmissionsViewModel ViewModel
         {
@@ -32,11 +49,6 @@ namespace OSBIDE.Controls.Views
                 this.DataContext = value;
             }
         }
-
-        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(AssignmentSubmissionsViewModel), typeof(AssignmentSubmissions), new UIPropertyMetadata(new AssignmentSubmissionsViewModel()));
-        
 
         public AssignmentSubmissions()
         {

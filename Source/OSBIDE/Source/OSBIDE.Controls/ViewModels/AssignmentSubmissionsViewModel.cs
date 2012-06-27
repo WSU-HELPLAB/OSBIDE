@@ -12,6 +12,7 @@ using System.IO;
 using Ionic.Zip;
 using System.Windows.Forms;
 using OSBIDE.Library;
+using System.Windows.Threading;
 
 namespace OSBIDE.Controls.ViewModels
 {
@@ -21,6 +22,7 @@ namespace OSBIDE.Controls.ViewModels
         private OsbideContext _db;
         private List<EventLog> _allSubmissions = new List<EventLog>();
         private string _errorMessage = "";
+        private DispatcherTimer _timer = new DispatcherTimer();
 
         public ObservableCollection<string> AvailableAssignments { get; set; }
         public ObservableCollection<SubmissionEntryViewModel> SubmissionEntries { get; set; }
@@ -53,6 +55,7 @@ namespace OSBIDE.Controls.ViewModels
         }
 
         public AssignmentSubmissionsViewModel()
+            : this(OsbideContext.DefaultLocalInstance)
         {
         }
 
@@ -61,14 +64,28 @@ namespace OSBIDE.Controls.ViewModels
             DownloadCommand = new DelegateCommand(Download, CanIssueCommand);
             AvailableAssignments = new ObservableCollection<string>();
             SubmissionEntries = new ObservableCollection<SubmissionEntryViewModel>();
-            
+
+            _timer.Interval = new TimeSpan(0, 0, 1, 0, 0);
+            _timer.Tick += new EventHandler(timer_Tick);
+            _timer.Start();
+
             _db = db;
-            var names = (from submit in db.SubmitEvents
+            UpdateAssignmentListing();
+        }
+
+        private void UpdateAssignmentListing()
+        {
+            var names = (from submit in _db.SubmitEvents
                          select submit.AssignmentName).Distinct().ToList();
             foreach (string name in names)
             {
                 AvailableAssignments.Add(name);
             }
+        }
+
+        void timer_Tick(object sender, EventArgs e)
+        {
+            UpdateAssignmentListing();
         }
 
         void osbideState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -116,7 +133,7 @@ namespace OSBIDE.Controls.ViewModels
                 foreach (SubmissionEntryViewModel vm in SubmissionEntries)
                 {
                     string unpackDir = Path.Combine(directory, vm.SubmissionLog.Sender.FullName);
-                    using(MemoryStream zipStream = new MemoryStream())
+                    using (MemoryStream zipStream = new MemoryStream())
                     {
                         zipStream.Write(vm.Submission.SolutionData, 0, vm.Submission.SolutionData.Length);
                         zipStream.Position = 0;

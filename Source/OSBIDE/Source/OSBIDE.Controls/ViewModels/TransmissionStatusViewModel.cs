@@ -4,15 +4,21 @@ using System.Linq;
 using System.Text;
 using OSBIDE.Library.ServiceClient;
 using System.Windows.Threading;
+using System.Windows.Input;
+using OSBIDE.Library.Commands;
 
 namespace OSBIDE.Controls.ViewModels
 {
     public class TransmissionStatusViewModel : ViewModelBase
     {
         private ServiceClient _serviceClient;
-        private DispatcherTimer timer = new DispatcherTimer();
+        private DispatcherTimer _initTimer = new DispatcherTimer();
+        private DispatcherTimer _updateTimer = new DispatcherTimer();
 
         #region view properties
+
+        public ICommand ActivateSendCommand { get; set; }
+        public ICommand ActivateReceiveCommand { get; set; }
 
         private string _sendStatus = "";
         public string SendStatus
@@ -131,18 +137,46 @@ namespace OSBIDE.Controls.ViewModels
         public TransmissionStatusViewModel()
         {
             _serviceClient = ServiceClient.GetInstance();
-            timer.Interval = new TimeSpan(0, 0, 0, 5);
-            timer.Tick += new EventHandler(timer_Tick);
+            
+            _initTimer.Interval = new TimeSpan(0, 0, 0, 5);
+            _initTimer.Tick += new EventHandler(initTimer_Tick);
+
+            _updateTimer.Interval = new TimeSpan(0, 1, 0);
+            _updateTimer.Tick += new EventHandler(updateTimer_Tick);
+            _updateTimer.Start();
+
+            ActivateReceiveCommand = new DelegateCommand(ActivateReceive, CanIssueCommand);
+            ActivateSendCommand = new DelegateCommand(ActivateSend, CanIssueCommand);
 
             if (_serviceClient == null)
             {
                 //wait for our service client to not be null
-                timer.Start();
+                _initTimer.Start();
             }
             else
             {
                 ServiceClientInit();
             }
+        }
+
+        void updateTimer_Tick(object sender, EventArgs e)
+        {
+            UpdateTransmissionStatus();
+        }
+
+        private void ActivateSend(object param)
+        {
+            _serviceClient.TurnOnSending();
+        }
+
+        private void ActivateReceive(object param)
+        {
+            _serviceClient.TurnOnReceiving();
+        }
+
+        private bool CanIssueCommand(object param)
+        {
+            return true;
         }
 
         private void UpdateTransmissionStatus()
@@ -166,13 +200,17 @@ namespace OSBIDE.Controls.ViewModels
             {
                 ReceiveStatus = "Receiving...";
             }
+            LastReceiveDate = _serviceClient.SendStatus.LastTransmissionTime;
+            SendProgressMaxValue = _serviceClient.SendStatus.NumberOfTransmissions;
+            SendProgressValue = _serviceClient.SendStatus.CompletedTransmissions;
+            LastSendDate = _serviceClient.SendStatus.LastTransmissionTime;
         }
 
         private void ServiceClientInit()
         {
             if (_serviceClient == null)
             {
-                timer.Start();
+                _initTimer.Start();
                 return;
             }
 
@@ -184,70 +222,25 @@ namespace OSBIDE.Controls.ViewModels
 
         void _serviceClient_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsSendingData")
-            {
-                
-            }
-            else if (e.PropertyName == "IsReceivingData")
-            {
-                
-            }
+            UpdateTransmissionStatus();
         }
 
         void ReceiveStatus_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsActive")
-            {
-            }
-            else if (e.PropertyName == "CurrentTransmission")
-            {
-            }
-            else if (e.PropertyName == "LastTransmission")
-            {
-            }
-            else if (e.PropertyName == "NumberOfTransmissions")
-            {
-            }
-            else if (e.PropertyName == "CompletedTransmissions")
-            {
-            }
-            else if (e.PropertyName == "LastTransmissionTime")
-            {
-                LastReceiveDate = _serviceClient.SendStatus.LastTransmissionTime;
-            }
+            UpdateTransmissionStatus();
         }
 
         void SendStatus_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "IsActive")
-            {
-            }
-            else if (e.PropertyName == "CurrentTransmission")
-            {
-            }
-            else if (e.PropertyName == "LastTransmission")
-            {
-            }
-            else if (e.PropertyName == "NumberOfTransmissions")
-            {
-                SendProgressMaxValue = _serviceClient.SendStatus.NumberOfTransmissions;
-            }
-            else if (e.PropertyName == "CompletedTransmissions")
-            {
-                SendProgressValue = _serviceClient.SendStatus.CompletedTransmissions;
-            }
-            else if (e.PropertyName == "LastTransmissionTime")
-            {
-                LastSendDate = _serviceClient.SendStatus.LastTransmissionTime;
-            }
+            UpdateTransmissionStatus();
         }
 
-        private void timer_Tick(object sender, EventArgs e)
+        private void initTimer_Tick(object sender, EventArgs e)
         {
             _serviceClient = ServiceClient.GetInstance();
             if (_serviceClient != null)
             {
-                timer.Stop();
+                _initTimer.Stop();
                 ServiceClientInit();
             }
         }

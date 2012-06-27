@@ -26,7 +26,25 @@ namespace OSBIDE.Library.Events
         public DateTime EventDate { get; set; }
 
         [Required]
-        public string SolutionName { get; set; }
+        private string _solutionName = "";
+        public string SolutionName
+        {
+            get
+            {
+                return _solutionName;
+            }
+            set
+            {
+                string oldsolution = _solutionName;
+                _solutionName = value;
+
+                //rebuild zip if our solution name changed.
+                if (oldsolution.CompareTo(_solutionName) != 0)
+                {
+                    CreateSolutionBinary();
+                }
+            }
+        }
 
         [Required]
         public string EventName { get { return SubmitEvent.Name; } }
@@ -51,19 +69,71 @@ namespace OSBIDE.Library.Events
             : this()
         {
             SolutionName = solutionPath;
+        }
+
+        public SubmitEvent(DTE2 dte)
+            : this(dte.Solution.FullName)
+        {
+        }
+
+        /// <summary>
+        /// Creates a binary of the current solution.  Automatically called whenever
+        /// the solution name gets changed.
+        /// </summary>
+        private void CreateSolutionBinary()
+        {
             MemoryStream stream = new MemoryStream();
             using (ZipFile zip = new ZipFile())
             {
-                string rootPath = Path.GetDirectoryName(solutionPath);
-                zip.AddDirectory(rootPath);
+                string rootPath = Path.GetDirectoryName(SolutionName);
+                string[] files = GetSolutionFileList(rootPath);
+                foreach (string file in files)
+                {
+                    string directoryName = Path.GetDirectoryName(file).Replace(rootPath, "");
+                    zip.AddFile(file, directoryName);
+                }
                 zip.Save(stream);
                 stream.Position = 0;
             }
             SolutionData = stream.ToArray();
         }
 
-        public SubmitEvent(DTE2 dte) : this(dte.Solution.FullName)
+        /// <summary>
+        /// Builds a list of solution files to be zipped.  This function skips 
+        /// unnecessary files and folders.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private string[] GetSolutionFileList(string path)
         {
+            string[] noDirectorySearchList = { "bin", "obj", "debug", "release" };
+            string[] noFileExtension = { ".sdf", "ipch" };
+            List<string> filesToAdd = new List<string>(10);
+
+            foreach (string file in Directory.GetFiles(path))
+            {
+                //ignore file extensions flagged in our no extension list
+                if (noFileExtension.Contains(Path.GetExtension(file).ToLower()))
+                {
+                    continue;
+                }
+                filesToAdd.Add(file);
+            }
+
+            foreach (string directory in Directory.GetDirectories(path))
+            {
+                //ignore directories flagged in our no search list
+                string[] directoryPieces = directory.ToLower().Split(Path.DirectorySeparatorChar);
+                string localDirectory = directoryPieces[directoryPieces.Length - 1];
+                if (noDirectorySearchList.Contains(localDirectory))
+                {
+                    continue;
+                }
+
+                //add in subdirectory files
+                filesToAdd = filesToAdd.Union(GetSolutionFileList(directory)).ToList();
+            }
+            return filesToAdd.ToArray();
         }
     }
 }

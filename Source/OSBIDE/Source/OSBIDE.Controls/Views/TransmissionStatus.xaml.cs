@@ -20,11 +20,9 @@ namespace OSBIDE.Controls.Views
     /// </summary>
     public partial class TransmissionStatus : UserControl
     {
-
         // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ViewModelProperty =
             DependencyProperty.Register("ViewModel", typeof(TransmissionStatusViewModel), typeof(TransmissionStatus), new UIPropertyMetadata(new TransmissionStatusViewModel()));
-
 
         public TransmissionStatusViewModel ViewModel
         {
