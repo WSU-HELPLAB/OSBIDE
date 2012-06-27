@@ -128,7 +128,7 @@ namespace OSBIDE.Controls.ViewModels
             set
             {
                 _isNotReceiving = value;
-                OnPropertyChanged("IsNotSending");
+                OnPropertyChanged("IsNotReceiving");
             }
         }
 
