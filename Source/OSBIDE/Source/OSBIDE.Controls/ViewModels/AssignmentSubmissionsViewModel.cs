@@ -88,18 +88,6 @@ namespace OSBIDE.Controls.ViewModels
             UpdateAssignmentListing();
         }
 
-        void osbideState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "HasSqlServerError")
-            {
-                ErrorMessage = "Error retrieving record...";
-            }
-            else if (e.PropertyName == "HasWebServiceError")
-            {
-                ErrorMessage = "Error contacting server...";
-            }
-        }
-
         private void GetSubmissionEntries()
         {
             var entries = from submit in _db.SubmitEvents
