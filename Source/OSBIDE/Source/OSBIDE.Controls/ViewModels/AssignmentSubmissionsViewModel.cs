@@ -92,7 +92,7 @@ namespace OSBIDE.Controls.ViewModels
         {
             var entries = from submit in _db.SubmitEvents
                           where submit.AssignmentName == SelectedAssignment
-                          //&& submit.EventLog.SenderId == OsbideUser.CurrentUser.Id
+                          && submit.EventLog.SenderId == OsbideUser.CurrentUser.Id
                           orderby submit.EventDate ascending
                           select submit;
             Dictionary<string, SubmitEvent> events = new Dictionary<string, SubmitEvent>();
