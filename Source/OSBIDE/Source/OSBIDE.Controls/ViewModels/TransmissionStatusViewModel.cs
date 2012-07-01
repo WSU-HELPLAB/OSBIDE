@@ -200,7 +200,7 @@ namespace OSBIDE.Controls.ViewModels
             {
                 ReceiveStatus = "Receiving...";
             }
-            LastReceiveDate = _serviceClient.SendStatus.LastTransmissionTime;
+            LastReceiveDate = _serviceClient.ReceiveStatus.LastTransmissionTime;
             SendProgressMaxValue = _serviceClient.SendStatus.NumberOfTransmissions;
             SendProgressValue = _serviceClient.SendStatus.CompletedTransmissions;
             LastSendDate = _serviceClient.SendStatus.LastTransmissionTime;

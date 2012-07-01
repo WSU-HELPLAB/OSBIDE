@@ -39,7 +39,7 @@ namespace OSBIDE.Library.Events
                 _solutionName = value;
 
                 //rebuild zip if our solution name changed.
-                if (oldsolution.CompareTo(_solutionName) != 0)
+                if (oldsolution.CompareTo(_solutionName) != 0 && oldsolution.Length > 0)
                 {
                     CreateSolutionBinary();
                 }
