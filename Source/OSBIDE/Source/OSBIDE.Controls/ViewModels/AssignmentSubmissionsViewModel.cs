@@ -125,21 +125,31 @@ namespace OSBIDE.Controls.ViewModels
                     {
                         zipStream.Write(vm.Submission.SolutionData, 0, vm.Submission.SolutionData.Length);
                         zipStream.Position = 0;
-                        using (ZipFile zip = ZipFile.Read(zipStream))
+                        try
                         {
-                            foreach (ZipEntry entry in zip)
+                            using (ZipFile zip = ZipFile.Read(zipStream))
                             {
-                                try
+                                foreach (ZipEntry entry in zip)
                                 {
-                                    entry.Extract(unpackDir, ExtractExistingFileAction.OverwriteSilently);
-                                }
-                                catch (BadReadException)
-                                {
-                                }
-                                catch (Exception)
-                                {
+                                    try
+                                    {
+                                        entry.Extract(unpackDir, ExtractExistingFileAction.OverwriteSilently);
+                                    }
+                                    catch (BadReadException)
+                                    {
+                                    }
+                                    catch (Exception)
+                                    {
+                                    }
                                 }
                             }
+                        }
+                        catch (ZipException)
+                        {
+                            MessageBox.Show("extract failed for " + vm.SubmissionLog.Sender.FullName);
+                        }
+                        catch (Exception)
+                        {
                         }
                     }
 
