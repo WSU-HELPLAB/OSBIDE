@@ -57,6 +57,7 @@ namespace OSBIDE.Library.Events
         {
             SubmitEvent submit = new SubmitEvent(dte);
             submit.AssignmentName = e.AssignmentName;
+            submit.CreateSolutionBinary();
 
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(submit));

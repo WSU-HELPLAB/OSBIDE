@@ -35,14 +35,7 @@ namespace OSBIDE.Library.Events
             }
             set
             {
-                string oldsolution = _solutionName;
                 _solutionName = value;
-
-                //rebuild zip if our solution name changed.
-                if (oldsolution.CompareTo(_solutionName) != 0 && oldsolution.Length > 0)
-                {
-                    CreateSolutionBinary();
-                }
             }
         }
 
@@ -77,10 +70,9 @@ namespace OSBIDE.Library.Events
         }
 
         /// <summary>
-        /// Creates a binary of the current solution.  Automatically called whenever
-        /// the solution name gets changed.
+        /// Creates a binary of the current solution.
         /// </summary>
-        private void CreateSolutionBinary()
+        public void CreateSolutionBinary()
         {
             MemoryStream stream = new MemoryStream();
             using (ZipFile zip = new ZipFile())
