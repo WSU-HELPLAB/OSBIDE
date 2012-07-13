@@ -384,7 +384,7 @@ namespace OSBIDE.Library.ServiceClient
                 }
 
                 EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
-                ReceiveStatus.LastTransmissionTime = DateTime.Now;
+                ReceiveStatus.LastTransmissionTime = mostRecentLog.DateReceived;
 
                 //find all unique User Ids
                 List<int> eventLogIds = new List<int>();
