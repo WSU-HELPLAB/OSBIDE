@@ -137,13 +137,12 @@ namespace OSBIDE.Controls.ViewModels
         public TransmissionStatusViewModel()
         {
             _serviceClient = ServiceClient.GetInstance();
-            
+
             _initTimer.Interval = new TimeSpan(0, 0, 0, 5);
             _initTimer.Tick += new EventHandler(initTimer_Tick);
 
             _updateTimer.Interval = new TimeSpan(0, 1, 0);
             _updateTimer.Tick += new EventHandler(updateTimer_Tick);
-            _updateTimer.Start();
 
             ActivateReceiveCommand = new DelegateCommand(ActivateReceive, CanIssueCommand);
             ActivateSendCommand = new DelegateCommand(ActivateSend, CanIssueCommand);
@@ -213,11 +212,16 @@ namespace OSBIDE.Controls.ViewModels
                 _initTimer.Start();
                 return;
             }
+            else
+            {
+                UpdateTransmissionStatus();
+                _serviceClient.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(_serviceClient_PropertyChanged);
+                _serviceClient.SendStatus.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(SendStatus_PropertyChanged);
+                _serviceClient.ReceiveStatus.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReceiveStatus_PropertyChanged);
 
-            UpdateTransmissionStatus();
-            _serviceClient.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(_serviceClient_PropertyChanged);
-            _serviceClient.SendStatus.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(SendStatus_PropertyChanged);
-            _serviceClient.ReceiveStatus.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(ReceiveStatus_PropertyChanged);
+                _updateTimer.Start();
+            }
+
         }
 
         void _serviceClient_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
