@@ -27,6 +27,7 @@ namespace OSBIDE.Controls.ViewModels
         public ObservableCollection<string> AvailableAssignments { get; set; }
         public ObservableCollection<SubmissionEntryViewModel> SubmissionEntries { get; set; }
         public ICommand DownloadCommand { get; set; }
+        public ICommand RefreshAssignments { get; set; }
         public string SelectedAssignment
         {
             get
@@ -62,6 +63,7 @@ namespace OSBIDE.Controls.ViewModels
         public AssignmentSubmissionsViewModel(OsbideContext db)
         {
             DownloadCommand = new DelegateCommand(Download, CanIssueCommand);
+            RefreshAssignments = new DelegateCommand(RefreshAssignmentList, CanIssueCommand);
             AvailableAssignments = new ObservableCollection<string>();
             SubmissionEntries = new ObservableCollection<SubmissionEntryViewModel>();
 
@@ -79,7 +81,10 @@ namespace OSBIDE.Controls.ViewModels
                          select submit.AssignmentName).Distinct().ToList();
             foreach (string name in names)
             {
-                AvailableAssignments.Add(name);
+                if (AvailableAssignments.Contains(name) == false)
+                {
+                    AvailableAssignments.Add(name);
+                }
             }
         }
 
@@ -109,6 +114,11 @@ namespace OSBIDE.Controls.ViewModels
                 vm.Submission = evt;
                 SubmissionEntries.Add(vm);
             }
+        }
+
+        private void RefreshAssignmentList(object param)
+        {
+            GetSubmissionEntries();
         }
 
         private void Download(object param)
