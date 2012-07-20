@@ -382,6 +382,13 @@ namespace OSBIDE.Library.ServiceClient
                 {
                     startDate = mostRecentLog.DateReceived;
                 }
+                else
+                {
+                    //AC Note: mostRecentLog cannot be NULL because we use it to set the last transmission
+                    //time.  This can probably be simplified.
+                    mostRecentLog = new EventLog();
+                    mostRecentLog.DateReceived = startDate;
+                }
 
                 EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
                 ReceiveStatus.LastTransmissionTime = mostRecentLog.DateReceived;
