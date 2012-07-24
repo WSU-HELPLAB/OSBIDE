@@ -8,10 +8,12 @@ using Ionic.Zip;
 using EnvDTE;
 using EnvDTE80;
 using System.Runtime.Serialization;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Library.Events
 {
     public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging, StartWithoutDebugging };
+    public enum CutCopyPasteActions { Cut, Copy, Paste };
     public class EventFactory
     {
         //position of strings must match position in DebugActions enumeration
@@ -24,6 +26,14 @@ namespace OSBIDE.Library.Events
                     "Debug.StepOut", 
                     "Debug.StopDebugging",
                     "Debug.StartWithoutDebugging"
+                }).ToList();
+
+        private static List<string> cutCopyPasteCommands =
+            (new string[] 
+                { 
+                    "Edit.Cut", 
+                    "Edit.Copy", 
+                    "Edit.Paste"
                 }).ToList();
 
         public static IOsbideEvent FromCommand(string commandName, DTE2 dte)
@@ -61,6 +71,15 @@ namespace OSBIDE.Library.Events
                 }
 
                 oEvent = debug;
+            }
+            else if (cutCopyPasteCommands.Contains(commandName))
+            {
+                CutCopyPasteEvent ccp = new CutCopyPasteEvent();
+                ccp.SolutionName = dte.Solution.FullName;
+                ccp.EventDate = DateTime.Now;
+                ccp.EventAction = cutCopyPasteCommands.IndexOf(commandName);
+                ccp.Document = DocumentFactory.FromDteDocument(dte.ActiveDocument);
+                oEvent = ccp;
             }
 
             return oEvent;

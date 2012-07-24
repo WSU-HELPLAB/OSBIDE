@@ -77,12 +77,12 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(download));
         }
 
-        public override void DocumentSaved(Document Document)
+        public override void DocumentSaved(Document document)
         {
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
-            save.Document = DocumentFactory.FromDteDocument(Document);
+            save.Document = DocumentFactory.FromDteDocument(document);
 
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
