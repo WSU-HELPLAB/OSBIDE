@@ -173,14 +173,20 @@ namespace OSBIDE.VSPackage
                 mcs.AddCommand(menuItem);
                 
                 //create submit assignment command
+                //(turned off for fall study))
+                /*
                 CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
                 MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
                 mcs.AddCommand(submitMenuItem);
+                */
 
                 // Create the command for the tool window
+                //(turned off for fall study)
+                /*
                 CommandID toolwndCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideStatusTool);
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand(menuToolWin);
+                 * */
             }
 
             //create our web service
@@ -222,6 +228,8 @@ namespace OSBIDE.VSPackage
             //check web service version number against ours
             CheckServiceVersion();
 
+            /* AC: SQL Server CE is not needed for the Fall study, so disable all
+             * checks.
             if (!OsbideContext.HasSqlServerCE)
             {
                 _errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...", LogPriority.MediumPriority);
@@ -240,6 +248,7 @@ namespace OSBIDE.VSPackage
                 SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
                 _db = new OsbideContext(conn, true);
             }
+             * */
 
             if (_isOsbideUpToDate)
             {

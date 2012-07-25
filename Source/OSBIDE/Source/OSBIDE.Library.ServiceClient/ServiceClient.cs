@@ -120,12 +120,15 @@ namespace OSBIDE.Library.ServiceClient
             }
 
             //set up and begin event log thread
+            //(turned off for fall study)
+            /*
             _eventLogTask = Task.Factory.StartNew(
                 () =>
                 {
                     PullFromServer();
                 }
                 );
+             * */
         }
 
         #endregion

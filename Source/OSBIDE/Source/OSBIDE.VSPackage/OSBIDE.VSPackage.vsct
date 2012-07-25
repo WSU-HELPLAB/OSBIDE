@@ -73,6 +73,7 @@
         </Strings>
       </Button>
 
+      <!-- turned off for fall study
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideSubmitAssignmentCommand" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
@@ -90,7 +91,7 @@
           <ButtonText>OSBIDE Status</ButtonText>
         </Strings>
       </Button>
-
+      -->
 
     </Buttons>
    
