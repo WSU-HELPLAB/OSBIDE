@@ -129,6 +129,11 @@ namespace OSBIDE.Library.Events
 
         public override void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
         {
+            
+        }
+
+        public override void GenericCommand_AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
+        {
             Command cmd = GetCommand(Guid, ID);
             string commandName = "";
             if (cmd != null)

@@ -9,6 +9,7 @@ using EnvDTE;
 using EnvDTE80;
 using System.Runtime.Serialization;
 using OSBIDE.Library.Models;
+using System.Windows;
 
 namespace OSBIDE.Library.Events
 {
@@ -47,9 +48,18 @@ namespace OSBIDE.Library.Events
                 DebugEvent debug = new DebugEvent();
                 debug.SolutionName = dte.Solution.FullName;
                 debug.EventDate = DateTime.Now;
+                debug.DocumentName = dte.ActiveDocument.Name;
 
-                //we don't really use this, so set to -1 so that it stands out
-                debug.EventReason = -1;
+                //add line number if applicable
+                if (action == DebugActions.StepInto
+                    || action == DebugActions.StepOut
+                    || action == DebugActions.StepOver
+                    )
+                {
+                    TextSelection debugSelection = dte.ActiveDocument.Selection;
+                    int lineNumber = debugSelection.CurrentLine;
+                    debug.LineNumber = lineNumber;
+                }
 
                 //kind of reappropriating this for our current use.  Consider refactoring.
                 debug.ExecutionAction = (int)action;
@@ -78,7 +88,7 @@ namespace OSBIDE.Library.Events
                 ccp.SolutionName = dte.Solution.FullName;
                 ccp.EventDate = DateTime.Now;
                 ccp.EventAction = cutCopyPasteCommands.IndexOf(commandName);
-                ccp.Document = DocumentFactory.FromDteDocument(dte.ActiveDocument);
+                ccp.Content = Clipboard.GetText();
                 oEvent = ccp;
             }
 

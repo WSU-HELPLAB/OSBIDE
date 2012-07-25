@@ -27,7 +27,7 @@ namespace OSBIDE.Library.Events
             }
         }
         public string DocumentName { get; set; }
-        public IVSDocument Document { get; set; }
+        public string Content { get; set; }
 
         public string EventName { get { return CutCopyPasteEvent.Name; } }
         public static string Name { get { return "CutCopyPasteEvent"; } }
