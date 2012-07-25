@@ -12,14 +12,9 @@ namespace OSBIDE.Library.Events
     {
         public DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
+        public int EventReason { get; set; }
         public int ExecutionAction { get; set; }
         public string DocumentName { get; set; }
-
-        /// <summary>
-        /// If the event was a Step (over, into, out of), will track the line number
-        /// on which the event took place.
-        /// </summary>
-        public int LineNumber { get; set; }
 
         /// <summary>
         /// Contains information in the debug output window.  As the output window is cumulative, there's no
@@ -31,7 +26,6 @@ namespace OSBIDE.Library.Events
         public DebugEvent()
         {
             EventDate = DateTime.Now;
-            LineNumber = -1;
         }
     }
 }

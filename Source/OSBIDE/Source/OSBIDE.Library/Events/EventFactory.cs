@@ -8,13 +8,10 @@ using Ionic.Zip;
 using EnvDTE;
 using EnvDTE80;
 using System.Runtime.Serialization;
-using OSBIDE.Library.Models;
-using System.Windows;
 
 namespace OSBIDE.Library.Events
 {
     public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging, StartWithoutDebugging };
-    public enum CutCopyPasteActions { Cut, Copy, Paste };
     public class EventFactory
     {
         //position of strings must match position in DebugActions enumeration
@@ -29,14 +26,6 @@ namespace OSBIDE.Library.Events
                     "Debug.StartWithoutDebugging"
                 }).ToList();
 
-        private static List<string> cutCopyPasteCommands =
-            (new string[] 
-                { 
-                    "Edit.Cut", 
-                    "Edit.Copy", 
-                    "Edit.Paste"
-                }).ToList();
-
         public static IOsbideEvent FromCommand(string commandName, DTE2 dte)
         {
             IOsbideEvent oEvent = null;
@@ -48,18 +37,9 @@ namespace OSBIDE.Library.Events
                 DebugEvent debug = new DebugEvent();
                 debug.SolutionName = dte.Solution.FullName;
                 debug.EventDate = DateTime.Now;
-                debug.DocumentName = dte.ActiveDocument.Name;
 
-                //add line number if applicable
-                if (action == DebugActions.StepInto
-                    || action == DebugActions.StepOut
-                    || action == DebugActions.StepOver
-                    )
-                {
-                    TextSelection debugSelection = dte.ActiveDocument.Selection;
-                    int lineNumber = debugSelection.CurrentLine;
-                    debug.LineNumber = lineNumber;
-                }
+                //we don't really use this, so set to -1 so that it stands out
+                debug.EventReason = -1;
 
                 //kind of reappropriating this for our current use.  Consider refactoring.
                 debug.ExecutionAction = (int)action;
@@ -81,15 +61,6 @@ namespace OSBIDE.Library.Events
                 }
 
                 oEvent = debug;
-            }
-            else if (cutCopyPasteCommands.Contains(commandName))
-            {
-                CutCopyPasteEvent ccp = new CutCopyPasteEvent();
-                ccp.SolutionName = dte.Solution.FullName;
-                ccp.EventDate = DateTime.Now;
-                ccp.EventAction = cutCopyPasteCommands.IndexOf(commandName);
-                ccp.Content = Clipboard.GetText();
-                oEvent = ccp;
             }
 
             return oEvent;

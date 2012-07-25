@@ -77,12 +77,12 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(download));
         }
 
-        public override void DocumentSaved(Document document)
+        public override void DocumentSaved(Document Document)
         {
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
-            save.Document = DocumentFactory.FromDteDocument(document);
+            save.Document = DocumentFactory.FromDteDocument(Document);
 
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
@@ -128,11 +128,6 @@ namespace OSBIDE.Library.Events
         }
 
         public override void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
-        {
-            
-        }
-
-        public override void GenericCommand_AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
         {
             Command cmd = GetCommand(Guid, ID);
             string commandName = "";

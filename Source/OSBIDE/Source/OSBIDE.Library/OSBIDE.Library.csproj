@@ -112,7 +112,6 @@
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
-    <Compile Include="Events\CutCopyPasteEvent.cs" />
     <Compile Include="Events\IOsbideEventGenerator.cs" />
     <Compile Include="Events\EventGenerator.cs" />
     <Compile Include="Events\SolutionDownloadEvent.cs" />
