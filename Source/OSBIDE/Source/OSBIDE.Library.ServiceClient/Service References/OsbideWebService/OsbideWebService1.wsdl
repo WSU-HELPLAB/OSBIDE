@@ -26,6 +26,12 @@
   <wsdl:message name="OsbideWebService_SaveUser_OutputMessage">
     <wsdl:part name="parameters" element="SaveUserResponse" />
   </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_InputMessage">
+    <wsdl:part name="parameters" element="SubmitLocalErrorLog" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_OutputMessage">
+    <wsdl:part name="parameters" element="SubmitLocalErrorLogResponse" />
+  </wsdl:message>
   <wsdl:message name="OsbideWebService_SubmitLog_InputMessage">
     <wsdl:part name="parameters" element="SubmitLog" />
   </wsdl:message>
@@ -68,6 +74,10 @@
     <wsdl:operation name="SaveUser">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SaveUser" message="OsbideWebService_SaveUser_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/SaveUserResponse" message="OsbideWebService_SaveUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SubmitLocalErrorLog">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLog" message="OsbideWebService_SubmitLocalErrorLog_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLogResponse" message="OsbideWebService_SubmitLocalErrorLog_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SubmitLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />

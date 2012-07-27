@@ -67,12 +67,14 @@ namespace OSBIDE.Controls.ViewModels
             AvailableAssignments = new ObservableCollection<string>();
             SubmissionEntries = new ObservableCollection<SubmissionEntryViewModel>();
 
+            /* AC: turned off for fall study
             _timer.Interval = new TimeSpan(0, 0, 1, 0, 0);
             _timer.Tick += new EventHandler(timer_Tick);
             _timer.Start();
 
             _db = db;
             UpdateAssignmentListing();
+             * */
         }
 
         private void UpdateAssignmentListing()

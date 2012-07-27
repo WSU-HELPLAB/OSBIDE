@@ -18,6 +18,7 @@ namespace OSBIDE.Library.Models
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
         public DbSet<SubmitEvent> SubmitEvents { get; set; }
+        public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
         /*
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<DebugEvent> DebugEvents { get; set; }

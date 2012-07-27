@@ -145,6 +145,8 @@
     <None Include="app.config" />
     <None Include="OSBIDE.Controls.key.snk" />
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.EventLog.datasource" />
+    <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -209,6 +211,12 @@
     <None Include="Service References\WebServices\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\WebServices\OsbideWebService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\WebServices\OsbideWebService21.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Service References\WebServices\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>

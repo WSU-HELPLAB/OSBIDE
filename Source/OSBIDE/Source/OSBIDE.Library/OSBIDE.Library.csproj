@@ -132,6 +132,7 @@
     <Compile Include="Models\BreakPoint.cs" />
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\IVSDocument.cs" />
+    <Compile Include="Models\LocalErrorLog.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="Models\Enums.cs" />

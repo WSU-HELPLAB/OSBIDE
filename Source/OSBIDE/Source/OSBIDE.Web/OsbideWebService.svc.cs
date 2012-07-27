@@ -89,6 +89,40 @@ namespace OSBIDE.Web
 
         [OperationContract]
         [ApplyDataContractResolver]
+        public int SubmitLocalErrorLog(LocalErrorLog errorLog)
+        {
+            //check to see if the user exists in the database.  If not, reset sender and try again
+            //(next IF statement)
+            if (errorLog.SenderId != 0)
+            {
+                OsbideUser userCheck = Db.Users.Find(errorLog.SenderId);
+                if (userCheck == null)
+                {
+                    errorLog.SenderId = 0;
+                }
+            }
+
+            //reset the sender if necessary
+            if (errorLog.SenderId == 0)
+            {
+                errorLog.Sender = SaveUser(errorLog.Sender);
+                errorLog.SenderId = errorLog.Sender.Id;
+            }
+            errorLog.Sender = null;
+            Db.LocalErrorLogs.Add(errorLog);
+            try
+            {
+                Db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return (int)Enums.ServiceCode.Error;
+            }
+            return errorLog.Id;
+        }
+
+        [OperationContract]
+        [ApplyDataContractResolver]
         public int SubmitLog(EventLog log)
         {
             //AC: kind of hackish, but event logs that we receive should already have an ID
@@ -122,7 +156,7 @@ namespace OSBIDE.Web
             {
                 Db.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return (int)Enums.ServiceCode.Error;
             }

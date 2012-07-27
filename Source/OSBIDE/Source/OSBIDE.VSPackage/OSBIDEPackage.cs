@@ -53,7 +53,7 @@ namespace OSBIDE.VSPackage
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(OsbideStatusToolWindow))]
     [Guid(GuidList.guidOSBIDE_VSPackagePkgString)]
-    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     public sealed class OSBIDEPackage : Package
     {
         private OsbideWebServiceClient _webServiceClient = null;

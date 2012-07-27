@@ -10,6 +10,16 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="OsbideUser" nillable="true" type="tns:OsbideUser" />
+  <xs:complexType name="LocalErrorLog">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Content" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Id" type="xs:int" />
+      <xs:element minOccurs="0" name="LogDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="Sender" nillable="true" type="tns:OsbideUser" />
+      <xs:element minOccurs="0" name="SenderId" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="LocalErrorLog" nillable="true" type="tns:LocalErrorLog" />
   <xs:complexType name="EventLog">
     <xs:sequence>
       <xs:element minOccurs="0" name="Data" nillable="true" type="xs:base64Binary" />

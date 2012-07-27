@@ -10,6 +10,13 @@ namespace OSBIDE.Library.Logging
     {
         string filePath = "";
         public LogPriority MinimumPriority { get; set; }
+        public string FilePath
+        {
+            get
+            {
+                return filePath;
+            }
+        }
 
         public LocalErrorLogger()
         {

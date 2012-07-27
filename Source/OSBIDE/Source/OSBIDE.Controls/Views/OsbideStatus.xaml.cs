@@ -32,8 +32,10 @@ namespace OSBIDE.Controls.Views
 
                 //AC: this shouldn't be necessary.  Todo: figure out why this won't
                 //happen automatically
+                /*AC: turned off for fall study
                 TransmissionTab.ViewModel = ViewModel.StatusViewModel;
                 SubmissionsTab.ViewModel = ViewModel.SubmissionViewModel;
+                 * */
             }
         }
 

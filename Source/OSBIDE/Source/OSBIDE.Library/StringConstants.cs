@@ -63,11 +63,27 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string LocalErrorLogExtension
+        {
+            get
+            {
+                return ".log";
+            }
+        }
+
+        public static string LocalErrorLogFileName
+        {
+            get
+            {
+                return DateTime.Today.ToString("yyyy-MM-dd");
+            }
+        }
+
         public static string LocalErrorLogPath
         {
             get
             {
-                return Path.Combine(DataRoot, DateTime.Today.ToString("yyyy-MM-dd") + ".log");
+                return Path.Combine(DataRoot, LocalErrorLogFileName + LocalErrorLogExtension);
             }
         }
 

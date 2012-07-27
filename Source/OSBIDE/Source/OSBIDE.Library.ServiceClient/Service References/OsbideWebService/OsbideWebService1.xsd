@@ -44,10 +44,24 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="SubmitLocalErrorLog">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="errorLog" nillable="true" type="q4:LocalErrorLog" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitLocalErrorLogResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SubmitLocalErrorLogResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="SubmitLog">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q4:EventLog" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q5:EventLog" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -69,21 +83,21 @@
   <xs:element name="GetPastEventsResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetPastEventsResult" nillable="true" type="q5:ArrayOfEventLog" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetPastEventsResult" nillable="true" type="q6:ArrayOfEventLog" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetUsers">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q6="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="osbideIds" nillable="true" type="q6:ArrayOfint" />
+        <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="osbideIds" nillable="true" type="q7:ArrayOfint" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetUsersResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetUsersResult" nillable="true" type="q7:ArrayOfOsbideUser" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetUsersResult" nillable="true" type="q8:ArrayOfOsbideUser" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

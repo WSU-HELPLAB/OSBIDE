@@ -13,6 +13,7 @@ using System.ComponentModel;
 using OSBIDE.Library.Logging;
 using System.Threading.Tasks;
 using OSBIDE.Library.ServiceClient.OsbideWebService;
+using System.IO;
 
 namespace OSBIDE.Library.ServiceClient
 {
@@ -29,6 +30,7 @@ namespace OSBIDE.Library.ServiceClient
         private ILogger _logger;
         private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
         private Task _eventLogTask;
+        private Task _sendLocalErrorsTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
         private bool _isSendingData = true;
@@ -119,6 +121,21 @@ namespace OSBIDE.Library.ServiceClient
                 SaveLogsToCache(new List<EventLog>());
             }
 
+            //send off saved local errors
+            _sendLocalErrorsTask = Task.Factory.StartNew(
+                () =>
+                {
+                    try
+                    {
+                        SendLocalErrorLogs();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.WriteToLog("Error sending local logs to server: " + ex.Message, LogPriority.MediumPriority);
+                    }
+                }
+                );
+
             //set up and begin event log thread
             //(turned off for fall study)
             /*
@@ -174,12 +191,15 @@ namespace OSBIDE.Library.ServiceClient
             //only start a new thread if the existing one has finished
             if (_eventLogTask.IsCompleted == true)
             {
+                //turned off for fall study
+                /*
                 _eventLogTask = Task.Factory.StartNew(
                 () =>
                 {
                     PullFromServer();
                 }
                 );
+                 * */
             }
         }
 
@@ -191,6 +211,41 @@ namespace OSBIDE.Library.ServiceClient
         #endregion
 
         #region private send methods
+
+        private void SendLocalErrorLogs()
+        {
+            string dataRoot = StringConstants.DataRoot;
+            string logExtension = StringConstants.LocalErrorLogExtension;
+            string today = StringConstants.LocalErrorLogFileName;
+
+            //find all log files
+            string[] files = Directory.GetFiles(dataRoot);
+            foreach(string file in files)
+            {
+                if (Path.GetExtension(file) == logExtension)
+                {
+                    //ignore today's log
+                    if (Path.GetFileNameWithoutExtension(file) != today)
+                    {
+                        LocalErrorLog log = LocalErrorLog.FromFile(file, _currentUser);
+                        int result = _webServiceClient.SubmitLocalErrorLog(log);
+
+                        //remove if file successfully sent
+                        if (result != -1)
+                        {
+                            try
+                            {
+                                File.Delete(file);
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void SendError(Exception ex)
         {
             _logger.WriteToLog(string.Format("Push error: {0}", ex.Message), LogPriority.HighPriority);
@@ -305,7 +360,14 @@ namespace OSBIDE.Library.ServiceClient
                 Task.Factory.StartNew(
                     () =>
                     {
-                        this.SendLogToServer(eventLog);
+                        try
+                        {
+                            this.SendLogToServer(eventLog);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.WriteToLog(string.Format("SendToServer Error: {0}", ex.Message), LogPriority.HighPriority);
+                        }
                     }
                     );
             }
@@ -329,7 +391,9 @@ namespace OSBIDE.Library.ServiceClient
             try
             {
                 ReceiveStatus.IsActive = true;
-                EventsFromServerLoop();
+
+                //not used for fall release 
+                //EventsFromServerLoop();
             }
             catch (TimeoutException tex)
             {
