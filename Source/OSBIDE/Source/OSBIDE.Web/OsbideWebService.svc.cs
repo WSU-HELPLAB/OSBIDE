@@ -182,7 +182,7 @@ namespace OSBIDE.Web
             {
                 timeoutCount++;
                 logs = (from log in Db.EventLogs
-                        where log.DateReceived > start && log.LogType == SubmitEvent.Name
+                        where log.DateReceived > start
                         orderby log.DateReceived ascending
                         select log
                         ).Take(10).ToList();
