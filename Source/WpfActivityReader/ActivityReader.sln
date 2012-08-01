@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityReader", "ActivityR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityReader.Library", "ActivityReader.Library\ActivityReader.Library.csproj", "{65DC23FC-E441-4522-8C0B-EB3AFAF61B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityReader.Controls", "ActivityReader.Controls\ActivityReader.Controls.csproj", "{19A76567-EE16-4171-923C-960D034F6A71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityReader.Controls", "ActivityReader.Controls\ActivityReader.Controls.csproj", "{3F065ED5-8181-4E83-829E-15958E26EA45}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -52,16 +52,16 @@ Global
 		{65DC23FC-E441-4522-8C0B-EB3AFAF61B10}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{65DC23FC-E441-4522-8C0B-EB3AFAF61B10}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{65DC23FC-E441-4522-8C0B-EB3AFAF61B10}.Release|x86.ActiveCfg = Release|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{19A76567-EE16-4171-923C-960D034F6A71}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F065ED5-8181-4E83-829E-15958E26EA45}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
