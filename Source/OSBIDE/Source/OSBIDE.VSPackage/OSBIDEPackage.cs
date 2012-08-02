@@ -218,6 +218,11 @@ namespace OSBIDE.VSPackage
                     _errorLogger.WriteToLog("Web service error: " + notFoundException.Message, LogPriority.HighPriority);
                     _hasWebServiceError = true;
                 }
+                catch (Exception ex)
+                {
+                    _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
+                    _hasWebServiceError = true;
+                }
                 if (webUser == null && _hasWebServiceError == false)
                 {
                     CurrentUser = _webServiceClient.SaveUser(CurrentUser);
