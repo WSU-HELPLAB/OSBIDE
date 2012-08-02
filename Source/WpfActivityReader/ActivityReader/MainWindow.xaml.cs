@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ActivityReader.Controls.Views;
+using ActivityReader.Controls.ViewModels;
 
 namespace ActivityReader
 {
@@ -22,6 +24,13 @@ namespace ActivityReader
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void OpenDownloadWindow(object sender, RoutedEventArgs e)
+        {
+            EventDownloadViewModel vm = new EventDownloadViewModel();
+            EventDownloadView view = new EventDownloadView(vm);
+            view.ShowDialog();
         }
     }
 }
