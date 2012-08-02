@@ -59,7 +59,7 @@ namespace OSBIDE.Library
         {
             get
             {
-                return string.Format("Data Source={0}", LocalDatabasePath);
+                return string.Format("Data Source={0};Max Database Size=4091", LocalDatabasePath);
             }
         }
 

@@ -185,7 +185,7 @@ namespace OSBIDE.Web
                         where log.DateReceived > start
                         orderby log.DateReceived ascending
                         select log
-                        ).Take(10).ToList();
+                        ).Take(100).ToList();
                 if (logs.Count > 0 || waitForContent == false || timeoutCount > 4)
                 {
                     foundData = true;
