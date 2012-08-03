@@ -72,6 +72,10 @@ namespace OSBIDE.UnitTests.Library.Events
         public void BinaryConversionTest()
         {
             BuildEvent build = new BuildEvent();
+
+            //AC: needs to be rewritten
+            Assert.AreEqual(true, false);
+            /*
             build.ErrorItems.Add(new OSBIDE.Library.Models.ErrorListItem() { Description = "test" });
             build.EventDate = DateTime.Now;
             build.SolutionName = "test";
@@ -83,6 +87,7 @@ namespace OSBIDE.UnitTests.Library.Events
             //after going through the conversion, ensure that the build items remain the same
             Assert.AreEqual(build.SolutionName, convertedEvent.SolutionName);
             Assert.AreEqual(build.ErrorItems.Count, convertedEvent.ErrorItems.Count);
+             * */
         }
     }
 }

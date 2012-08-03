@@ -112,13 +112,16 @@
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
+    <Compile Include="Models\BuildEventBreakPoint.cs" />
+    <Compile Include="Models\BuildEventErrorListItem.cs" />
+    <Compile Include="Models\CodeDocumentBreakPoint.cs" />
     <Compile Include="Events\CutCopyPasteEvent.cs" />
     <Compile Include="Events\IOsbideEventGenerator.cs" />
     <Compile Include="Events\EventGenerator.cs" />
     <Compile Include="Events\SolutionDownloadEvent.cs" />
     <Compile Include="Events\SubmitEvent.cs" />
     <Compile Include="Logging\LogMessage.cs" />
-    <Compile Include="Models\CodeFile.cs" />
+    <Compile Include="Models\CodeDocument.cs" />
     <Compile Include="Events\DebugEvent.cs" />
     <Compile Include="Events\EditorActivityEvent.cs" />
     <Compile Include="Events\EventCreatedArgs.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="LibraryBinder.cs" />
     <Compile Include="Logging\LocalErrorLogger.cs" />
     <Compile Include="Models\BreakPoint.cs" />
+    <Compile Include="Models\CodeDocumentErrorListItem.cs" />
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\IVSDocument.cs" />
     <Compile Include="Models\LocalErrorLog.cs" />

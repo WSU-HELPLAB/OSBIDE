@@ -7,9 +7,10 @@ namespace OSBIDE.Library.Models
 {
     public interface IVSDocument
     {
+        int Id { get; set; }
         string FileName { get; set; }
         string Content { get; set; }
-        List<BreakPoint> BreakPoints { get; set; }
-        List<ErrorListItem> ErrorItems { get; set; }
+        List<CodeDocumentBreakPoint> BreakPoints { get; set; }
+        List<CodeDocumentErrorListItem> ErrorItems { get; set; }
     }
 }

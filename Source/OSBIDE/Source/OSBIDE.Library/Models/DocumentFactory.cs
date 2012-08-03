@@ -26,7 +26,10 @@ namespace OSBIDE.Library.Models
                 //only grab events that are related to the current file
                 if (item.FileName.CompareTo(document.FullName) == 0)
                 {
-                    codeDocument.ErrorItems.Add(ErrorListItem.FromErrorItem(item));
+                    CodeDocumentErrorListItem eli = new CodeDocumentErrorListItem();
+                    eli.CodeDocument = codeDocument;
+                    eli.ErrorListItem = ErrorListItem.FromErrorItem(item);
+                    codeDocument.ErrorItems.Add(eli);
                 }
             }
 
@@ -38,7 +41,10 @@ namespace OSBIDE.Library.Models
                 //agan, only grab breakpoints set in the current document
                 if (bp.File.CompareTo(document.FullName) == 0)
                 {
-                    codeDocument.BreakPoints.Add(bp);
+                    CodeDocumentBreakPoint cbp = new CodeDocumentBreakPoint();
+                    cbp.CodeDocument = codeDocument;
+                    cbp.BreakPoint = bp;
+                    codeDocument.BreakPoints.Add(cbp);
                 }
             }
             return codeDocument;

@@ -17,15 +17,21 @@ namespace OSBIDE.Library.Models
     {
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
-        public DbSet<SubmitEvent> SubmitEvents { get; set; }
         public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
-        /*
+
+        //events that we log
         public DbSet<BuildEvent> BuildEvents { get; set; }
+        public DbSet<BuildEventBreakPoint> BuildEventBreakPoints { get; set; }
+        public DbSet<BuildEventErrorListItem> BuildEventErrorListItems { get; set; }
+        public DbSet<CutCopyPasteEvent> CutCopyPasteEvents { get; set; }
         public DbSet<DebugEvent> DebugEvents { get; set; }
         public DbSet<EditorActivityEvent> EditorActivityEvents { get; set; }
         public DbSet<ExceptionEvent> ExceptionEvents { get; set; }
         public DbSet<SaveEvent> SaveEvents { get; set; }
-        */
+        public DbSet<CodeDocument> CodeDocuments { get; set; }
+        public DbSet<CodeDocumentBreakPoint> CodeDocumentBreakPoints { get; set; }
+        public DbSet<CodeDocumentErrorListItem> CodeDocumentErrorListItems { get; set; }
+        public DbSet<SubmitEvent> SubmitEvents { get; set; }
 
         public OsbideContext()
             : base()

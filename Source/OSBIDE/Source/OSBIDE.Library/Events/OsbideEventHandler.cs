@@ -98,14 +98,20 @@ namespace OSBIDE.Library.Events
             for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
             {
                 ErrorItem item = dte.ToolWindows.ErrorList.ErrorItems.Item(i);
-                build.ErrorItems.Add(ErrorListItem.FromErrorItem(item));
+                BuildEventErrorListItem beli = new BuildEventErrorListItem();
+                beli.BuildEvent = build;
+                beli.ErrorListItem = ErrorListItem.FromErrorItem(item);
+                build.ErrorItems.Add(beli);
             }
 
             //add in breakpoint information
             for (int i = 1; i <= dte.Debugger.Breakpoints.Count; i++)
             {
                 BreakPoint bp = new BreakPoint(dte.Debugger.Breakpoints.Item(i));
-                build.Breakpoints.Add(bp);
+                BuildEventBreakPoint bebp = new BuildEventBreakPoint();
+                bebp.BreakPoint = bp;
+                bebp.BuildEvent = build;
+                build.Breakpoints.Add(bebp);
             }
 
             byte[] data = EventFactory.ToZippedBinary(build);

@@ -14,6 +14,7 @@ namespace OSBIDE.Library.Events
     public class SubmitEvent : IOsbideEvent
     {
         [Key]
+        [Required]
         public int Id { get; set; }
 
         [Required]

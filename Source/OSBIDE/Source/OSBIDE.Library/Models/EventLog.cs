@@ -38,6 +38,9 @@ namespace OSBIDE.Library.Models
         [IgnoreDataMember]
         public virtual OsbideUser Sender { get; set; }
 
+        [DataMember]
+        public string AssemblyVersion { get; set; }
+
         public EventLog()
         {
             DateReceived = DateTime.Now;
@@ -60,6 +63,7 @@ namespace OSBIDE.Library.Models
             {
                 SenderId = sender.Id;
             }
+            AssemblyVersion = OSBIDE.Library.StringConstants.LibraryVersion;
         }
 
         public EventLog(EventLog copyLog)
@@ -70,6 +74,7 @@ namespace OSBIDE.Library.Models
             Data = copyLog.Data;
             Sender = new OsbideUser(copyLog.Sender);
             SenderId = copyLog.SenderId;
+            AssemblyVersion = copyLog.AssemblyVersion;
         }
     }
 }

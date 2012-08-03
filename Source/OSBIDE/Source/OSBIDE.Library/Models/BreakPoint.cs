@@ -2,20 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace OSBIDE.Library.Models
 {
     [Serializable]
     public class BreakPoint : IComparable, IEquatable<BreakPoint>
     {
+        [Key]
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
         public string Condition { get; set; }
+
+        [Required]
         public string File { get; set; }
+
+        [Required]
         public int FileColumn { get; set; }
+
+        [Required]
         public int FileLine { get; set; }
+
+        [Required]
         public int FunctionColumnOffset { get; set; }
+
+        [Required]
         public int FunctionLineOffset { get; set; }
+
+        [Required]
         public string FunctionName { get; set; }
+
+        [Required]
         public string Name { get; set; }
+
+        [Required]
         public bool Enabled { get; set; }
 
 
