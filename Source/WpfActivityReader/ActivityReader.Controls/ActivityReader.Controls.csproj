@@ -73,8 +73,15 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\EventDownloadViewModel.cs" />
+    <Compile Include="ViewModels\FeedMessageViewModel.cs" />
+    <Compile Include="Views\ActivityFeed.xaml.cs">
+      <DependentUpon>ActivityFeed.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EventDownloadView.xaml.cs">
       <DependentUpon>EventDownloadView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FeedMessage.xaml.cs">
+      <DependentUpon>FeedMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
@@ -87,7 +94,15 @@
       <DependentUpon>UserControl1.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ActivityFeed.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EventDownloadView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FeedMessage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

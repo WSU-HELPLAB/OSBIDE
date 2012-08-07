@@ -37,7 +37,7 @@ namespace ActivityReader.Controls.ViewModels
         public EventDownloadViewModel()
         {
             _serviceClient = new OsbideWebServiceClient();
-            SqlCeConnection conn = new SqlCeConnection("Data Source=reader.sdf;Max Database Size=4091");
+            SqlCeConnection conn = new SqlCeConnection(StringConstants.SqlCeConnectionString);
             _db = new OsbideContext(conn, true);
             DownloadCommand = new DelegateCommand(StartDownload, CanDownload);
             Status = "Not downloading";

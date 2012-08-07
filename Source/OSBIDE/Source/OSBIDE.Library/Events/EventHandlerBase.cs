@@ -13,7 +13,7 @@ namespace OSBIDE.Library.Events
     /// The EventHandlerBase class consolidates all of the various event handler types into a single class for
     /// easy inheritance.  By default, each event handler does nothing.  
     /// </summary>
-    public abstract class EventHandlerBase 
+    public abstract class EventHandlerBase : IVsDebuggerEvents
     {
         /// <summary>
         /// This event is raised whenever a new event log has been created and is ready for consumption
@@ -48,7 +48,6 @@ namespace OSBIDE.Library.Events
         private BuildEvents buildEvents = null;
         private CommandEvents genericCommandEvents = null;
         private CommandEvents menuCommandEvents = null;
-
         private DebuggerEvents debuggerEvents = null;
         private DocumentEvents documentEvents = null;
         private FindEvents findEvents = null;
@@ -59,6 +58,9 @@ namespace OSBIDE.Library.Events
         private ProjectItemsEvents solutionItemsEvents = null;
         private TextEditorEvents textEditorEvents = null;
 
+        private IVsDebugger debugger;
+        private uint debuggerEventsCookie;
+
         public EventHandlerBase(IServiceProvider serviceProvider, IOsbideEventGenerator osbideEvents)
         {
             if (serviceProvider == null)
@@ -67,7 +69,10 @@ namespace OSBIDE.Library.Events
             }
 
             ServiceProvider = serviceProvider;
-            
+            this.debugger = (IVsDebugger)serviceProvider.GetService(typeof(IVsDebugger));
+            debugger.AdviseDebugEventCallback(this);
+            debugger.AdviseDebuggerEvents(this, out debuggerEventsCookie);
+
             //save references to dte events
             buildEvents = dte.Events.BuildEvents;
             genericCommandEvents = dte.Events.CommandEvents;
@@ -202,5 +207,26 @@ namespace OSBIDE.Library.Events
 
         //text editor event handlers
         public virtual void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint) { }
+
+        public virtual int OnModeChange(DBGMODE dbgmodeNew)
+        {
+            int notCaught = (int)dte.Debugger.LastBreakReason & (int)dbgEventReason.dbgEventReasonExceptionNotHandled;
+            int thrown = (int)dte.Debugger.LastBreakReason & (int)dbgEventReason.dbgEventReasonExceptionThrown;
+
+            //AC note: debug reason 15 = exception?
+            if ((int)dte.Debugger.LastBreakReason == 15)
+            {
+                EnvDTE100.Debugger5 debugger = (EnvDTE100.Debugger5)dte.Debugger;
+                foreach (EnvDTE90.ExceptionSettings settings in debugger.ExceptionGroups)
+                {
+                    string settingsName = settings.Name;
+                    foreach (EnvDTE90.ExceptionSetting setting in settings)
+                    {
+                        string name = setting.Name;
+                    }
+                }
+            }
+            return (int)dbgmodeNew;
+        }
     }
 }
