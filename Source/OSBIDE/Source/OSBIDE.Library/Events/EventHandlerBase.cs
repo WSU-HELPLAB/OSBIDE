@@ -13,7 +13,7 @@ namespace OSBIDE.Library.Events
     /// The EventHandlerBase class consolidates all of the various event handler types into a single class for
     /// easy inheritance.  By default, each event handler does nothing.  
     /// </summary>
-    public abstract class EventHandlerBase : IVsDebuggerEvents
+    public abstract class EventHandlerBase
     {
         /// <summary>
         /// This event is raised whenever a new event log has been created and is ready for consumption
