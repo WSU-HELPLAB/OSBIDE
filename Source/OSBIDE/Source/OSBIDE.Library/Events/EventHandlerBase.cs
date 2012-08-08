@@ -194,6 +194,9 @@ namespace OSBIDE.Library.Events
         public virtual void SolutionBeforeClosing() { }
         public virtual void SolutionOpened()
         {
+            //Load exception handling on each project open.  Note that I'm only
+            //loading C related groups as loading the entire collection takes
+            //a very (10+ minute) long time to load.
             EnvDTE90.Debugger3 debugger = (EnvDTE90.Debugger3)dte.Debugger;
             string[] exceptionGroups = { "C++ Exceptions", "Win32 Exceptions" };
 
