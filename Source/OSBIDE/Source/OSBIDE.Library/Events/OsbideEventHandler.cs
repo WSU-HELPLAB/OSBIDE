@@ -55,6 +55,8 @@ namespace OSBIDE.Library.Events
 
         public override void OsbideSolutionSubmitted(object sender, SubmitEventArgs e)
         {
+            base.OsbideSolutionSubmitted(sender, e);
+
             SubmitEvent submit = new SubmitEvent(dte);
             submit.AssignmentName = e.AssignmentName;
             submit.CreateSolutionBinary();
@@ -65,6 +67,7 @@ namespace OSBIDE.Library.Events
 
         public override void OsbideSolutionDownloaded(object sender, SolutionDownloadedEventArgs e)
         {
+            base.OsbideSolutionDownloaded(sender, e);
             SolutionDownloadEvent download = new SolutionDownloadEvent()
             {
                 AssignmentName = e.DownloadedSubmission.AssignmentName,
@@ -79,6 +82,7 @@ namespace OSBIDE.Library.Events
 
         public override void DocumentSaved(Document document)
         {
+            base.DocumentSaved(document);
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
@@ -90,6 +94,7 @@ namespace OSBIDE.Library.Events
 
         public override void OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
+            base.OnBuildDone(Scope, Action);
             BuildEvent build = new BuildEvent();
             build.SolutionName = dte.Solution.FullName;
             build.EventDate = DateTime.Now;
@@ -120,26 +125,9 @@ namespace OSBIDE.Library.Events
             NotifyEventCreated(this, new EventCreatedArgs(build));
         }
 
-        public override void MenuCommand_BeforeExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
-        {
-            Command cmd = GetCommand(Guid, ID);
-            if (cmd != null)
-            {
-                List<int> breakpointIds = Enum.GetValues(typeof(BreakpointIDs)).Cast<int>().ToList();
-                if (breakpointIds.Contains(cmd.ID))
-                {
-
-                }
-            }
-        }
-
-        public override void GenericCommand_BeforeCommandExecute(string Guid, int ID, object CustomIn, object CustomOut, ref bool CancelDefault)
-        {
-            
-        }
-
         public override void GenericCommand_AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
         {
+            base.GenericCommand_AfterCommandExecute(Guid, ID, CustomIn, CustomOut);
             Command cmd = GetCommand(Guid, ID);
             string commandName = "";
             if (cmd != null)
@@ -170,6 +158,7 @@ namespace OSBIDE.Library.Events
         /// <param name="Hint"></param>
         public override void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {
+            base.EditorLineChanged(StartPoint, EndPoint, Hint);
             if (LastEditorActivityEvent < DateTime.Now.Subtract(new TimeSpan(0, 1, 0)))
             {
                 LastEditorActivityEvent = DateTime.Now;
@@ -178,6 +167,49 @@ namespace OSBIDE.Library.Events
                 activity.SolutionName = dte.Solution.FullName;
                 NotifyEventCreated(this, new EventCreatedArgs(activity));
             }
+        }
+
+        public override void OnExceptionThrown(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
+        {
+            base.OnExceptionThrown(ExceptionType, Name, Code, Description, ref ExceptionAction);
+            HandleException(ExceptionType, Name, Code, Description, ref ExceptionAction);
+        }
+
+        public override void OnExceptionNotHandled(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
+        {
+            base.OnExceptionNotHandled(ExceptionType, Name, Code, Description, ref ExceptionAction);
+            HandleException(ExceptionType, Name, Code, Description, ref ExceptionAction);
+        }
+
+        private void HandleException(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
+        {
+            ExceptionEvent ex = new ExceptionEvent();
+
+            //the stuff inside this try will be null if there isn't an open document
+            //window (rare, but possible)
+            try
+            {
+                TextSelection debugSelection = dte.ActiveDocument.Selection;
+                debugSelection.SelectLine();
+                ex.LineContent = debugSelection.Text;
+                ex.LineNumber = debugSelection.CurrentLine;
+                ex.DocumentName = dte.ActiveDocument.Name;
+            }
+            catch (Exception)
+            {
+                ex.LineContent = "";
+                ex.LineNumber = 0;
+                ex.DocumentName = dte.Solution.FullName;
+            }
+
+            ex.EventDate = DateTime.Now;
+            ex.ExceptionAction = (int)ExceptionAction;
+            ex.ExceptionCode = Code;
+            ex.ExceptionDescription = Description;
+            ex.ExceptionName = Name;
+            ex.ExceptionType = ExceptionType;
+            ex.SolutionName = dte.Solution.FullName;
+            NotifyEventCreated(this, new EventCreatedArgs(ex));
         }
 
         #endregion

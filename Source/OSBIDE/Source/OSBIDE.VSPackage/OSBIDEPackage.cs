@@ -29,6 +29,7 @@ using OSBIDE.Controls.ViewModels;
 using EnvDTE80;
 using OSBIDE.Library.Logging;
 using OSBIDE.Library.ServiceClient;
+using EnvDTE;
 
 namespace OSBIDE.VSPackage
 {

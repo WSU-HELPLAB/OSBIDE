@@ -48,7 +48,16 @@ namespace OSBIDE.Library.Events
                 DebugEvent debug = new DebugEvent();
                 debug.SolutionName = dte.Solution.FullName;
                 debug.EventDate = DateTime.Now;
-                debug.DocumentName = dte.ActiveDocument.Name;
+
+                //sometimes document name can be null
+                try
+                {
+                    debug.DocumentName = dte.ActiveDocument.Name;
+                }
+                catch (Exception)
+                {
+                    debug.DocumentName = dte.Solution.FullName;
+                }
 
                 //add line number if applicable
                 if (action == DebugActions.StepInto
@@ -56,14 +65,23 @@ namespace OSBIDE.Library.Events
                     || action == DebugActions.StepOver
                     )
                 {
-                    TextSelection debugSelection = dte.ActiveDocument.Selection;
-                    int lineNumber = debugSelection.CurrentLine;
-                    debug.LineNumber = lineNumber;
+                    //line number can be null if there is no document open
+                    try
+                    {
+                        TextSelection debugSelection = dte.ActiveDocument.Selection;
+                        debugSelection.SelectLine();
+                        int lineNumber = debugSelection.CurrentLine;
+                        debug.LineNumber = lineNumber;
+                        debug.DebugOutput = debugSelection.Text;
+                    }
+                    catch (Exception)
+                    {
+                        debug.LineNumber = 0;
+                    }
                 }
 
                 //kind of reappropriating this for our current use.  Consider refactoring.
                 debug.ExecutionAction = (int)action;
-                debug.DocumentName = dte.ActiveDocument.FullName;
 
                 //throw the content of the output window into the event if we just stopped debugging
                 if (action == DebugActions.StopDebugging)

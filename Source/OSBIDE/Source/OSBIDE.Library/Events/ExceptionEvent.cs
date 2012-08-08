@@ -50,9 +50,16 @@ namespace OSBIDE.Library.Events
         [Required]
         public string DocumentName { get; set; }
 
+        [Required]
+        public int LineNumber { get; set; }
+
+        [Required]
+        public string LineContent { get; set; }
+
         public ExceptionEvent()
         {
             EventDate = DateTime.Now;
+            LineContent = "";
         }
     }
 }

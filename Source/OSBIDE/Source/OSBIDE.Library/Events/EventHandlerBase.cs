@@ -28,9 +28,10 @@ namespace OSBIDE.Library.Events
         /// <summary>
         /// GUID for physical files and folders
         /// </summary>
-        public static string PhysicalFileGuid =  "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}";
+        public static string PhysicalFileGuid = "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}";
 
-        protected DTE2 dte {
+        protected DTE2 dte
+        {
             get
             {
                 DTE2 dteRef = null;
@@ -58,9 +59,6 @@ namespace OSBIDE.Library.Events
         private ProjectItemsEvents solutionItemsEvents = null;
         private TextEditorEvents textEditorEvents = null;
 
-        private IVsDebugger debugger;
-        private uint debuggerEventsCookie;
-
         public EventHandlerBase(IServiceProvider serviceProvider, IOsbideEventGenerator osbideEvents)
         {
             if (serviceProvider == null)
@@ -69,9 +67,6 @@ namespace OSBIDE.Library.Events
             }
 
             ServiceProvider = serviceProvider;
-            this.debugger = (IVsDebugger)serviceProvider.GetService(typeof(IVsDebugger));
-            debugger.AdviseDebugEventCallback(this);
-            debugger.AdviseDebuggerEvents(this, out debuggerEventsCookie);
 
             //save references to dte events
             buildEvents = dte.Events.BuildEvents;
@@ -106,6 +101,7 @@ namespace OSBIDE.Library.Events
             menuCommandEvents.BeforeExecute += new _dispCommandEvents_BeforeExecuteEventHandler(MenuCommand_BeforeExecute);
 
             //debugger events
+            debuggerEvents.OnContextChanged += new _dispDebuggerEvents_OnContextChangedEventHandler(OnContextChanged);
             debuggerEvents.OnEnterBreakMode += new _dispDebuggerEvents_OnEnterBreakModeEventHandler(OnEnterBreakMode);
             debuggerEvents.OnEnterDesignMode += new _dispDebuggerEvents_OnEnterDesignModeEventHandler(OnEnterDesignMode);
             debuggerEvents.OnEnterRunMode += new _dispDebuggerEvents_OnEnterRunModeEventHandler(OnEnterRunMode);
@@ -146,7 +142,6 @@ namespace OSBIDE.Library.Events
             textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(EditorLineChanged);
         }
 
-
         protected void NotifyEventCreated(object sender, EventCreatedArgs eventArgs)
         {
             EventCreated(sender, eventArgs);
@@ -169,6 +164,7 @@ namespace OSBIDE.Library.Events
         public virtual void MenuCommand_AfterExecute(string Guid, int ID, object CustomIn, object CustomOut) { }
 
         //debugger event handlers
+        public virtual void OnContextChanged(Process NewProcess, Program NewProgram, Thread NewThread, StackFrame NewStackFrame) { }
         public virtual void OnEnterBreakMode(dbgEventReason Reason, ref dbgExecutionAction ExecutionAction) { }
         public virtual void OnEnterDesignMode(dbgEventReason Reason) { }
         public virtual void OnEnterRunMode(dbgEventReason Reason) { }
@@ -196,7 +192,30 @@ namespace OSBIDE.Library.Events
 
         //solution event handlers
         public virtual void SolutionBeforeClosing() { }
-        public virtual void SolutionOpened() { }
+        public virtual void SolutionOpened()
+        {
+            EnvDTE90.Debugger3 debugger = (EnvDTE90.Debugger3)dte.Debugger;
+            string[] exceptionGroups = { "C++ Exceptions", "Win32 Exceptions" };
+
+            if (debugger != null)
+            {
+                if (debugger.ExceptionGroups != null)
+                {
+                    foreach (EnvDTE90.ExceptionSettings settings in debugger.ExceptionGroups)
+                    {
+                        string settingsName = settings.Name;
+                        if (exceptionGroups.Contains(settingsName))
+                        {
+                            foreach (EnvDTE90.ExceptionSetting setting in settings)
+                            {
+                                string name = setting.Name;
+                                settings.SetBreakWhenThrown(true, setting);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         public virtual void ProjectAdded(Project Project) { }
         public virtual void SolutionRenamed(string OldName) { }
 
@@ -207,26 +226,5 @@ namespace OSBIDE.Library.Events
 
         //text editor event handlers
         public virtual void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint) { }
-
-        public virtual int OnModeChange(DBGMODE dbgmodeNew)
-        {
-            int notCaught = (int)dte.Debugger.LastBreakReason & (int)dbgEventReason.dbgEventReasonExceptionNotHandled;
-            int thrown = (int)dte.Debugger.LastBreakReason & (int)dbgEventReason.dbgEventReasonExceptionThrown;
-
-            //AC note: debug reason 15 = exception?
-            if ((int)dte.Debugger.LastBreakReason == 15)
-            {
-                EnvDTE100.Debugger5 debugger = (EnvDTE100.Debugger5)dte.Debugger;
-                foreach (EnvDTE90.ExceptionSettings settings in debugger.ExceptionGroups)
-                {
-                    string settingsName = settings.Name;
-                    foreach (EnvDTE90.ExceptionSetting setting in settings)
-                    {
-                        string name = setting.Name;
-                    }
-                }
-            }
-            return (int)dbgmodeNew;
-        }
     }
 }
