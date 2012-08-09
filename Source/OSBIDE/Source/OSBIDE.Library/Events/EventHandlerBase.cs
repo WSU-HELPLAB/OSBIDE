@@ -198,7 +198,7 @@ namespace OSBIDE.Library.Events
             //loading C related groups as loading the entire collection takes
             //a very (10+ minute) long time to load.
             EnvDTE90.Debugger3 debugger = (EnvDTE90.Debugger3)dte.Debugger;
-            string[] exceptionGroups = { "C++ Exceptions", "Win32 Exceptions" };
+            string[] exceptionGroups = { "C++ Exceptions", "Win32 Exceptions", "Native Run-Time Checks" };
 
             if (debugger != null)
             {
