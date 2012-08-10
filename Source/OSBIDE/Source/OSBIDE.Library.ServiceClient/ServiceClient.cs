@@ -478,11 +478,18 @@ namespace OSBIDE.Library.ServiceClient
                 //see if we're missing any ids in our local DB
                 var eventLogQuery = from id in eventLogIds
                                     select id;
-                var idQuery = from user in db.Users
-                              where eventLogIds.Contains(user.Id)
-                              select user.Id;
-                int[] foundIds = idQuery.ToArray();
+                int[] foundIds = new int[0];
 
+                //From http://brandonzeider.me/2011/microsoft-net/entity-frameworksql-server-ce-thread-safety/
+                //suggestion is to thread lock db calls to prevent memory access violations.
+                lock (db)
+                {
+                    var idQuery = from user in db.Users
+                                  where eventLogIds.Contains(user.Id)
+                                  select user.Id;
+                    foundIds = idQuery.ToArray();
+                }
+                
                 foreach (int id in foundIds)
                 {
                     eventLogIds.Remove(id);
@@ -494,7 +501,10 @@ namespace OSBIDE.Library.ServiceClient
                     OsbideUser[] missingUsers = _webServiceClient.GetUsers(eventLogIds.ToArray());
                     foreach (OsbideUser user in missingUsers)
                     {
-                        db.InsertUserWithId(user);
+                        lock (db)
+                        {
+                            db.InsertUserWithId(user);
+                        }
                     }
                 }
 
@@ -507,8 +517,12 @@ namespace OSBIDE.Library.ServiceClient
                     {
                         SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data, new OsbideDeserializationBinder());
                         submit.EventLogId = log.Id;
-                        db.SubmitEvents.Add(submit);
-                        db.SaveChanges();
+
+                        lock (db)
+                        {
+                            db.SubmitEvents.Add(submit);
+                            db.SaveChanges();
+                        }
                     }
 
                 }

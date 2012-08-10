@@ -113,25 +113,20 @@ namespace ActivityReader.Controls.ViewModels
                     OsbideUser[] missingUsers = _serviceClient.GetUsers(eventLogIds.ToArray());
                     foreach (OsbideUser user in missingUsers)
                     {
-                        _db.InsertUserWithId(user);
+                        lock (_db)
+                        {
+                            _db.InsertUserWithId(user);
+                        }
                     }
                 }
 
                 //finally, insert the event logs
                 foreach (EventLog log in webLogs)
                 {
-                    bool successfulInsert = _db.InsertEventLogWithId(log);
-
-                    /*
-                    if (successfulInsert && log.LogType == SubmitEvent.Name)
+                    lock (_db)
                     {
-                        SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data, new OsbideDeserializationBinder());
-                        submit.EventLogId = log.Id;
-                        _db.SubmitEvents.Add(submit);
-                        _db.SaveChanges();
+                        bool successfulInsert = _db.InsertEventLogWithId(log);
                     }
-                     * */
-
                 }
             }while (webLogs.Length != 0);
         }

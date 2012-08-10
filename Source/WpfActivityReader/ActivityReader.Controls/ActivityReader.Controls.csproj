@@ -72,6 +72,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\ActivityFeedViewModel.cs" />
     <Compile Include="ViewModels\EventDownloadViewModel.cs" />
     <Compile Include="ViewModels\FeedMessageViewModel.cs" />
     <Compile Include="Views\ActivityFeed.xaml.cs">

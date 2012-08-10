@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ActivityReader.Controls.ViewModels;
 
 namespace ActivityReader.Controls.Views
 {
@@ -19,6 +20,18 @@ namespace ActivityReader.Controls.Views
     /// </summary>
     public partial class FeedMessage : UserControl
     {
+        public FeedMessageViewModel ViewModel
+        {
+            get
+            {
+                return this.DataContext as FeedMessageViewModel;
+            }
+            set
+            {
+                DataContext = value;
+            }
+        }
+
         public FeedMessage()
         {
             InitializeComponent();
