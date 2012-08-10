@@ -56,10 +56,12 @@ namespace OSBIDE.Library.Events
         [Required]
         public string LineContent { get; set; }
 
+        public virtual IList<StackFrame> StackFrames { get; set; }
+
         public ExceptionEvent()
         {
             EventDate = DateTime.Now;
-            LineContent = "";
+            StackFrames = new List<StackFrame>();
         }
     }
 }

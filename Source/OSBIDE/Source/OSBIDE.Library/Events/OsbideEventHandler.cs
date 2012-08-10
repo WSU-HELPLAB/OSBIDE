@@ -184,6 +184,20 @@ namespace OSBIDE.Library.Events
         private void HandleException(string ExceptionType, string Name, int Code, string Description, ref dbgExceptionAction ExceptionAction)
         {
             ExceptionEvent ex = new ExceptionEvent();
+            int depthCounter = 0;
+
+            //not sure when the current thread could be NULL, but you never know with
+            //the DTE.
+            if (dte.Debugger.CurrentThread != null)
+            {
+                foreach (EnvDTE.StackFrame dteFrame in dte.Debugger.CurrentThread.StackFrames)
+                {
+                    Models.StackFrame modelFrame = new Models.StackFrame(dteFrame);
+                    modelFrame.Depth = depthCounter;
+                    ex.StackFrames.Add(modelFrame);
+                    depthCounter++;
+                }
+            }
 
             //the stuff inside this try will be null if there isn't an open document
             //window (rare, but possible)

@@ -10,6 +10,7 @@ using System.Data.SqlServerCe;
 using System.Diagnostics.CodeAnalysis;
 using OSBIDE.Library.Events;
 using System.IO;
+using System.Reflection;
 
 namespace OSBIDE.Library.Models
 {
@@ -19,7 +20,7 @@ namespace OSBIDE.Library.Models
         public DbSet<OsbideUser> Users { get; set; }
         public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
 
-        //events that we log
+        
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<BuildEventBreakPoint> BuildEventBreakPoints { get; set; }
         public DbSet<BuildEventErrorListItem> BuildEventErrorListItems { get; set; }
@@ -27,6 +28,8 @@ namespace OSBIDE.Library.Models
         public DbSet<DebugEvent> DebugEvents { get; set; }
         public DbSet<EditorActivityEvent> EditorActivityEvents { get; set; }
         public DbSet<ExceptionEvent> ExceptionEvents { get; set; }
+        public DbSet<StackFrame> StackFrames { get; set; }
+        public DbSet<StackFrameVariable> StackFrameVariables { get; set; }
         public DbSet<SaveEvent> SaveEvents { get; set; }
         public DbSet<CodeDocument> CodeDocuments { get; set; }
         public DbSet<CodeDocumentBreakPoint> CodeDocumentBreakPoints { get; set; }
@@ -87,6 +90,22 @@ namespace OSBIDE.Library.Models
 #if !DEBUG
             modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
 #endif
+
+            //load in any model builder extensions (usually foreign key relationships)
+            //from the models
+            List<Type> componentObjects = (from type in Assembly.GetExecutingAssembly().GetTypes()
+                                           where
+                                           type.GetInterface("IModelBuilderExtender") != null
+                                           &&
+                                           type.IsInterface == false
+                                           &&
+                                           type.IsAbstract == false
+                                           select type).ToList();
+            foreach (Type component in componentObjects)
+            {
+                IModelBuilderExtender builder = Activator.CreateInstance(component) as IModelBuilderExtender;
+                builder.BuildRelationship(modelBuilder);
+            }
         }
 
         protected override bool ShouldValidateEntity(DbEntityEntry entityEntry)

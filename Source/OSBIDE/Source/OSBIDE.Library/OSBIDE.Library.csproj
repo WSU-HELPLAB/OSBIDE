@@ -139,8 +139,11 @@
     <Compile Include="Models\BreakPoint.cs" />
     <Compile Include="Models\CodeDocumentErrorListItem.cs" />
     <Compile Include="Models\DocumentFactory.cs" />
+    <Compile Include="Models\IModelBuilderExtender.cs" />
     <Compile Include="Models\IVSDocument.cs" />
     <Compile Include="Models\LocalErrorLog.cs" />
+    <Compile Include="Models\StackFrame.cs" />
+    <Compile Include="Models\StackFrameVariable.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="Models\Enums.cs" />
