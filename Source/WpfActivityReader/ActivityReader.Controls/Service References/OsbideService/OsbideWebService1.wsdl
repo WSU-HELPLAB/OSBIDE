@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="/Imports">
-      <xsd:import schemaLocation="http://osbide.osble.org/OsbideWebService.svc?xsd=xsd0" />
-      <xsd:import schemaLocation="http://osbide.osble.org/OsbideWebService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://osbide.osble.org/OsbideWebService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" />
-      <xsd:import schemaLocation="http://osbide.osble.org/OsbideWebService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd0" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" />
+      <xsd:import schemaLocation="http://localhost:49263/OsbideWebService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="OsbideWebService_Echo_InputMessage">
@@ -25,12 +25,6 @@
   </wsdl:message>
   <wsdl:message name="OsbideWebService_SaveUser_OutputMessage">
     <wsdl:part name="parameters" element="SaveUserResponse" />
-  </wsdl:message>
-  <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_InputMessage">
-    <wsdl:part name="parameters" element="SubmitLocalErrorLog" />
-  </wsdl:message>
-  <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_OutputMessage">
-    <wsdl:part name="parameters" element="SubmitLocalErrorLogResponse" />
   </wsdl:message>
   <wsdl:message name="OsbideWebService_SubmitLog_InputMessage">
     <wsdl:part name="parameters" element="SubmitLog" />
@@ -74,10 +68,6 @@
     <wsdl:operation name="SaveUser">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SaveUser" message="OsbideWebService_SaveUser_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/SaveUserResponse" message="OsbideWebService_SaveUser_OutputMessage" />
-    </wsdl:operation>
-    <wsdl:operation name="SubmitLocalErrorLog">
-      <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLog" message="OsbideWebService_SubmitLocalErrorLog_InputMessage" />
-      <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLogResponse" message="OsbideWebService_SubmitLocalErrorLog_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SubmitLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLog" message="OsbideWebService_SubmitLog_InputMessage" />

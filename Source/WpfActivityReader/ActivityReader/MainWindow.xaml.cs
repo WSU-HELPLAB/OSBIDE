@@ -27,13 +27,14 @@ namespace ActivityReader
     public partial class MainWindow : Window
     {
         OsbideContext db;
+        private int counter = 0;
         public MainWindow()
         {
             InitializeComponent();
             SqlCeConnection conn = new SqlCeConnection(ActivityReader.Library.StringConstants.SqlCeConnectionString);
             db = new OsbideContext(conn, true);
-            ActivityFeedViewModel vm = new ActivityFeedViewModel();
-            
+            counter = 0;
+            LoadResults();
         }
 
         private void OpenDownloadWindow(object sender, RoutedEventArgs e)
@@ -43,6 +44,36 @@ namespace ActivityReader
             view.ShowDialog();
         }
 
+        private void LoadPreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            counter -= 1000;
+            if (counter < 0)
+            {
+                counter = 0;
+            }
+            LoadResults();
+        }
+
+        private void LoadNextButton_Click(object sender, RoutedEventArgs e)
+        {
+            counter += 1000;
+            LoadResults();
+        }
+
+        private void LoadResults()
+        {
+            ActivityFeedViewModel vm = new ActivityFeedViewModel();
+            List<EventLog> logs = db.EventLogs.OrderBy(l => l.Id).Skip(counter).Take(1000).ToList();
+            foreach (EventLog log in logs)
+            {
+                FeedMessageViewModel message = new FeedMessageViewModel();
+                message.Log = log;
+                vm.Feed.Add(message);
+            }
+            Feed.ViewModel = vm;
+        }
+
+        /*AC: This needs OSBLE.Library >= 1.5.  We're using 1.3.3 for this test.
         private void ProcessLogs(object sender, RoutedEventArgs e)
         {
             int counter = 0;
@@ -106,9 +137,9 @@ namespace ActivityReader
                     evt.EventLogId = log.Id;
                     db.SolutionDownloadEvents.Add(evt);
                     db.SaveChanges();
-                     * */
+                     * 
                 }
             }
-        }
+        }*/
     }
 }

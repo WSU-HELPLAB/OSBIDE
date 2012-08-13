@@ -43,9 +43,9 @@
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.4.3.1\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="OSBIDE.Library, Version=1.4.0.0, Culture=neutral, PublicKeyToken=7c7b9ff0e17dca53, processorArchitecture=MSIL">
+    <Reference Include="OSBIDE.Library, Version=1.5.0.0, Culture=neutral, PublicKeyToken=7c7b9ff0e17dca53, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\OSBIDE\Source\OSBIDE.Library\bin\Release\OSBIDE.Library.dll</HintPath>
+      <HintPath>..\..\..\..\Development\Summer2012Reader\Source\OSBIDE\Source\OSBIDE.Library\bin\Release\OSBIDE.Library.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

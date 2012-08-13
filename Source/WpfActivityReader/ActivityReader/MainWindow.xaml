@@ -6,14 +6,20 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem Header="Download Data" Click="OpenDownloadWindow" />
-                <MenuItem Header="Process Logs" Click="ProcessLogs" />
             </MenuItem>
         </Menu>
-        <views:ActivityFeed x:Name="Feed" Grid.Row="1" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button x:Name="LoadPreviousButton" Content="Previous" Click="LoadPreviousButton_Click" />
+            <Button x:Name="LoadNextButton" Margin="10,0,0,0" Content="Next" Click="LoadNextButton_Click" />
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Vertical">
+            <views:ActivityFeed x:Name="Feed" />
+        </StackPanel>
     </Grid>
 </Window>

@@ -24,9 +24,6 @@ namespace ActivityReader.Controls.OsbideService {
         [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SaveUser", ReplyAction="urn:OsbideWebService/SaveUserResponse")]
         OSBIDE.Library.Models.OsbideUser SaveUser(OSBIDE.Library.Models.OsbideUser userToSave);
         
-        [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SubmitLocalErrorLog", ReplyAction="urn:OsbideWebService/SubmitLocalErrorLogResponse")]
-        int SubmitLocalErrorLog(OSBIDE.Library.Models.LocalErrorLog errorLog);
-        
         [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SubmitLog", ReplyAction="urn:OsbideWebService/SubmitLogResponse")]
         int SubmitLog(OSBIDE.Library.Models.EventLog log);
         
@@ -80,10 +77,6 @@ namespace ActivityReader.Controls.OsbideService {
         
         public OSBIDE.Library.Models.OsbideUser SaveUser(OSBIDE.Library.Models.OsbideUser userToSave) {
             return base.Channel.SaveUser(userToSave);
-        }
-        
-        public int SubmitLocalErrorLog(OSBIDE.Library.Models.LocalErrorLog errorLog) {
-            return base.Channel.SubmitLocalErrorLog(errorLog);
         }
         
         public int SubmitLog(OSBIDE.Library.Models.EventLog log) {
