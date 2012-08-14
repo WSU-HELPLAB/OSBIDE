@@ -175,6 +175,8 @@ namespace OSBIDE.Web
         [OperationContract]
         public List<EventLog> GetPastEvents(DateTime start, bool waitForContent = true)
         {
+            //AC: turned off for now
+            return new List<EventLog>();
             bool foundData = false;
             int timeoutCount = 0;
             List<EventLog> logs = new List<EventLog>();
