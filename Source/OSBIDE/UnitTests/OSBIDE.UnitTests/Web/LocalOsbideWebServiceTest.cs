@@ -96,6 +96,18 @@ namespace OSBIDE.UnitTests.Web
             Assert.AreEqual(OSBIDE.Library.StringConstants.LibraryVersion, target.LibraryVersionNumber());
         }
 
+        [TestMethod]
+        public void GetBinaryLogTest()
+        {
+            //setup values
+            OsbideWebService target = new OsbideWebService();
+            List<EventLog> logs = target.GetPastEvents(DateTime.MinValue, true);
+            foreach (EventLog log in logs)
+            {
+                IOsbideEvent evt = EventFactory.FromZippedBinary(log.Data);
+            }
+        }
+
         /// <summary>
         ///A test for SubmitLog
         ///</summary>

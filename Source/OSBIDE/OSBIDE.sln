@@ -1,6 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA888830-EB1D-4825-88A3-5BADB0A9F2AC}"
+	ProjectSection(SolutionItems) = preProject
+		OSBIDE.vsmdi = OSBIDE.vsmdi
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VSPackage", "Source\OSBIDE.VSPackage\OSBIDE.VSPackage.csproj", "{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876} = {A79BCD54-BE94-4E90-8670-B2CDE3DCA876}
@@ -16,19 +21,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.IntegrationTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.UnitTests", "UnitTests\OSBIDE.UnitTests\OSBIDE.UnitTests.csproj", "{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA888830-EB1D-4825-88A3-5BADB0A9F2AC}"
-	ProjectSection(SolutionItems) = preProject
-		OSBIDE.vsmdi = OSBIDE.vsmdi
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClient", "Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj", "{5AAF5126-7931-40F4-9B46-92CE15C47CCA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876} = {A79BCD54-BE94-4E90-8670-B2CDE3DCA876}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VS2012Package", "Source\OSBIDE.VS2012Package\OSBIDE.VS2012Package.csproj", "{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 9
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
@@ -53,6 +55,9 @@ Global
 		SccProjectUniqueName7 = Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
 		SccProjectName7 = Source/OSBIDE.Library.ServiceClient
 		SccLocalPath7 = Source\\OSBIDE.Library.ServiceClient
+		SccProjectUniqueName8 = Source\\OSBIDE.VS2012Package\\OSBIDE.VS2012Package.csproj
+		SccProjectName8 = Source/OSBIDE.VS2012Package
+		SccLocalPath8 = Source\\OSBIDE.VS2012Package
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OSBIDE.vsmdi
@@ -90,6 +95,10 @@ Global
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

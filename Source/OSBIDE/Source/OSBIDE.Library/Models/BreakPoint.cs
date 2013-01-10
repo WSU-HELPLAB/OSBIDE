@@ -40,6 +40,9 @@ namespace OSBIDE.Library.Models
         [Required]
         public bool Enabled { get; set; }
 
+        public BreakPoint()
+        {
+        }
 
         public BreakPoint(EnvDTE.Breakpoint bp)
         {
