@@ -41,7 +41,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>OSBIDE.Library.ServiceClient.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>OSBIDE.Library.ServiceClient.Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -107,7 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="OSBIDE.Library.ServiceClient.snk" />
+    <None Include="OSBIDE.Library.ServiceClient.Key.snk" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\OSBIDE.Library.Models.EventLog.datasource" />
     <None Include="Properties\DataSources\OSBIDE.Library.Models.OsbideUser.datasource" />
