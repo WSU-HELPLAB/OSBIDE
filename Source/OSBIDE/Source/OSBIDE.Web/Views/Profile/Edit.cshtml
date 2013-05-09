@@ -1,0 +1,168 @@
+﻿@using OSBIDE.Library
+@using OSBIDE.Library.Models
+@using OSBIDE.Web.Models.ViewModels
+@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models
+@model OSBIDE.Web.Models.ViewModels.EditProfileViewModel
+@{
+    ViewBag.Title = "Edit Your Profile";
+}
+<h1>@Model.User.FirstAndLastName</h1>
+<section>
+    @using (Html.BeginForm("Picture", "Profile", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <h1>Profile Picture</h1>
+        <img src="@Url.Action("Picture", "Profile", new { id = Model.User.Id })" title="profile image" alt="profile image" />
+        <p>Choose a profile picture...</p>
+        <input type="file" name="file" />
+        <input type="submit" name="upload" value="Upload" />
+        <input type="submit" name="reset" value="Reset Picture" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    }
+</section>
+<section>
+    <h1>Profile Information</h1>
+    @Html.ValidationSummary(true, "Account update was unsuccessful.")
+    @using (Html.BeginForm())
+    {
+        <h2>Change Email Address</h2>
+        <p>
+            You may change your email address as long as it is not in use by another account.  Note that in order to change your
+            email address, you must verify your password.
+        </p>
+        if (@Model.UpdateEmailSuccessMessage != null)
+        {
+        <div class="notice">
+            <h3>@Model.UpdateEmailSuccessMessage</h3>
+        </div>
+        }
+        <table class="form-entry">
+            <tr>
+                <th>Current Email Address:</th>
+                <td colspan="2">@Model.User.Email</td>
+            </tr>
+            <tr>
+                <th>New Email Address:</th>
+                <td>@Html.TextBoxFor(m => m.NewEmail)</td>
+                <td>@Html.ValidationMessageFor(m => m.NewEmail)</td>
+            </tr>
+            <tr>
+                <th>Confirm Email Address:</th>
+                <td>@Html.TextBoxFor(m => m.NewEmailConfirm)</td>
+                <td>@Html.ValidationMessageFor(m => m.NewEmailConfirm)</td>
+            </tr>
+            <tr>
+                <th>Verify Password:</th>
+                <td>@Html.PasswordFor(m => m.OldPassword)</td>
+                <td>@Html.ValidationMessageFor(m => m.OldPassword)</td>
+            </tr>
+        </table>
+        <input type="submit" name="updateEmail" value="Update Email" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    }
+    @using (Html.BeginForm())
+    {
+        <h2>Update Password</h2>
+        if (@Model.UpdatePasswordSuccessMessage != null)
+        {
+        <div class="notice">
+            <h3>@Model.UpdatePasswordSuccessMessage</h3>
+        </div>
+        }
+        <table class="form-entry">
+            <tr>
+                <th>Current Password:</th>
+                <td>@Html.PasswordFor(m => m.OldPassword)</td>
+                <td>@Html.ValidationMessageFor(m => m.OldPassword)</td>
+            </tr>
+            <tr>
+                <th>New Password:</th>
+                <td>@Html.PasswordFor(m => m.NewPassword)</td>
+                <td>@Html.ValidationMessageFor(m => m.NewPassword)</td>
+            </tr>
+            <tr>
+                <th>Confirm New Password:</th>
+                <td>@Html.PasswordFor(m => m.NewPasswordConfirm)</td>
+                <td>@Html.ValidationMessageFor(m => m.NewPasswordConfirm)</td>
+            </tr>
+        </table>
+        <input type="submit" name="updatePassword" value="Update Password" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    }
+</section>
+<section>
+    <h1></h1>
+</section>
+<section>
+    <h1>Subscriptions</h1>
+    <p>This section allows you to select whose feed notifications that you will see in your activity feed.  Note that you are required to be subscribed to certain users.</p>
+    @using (Html.BeginForm())
+    {
+        <table>
+            <thead>
+            </thead>
+            <tbody>
+                @{int columnCounter = -1;
+                  bool openTableRow = false;
+                  }
+                @foreach (OsbideUser user in Model.UsersInCourse)
+                {
+                    //ignore current user in the list
+                    if (user.Id == Model.User.Id)
+                    {
+                        continue;
+                    }
+                    columnCounter++;
+                    string isChecked = "";
+                    bool isRequired = false;
+                    if (Model.UserSubscriptions.ContainsKey(user.Id) == true)
+                    {
+                        isChecked = @"checked=""checked""";
+                        if (Model.UserSubscriptions[user.Id].IsRequiredSubscription == true)
+                        {
+                            isRequired = true;
+                        }
+                    }
+                    if (columnCounter % 4 == 0)
+                    {
+                        openTableRow = true;
+                    @:<tr>
+}
+                        <td style="padding:25px;">
+                            <img src="@Url.Action("Picture", "Profile", new { id = user.Id, size = 64 })" height="64" width="64" title="profile image" alt="profile image" />
+                            <div>
+                                <a href="@Url.Action("Index", "Profile", new { id = user.Id, component = OsbideVsComponent.UserProfile })">@user.FirstAndLastName</a>
+                                <br />
+                                @if(isRequired == false)
+                                {
+                                    @:<input id="subscription_@user.Id" name="subscription_@user.Id" type="checkbox" @isChecked @isRequired /> 
+                                    <label for="subscription_@user.Id">Subscribe</label>
+                                }
+                                else
+                                {
+                                    @:(Required)
+                                }
+                            </div>
+                        </td>
+                    if (columnCounter % 4 == 3)
+                    {
+                        openTableRow = false;
+                    @:</tr>
+                                }
+                }
+                @if (openTableRow == true)
+                {
+                    @:</tr>
+                }
+            </tbody>
+        </table>
+        <input type="submit" name="updateSubscriptions" value="Update Subscriptions" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    }
+</section>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

@@ -1,0 +1,12 @@
+﻿@model OSBIDE.Web.Models.ViewModels.FeedViewModel
+<style type="text/css">
+    .feed-item-ajax {
+        display: none;
+    }
+</style>
+<section id="feed-items">
+@Html.Partial("Feed/_FeedItems", Model.Feed)
+</section>
+<section id="feed-footer">
+@Html.Partial("Feed/_FeedFooter", Model)
+</section>

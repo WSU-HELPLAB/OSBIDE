@@ -1,0 +1,118 @@
+﻿@using OSBIDE.Library
+@using OSBIDE.Library.Models
+@using OSBIDE.Web.Models.ViewModels
+@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models
+@using System.Collections.Generic
+@model FeedViewModel
+<section>
+    @Html.ActionLink("Load earlier posts...", "Index", new { timestamp = Model.LastPollDate.AddHours(-10).Ticks }, new { id = "load-old-posts" })
+</section>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //get recent feed items
+        getRecentFeedItems();
+
+        //display hidden 
+        showLastHidden();
+
+        //listen for clicks to load older messages
+        $("#load-old-posts").click(function(e)
+        {
+            e.preventDefault();
+            $("#load-old-posts").text("Loading...");
+            var feedId = getOldestFeedId();
+            $.ajax(
+            {
+                url: "@Url.Action("OldFeedItems", "Feed")",
+                data: { id: feedId, count: 10, userId: "@Model.SingleUserId" },
+                dataType: "html",
+                type: "GET",
+                success: getOldPostsSuccess,
+            }
+            );
+        });
+    }
+    );
+
+    function getOldPostsSuccess(html) {
+        $("#load-old-posts").text("Load earlier posts...");
+        var trimmed = $.trim(html);
+        if (trimmed.length > 0) {
+            $("#feed-items").append(html);
+            $(".feed-item-ajax:hidden.OldFeedItems").each(function (e) {
+                $(this).removeClass("feed-item-ajax");
+            });
+        }
+        else {
+            $("#load-old-posts").text("No earlier posts available.");
+        }
+    }
+
+    function showLastHidden() {
+        var initialScrollHeight = $(document).scrollTop();
+        var item = $(".feed-item-ajax:hidden").last();
+
+        //if we're loading old items, 
+        if (item.hasClass("OldFeedItems")) {
+            item = $(".feed-item-ajax:hidden.OldFeedItems").first();
+        }
+        item.slideDown(
+                {
+                    duration: 600,
+                    easing: "linear",
+                    progress: function (animation, progress, remainingMs) {
+                        if (initialScrollHeight > 50) {
+                            $(document).scrollTop($(this).height() + initialScrollHeight);
+                        }
+                    }
+                });
+        setTimeout(showLastHidden, 4000);
+    }
+
+    function getOldestFeedId() {
+        var lastId = $(".feed-item-single").last().attr("data-id");
+        if (lastId == undefined) {
+            lastId = "@(Model.LastLogId + 1)";
+        }
+        return lastId;
+    }
+
+    function getMostRecentFeedId() {
+        var lastId = $(".feed-item-single").first().attr("data-id");
+        if (lastId == undefined) {
+            lastId = "@Model.LastLogId";
+        }
+    return lastId;
+}
+
+
+function getRecentFeedItems() {
+
+    //find most recent log id
+    var lastId = getMostRecentFeedId();
+    $.ajax(
+        {
+            url: "@Url.Action("RecentFeedItems", "Feed")",
+                data: { id: lastId, userId: "@Model.SingleUserId" },
+                dataType: "html",
+                type: "GET",
+                success: getRecentFeedItemsSuccess,
+                complete: function () { setTimeout(getRecentFeedItems, 40000); }
+            }
+            );
+    }
+
+    function getRecentFeedItemsSuccess(html) {
+        var trimmed = $.trim(html);
+        if (trimmed.length > 0) {
+            $("#feed-items").prepend(html);
+        }
+    }
+
+
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
+}

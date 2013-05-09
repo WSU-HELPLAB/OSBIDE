@@ -1,0 +1,30 @@
+﻿@using OSBIDE.Library.Models
+@model OSBIDE.Library.Models.LogComment
+@{
+    LogComment comment = Model;
+    OsbideUser CurrentUser = ViewBag.CurrentUser;
+    HelpfulLogComment helpful = comment.HelpfulMarks.Where(m => m.UserId == CurrentUser.Id).FirstOrDefault();
+    int helpfulCount = comment.HelpfulMarks.Count();
+}
+<section class="log-comment-single">
+    <div class="log-comment-profile-picture">
+        <img src="@Url.Action("Picture", "Profile", new { id = comment.AuthorId, size = 48 })" title="profile image" alt="profile image" style="float:left;" />
+    </div>
+    <div class="log-comment-content">
+        <h1>@comment.Author.FirstAndLastName</h1>
+        <h2>@comment.DatePosted.ToString("MM/dd @ hh:mmtt")</h2>
+        <p>
+            @comment.Content
+        </p>
+    </div>
+    @if (helpful == null)//&& comment.AuthorId != CurrentUser.Id)
+    {
+        <div>@Html.ActionLink("mark as helpful", "MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Request.Url.AbsoluteUri }, new { })</div>
+    }
+    <div class="helpful-marks" style="clear: both;">
+        @if (helpfulCount > 0)
+        {
+            @:+@helpfulCount
+                }
+    </div>
+</section>

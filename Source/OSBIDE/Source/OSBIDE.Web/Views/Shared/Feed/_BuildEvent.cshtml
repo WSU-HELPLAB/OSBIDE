@@ -1,0 +1,15 @@
+﻿@using OSBIDE.Library.Models
+@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models
+@using System.IO
+@model OSBIDE.Web.Models.AggregateFeedItem
+@{
+    int buildCount = 1;
+    int errorCount = (Model.Items.First().Event as BuildEvent).CriticalErrorCount;
+}
+@Model.Creator.FirstName attempted to compile &quot;@Path.GetFileNameWithoutExtension(Model.Items.First().Event.SolutionName)&quot;
+@if(buildCount != 1)
+{
+    <text>@buildCount times</text>
+}
+and encountered @errorCount error(s).
