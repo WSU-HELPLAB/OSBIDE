@@ -1,45 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:complexType name="OsbideUser">
-    <xs:sequence>
-      <xs:element name="_firstName" nillable="true" type="xs:string" />
-      <xs:element name="_institutionId" nillable="true" type="xs:string" />
-      <xs:element name="_lastName" nillable="true" type="xs:string" />
-      <xs:element name="_x003C_Id_x003E_k__BackingField" type="xs:int" />
-      <xs:element name="_x003C_OsbleId_x003E_k__BackingField" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="OsbideUser" nillable="true" type="tns:OsbideUser" />
-  <xs:complexType name="LocalErrorLog">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Content" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="Id" type="xs:int" />
-      <xs:element minOccurs="0" name="LogDate" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="Sender" nillable="true" type="tns:OsbideUser" />
-      <xs:element minOccurs="0" name="SenderId" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="LocalErrorLog" nillable="true" type="tns:LocalErrorLog" />
-  <xs:complexType name="EventLog">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="Data" nillable="true" type="xs:base64Binary" />
-      <xs:element minOccurs="0" name="DateReceived" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="Id" type="xs:int" />
-      <xs:element minOccurs="0" name="LogType" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="SenderId" type="xs:int" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="EventLog" nillable="true" type="tns:EventLog" />
-  <xs:complexType name="ArrayOfEventLog">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="EventLog" nillable="true" type="tns:EventLog" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfEventLog" nillable="true" type="tns:ArrayOfEventLog" />
-  <xs:complexType name="ArrayOfOsbideUser">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="OsbideUser" nillable="true" type="tns:OsbideUser" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfOsbideUser" nillable="true" type="tns:ArrayOfOsbideUser" />
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:24867/Services/OsbideWebService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" />
+  <xs:element name="Echo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="toEcho" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EchoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EchoResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Login">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="email" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="hashedPassword" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LoginResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="LoginResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetActiveUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetActiveUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetActiveUserResult" nillable="true" type="q1:OsbideUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsValidKey">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsValidKeyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="IsValidKeyResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitLocalErrorLog">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="errorLog" nillable="true" type="q2:LocalErrorLog" />
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitLocalErrorLogResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SubmitLocalErrorLogResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitLog">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q3:EventLog" />
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitLogResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SubmitLogResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LibraryVersionNumber">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LibraryVersionNumberResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="LibraryVersionNumberResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OsbidePackageUrl">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OsbidePackageUrlResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="OsbidePackageUrlResult" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

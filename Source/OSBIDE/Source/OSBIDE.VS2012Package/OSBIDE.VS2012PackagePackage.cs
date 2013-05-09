@@ -22,8 +22,11 @@ using System.ServiceModel;
 using EnvDTE80;
 using OSBIDE.Library;
 using System.IO;
+using System.Runtime.Caching;
+using OSBIDE.VS2012Package;
+using EnvDTE;
 
-namespace WashingtonStateUniversity.OSBIDE_VS2012Package
+namespace OSBIDE_VS2012Package
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -43,6 +46,12 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideToolWindow(typeof(ActivityFeedToolWindow))]
+    [ProvideToolWindow(typeof(ActivityFeedDetailsToolWindow))]
+    [ProvideToolWindow(typeof(ChatToolWindow))]
+    [ProvideToolWindow(typeof(UserProfileToolWindow))]
+    [ProvideToolWindow(typeof(CreateAccountToolWindow))]
+    [ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [Guid(GuidList.guidOSBIDE_VS2012PackagePkgString)]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     public sealed class OSBIDE_VS2012PackagePackage : Package
@@ -51,9 +60,13 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
         private bool _hasWebServiceError = false;
         private OsbideEventHandler _eventHandler = null;
         private ILogger _errorLogger = new LocalErrorLogger();
-        public OsbideUser CurrentUser { get; private set; }
         private ServiceClient _client;
         private OsbideContext _db;
+        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        private string _userName = null;
+        private string _userPassword = null;
+        private string _webServiceKey = null;
+        private OsbideToolWindowManager _manager = null;
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
@@ -71,7 +84,133 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
             //AC: For consolidation purposes, I've just thrown everything inside the Initialize method.
         }
 
+        /////////////////////////////////////////////////////////////////////////////
+        // Overriden Package Implementation
+        #region Package Members
 
+        /// <summary>
+        /// Initialization of the package; this method is called right after the package is sited, so this is the place
+        /// where you can put all the initilaization code that rely on services provided by VisualStudio.
+        /// </summary>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            //AC: Explicity load in assemblies.  Necessary for serialization (why?)
+            Assembly.Load("OSBIDE.Library");
+            Assembly.Load("OSBIDE.Controls");
+
+            // Add our command handlers for menu (commands must exist in the .vsct file)
+            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            if (null != mcs)
+            {
+                // Create the command for the menu item.
+                CommandID menuCommandID = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCommand);
+                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                mcs.AddCommand(menuItem);
+
+                //activity feed
+                CommandID activityFeedId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideActivityFeedTool);
+                MenuCommand menuActivityWin = new MenuCommand(ShowActivityFeedTool, activityFeedId);
+                mcs.AddCommand(menuActivityWin);
+
+                //activity feed details
+                CommandID activityFeedDetailsId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideActivityFeedDetailsTool);
+                MenuCommand menuActivityDetailsWin = new MenuCommand(ShowActivityFeedDetailsTool, activityFeedDetailsId);
+                mcs.AddCommand(menuActivityDetailsWin);
+
+                //chat window
+                CommandID chatWindowId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideChatTool);
+                MenuCommand menuChatWin = new MenuCommand(ShowChatTool, chatWindowId);
+                mcs.AddCommand(menuChatWin);
+
+                //profile page
+                CommandID profileWindowId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideUserProfileTool);
+                MenuCommand menuProfileWin = new MenuCommand(ShowProfileTool, profileWindowId);
+                mcs.AddCommand(menuProfileWin);
+
+                //"ask for help context" menu
+                CommandID askForHelpId = new CommandID(GuidList.guidOSBIDE_ContextMenuCmdSet, (int)PkgCmdIDList.cmdOsbideAskForHelp);
+                OleMenuCommand askForHelpWin = new OleMenuCommand(ShowAskForHelp, askForHelpId);
+                askForHelpWin.BeforeQueryStatus += AskForHelpCheckActive;
+                mcs.AddCommand(askForHelpWin);
+
+                //create account window
+                CommandID createAccountWindowId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCreateAccountTool);
+                MenuCommand menuAccountWin = new MenuCommand(ShowCreateAccountTool, createAccountWindowId);
+                mcs.AddCommand(menuAccountWin);
+
+                //submit assignment command
+                CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
+                MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
+                mcs.AddCommand(submitMenuItem);
+
+                //ask the professor window
+                CommandID askProfessorWindowId = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideAskTheProfessor);
+                MenuCommand menuAskProfessorWin = new MenuCommand(ShowAskProfessorTool, askProfessorWindowId);
+                mcs.AddCommand(menuAskProfessorWin);
+
+            }
+
+            //create our web service
+            _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
+
+            //pull saved user data
+            _userName = _cache[StringConstants.UserNameCacheKey] as string;
+            _userPassword = _cache[StringConstants.PasswordCacheKey] as string;
+
+            //display a user notification if we don't have any user on file
+            if (_userName == null || _userPassword == null)
+            {
+                _isOsbideUpToDate = false;
+                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information, which can be done by clicking on the \"Tools\" menu and selecting \"Log into OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.OK);
+            }
+            else
+            {
+                string authKey = "";
+                try
+                {
+                    string hashedPassword = UserPassword.EncryptPassword(_userPassword, _userName);
+                    authKey = _webServiceClient.Login(_userName, hashedPassword);
+                    if (authKey.Length == 0)
+                    {
+                        MessageBoxResult result = MessageBox.Show("It appears as though your OSBIDE user name or password has changed since the last time you opened Visual Studio.  Would you like to log back into OSBIDE?", "Log Into OSBIDE", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            MenuItemCallback(this, EventArgs.Empty);
+                        }
+                    }
+                }
+                catch (EndpointNotFoundException notFoundException)
+                {
+                    _errorLogger.WriteToLog("Web service error: " + notFoundException.Message, LogPriority.HighPriority);
+                    _hasWebServiceError = true;
+                }
+                catch (Exception ex)
+                {
+                    _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
+                    _hasWebServiceError = true;
+                }
+                if (authKey.Length > 0)
+                {
+                    _cache[StringConstants.AuthenticationCacheKey] = authKey;
+                }
+            }
+
+            //check web service version number against ours
+            CheckServiceVersion();
+
+            if (_isOsbideUpToDate)
+            {
+                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
+                _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
+            }
+
+            _manager = new OsbideToolWindowManager(_cache as FileCache, this);
+        }
+        #endregion
+
+        #region AC Code
 
         /// <summary>
         /// This function is called when the user clicks the menu item that shows the 
@@ -102,6 +241,128 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
              * */
         }
 
+        private void ShowActivityFeedTool(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == false)
+            {
+                _manager.OpenActivityFeedWindow();
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+            }
+        }
+
+        private void ShowActivityFeedDetailsTool(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == false)
+            {
+                _manager.OpenActivityFeedDetailsWindow();
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+            }
+        }
+
+        private void ShowChatTool(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == false)
+            {
+                _manager.OpenChatWindow();
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+            }
+        }
+
+        private void ShowProfileTool(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == false)
+            {
+                _manager.OpenProfileWindow();
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+            }
+        }
+
+        private void ShowCreateAccountTool(object sender, EventArgs e)
+        {
+            _manager.OpenCreateAccountWindow();
+
+        }
+
+        private void ShowAskProfessorTool(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == false)
+            {
+                _manager.OpenAskTheProfessorWindow();
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+            }
+        }
+
+        public void ShowAskForHelp(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(_cache[StringConstants.AuthenticationCacheKey].ToString()) == true)
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
+                return;
+            }
+
+            AskForHelpViewModel vm = new AskForHelpViewModel();
+
+            //find current text selection
+            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+            if (dte != null)
+            {
+                TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
+                if (selection != null)
+                {
+                    vm.Code = selection.Text;
+                }
+            }
+
+            //show message dialog
+            MessageBoxResult result = AskForHelpForm.ShowModalDialog(vm);
+            if (result == MessageBoxResult.OK)
+            {
+                EventGenerator generator = EventGenerator.GetInstance();
+                AskForHelpEvent evt = new AskForHelpEvent();
+                evt.Code = vm.Code;
+                evt.UserComment = vm.UserText;
+                generator.SubmitEvent(evt);
+                MessageBox.Show("Your question has been logged and will show up in the activity stream shortly.");
+            }
+        }
+
+        private void AskForHelpCheckActive(object sender, EventArgs e)
+        {
+            var cmd = sender as OleMenuCommand;
+            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+            if (dte != null)
+            {
+                TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
+                if (selection != null)
+                {
+                    string text = selection.Text;
+                    if (string.IsNullOrEmpty(text) == true)
+                    {
+                        cmd.Enabled = false;
+                    }
+                    else
+                    {
+                        cmd.Enabled = true;
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// This function is the callback used to execute a command when the a menu item is clicked.
         /// See the Initialize method to see how the menu item is associated to this function using
@@ -111,14 +372,28 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
         {
             IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             Guid clsid = Guid.Empty;
-            MessageBoxResult result = AccountWindow.ShowModalDialog(CurrentUser);
+            OsbideLoginViewModel vm = new OsbideLoginViewModel();
+            vm.RequestCreateAccount += ShowCreateAccountTool;
+
+            //attempt to store previously cached values if possible
+            vm.Password = _userPassword;
+            vm.Email = _userName;
+
+            MessageBoxResult result = OsbideLoginControl.ShowModalDialog(vm);
 
             //assume that data was changed and needs to be saved
             if (result == MessageBoxResult.OK)
             {
                 try
                 {
-                    CurrentUser = _webServiceClient.SaveUser(CurrentUser);
+                    _cache[StringConstants.UserNameCacheKey] = vm.Email;
+                    _userName = vm.Email;
+
+                    _cache[StringConstants.PasswordCacheKey] = vm.Password;
+                    _userPassword = vm.Password;
+
+                    _cache[StringConstants.AuthenticationCacheKey] = vm.AuthenticationHash;
+
                 }
                 catch (Exception ex)
                 {
@@ -130,10 +405,11 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
                 }
 
                 //If we got back a valid user, turn on log saving
-                if (CurrentUser.Id != 0)
+                if (_userName != null && _userPassword != null)
                 {
-                    SaveUserData(CurrentUser);
                     _isOsbideUpToDate = true;
+
+                    MessageBox.Show("Welcome to OSBIDE!");
                 }
                 else
                 {
@@ -142,124 +418,6 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
             }
         }
 
-        /////////////////////////////////////////////////////////////////////////////
-        // Overriden Package Implementation
-        #region Package Members
-
-        /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initilaization code that rely on services provided by VisualStudio.
-        /// </summary>
-        protected override void Initialize()
-        {
-            base.Initialize();
-
-            //AC: Explicity load in assemblies.  Necessary for serialization (why?)
-            Assembly.Load("OSBIDE.Library");
-            Assembly.Load("OSBIDE.Controls");
-
-            // Add our command handlers for menu (commands must exist in the .vsct file)
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (null != mcs)
-            {
-                // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidOSBIDE_VS2012PackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCommand);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
-                mcs.AddCommand(menuItem);
-
-                //create submit assignment command
-                //(turned off for fall study))
-                /*
-                CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
-                MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
-                mcs.AddCommand(submitMenuItem);
-                */
-
-                // Create the command for the tool window
-                //(turned off for fall study)
-                /*
-                CommandID toolwndCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideStatusTool);
-                MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
-                mcs.AddCommand(menuToolWin);
-                 * */
-            }
-
-            //create our web service
-            _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
-
-            //pull saved user data
-            CurrentUser = GetSavedUserData();
-
-            //display a user notification if we don't have any user on file
-            if (CurrentUser.Id == 0)
-            {
-                _isOsbideUpToDate = false;
-                MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information.  Would you like to do this now?  You can always make changes to your information by clicking on the \"Tools\" menu and selecting \"OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
-                {
-                    MenuItemCallback(this, EventArgs.Empty);
-                }
-            }
-            else
-            {
-                //make sure that the saved user has the right ID
-                OsbideUser webUser = null;
-                try
-                {
-                    webUser = _webServiceClient.GetUserById(CurrentUser.Id);
-                }
-                catch (EndpointNotFoundException notFoundException)
-                {
-                    _errorLogger.WriteToLog("Web service error: " + notFoundException.Message, LogPriority.HighPriority);
-                    _hasWebServiceError = true;
-                }
-                catch (Exception ex)
-                {
-                    _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
-                    _hasWebServiceError = true;
-                }
-                if (webUser == null && _hasWebServiceError == false)
-                {
-                    CurrentUser = _webServiceClient.SaveUser(CurrentUser);
-                    SaveUserData(CurrentUser);
-                }
-            }
-
-            //check web service version number against ours
-            CheckServiceVersion();
-
-            /* AC: SQL Server CE is not needed for the Fall study, so disable all
-             * checks.
-            if (!OsbideContext.HasSqlServerCE)
-            {
-                _errorLogger.WriteToLog("SQL Server CE not detected.  Prompting user to install...", LogPriority.MediumPriority);
-                MessageBoxResult result = MessageBox.Show("OSBIDE requires SQL Server CE in order to properly function.  Would you like to download this now?",
-                                            "Missing Component",
-                                            MessageBoxButton.YesNo
-                                            );
-                if (result == MessageBoxResult.Yes)
-                {
-
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("http://www.microsoft.com/download/en/details.aspx?id=17876"));
-                }
-            }
-            else
-            {
-                SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
-                _db = new OsbideContext(conn, true);
-            }
-             * */
-
-            if (_isOsbideUpToDate)
-            {
-                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
-                _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
-            }
-        }
-
-        #endregion
-
-        #region AC Code
         private void CheckServiceVersion()
         {
             string remoteVersionNumber = "";
@@ -292,26 +450,6 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
         }
 
         /// <summary>
-        /// Retrieves saved user data
-        /// </summary>
-        /// <returns></returns>
-        private OsbideUser GetSavedUserData()
-        {
-            return OsbideUser.ReadUserFromFile(StringConstants.UserDataPath);
-        }
-
-        /// <summary>
-        /// Saves current user data to disk
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        private bool SaveUserData(OsbideUser user)
-        {
-            OsbideUser.SaveUserToFile(user, StringConstants.UserDataPath);
-            return true;
-        }
-
-        /// <summary>
         /// Called when the user selects the "submit assignment" menu option
         /// </summary>
         /// <param name="sender"></param>
@@ -331,14 +469,14 @@ namespace WashingtonStateUniversity.OSBIDE_VS2012Package
 
             evt.SolutionName = dte.Solution.FullName;
 
-            SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(CurrentUser, evt);
+            SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(_cache[StringConstants.UserNameCacheKey] as string, evt);
             MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
 
             //assume that data was changed and needs to be saved
             if (result == MessageBoxResult.OK)
             {
                 EventGenerator generator = EventGenerator.GetInstance();
-                generator.RequestSolutionSubmit(CurrentUser, vm.SelectedAssignment);
+                generator.RequestSolutionSubmit(vm.SelectedAssignment);
 
             }
         }

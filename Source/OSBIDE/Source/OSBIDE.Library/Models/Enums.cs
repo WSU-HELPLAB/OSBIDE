@@ -7,6 +7,11 @@ namespace OSBIDE.Library.Models
 {
     public static class Enums
     {
-        public enum ServiceCode { Error = -1, Ok }
+        public enum ServiceCode { 
+                                  GenericError = -100,  
+                                  DatabaseError = -99,
+                                  AuthenticationError = -98,
+                                  Ok = 1 
+                                }
     }
 }

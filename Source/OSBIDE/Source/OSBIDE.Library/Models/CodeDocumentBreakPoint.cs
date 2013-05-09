@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {

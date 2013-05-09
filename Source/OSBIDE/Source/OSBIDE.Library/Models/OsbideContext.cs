@@ -17,13 +17,30 @@ namespace OSBIDE.Library.Models
     public class OsbideContext : DbContext
     {
         public DbSet<EventLog> EventLogs { get; set; }
+        public DbSet<EventLogData> EventLogData { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
         public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
+        public DbSet<UserPassword> UserPasswords { get; set; }
+        public DbSet<School> Schools { get; set; }
+        public DbSet<LogComment> LogComments { get; set; }
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
+        public DbSet<ErrorListItem> ErrorListItems { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<EventLogSubscription> EventLogSubscriptions { get; set; }
+        public DbSet<UserFeedSetting> UserFeedSettings { get; set; }
+        public DbSet<HelpfulLogComment> HelpfulLogComments { get; set; }
+        public DbSet<UserScore> UserScores { get; set; }
+        public DbSet<PrivateQuestion> PrivateQuestions { get; set; }
 
-        
+        public DbSet<AskForHelpEvent> AskForHelpEvents { get; set; }
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<BuildEventBreakPoint> BuildEventBreakPoints { get; set; }
         public DbSet<BuildEventErrorListItem> BuildEventErrorListItems { get; set; }
+        public DbSet<BuildError> BuildErrors { get; set; }
+        public DbSet<ErrorType> ErrorTypes { get; set; }
+        public DbSet<BuildDocument> BuildDocuments { get; set; }
         public DbSet<CutCopyPasteEvent> CutCopyPasteEvents { get; set; }
         public DbSet<DebugEvent> DebugEvents { get; set; }
         public DbSet<EditorActivityEvent> EditorActivityEvents { get; set; }
@@ -35,6 +52,7 @@ namespace OSBIDE.Library.Models
         public DbSet<CodeDocumentBreakPoint> CodeDocumentBreakPoints { get; set; }
         public DbSet<CodeDocumentErrorListItem> CodeDocumentErrorListItems { get; set; }
         public DbSet<SubmitEvent> SubmitEvents { get; set; }
+        public DbSet<FeedCommentEvent> FeedCommentEvents { get; set; }
 
         public OsbideContext()
             : base()
@@ -81,6 +99,25 @@ namespace OSBIDE.Library.Models
                 SqlCeConnection conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
                 OsbideContext localDb = new OsbideContext(conn, true);
                 return localDb;
+            }
+        }
+
+        public static OsbideContext DefaultWebConnection
+        {
+            get
+            {
+                OsbideContext _db;
+#if DEBUG
+                _db = new OsbideContext("OsbideDebugContext");
+                Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
+
+                //uncomment this line (and comment out the one above) when VS is acting stupid and won't
+                //recreate the database on model change.
+                //Database.SetInitializer<OsbideContext>(new OsbideContextAlwaysCreateInitializer());
+#else
+            _db = new OsbideContext("OsbideReleaseContext");
+#endif
+                return _db;
             }
         }
 
@@ -149,7 +186,7 @@ namespace OSBIDE.Library.Models
                     File.Delete(StringConstants.LocalDatabasePath);
                     success = true;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     success = false;
                 }
@@ -189,7 +226,7 @@ namespace OSBIDE.Library.Models
             {
                 conn.Open();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -201,7 +238,7 @@ namespace OSBIDE.Library.Models
             {
                 object result = cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -237,13 +274,6 @@ namespace OSBIDE.Library.Models
                 SqlDbType = System.Data.SqlDbType.NVarChar
             });
 
-            cmd.Parameters.Add(new SqlCeParameter()
-            {
-                ParameterName = "osbleId",
-                Value = user.OsbleId,
-                SqlDbType = System.Data.SqlDbType.Int
-            });
-
             try
             {
                 cmd.ExecuteNonQuery();
@@ -253,7 +283,7 @@ namespace OSBIDE.Library.Models
                 cmd = new SqlCeCommand(query, conn);
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -292,7 +322,7 @@ namespace OSBIDE.Library.Models
             {
                 conn.Open();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -304,7 +334,7 @@ namespace OSBIDE.Library.Models
             {
                 object result = cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -357,7 +387,7 @@ namespace OSBIDE.Library.Models
                 cmd = new SqlCeCommand(query, conn);
                 cmd.ExecuteNonQuery();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }

@@ -27,7 +27,7 @@ namespace OSBIDE.Library.ServiceClient
         {
             get
             {
-                EndpointAddress endpoint = new EndpointAddress("http://localhost:49263/OsbideWebService.svc");
+                EndpointAddress endpoint = new EndpointAddress("http://localhost:24867/Services/OsbideWebService.svc");
                 return endpoint;
             }
         }
@@ -36,7 +36,7 @@ namespace OSBIDE.Library.ServiceClient
         {
             get
             {
-                EndpointAddress endpoint = new EndpointAddress("http://osbide.osble.org/OsbideWebService.svc");
+                EndpointAddress endpoint = new EndpointAddress("http://osbide.osble.org/Services/OsbideWebService.svc");
                 return endpoint;
             }
         }

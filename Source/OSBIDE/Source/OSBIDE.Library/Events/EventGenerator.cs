@@ -10,9 +10,9 @@ namespace OSBIDE.Library.Events
     {
         private static EventGenerator _instance = null;
 
-        public event EventHandler<SubmitEventArgs> SolutionSubmitRequest = delegate { };
+        public event EventHandler<SubmitAssignmentArgs> SolutionSubmitRequest = delegate { };
         public event EventHandler<SolutionDownloadedEventArgs> SolutionDownloaded = delegate { };
-
+        public event EventHandler<SubmitEventArgs> SubmitEventRequested = delegate { };
         private EventGenerator()
         {
 
@@ -27,12 +27,17 @@ namespace OSBIDE.Library.Events
             return _instance;
         }
 
+        public void SubmitEvent(IOsbideEvent evt)
+        {
+            SubmitEventRequested(this, new SubmitEventArgs(evt));
+        }
+
         /// <summary>
         /// Triggers a request for the system to save the active solution
         /// </summary>
-        public void RequestSolutionSubmit(OsbideUser requestAuthor, string assignmentName)
+        public void RequestSolutionSubmit(string assignmentName)
         {
-            SolutionSubmitRequest(requestAuthor, new SubmitEventArgs(assignmentName));
+            SolutionSubmitRequest(this, new SubmitAssignmentArgs(assignmentName));
         }
 
         public void NotifySolutionDownloaded(OsbideUser downloadingUser, SubmitEvent downloadedSubmission)
@@ -43,8 +48,17 @@ namespace OSBIDE.Library.Events
 
     public class SubmitEventArgs : EventArgs
     {
+        public IOsbideEvent Event { get; private set; }
+        public SubmitEventArgs(IOsbideEvent evt)
+        {
+            Event = evt;
+        }
+    }
+
+    public class SubmitAssignmentArgs : EventArgs
+    {
         public string AssignmentName { get; private set; }
-        public SubmitEventArgs(string assignmentName)
+        public SubmitAssignmentArgs(string assignmentName)
         {
             AssignmentName = assignmentName;
         }

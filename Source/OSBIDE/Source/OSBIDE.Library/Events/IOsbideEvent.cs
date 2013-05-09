@@ -14,5 +14,6 @@ namespace OSBIDE.Library.Events
         DateTime EventDate { get; set; }
         string SolutionName { get; set; }
         string EventName { get; }
+        string PrettyName { get; }
     }
 }

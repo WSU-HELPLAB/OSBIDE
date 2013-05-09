@@ -5,18 +5,77 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Drawing;
+using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace OSBIDE.Library.Models
 {
-    [Serializable]
-    public class OsbideUser
+    [Flags]
+    public enum SystemRole : int
     {
-        [Key]
-        public int Id { get; set; }
+        Student = 1,
+        TA = 2,
+        Instructor = 4
+    }
 
+    [Serializable]
+    [DataContract]
+    public class OsbideUser : INotifyPropertyChanged, IModelBuilderExtender
+    {
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        private int _id;
+        private string _email;
         private string _firstName = "";
+        private string _lastName = "";
+        private int _schoolId;
+        private int _institutionId = -1;
+        private byte[] _profileImage;
 
-        [Required]
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        [Key]
+        [DataMember]
+        public int Id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                OnPropertyChanged("Id");
+            }
+        }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your email address.")]
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Email Address")]
+        [DataMember]
+        public string Email
+        {
+            get
+            {
+                return _email;
+            }
+            set
+            {
+                _email = value;
+                OnPropertyChanged("Email");
+            }
+        }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your first name.")]
+        [Display(Name = "First Name")]
+        [DataMember]
         public string FirstName
         {
             get
@@ -26,12 +85,15 @@ namespace OSBIDE.Library.Models
             set
             {
                 _firstName = value.Trim();
+                OnPropertyChanged("FirstName");
             }
         }
 
-        private string _lastName = "";
 
-        [Required]
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your last name.")]
+        [Display(Name = "Last Name")]
+        [DataMember]
         public string LastName
         {
             get
@@ -41,11 +103,43 @@ namespace OSBIDE.Library.Models
             set
             {
                 _lastName = value.Trim();
+                OnPropertyChanged("LastName");
             }
         }
 
-        private string _institutionId = "";
-        public string InstitutionId
+        /// <summary>
+        /// SchoolId references the name of the school or institution that the user belongs to.  For example,
+        /// if a student attended Washington State University, the SchoolId would match that of Washington State University.
+        /// I know this is confusing :(
+        /// </summary>
+        [Display(Name = "School / Institution")]
+        [Required(ErrorMessage = "Please select your school or institution.")]
+        [DataMember]
+        public int SchoolId
+        {
+            get
+            {
+                return _schoolId;
+            }
+            set
+            {
+                _schoolId = value;
+                OnPropertyChanged("SchoolId");
+            }
+        }
+
+        [ForeignKey("SchoolId")]
+        public virtual School SchoolObj { get; set; }
+
+        /// <summary>
+        /// InstitutionId references the user's ID number at their particular institution.  For example,
+        /// If a student attended WSU and their school ID was 123456, their InstitutionId would be "123456."  
+        /// I know this is confusing :(
+        /// </summary>
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your school or institution ID.")]
+        [Display(Name = "School / Institution ID")]
+        [DataMember]
+        public int InstitutionId
         {
             get
             {
@@ -53,11 +147,49 @@ namespace OSBIDE.Library.Models
             }
             set
             {
-                _institutionId = value.Trim();
+                _institutionId = value;
+                OnPropertyChanged("InstitutionId");
             }
         }
 
-        public int OsbleId { get; set; }
+        [Column(TypeName = "image")]
+        [DataMember]
+        public byte[] ProfileImage
+        {
+            get
+            {
+                return _profileImage;
+            }
+            set
+            {
+                _profileImage = value;
+                OnPropertyChanged("ProfileImage");
+            }
+        }
+
+        /// <summary>
+        /// The numeric representation of the user's role within OSBIDE.  
+        /// Use <see cref="Role"/> instead.
+        /// </summary>
+        [DataMember]
+        [Required]
+        public int RoleValue { get; protected set; }
+
+        /// <summary>
+        /// The user's role within the OSBIDE system
+        /// </summary>
+        [NotMapped]
+        public SystemRole Role
+        {
+            get
+            {
+                return (SystemRole)RoleValue;
+            }
+            set
+            {
+                RoleValue = (int)value;
+            }
+        }
 
         /// <summary>
         /// Returns the User's full name in "Last, First" format.
@@ -71,73 +203,74 @@ namespace OSBIDE.Library.Models
             }
         }
 
+        /// <summary>
+        /// Returns the user's full name in "First Last" format
+        /// </summary>
+        [NotMapped]
+        public string FirstAndLastName
+        {
+            get
+            {
+                return string.Format("{0} {1}", FirstName, LastName);
+            }
+        }
+
+        [IgnoreDataMember]
+        public virtual IList<EventLogSubscription> LogSubscriptions { get; set; }
+
+        public virtual UserScore Score { get; set; }
+
+        public void SetProfileImage(Bitmap bmp)
+        {
+            MemoryStream stream = new MemoryStream();
+            bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+            stream.Position = 0;
+            ProfileImage = stream.ToArray();
+        }
+
+        public Bitmap GetProfileImage()
+        {
+            MemoryStream stream = new MemoryStream(ProfileImage);
+            Bitmap bmp = new Bitmap(stream);
+            return bmp;
+        }
+
         public static OsbideUser GenericUser()
         {
             return new OsbideUser()
             {
                 FirstName = "Ann",
                 LastName = "Onymous",
-                InstitutionId = "0000",
-                OsbleId = 0
+                InstitutionId = -1,
+                ProfileImage = new byte[0]
             };
         }
 
         public OsbideUser()
         {
+            LogSubscriptions = new List<EventLogSubscription>();
+            Role = SystemRole.Student;
         }
 
         public OsbideUser(OsbideUser copyUser)
+            : this()
         {
+            Role = copyUser.Role;
             Id = copyUser.Id;
             FirstName = copyUser.FirstName;
             LastName = copyUser.LastName;
             InstitutionId = copyUser.InstitutionId;
-            OsbleId = copyUser.OsbleId;
+            ProfileImage = copyUser.ProfileImage;
+            Email = copyUser.Email;
+            SchoolId = copyUser.SchoolId;
         }
 
-        public static OsbideUser ReadUserFromFile(string filePath)
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
         {
-            OsbideUser savedUser = new OsbideUser();
-            BinaryFormatter formatter = new BinaryFormatter();
-            formatter.Binder = new OsbideDeserializationBinder();
-
-            if (File.Exists(filePath))
-            {
-                FileStream data = File.Open(filePath, FileMode.Open);
-                try
-                {
-                    savedUser = (OsbideUser)formatter.Deserialize(data);
-                }
-                catch (Exception ex)
-                {
-                }
-                data.Close();
-            }
-            return savedUser;
-        }
-
-        public static void SaveUserToFile(OsbideUser user, string filePath)
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream file = File.Open(filePath, FileMode.Create);
-            formatter.Serialize(file, user);
-            file.Close();
-
-            //reset current user property after a save
-            _currentUser = null;
-        }
-
-        private static OsbideUser _currentUser;
-        public static OsbideUser CurrentUser
-        {
-            get
-            {
-                if (_currentUser == null)
-                {
-                    _currentUser = ReadUserFromFile(StringConstants.UserDataPath);
-                }
-                return _currentUser;
-            }
+            modelBuilder.Entity<OsbideUser>()
+                .HasRequired(u => u.SchoolObj)
+                .WithMany()
+                .WillCascadeOnDelete(true);
         }
     }
 }

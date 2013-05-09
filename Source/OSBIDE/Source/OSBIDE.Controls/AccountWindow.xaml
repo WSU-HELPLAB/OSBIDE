@@ -1,13 +1,12 @@
 ﻿<Window x:Class="OSBIDE.Controls.AccountWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="OSBIDE Account Settings" Height="188" Width="411"
+        Title="OSBIDE Login" Height="155" Width="411"
         xmlns:library="clr-namespace:OSBIDE.Library.Models;assembly=OSBIDE.Library" 
         ResizeMode="NoResize"
         >
     <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
-            <RowDefinition />
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
@@ -19,37 +18,37 @@
         </Grid.ColumnDefinitions>
         
         <!--0,0 to 0,1 -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" FontSize="14">Please fill out your information using the form below.</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" FontSize="14">Log into OSBIDE:</TextBlock>
         
         <!--1,0 and 1,1-->
-        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold">First Name:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="FirstNameTextBox" Text="{Binding Path=FirstName, Mode=TwoWay}" />
+        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Email Address:</TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmailTextBox" Text="{Binding Path=Email, Mode=TwoWay}" Margin="0,5,0,0" />
 
         <!--2,0 and 2,1-->
-        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold">Last Name:</TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="LastNameTextBox" Text="{Binding Path=LastName, Mode=TwoWay}" />
-
-        <!--3,0 and 3,1-->
-        <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold">Student/Institution ID:</TextBlock>
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="InstitutionIdTextBox" Text="{Binding Path=InstitutionId, Mode=TwoWay}" />
+        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Password:</TextBlock>
+        <PasswordBox Grid.Row="2" Grid.Column="1" x:Name="PasswordTextBox" Margin="0,5,0,0" />
 
         
-        <!--4,0-->
-        <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">
+        
+        <!--5,0-->
+        <TextBlock Grid.Row="5" Grid.Column="0" VerticalAlignment="Bottom">
             <Hyperlink x:Name="PrivacyPolicyLink" NavigateUri="http://osbide.codeplex.com/wikipage?title=Privacy%20Policy" >
                 Privacy Policy
             </Hyperlink>
         </TextBlock>
-        <!--4,1-->
+        <!--5,1-->
         <StackPanel 
-            Grid.Row="4" 
+            Grid.Row="5" 
             Grid.Column="1" 
             Orientation="Horizontal" 
             HorizontalAlignment="Right"
             Margin="0,5,0,0"
             >
-            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0">OK</Button>
-            <Button x:Name="CancelButton" Width="50">Cancel</Button>
+            <TextBlock VerticalAlignment="Bottom" Margin="0,0,15,0">
+                <Hyperlink NavigateUri="{Binding Path=CreateAccountUrl}">Create new account</Hyperlink>
+            </TextBlock>
+            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0" Command="{Binding LoginCommand}">Log in</Button>
+            <Button x:Name="CancelButton" Width="50" Command="{Binding CancelCommand}">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

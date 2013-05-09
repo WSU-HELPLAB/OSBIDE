@@ -7,7 +7,8 @@ namespace OSBIDE.Library.Events
 {
     public interface IOsbideEventGenerator
     {
-        event EventHandler<SubmitEventArgs> SolutionSubmitRequest;
+        event EventHandler<SubmitAssignmentArgs> SolutionSubmitRequest;
         event EventHandler<SolutionDownloadedEventArgs> SolutionDownloaded;
+        event EventHandler<SubmitEventArgs> SubmitEventRequested;
     }
 }

@@ -13,7 +13,7 @@ namespace OSBIDE.Library.Models
         [Required]
         public int Id { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string Condition { get; set; }
 
         [Required]
@@ -31,7 +31,7 @@ namespace OSBIDE.Library.Models
         [Required]
         public int FunctionLineOffset { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string FunctionName { get; set; }
 
         [Required]

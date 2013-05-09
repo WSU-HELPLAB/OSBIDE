@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Events;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
     [Serializable]
-    public class BuildEventErrorListItem
+    public class BuildEventErrorListItem : IModelBuilderExtender
     {
         [Key]
         [Required]
@@ -25,5 +26,18 @@ namespace OSBIDE.Library.Models
 
         [ForeignKey("ErrorListItemId")]
         public virtual ErrorListItem ErrorListItem { get; set; }
+
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BuildEventErrorListItem>()
+                .HasRequired(b => b.BuildEvent)
+                .WithMany()
+                .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<BuildEventErrorListItem>()
+                .HasRequired(b => b.ErrorListItem)
+                .WithMany()
+                .WillCascadeOnDelete(true);
+        }
     }
 }

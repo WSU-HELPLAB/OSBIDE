@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EnvDTE;
-using EnvDTE80;
 using OSBIDE.Library.Models;
 using System.IO;
 using Ionic.Zip;
+using EnvDTE80;
+using EnvDTE90a;
 
 namespace OSBIDE.Library.Events
 {
@@ -44,7 +45,7 @@ namespace OSBIDE.Library.Events
             {
                 cmd = dte.Commands.Item(guid, id);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //do nothing
             }
@@ -53,7 +54,18 @@ namespace OSBIDE.Library.Events
 
         #region EventHandlerBase Overrides
 
-        public override void OsbideSolutionSubmitted(object sender, SubmitEventArgs e)
+        public override void SubmitEventRequested(object sender, SubmitEventArgs e)
+        {
+            base.SubmitEventRequested(sender, e);
+            IOsbideEvent evt = e.Event;
+            evt.EventDate = DateTime.Now;
+            evt.SolutionName = dte.Solution.FullName;
+
+            //send off to the service client
+            NotifyEventCreated(this, new EventCreatedArgs(evt));
+        }
+
+        public override void OsbideSolutionSubmitted(object sender, SubmitAssignmentArgs e)
         {
             base.OsbideSolutionSubmitted(sender, e);
 
@@ -86,7 +98,7 @@ namespace OSBIDE.Library.Events
             SaveEvent save = new SaveEvent();
             save.EventDate = DateTime.Now;
             save.SolutionName = dte.Solution.FullName;
-            save.Document = DocumentFactory.FromDteDocument(document);
+            save.Document = (CodeDocument)DocumentFactory.FromDteDocument(document);
 
             //let others know that we have a new event
             NotifyEventCreated(this, new EventCreatedArgs(save));
@@ -94,35 +106,62 @@ namespace OSBIDE.Library.Events
 
         public override void OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
+            
             base.OnBuildDone(Scope, Action);
-            BuildEvent build = new BuildEvent();
-            build.SolutionName = dte.Solution.FullName;
-            build.EventDate = DateTime.Now;
 
-            //start at 1 when iterating through Error List
-            for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
-            {
-                ErrorItem item = dte.ToolWindows.ErrorList.ErrorItems.Item(i);
-                BuildEventErrorListItem beli = new BuildEventErrorListItem();
-                beli.BuildEvent = build;
-                beli.ErrorListItem = ErrorListItem.FromErrorItem(item);
-                build.ErrorItems.Add(beli);
-            }
+            //this might take a while, so throw it in its own thread
+            //System.Threading.Tasks.Task.Factory.StartNew(
+            //    () =>
+            //    {
+                    BuildEvent build = new BuildEvent();
+                    List<string> filesWithErrors = new List<string>();
+                    build.SolutionName = dte.Solution.FullName;
+                    build.EventDate = DateTime.Now;
 
-            //add in breakpoint information
-            for (int i = 1; i <= dte.Debugger.Breakpoints.Count; i++)
-            {
-                BreakPoint bp = new BreakPoint(dte.Debugger.Breakpoints.Item(i));
-                BuildEventBreakPoint bebp = new BuildEventBreakPoint();
-                bebp.BreakPoint = bp;
-                bebp.BuildEvent = build;
-                build.Breakpoints.Add(bebp);
-            }
+                    //start at 1 when iterating through Error List
+                    for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
+                    {
+                        ErrorItem item = dte.ToolWindows.ErrorList.ErrorItems.Item(i);
+                        BuildEventErrorListItem beli = new BuildEventErrorListItem();
+                        beli.BuildEvent = build;
+                        beli.ErrorListItem = ErrorListItem.FromErrorItem(item);
+                        build.ErrorItems.Add(beli);
 
-            byte[] data = EventFactory.ToZippedBinary(build);
+                        //add the file with the error to our list of items that have errors
+                        if (filesWithErrors.Contains(beli.ErrorListItem.File.ToLower()) == false)
+                        {
+                            filesWithErrors.Add(beli.ErrorListItem.File.ToLower());
+                        }
+                    }
 
-            //let others know that we have created a new event
-            NotifyEventCreated(this, new EventCreatedArgs(build));
+                    //add in breakpoint information
+                    for (int i = 1; i <= dte.Debugger.Breakpoints.Count; i++)
+                    {
+                        BreakPoint bp = new BreakPoint(dte.Debugger.Breakpoints.Item(i));
+                        BuildEventBreakPoint bebp = new BuildEventBreakPoint();
+                        bebp.BreakPoint = bp;
+                        bebp.BuildEvent = build;
+                        build.Breakpoints.Add(bebp);
+                    }
+
+                    //get all files in the solution
+                    List<CodeDocument> files = build.GetSolutionFiles(dte.Solution);
+
+                    //add in associated documents
+                    foreach (CodeDocument file in files)
+                    {
+                        BuildDocument bd = new BuildDocument();
+                        bd.Build = build;
+                        bd.Document = file;
+                        build.Documents.Add(bd);
+                    }
+
+                    byte[] data = EventFactory.ToZippedBinary(build);
+
+                    //let others know that we have created a new event
+                    NotifyEventCreated(this, new EventCreatedArgs(build));
+                //}
+                //);
         }
 
         public override void GenericCommand_AfterCommandExecute(string Guid, int ID, object CustomIn, object CustomOut)
@@ -164,7 +203,7 @@ namespace OSBIDE.Library.Events
                 LastEditorActivityEvent = DateTime.Now;
                 EditorActivityEvent activity = new EditorActivityEvent();
                 activity.EventDate = DateTime.Now;
-                activity.SolutionName = dte.Solution.FullName;
+                activity.SolutionName = Path.GetFileName(dte.Solution.FullName);
                 NotifyEventCreated(this, new EventCreatedArgs(activity));
             }
         }
@@ -186,16 +225,23 @@ namespace OSBIDE.Library.Events
             ExceptionEvent ex = new ExceptionEvent();
             int depthCounter = 0;
 
-            //not sure when the current thread could be NULL, but you never know with
-            //the DTE.
-            if (dte.Debugger.CurrentThread != null)
+            EnvDTE90a.Debugger4 debugger = dte.Debugger as EnvDTE90a.Debugger4;
+
+            if (debugger != null)
             {
-                foreach (EnvDTE.StackFrame dteFrame in dte.Debugger.CurrentThread.StackFrames)
+
+                //not sure when the current thread could be NULL, but you never know with
+                //the DTE.
+                if (debugger.CurrentThread != null)
                 {
-                    Models.StackFrame modelFrame = new Models.StackFrame(dteFrame);
-                    modelFrame.Depth = depthCounter;
-                    ex.StackFrames.Add(modelFrame);
-                    depthCounter++;
+                    foreach (EnvDTE.StackFrame dteFrame in debugger.CurrentThread.StackFrames)
+                    {
+                        EnvDTE90a.StackFrame2 frame = (StackFrame2)dteFrame;
+                        Models.StackFrame modelFrame = new Models.StackFrame(frame);
+                        modelFrame.Depth = depthCounter;
+                        ex.StackFrames.Add(modelFrame);
+                        depthCounter++;
+                    }
                 }
             }
 

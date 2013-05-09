@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="04d2100c-6adc-4ff3-a2d2-45b81fed4f27" Version="1.5.0" Language="en-US" Publisher="Washington State University" />
+    <Identity Id="04d2100c-6adc-4ff3-a2d2-45b81fed4f27" Version="2.0.0" Language="en-US" Publisher="Washington State University" />
     <DisplayName>OSBIDE</DisplayName>
     <Description>OSBIDE is an open-source plugin for Visual Studio that aims to increase the understanding of how interactions within an IDE are related to academic performance. OSBIDE has been developed by members of the Human-centered Environments for Learning and Programming (HELP) Lab (http://helplab.org) in the School of Electrical Engineering and Computer Science at Washington State University. </Description>
     <MoreInfo>http://osbide.codeplex.com</MoreInfo>
+    <License>privacy notice.rtf</License>
     <ReleaseNotes>privacy notice.rtf</ReleaseNotes>
     <Icon>PackageIcon.ico</Icon>
   </Metadata>
-  <Installation InstalledByMsi="false">
+  <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />
   </Installation>
   <Dependencies>

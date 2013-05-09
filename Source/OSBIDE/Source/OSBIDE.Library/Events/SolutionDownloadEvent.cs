@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Events
 {
@@ -23,7 +24,7 @@ namespace OSBIDE.Library.Events
         [Required]
         public DateTime EventDate { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string SolutionName { get; set; }
 
         [Required]
@@ -40,6 +41,9 @@ namespace OSBIDE.Library.Events
 
         [NotMapped]
         public static string Name { get { return "SolutionDownloadEvent"; } }
+
+        [NotMapped]
+        public string PrettyName { get { return "Solution Download"; } }
 
         public SolutionDownloadEvent()
         {

@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using System.IO;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
@@ -39,11 +40,9 @@ namespace OSBIDE.Library.Models
             LogDate = DateTime.MinValue;
         }
 
-        public static LocalErrorLog FromFile(string filePath, OsbideUser sender)
+        public static LocalErrorLog FromFile(string filePath)
         {
             LocalErrorLog log = new LocalErrorLog();
-            log.Sender = sender;
-            log.SenderId = sender.Id;
             DateTime localDateTime = DateTime.MinValue;
             DateTime.TryParse(Path.GetFileNameWithoutExtension(filePath), out localDateTime);
             log.LogDate = localDateTime;

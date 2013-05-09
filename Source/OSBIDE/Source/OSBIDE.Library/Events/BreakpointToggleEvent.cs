@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using OSBIDE.Library.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Events
 {
+    [Serializable]
     public class BreakpointToggleEvent : IOsbideEvent
     {
         [Key]
@@ -22,11 +24,14 @@ namespace OSBIDE.Library.Events
         [Required]
         public DateTime EventDate { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string SolutionName { get; set; }
 
         [Required]
         public string EventName { get { return "BreakpointToggleEvent"; } }
+
+        [NotMapped]
+        public string PrettyName { get { return "Breakpoint Toggle"; } }
 
         [NotMapped]
         public BreakPoint Breakpoint { get; set; }

@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace OSBIDE.Library
 {
+
     public static class StringConstants
     {
         public static string DataRoot
@@ -22,11 +23,27 @@ namespace OSBIDE.Library
             }
         }
 
-        public static string UserDataPath
+        public static string UserNameCacheKey
         {
             get
             {
-                return Path.Combine(DataRoot, "UserData.dat");
+                return "UserName";
+            }
+        }
+
+        public static string PasswordCacheKey
+        {
+            get
+            {
+                return "Password";
+            }
+        }
+
+        public static string AuthenticationCacheKey
+        {
+            get
+            {
+                return "AuthKey";
             }
         }
 
@@ -40,6 +57,66 @@ namespace OSBIDE.Library
                     Directory.CreateDirectory(path);
                 }
                 return path;
+            }
+        }
+
+        public static string ActivityFeedUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/Feed";
+#else
+                return "http://osbide.osble.org/Feed";
+#endif
+            }
+        }
+
+        public static string CreateAccountUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/Account/Create";
+#else
+                return "http://osbide.osble.org/Account/Create";
+#endif
+            }
+        }
+
+        public static string AskTheProfessorUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/PrivateQuestion";
+#else
+                return "http://osbide.osble.org/PrivateQuestion";
+#endif
+            }
+        }
+
+        public static string ChatUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/Chat";
+#else
+                return "http://osbide.osble.org/Chat";
+#endif
+            }
+        }
+
+        public static string ProfileUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/Profile";
+#else
+                return "http://osbide.osble.org/Profile";
+#endif
             }
         }
 

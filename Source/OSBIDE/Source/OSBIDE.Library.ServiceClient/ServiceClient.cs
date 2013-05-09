@@ -24,13 +24,13 @@ namespace OSBIDE.Library.ServiceClient
         #region instance variables
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         private OsbideWebServiceClient _webServiceClient = null;
-        private OsbideUser _currentUser;
         private EventHandlerBase _events;
         private List<EventLog> _pendingLogs = new List<EventLog>();
         private ILogger _logger;
         private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
         private Task _eventLogTask;
         private Task _sendLocalErrorsTask;
+        private Task _checkKeyTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
         private bool _isSendingData = true;
@@ -105,7 +105,6 @@ namespace OSBIDE.Library.ServiceClient
         private ServiceClient(EventHandlerBase dteEventHandler, ILogger logger)
         {
             _events = dteEventHandler;
-            _currentUser = OsbideUser.CurrentUser;
             this._logger = logger;
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
@@ -120,7 +119,7 @@ namespace OSBIDE.Library.ServiceClient
             {
                 SaveLogsToCache(new List<EventLog>());
             }
-
+            
             //send off saved local errors
             _sendLocalErrorsTask = Task.Factory.StartNew(
                 () =>
@@ -132,6 +131,21 @@ namespace OSBIDE.Library.ServiceClient
                     catch (Exception ex)
                     {
                         _logger.WriteToLog("Error sending local logs to server: " + ex.Message, LogPriority.MediumPriority);
+                    }
+                }
+                );
+
+            //register a thread to keep our service key from going stale
+            _checkKeyTask = Task.Factory.StartNew(
+                () =>
+                {
+                    try
+                    {
+                        CheckKey();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.WriteToLog("Error in CheckKey: " + ex.Message, LogPriority.MediumPriority);
                     }
                 }
                 );
@@ -212,6 +226,35 @@ namespace OSBIDE.Library.ServiceClient
 
         #region private send methods
 
+        private void CheckKey()
+        {
+            while (IsSendingData)
+            {
+                lock (_cache)
+                {
+                    string webServiceKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+                    bool result = _webServiceClient.IsValidKey(webServiceKey);
+
+                    //if result is false, our key has gone stale.  Try to login again
+                    if (result == false)
+                    {
+                        string userName = _cache[StringConstants.UserNameCacheKey] as string;
+                        string password = _cache[StringConstants.PasswordCacheKey] as string;
+                        if (userName != null && password != null)
+                        {
+                            webServiceKey = _webServiceClient.Login(userName, UserPassword.EncryptPassword(password, userName));
+                            _cache[StringConstants.AuthenticationCacheKey] = webServiceKey;
+                        }
+                        else
+                        {
+                            IsSendingData = false;
+                        }
+                    }
+                }
+                Thread.Sleep(new TimeSpan(0, 0, 3, 0, 0));
+            }
+        }
+
         private void SendLocalErrorLogs()
         {
             string dataRoot = StringConstants.DataRoot;
@@ -220,15 +263,20 @@ namespace OSBIDE.Library.ServiceClient
 
             //find all log files
             string[] files = Directory.GetFiles(dataRoot);
-            foreach(string file in files)
+            foreach (string file in files)
             {
                 if (Path.GetExtension(file) == logExtension)
                 {
                     //ignore today's log
                     if (Path.GetFileNameWithoutExtension(file) != today)
                     {
-                        LocalErrorLog log = LocalErrorLog.FromFile(file, _currentUser);
-                        int result = _webServiceClient.SubmitLocalErrorLog(log);
+                        LocalErrorLog log = LocalErrorLog.FromFile(file);
+                        int result = 0;
+                        lock (_cache)
+                        {
+                            string webServiceKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+                            result = _webServiceClient.SubmitLocalErrorLog(log, webServiceKey);
+                        }
 
                         //remove if file successfully sent
                         if (result != -1)
@@ -281,6 +329,9 @@ namespace OSBIDE.Library.ServiceClient
                 SaveLogsToCache(new List<EventLog>());
             }
 
+            //reorder by date received (created in our case)
+            logsToBeSaved = logsToBeSaved.OrderBy(l => l.DateReceived).ToList();
+
             //loop through each log to be saved, give a dummy ID number
             int counter = 1;
             foreach (EventLog log in logsToBeSaved)
@@ -300,8 +351,6 @@ namespace OSBIDE.Library.ServiceClient
             foreach (EventLog log in logsToBeSaved)
             {
                 //reset the log's sending user just to be safe
-                log.SenderId = _currentUser.Id;
-                log.Sender = _currentUser;
                 _logger.WriteToLog(string.Format("Sending log with ID {0} to the server", log.Id), LogPriority.LowPriority);
                 SendStatus.CurrentTransmission = log;
 
@@ -309,7 +358,12 @@ namespace OSBIDE.Library.ServiceClient
                 {
                     //the number that comes back from the web service is the log's local ID number.  Save
                     //for later when we clean up our local db.
-                    int result = _webServiceClient.SubmitLog(log);
+                    int result = -1;
+                    lock (_cache)
+                    {
+                        string webServiceKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+                        result = _webServiceClient.SubmitLog(log, webServiceKey);
+                    }
                     savedLogs.Add(result);
 
                     //update our submission status
@@ -350,7 +404,7 @@ namespace OSBIDE.Library.ServiceClient
         private void OsbideEventCreated(object sender, EventCreatedArgs e)
         {
             //create a new event log...
-            EventLog eventLog = new EventLog(e.OsbideEvent, _currentUser);
+            EventLog eventLog = new EventLog(e.OsbideEvent);
             SendStatus.IsActive = false;
 
             //if the system is allowing web pushes, send it off.  Otherwise,
@@ -457,7 +511,7 @@ namespace OSBIDE.Library.ServiceClient
                     mostRecentLog.DateReceived = startDate;
                 }
 
-                EventLog[] logs = _webServiceClient.GetPastEvents(startDate, true);
+                EventLog[] logs = new EventLog[0];// _webServiceClient.GetPastEvents(startDate, true);
                 ReceiveStatus.LastTransmissionTime = mostRecentLog.DateReceived;
 
                 //find all unique User Ids
@@ -489,12 +543,12 @@ namespace OSBIDE.Library.ServiceClient
                                   select user.Id;
                     foundIds = idQuery.ToArray();
                 }
-                
+
                 foreach (int id in foundIds)
                 {
                     eventLogIds.Remove(id);
                 }
-
+                /*
                 //if we have any remaining ids, then we need to make the appropriate db call
                 if (eventLogIds.Count > 0)
                 {
@@ -506,7 +560,7 @@ namespace OSBIDE.Library.ServiceClient
                             db.InsertUserWithId(user);
                         }
                     }
-                }
+                }*/
 
                 //finally, insert the event logs
                 foreach (EventLog log in logs)
@@ -515,7 +569,7 @@ namespace OSBIDE.Library.ServiceClient
 
                     if (successfulInsert && log.LogType == SubmitEvent.Name)
                     {
-                        SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data, new OsbideDeserializationBinder());
+                        SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data.BinaryData, new OsbideDeserializationBinder());
                         submit.EventLogId = log.Id;
 
                         lock (db)
@@ -541,7 +595,20 @@ namespace OSBIDE.Library.ServiceClient
 
         private List<EventLog> GetLogsFromCache()
         {
-            return ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
+            List<EventLog> logs = new List<EventLog>();
+            //get pending records
+            try
+            {
+                logs = ((EventLog[])_cache.Get(_cacheKey, _cacheRegion)).ToList();
+            }
+            catch (Exception ex)
+            {
+                //saved logs corrupted, start over
+                SaveLogsToCache(new List<EventLog>());
+                logs = new List<EventLog>();
+                _logger.WriteToLog(string.Format("GetLogsFromCache() error: {0}", ex.Message), LogPriority.HighPriority);
+            }
+            return logs;
         }
         #endregion
     }

@@ -15,7 +15,7 @@ namespace OSBIDE.Library.Models
         {
             CodeDocument codeDocument = new CodeDocument();
             DTE2 dte = (DTE2)document.DTE;
-            codeDocument.FileName = document.Name;
+            codeDocument.FileName = Path.Combine(document.Path, document.Name);
             codeDocument.Content = File.ReadAllText(document.FullName);
 
             //start at 1 when iterating through Error List
@@ -24,7 +24,9 @@ namespace OSBIDE.Library.Models
                 ErrorItem item = dte.ToolWindows.ErrorList.ErrorItems.Item(i);
                 
                 //only grab events that are related to the current file
-                if (item.FileName.CompareTo(document.FullName) == 0)
+                string itemFileName = Path.GetFileName(item.FileName).ToLower();
+                string documentFileName = Path.GetFileName(document.FullName).ToLower();
+                if (itemFileName.CompareTo(documentFileName) == 0)
                 {
                     CodeDocumentErrorListItem eli = new CodeDocumentErrorListItem();
                     eli.CodeDocument = codeDocument;

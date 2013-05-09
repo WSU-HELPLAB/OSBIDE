@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Events;
 using System.Runtime.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
@@ -27,8 +28,7 @@ namespace OSBIDE.Library.Models
 
         [Required]
         [DataMember]
-        [Column(TypeName = "image")]
-        public byte[] Data { get; set; }
+        public virtual EventLogData Data { get; set; }
 
         [Required]
         [DataMember]
@@ -41,17 +41,38 @@ namespace OSBIDE.Library.Models
         [DataMember]
         public string AssemblyVersion { get; set; }
 
+        [IgnoreDataMember]
+        public virtual IList<LogComment> Comments
+        {
+            get
+            {
+                return _comments;
+            }
+            set
+            {
+                _comments = value;
+            }
+        }
+
+        [IgnoreDataMember]
+        [NonSerialized]
+        private IList<LogComment> _comments;
+
+        [IgnoreDataMember]
+        public virtual IList<EventLogSubscription> Subscriptions { get; set; }
+
         public EventLog()
         {
             DateReceived = DateTime.Now;
+            AssemblyVersion = OSBIDE.Library.StringConstants.LibraryVersion;
+            Subscriptions = new List<EventLogSubscription>();
+            Comments = new List<LogComment>();
+            Data = new EventLogData();
         }
 
-        public EventLog(IOsbideEvent evt, OsbideUser sender) 
+        public EventLog(IOsbideEvent evt, OsbideUser sender)
+            : this(evt)
         {
-            DateReceived = DateTime.Now;
-            LogType = evt.EventName;
-            Data = EventFactory.ToZippedBinary(evt);
-
             //were we sent a null user?
             if (sender.FirstName == null && sender.LastName == null)
             {
@@ -63,10 +84,21 @@ namespace OSBIDE.Library.Models
             {
                 SenderId = sender.Id;
             }
-            AssemblyVersion = OSBIDE.Library.StringConstants.LibraryVersion;
         }
 
-        public EventLog(EventLog copyLog)
+        public EventLog(IOsbideEvent evt)
+            : this()
+        {
+            DateReceived = DateTime.Now;
+            LogType = evt.EventName;
+            Data = new EventLogData()
+            {
+                LogId = this.Id,
+                BinaryData = EventFactory.ToZippedBinary(evt)
+            };
+        }
+
+        public EventLog(EventLog copyLog) : this()
         {
             DateReceived = copyLog.DateReceived;
             Id = copyLog.Id;
@@ -76,5 +108,6 @@ namespace OSBIDE.Library.Models
             SenderId = copyLog.SenderId;
             AssemblyVersion = copyLog.AssemblyVersion;
         }
+
     }
 }

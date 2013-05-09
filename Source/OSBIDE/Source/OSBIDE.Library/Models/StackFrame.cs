@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using EnvDTE;
 using OSBIDE.Library.Events;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
@@ -15,20 +16,26 @@ namespace OSBIDE.Library.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string FunctionName { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string Module { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string Language { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        public string FileName { get; set; }
 
         [Required]
         public int ExceptionEventId { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string ReturnType { get; set; }
+
+        [Required]
+        public int LineNumber { get; set; }
 
         [ForeignKey("ExceptionEventId")]
         public virtual ExceptionEvent Exception { get; set; }
@@ -50,6 +57,18 @@ namespace OSBIDE.Library.Models
         public StackFrame(EnvDTE.StackFrame frame)
             : this()
         {
+            EnvDTE90a.StackFrame2 frame2 = null;
+            try
+            {
+                frame2 = (EnvDTE90a.StackFrame2)frame;
+                this.LineNumber = (int)frame2.LineNumber;
+                this.FileName = frame2.FileName;
+            }
+            catch (Exception)
+            {
+                this.LineNumber = 0;
+                this.FileName = "";
+            }
             this.FunctionName = frame.FunctionName;
             this.Module = frame.Module;
             this.Language = frame.Language;
@@ -61,6 +80,7 @@ namespace OSBIDE.Library.Models
                     Name = local.Name,
                     Value = local.Value
                 };
+                this.Variables.Add(var);
             }
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Events
 {
@@ -23,7 +24,7 @@ namespace OSBIDE.Library.Events
         [Required]
         public DateTime EventDate { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string SolutionName { get; set; }
 
         [Required]
@@ -42,10 +43,10 @@ namespace OSBIDE.Library.Events
             }
         }
 
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string DocumentName { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string Content { get; set; }
 
         [Required]
@@ -54,9 +55,14 @@ namespace OSBIDE.Library.Events
         [NotMapped]
         public static string Name { get { return "CutCopyPasteEvent"; } }
 
+        [NotMapped]
+        public string PrettyName { get { return "Cut, Copy, & Paste"; } }
+
         public CutCopyPasteEvent()
         {
             EventDate = DateTime.Now;
+            DocumentName = "";
+            Content = "";
         }
     }
 }

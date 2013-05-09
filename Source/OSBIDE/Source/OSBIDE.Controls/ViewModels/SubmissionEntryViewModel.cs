@@ -67,7 +67,9 @@ namespace OSBIDE.Controls.ViewModels
 
                 //Notify OSBIDE that a submission has been downloaded
                 EventGenerator generator = EventGenerator.GetInstance();
-                generator.NotifySolutionDownloaded(OsbideUser.CurrentUser, Submission);
+
+                throw new NotImplementedException("This code needs to be updated.");
+                //generator.NotifySolutionDownloaded(OsbideUser.CurrentUser, Submission);
             }
         }
 

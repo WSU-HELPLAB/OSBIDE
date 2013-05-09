@@ -1,104 +1,131 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA888830-EB1D-4825-88A3-5BADB0A9F2AC}"
-	ProjectSection(SolutionItems) = preProject
-		OSBIDE.vsmdi = OSBIDE.vsmdi
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VSPackage", "Source\OSBIDE.VSPackage\OSBIDE.VSPackage.csproj", "{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}"
-	ProjectSection(ProjectDependencies) = postProject
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876} = {A79BCD54-BE94-4E90-8670-B2CDE3DCA876}
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "Source\OSBIDE.Controls\OSBIDE.Controls.csproj", "{9EA09E78-0541-4233-B189-EE1DBD56520D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{913528C6-350E-4CA0-936E-B75C9D8DE120} = {913528C6-350E-4CA0-936E-B75C9D8DE120}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "Source\OSBIDE.Library\OSBIDE.Library.csproj", "{A38761C0-8F42-4C04-9DAA-05989B3971D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "Source\OSBIDE.Web\OSBIDE.Web.csproj", "{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.IntegrationTests", "UnitTests\OSBIDE.IntegrationTests\OSBIDE.IntegrationTests.csproj", "{500B91C3-F9B3-4A6C-9AD5-F4A534E26807}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.UnitTests", "UnitTests\OSBIDE.UnitTests\OSBIDE.UnitTests.csproj", "{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClient", "Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj", "{5AAF5126-7931-40F4-9B46-92CE15C47CCA}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876} = {A79BCD54-BE94-4E90-8670-B2CDE3DCA876}
+		{913528C6-350E-4CA0-936E-B75C9D8DE120} = {913528C6-350E-4CA0-936E-B75C9D8DE120}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VS2012Package", "Source\OSBIDE.VS2012Package\OSBIDE.VS2012Package.csproj", "{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\..\..\..\filecache\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "Source\OSBIDE.Web\OSBIDE.Web.csproj", "{913528C6-350E-4CA0-936E-B75C9D8DE120}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 9
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = UnitTests\\OSBIDE.UnitTests\\OSBIDE.UnitTests.csproj
-		SccProjectName1 = UnitTests/OSBIDE.UnitTests
-		SccLocalPath1 = UnitTests\\OSBIDE.UnitTests
-		SccProjectUniqueName2 = UnitTests\\OSBIDE.IntegrationTests\\OSBIDE.IntegrationTests.csproj
-		SccProjectName2 = UnitTests/OSBIDE.IntegrationTests
-		SccLocalPath2 = UnitTests\\OSBIDE.IntegrationTests
-		SccProjectUniqueName3 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
-		SccProjectName3 = Source/OSBIDE.Web
-		SccLocalPath3 = Source\\OSBIDE.Web
-		SccProjectUniqueName4 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
-		SccProjectName4 = Source/OSBIDE.Library
-		SccLocalPath4 = Source\\OSBIDE.Library
-		SccProjectUniqueName5 = Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
-		SccProjectName5 = Source/OSBIDE.Controls
-		SccLocalPath5 = Source\\OSBIDE.Controls
-		SccProjectUniqueName6 = Source\\OSBIDE.VSPackage\\OSBIDE.VSPackage.csproj
-		SccProjectName6 = Source/OSBIDE.VSPackage
-		SccLocalPath6 = Source\\OSBIDE.VSPackage
-		SccProjectUniqueName7 = Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
-		SccProjectName7 = Source/OSBIDE.Library.ServiceClient
-		SccLocalPath7 = Source\\OSBIDE.Library.ServiceClient
-		SccProjectUniqueName8 = Source\\OSBIDE.VS2012Package\\OSBIDE.VS2012Package.csproj
-		SccProjectName8 = Source/OSBIDE.VS2012Package
-		SccLocalPath8 = Source\\OSBIDE.VS2012Package
+		SccProjectUniqueName1 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
+		SccProjectName1 = Source/OSBIDE.Library
+		SccLocalPath1 = Source\\OSBIDE.Library
+		SccProjectUniqueName2 = Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
+		SccProjectName2 = Source/OSBIDE.Controls
+		SccLocalPath2 = Source\\OSBIDE.Controls
+		SccProjectUniqueName3 = Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
+		SccProjectName3 = Source/OSBIDE.Library.ServiceClient
+		SccLocalPath3 = Source\\OSBIDE.Library.ServiceClient
+		SccProjectUniqueName4 = Source\\OSBIDE.VS2012Package\\OSBIDE.VS2012Package.csproj
+		SccProjectName4 = Source/OSBIDE.VS2012Package
+		SccLocalPath4 = Source\\OSBIDE.VS2012Package
+		SccProjectUniqueName5 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\FileCache.csproj
+		SccProjectName5 = ../../../../../fc/Main/Source/FileCache
+		SccLocalPath5 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache
+		SccProjectUniqueName6 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
+		SccProjectName6 = Source/OSBIDE.Web
+		SccLocalPath6 = Source\\OSBIDE.Web
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OSBIDE.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Debug|x86.Build.0 = Debug|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|x86.ActiveCfg = Release|Any CPU
 		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|x86.ActiveCfg = Debug|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Debug|x86.Build.0 = Debug|x86
 		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}.Release|Any CPU.Build.0 = Release|Any CPU
-		{500B91C3-F9B3-4A6C-9AD5-F4A534E26807}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{500B91C3-F9B3-4A6C-9AD5-F4A534E26807}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{500B91C3-F9B3-4A6C-9AD5-F4A534E26807}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{500B91C3-F9B3-4A6C-9AD5-F4A534E26807}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7E4FE1A-7F51-4706-8BD7-E14E50F67246}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|x86.ActiveCfg = Release|x86
+		{A38761C0-8F42-4C04-9DAA-05989B3971D0}.Release|x86.Build.0 = Release|x86
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|x86.ActiveCfg = Debug|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Debug|x86.Build.0 = Debug|x86
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|x86.ActiveCfg = Release|x86
+		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|x86.Build.0 = Release|x86
 		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|x86.ActiveCfg = Debug|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|x86.Build.0 = Debug|x86
 		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Mixed Platforms.Build.0 = Release|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|x86.ActiveCfg = Release|x86
+		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|x86.Build.0 = Release|x86
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|x86.Build.0 = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|x86.ActiveCfg = Release|Any CPU
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|x86.ActiveCfg = Debug|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Debug|x86.Build.0 = Debug|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|Any CPU.Build.0 = Release|Any CPU
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|Mixed Platforms.Build.0 = Release|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|x86.ActiveCfg = Release|x86
+		{913528C6-350E-4CA0-936E-B75C9D8DE120}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

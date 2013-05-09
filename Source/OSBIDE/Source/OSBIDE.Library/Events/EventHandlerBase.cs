@@ -84,8 +84,9 @@ namespace OSBIDE.Library.Events
 
             //attach osbide requests
             _osbideEvents = osbideEvents;
-            _osbideEvents.SolutionSubmitRequest += new EventHandler<SubmitEventArgs>(OsbideSolutionSubmitted);
+            _osbideEvents.SolutionSubmitRequest += new EventHandler<SubmitAssignmentArgs>(OsbideSolutionSubmitted);
             _osbideEvents.SolutionDownloaded += new EventHandler<SolutionDownloadedEventArgs>(OsbideSolutionDownloaded);
+            _osbideEvents.SubmitEventRequested += new EventHandler<SubmitEventArgs>(SubmitEventRequested);
 
             //attach listeners for dte events
             //build events
@@ -148,8 +149,9 @@ namespace OSBIDE.Library.Events
         }
 
         //OSBIDE-specific event handlers 
-        public virtual void OsbideSolutionSubmitted(object sender, SubmitEventArgs e) { }
+        public virtual void OsbideSolutionSubmitted(object sender, SubmitAssignmentArgs e) { }
         public virtual void OsbideSolutionDownloaded(object sender, SolutionDownloadedEventArgs e) { }
+        public virtual void SubmitEventRequested(object sender, SubmitEventArgs e) { }
 
         //build event handlers
         public virtual void OnBuildBegin(vsBuildScope Scope, vsBuildAction Action) { }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="5gvZtsO9UTQPLDSY2N4YFnq5ELE=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="K3pIK7TpYaoT6DXbXiisXDPPRg4=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_OsbideWebService">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_OsbideWebService" contract="OsbideWebService.OsbideWebService" bindingType="basicHttpBinding" address="http://localhost:49263/OsbideWebService.svc" bindingConfiguration="BasicHttpBinding_OsbideWebService">
+    <endpoint name="BasicHttpBinding_OsbideWebService" contract="OsbideWebService.OsbideWebService" bindingType="basicHttpBinding" address="http://localhost:24867/Services/OsbideWebService.svc" bindingConfiguration="BasicHttpBinding_OsbideWebService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:49263/OsbideWebService.svc</serializedValue>
+          <serializedValue>http://localhost:24867/Services/OsbideWebService.svc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

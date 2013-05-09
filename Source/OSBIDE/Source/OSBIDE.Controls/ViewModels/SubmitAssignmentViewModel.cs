@@ -8,14 +8,17 @@ using OSBIDE.Library.Events;
 using System.Windows;
 using System.Windows.Input;
 using OSBIDE.Library.Commands;
+using System.Runtime.Caching;
+using OSBIDE.Library;
 
 namespace OSBIDE.Controls.ViewModels
 {
     public class SubmitAssignmentViewModel : ViewModelBase
     {
-        public SubmitAssignmentViewModel(OsbideUser user, IOsbideEvent lastSubmit)
+        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        public SubmitAssignmentViewModel(string userName, IOsbideEvent lastSubmit)
         {
-            User = user;
+            UserName = userName;
             LastSubmit = lastSubmit;
             ContinueCommand = new DelegateCommand(Continue, CanIssueCommand);
             CancelCommand = new DelegateCommand(Cancel, CanIssueCommand);
@@ -34,13 +37,6 @@ namespace OSBIDE.Controls.ViewModels
             Assignments.Add("Assignment #7");
             Assignments.Add("Assignment #8");
             Assignments.Add("Assignment #9");
-            Assignments.Add("Assignment #10");
-            Assignments.Add("Assignment #11");
-            Assignments.Add("Assignment #12");
-            Assignments.Add("Assignment #13");
-            Assignments.Add("Assignment #14");
-            Assignments.Add("Assignment #15");
-            Assignments.Add("Assignment #16");
         }
 
         #region properties
@@ -66,20 +62,6 @@ namespace OSBIDE.Controls.ViewModels
             }
         }
 
-        public OsbideUser _user;
-        public OsbideUser User
-        {
-            get
-            {
-                return _user;
-            }
-            set
-            {
-                _user = value;
-                OnPropertyChanged("UserName");
-            }
-        }
-
         public IOsbideEvent _submitEvent;
         public IOsbideEvent LastSubmit
         {
@@ -98,14 +80,8 @@ namespace OSBIDE.Controls.ViewModels
 
         public string UserName
         {
-            get
-            {
-                if (User != null)
-                {
-                    return string.Format("{0} {1}", User.FirstName, User.LastName);
-                }
-                return "";
-            }
+            private set;
+            get;
         }
 
         public string _lastSubmitted = "";

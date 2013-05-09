@@ -5,6 +5,7 @@ using System.Text;
 using EnvDTE;
 using System.ComponentModel.DataAnnotations;
 using OSBIDE.Library.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Events
 {
@@ -25,7 +26,7 @@ namespace OSBIDE.Library.Events
         [Required]
         public DateTime EventDate { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         public string SolutionName { get; set; }
 
         [Required]
@@ -45,7 +46,7 @@ namespace OSBIDE.Library.Events
         /// Contains information in the debug output window.  As the output window is cumulative, there's no
         /// reason to set this unless you're dealing with a "StopDebugging" event
         /// </summary>
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string DebugOutput { get; set; }
 
         [Required]
@@ -54,10 +55,13 @@ namespace OSBIDE.Library.Events
         [NotMapped]
         public static string Name { get { return "DebugEvent"; } }
 
+        [NotMapped]
+        public string PrettyName { get { return "Debug"; } }
 
         public DebugEvent()
         {
             EventDate = DateTime.Now;
+            DebugOutput = "";
             LineNumber = -1;
         }
     }

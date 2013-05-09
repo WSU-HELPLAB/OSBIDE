@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using OSBIDE.Library.Models;
 using System.Diagnostics;
+using OSBIDE.Library;
+using System.Drawing;
 
 namespace OSBIDE.Controls
 {
@@ -38,7 +40,7 @@ namespace OSBIDE.Controls
         {
             InitializeComponent();
             ActiveUser = new OsbideUser();
-            
+
             //bind to our model
             this.DataContext = ActiveUser;
 

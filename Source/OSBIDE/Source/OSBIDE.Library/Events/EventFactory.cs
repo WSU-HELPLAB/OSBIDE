@@ -107,6 +107,15 @@ namespace OSBIDE.Library.Events
                 ccp.EventDate = DateTime.Now;
                 ccp.EventAction = cutCopyPasteCommands.IndexOf(commandName);
                 ccp.Content = Clipboard.GetText();
+                //sometimes document name can be null
+                try
+                {
+                    ccp.DocumentName = dte.ActiveDocument.Name;
+                }
+                catch (Exception)
+                {
+                    ccp.DocumentName = dte.Solution.FullName;
+                }
                 oEvent = ccp;
             }
 
@@ -174,6 +183,52 @@ namespace OSBIDE.Library.Events
                 zipStream.Position = 0;
             }
             return zipStream.ToArray();
+        }
+
+        public static IOsbideEvent FromName(string name)
+        {
+            IOsbideEvent evt = null;
+            if (name == AskForHelpEvent.Name)
+            {
+                evt = new AskForHelpEvent();
+            }
+            else if (name == BuildEvent.Name)
+            {
+                evt = new BuildEvent();
+            }
+            else if (name == CutCopyPasteEvent.Name)
+            {
+                evt = new CutCopyPasteEvent();
+            }
+            else if (name == DebugEvent.Name)
+            {
+                evt = new DebugEvent();
+            }
+            else if (name == EditorActivityEvent.Name)
+            {
+                evt = new EditorActivityEvent();
+            }
+            else if (name == ExceptionEvent.Name)
+            {
+                evt = new ExceptionEvent();
+            }
+            else if (name == FeedCommentEvent.Name)
+            {
+                evt = new FeedCommentEvent();
+            }
+            else if (name == SaveEvent.Name)
+            {
+                evt = new SaveEvent();
+            }
+            else if (name == SolutionDownloadEvent.Name)
+            {
+                evt = new SolutionDownloadEvent();
+            }
+            else if (name == SubmitEvent.Name)
+            {
+                evt = new SubmitEvent();
+            }
+            return evt;
         }
     }
 }

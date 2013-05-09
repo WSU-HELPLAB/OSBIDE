@@ -42,7 +42,7 @@ namespace OSBIDE.Library.Models
                 eli.File = item.FileName;
                 eli.Description = item.Description;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 
             }

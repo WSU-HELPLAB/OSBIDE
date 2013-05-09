@@ -7,6 +7,7 @@ using OSBIDE.Library.Models;
 using Ionic.Zip;
 using System.IO;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Events
 {
@@ -26,7 +27,7 @@ namespace OSBIDE.Library.Events
         [Required]
         public DateTime EventDate { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = true)]
         private string _solutionName = "";
         public string SolutionName
         {
@@ -45,6 +46,9 @@ namespace OSBIDE.Library.Events
 
         [NotMapped]
         public static string Name { get { return "SubmitEvent"; } }
+
+        [NotMapped]
+        public string PrettyName { get { return "Submit Solution"; } }
 
         [Required]
         public string AssignmentName { get; set; }

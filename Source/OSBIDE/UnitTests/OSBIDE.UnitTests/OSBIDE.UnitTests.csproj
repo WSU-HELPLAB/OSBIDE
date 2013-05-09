@@ -173,21 +173,9 @@
     <Shadow Include="Test References\OSBIDE.Library.accessor" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\OSBIDE.Controls\OSBIDE.Controls.csproj">
-      <Project>{9EA09E78-0541-4233-B189-EE1DBD56520D}</Project>
-      <Name>OSBIDE.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj">
-      <Project>{5AAF5126-7931-40F4-9B46-92CE15C47CCA}</Project>
-      <Name>OSBIDE.Library.ServiceClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Source\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
       <Name>OSBIDE.Library</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Source\OSBIDE.Web\OSBIDE.Web.csproj">
-      <Project>{A79BCD54-BE94-4E90-8670-B2CDE3DCA876}</Project>
-      <Name>OSBIDE.Web</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Source\OSBIDE.VSPackage\OSBIDE.VSPackage.csproj">
       <Project>{BD4265B7-EA5B-490F-A7D2-C1E86E711DB7}</Project>
