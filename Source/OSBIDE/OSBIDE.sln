@@ -1,23 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "..\..\..\..\..\filecache\Main\Source\FileCache\Source\OSBIDE.Controls\OSBIDE.Controls.csproj", "{9EA09E78-0541-4233-B189-EE1DBD56520D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "Source\OSBIDE.Controls\OSBIDE.Controls.csproj", "{9EA09E78-0541-4233-B189-EE1DBD56520D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{913528C6-350E-4CA0-936E-B75C9D8DE120} = {913528C6-350E-4CA0-936E-B75C9D8DE120}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "..\..\..\..\..\filecache\Main\Source\FileCache\Source\OSBIDE.Library\OSBIDE.Library.csproj", "{A38761C0-8F42-4C04-9DAA-05989B3971D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "Source\OSBIDE.Library\OSBIDE.Library.csproj", "{A38761C0-8F42-4C04-9DAA-05989B3971D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClient", "..\..\..\..\..\filecache\Main\Source\FileCache\Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj", "{5AAF5126-7931-40F4-9B46-92CE15C47CCA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClient", "Source\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj", "{5AAF5126-7931-40F4-9B46-92CE15C47CCA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{913528C6-350E-4CA0-936E-B75C9D8DE120} = {913528C6-350E-4CA0-936E-B75C9D8DE120}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.VS2012Package", "Source\OSBIDE.VS2012Package\OSBIDE.VS2012Package.csproj", "{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\..\..\filecache\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "..\..\..\..\..\filecache\Main\Source\FileCache\Source\OSBIDE.Web\OSBIDE.Web.csproj", "{913528C6-350E-4CA0-936E-B75C9D8DE120}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "Source\OSBIDE.Web\OSBIDE.Web.csproj", "{913528C6-350E-4CA0-936E-B75C9D8DE120}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -25,21 +23,21 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Library\\OSBIDE.Library.csproj
+		SccProjectUniqueName1 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
 		SccProjectName1 = Source/OSBIDE.Library
-		SccLocalPath1 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Library
-		SccProjectUniqueName2 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
+		SccLocalPath1 = Source\\OSBIDE.Library
+		SccProjectUniqueName2 = Source\\OSBIDE.Controls\\OSBIDE.Controls.csproj
 		SccProjectName2 = Source/OSBIDE.Controls
-		SccLocalPath2 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Controls
-		SccProjectUniqueName3 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
+		SccLocalPath2 = Source\\OSBIDE.Controls
+		SccProjectUniqueName3 = Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
 		SccProjectName3 = Source/OSBIDE.Library.ServiceClient
-		SccLocalPath3 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Library.ServiceClient
+		SccLocalPath3 = Source\\OSBIDE.Library.ServiceClient
 		SccProjectUniqueName4 = ..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\FileCache.csproj
 		SccProjectName4 = ../../../../fc/Main/Source/FileCache
 		SccLocalPath4 = ..\\..\\..\\..\\filecache\\Main\\Source\\FileCache
-		SccProjectUniqueName5 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Web\\OSBIDE.Web.csproj
+		SccProjectUniqueName5 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
 		SccProjectName5 = Source/OSBIDE.Web
-		SccLocalPath5 = ..\\..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\Source\\OSBIDE.Web
+		SccLocalPath5 = Source\\OSBIDE.Web
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OSBIDE.vsmdi
@@ -88,18 +86,6 @@ Global
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|Mixed Platforms.Build.0 = Release|x86
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|x86.ActiveCfg = Release|x86
 		{5AAF5126-7931-40F4-9B46-92CE15C47CCA}.Release|x86.Build.0 = Release|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|x86.ActiveCfg = Debug|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Debug|x86.Build.0 = Debug|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|Mixed Platforms.Build.0 = Release|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|x86.ActiveCfg = Release|x86
-		{87F7DB29-ACC0-46C6-ADA3-E67FEF4B93AD}.Release|x86.Build.0 = Release|x86
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
