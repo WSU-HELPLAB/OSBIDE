@@ -149,6 +149,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PrivateQuestionController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -354,6 +355,7 @@
     <Content Include="Views\Error\RequiresActiveVsConnection.cshtml" />
     <Content Include="Views\Feed\Details\_SubmitEvent.cshtml" />
     <Content Include="Views\Shared\Feed\_SubmitEvent.cshtml" />
+    <Content Include="Views\Setup\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
