@@ -144,6 +144,7 @@
     <Compile Include="Controllers\BuildEventController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PrivateQuestionController.cs" />
@@ -153,6 +154,7 @@
     </Compile>
     <Compile Include="Models\AggregateFeedItem.cs" />
     <Compile Include="Models\Attributes\NotForStudents.cs" />
+    <Compile Include="Models\Attributes\RequiresVisualStudioConnection.cs" />
     <Compile Include="Models\BuildDiffLine.cs" />
     <Compile Include="Models\DocumentError.cs" />
     <Compile Include="Models\Attributes\OsbideAuthorize.cs" />
@@ -345,12 +347,13 @@
     <Content Include="Views\Shared\Feed\_AskForHelpEvent.cshtml" />
     <Content Include="Views\Feed\Details\_AskForHelpEvent.cshtml" />
     <Content Include="Views\Shared\_CommentSingle.cshtml" />
-    <Content Include="Views\Shared\Feed\_SubmitEvent.cshtml" />
-    <Content Include="Views\Feed\Details\_SubmitEvent.cshtml" />
     <Content Include="Views\Assignment\Index.cshtml" />
     <Content Include="Views\PrivateQuestion\Index.cshtml" />
     <Content Include="Views\Account\CreateComplete.cshtml" />
     <Content Include="Scripts\Osbide.Default.js" />
+    <Content Include="Views\Error\RequiresActiveVsConnection.cshtml" />
+    <Content Include="Views\Feed\Details\_SubmitEvent.cshtml" />
+    <Content Include="Views\Shared\Feed\_SubmitEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -15,6 +15,7 @@ using System.Web.Mvc;
 namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
+    [RequiresVisualStudioConnectionForStudents]
     public class FeedController : ControllerBase
     {
         /// <summary>

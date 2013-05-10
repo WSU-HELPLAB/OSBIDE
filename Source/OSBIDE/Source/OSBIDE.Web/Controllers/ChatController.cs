@@ -13,6 +13,7 @@ using System.Web.Mvc;
 namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
+    [RequiresVisualStudioConnectionForStudents]
     public class ChatController : ControllerBase
     {
         public ActionResult Index(int id = -1, int sendingRoomId = -1)

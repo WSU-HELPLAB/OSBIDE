@@ -56,6 +56,8 @@ namespace OSBIDE.Web.Services
                 {
                     hash = auth.LogIn(user);
                 }
+                user.LastVsActivity = DateTime.Now;
+                Db.SaveChanges();
             }
             return hash;
         }
@@ -138,6 +140,11 @@ namespace OSBIDE.Web.Services
 
             //replace sender information with what is contained in the auth key
             OsbideUser authUser = GetActiveUser(authToken);
+
+            //log the last activity date
+            authUser.LastVsActivity = DateTime.Now;
+            Db.SaveChanges();
+
             log.Sender = null;
             log.SenderId = authUser.Id;
 

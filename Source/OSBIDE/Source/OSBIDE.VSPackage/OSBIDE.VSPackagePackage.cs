@@ -54,7 +54,7 @@ namespace OSBIDE.VSPackage
     [ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(GuidList.guidOSBIDE_VSPackagePkgString)]
-    public sealed class OSBIDE_VSPackagePackage : Package
+    public sealed class OSBIDE_VSPackagePackage : Package, IDisposable
     { 
         private OsbideWebServiceClient _webServiceClient = null;
         private bool _hasWebServiceError = false;
@@ -100,9 +100,22 @@ namespace OSBIDE.VSPackage
             Assembly.Load("OSBIDE.Library");
             Assembly.Load("OSBIDE.Controls");
 
+            //Try to load in awesomium binaries.  If this fails, the client doesn't have
+            //Awesomium installed and therefore cannot access the built-in VS components
+            bool hasAwesomium = true;
+            try
+            {
+                Assembly.Load("Awesomium.Core");
+            }
+            catch (Exception)
+            {
+                hasAwesomium = false;
+                MessageBox.Show("It appears as though your system is missing prerequisite components necessary for OSBIDE to operate properly.  Until this is resolved, you will not be able to access certain OSBIDE components within Visual Studio.  You can download the prerequisite files and obtain support by visiting http://osbide.codeplex.com.", "OSBIDE", MessageBoxButton.OK);
+            }
+
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (null != mcs)
+            if (null != mcs && hasAwesomium == true)
             {
                 // Create the command for the menu item.
                 CommandID menuCommandID = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideCommand);
@@ -482,5 +495,9 @@ namespace OSBIDE.VSPackage
         }
         #endregion
 
+        public void Dispose()
+        {
+            _webServiceClient.Close();
+        }
     }
 }

@@ -22,6 +22,7 @@ namespace OSBIDE.Web.Controllers
         //
         // GET: /Profile/
         [OsbideAuthorize]
+        [RequiresVisualStudioConnectionForStudents]
         public ActionResult Index(int? id, int timestamp = -1)
         {
             ActivityFeedQuery query = new ActivityFeedQuery(Db);

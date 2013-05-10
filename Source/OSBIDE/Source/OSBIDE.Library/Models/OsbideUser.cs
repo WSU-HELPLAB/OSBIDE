@@ -188,8 +188,33 @@ namespace OSBIDE.Library.Models
             set
             {
                 RoleValue = (int)value;
+                OnPropertyChanged("Role");
             }
         }
+
+        private DateTime _lastVsActivity;
+
+        /// <summary>
+        /// Tracks when the user's Visual Studio client was last active.
+        /// Users can only access the web portion of OSBIDE if they have an
+        /// active connection through Visual Studio.
+        /// </summary>
+        [DataMember]
+        [Required]
+        public DateTime LastVsActivity
+        {
+            get
+            {
+                return _lastVsActivity;
+            }
+            set
+            {
+                _lastVsActivity = value;
+                OnPropertyChanged("LastVsActivity");
+            }
+        }
+
+        
 
         /// <summary>
         /// Returns the User's full name in "Last, First" format.
@@ -250,6 +275,7 @@ namespace OSBIDE.Library.Models
         {
             LogSubscriptions = new List<EventLogSubscription>();
             Role = SystemRole.Student;
+            LastVsActivity = DateTime.Now;
         }
 
         public OsbideUser(OsbideUser copyUser)
@@ -263,6 +289,7 @@ namespace OSBIDE.Library.Models
             ProfileImage = copyUser.ProfileImage;
             Email = copyUser.Email;
             SchoolId = copyUser.SchoolId;
+            LastVsActivity = copyUser.LastVsActivity;
         }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
