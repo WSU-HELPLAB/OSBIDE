@@ -51,7 +51,11 @@ namespace OSBIDE.Library
         {
             get
             {
-                string path = Path.Combine(DataRoot, "cache");
+#if DEBUG
+                string path = Path.Combine(DataRoot, "cache_debug");
+#else
+                string path = Path.Combine(DataRoot, "cache_release");
+#endif
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);

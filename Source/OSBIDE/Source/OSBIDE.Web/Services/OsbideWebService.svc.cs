@@ -38,6 +38,29 @@ namespace OSBIDE.Web.Services
         }
 
         /// <summary>
+        /// Logs a VS transaction for the given auth key
+        /// </summary>
+        /// <param name="authKey"></param>
+        private void LogUserTransaction(string authToken)
+        {
+            OsbideUser user = GetActiveUser(authToken);
+            if (user != null)
+            {
+                LogUserTransaction(user);
+            }
+        }
+
+        private void LogUserTransaction(OsbideUser user)
+        {
+            OsbideUser dbUser = Db.Users.Where(u => u.Id == user.Id).FirstOrDefault();
+            if (dbUser != null)
+            {
+                dbUser.LastVsActivity = DateTime.Now;
+                Db.SaveChanges();
+            }
+        }
+
+        /// <summary>
         /// Attempts to log the user into OSBIDE.  Returns a hash that can be used to authenticate future requests.  
         /// If the login fails, the hash will be an empty string.
         /// </summary>
@@ -55,9 +78,8 @@ namespace OSBIDE.Web.Services
                 if (user != null)
                 {
                     hash = auth.LogIn(user);
+                    LogUserTransaction(user);
                 }
-                user.LastVsActivity = DateTime.Now;
-                Db.SaveChanges();
             }
             return hash;
         }
@@ -87,11 +109,7 @@ namespace OSBIDE.Web.Services
             bool isValid = false;
             if (auth.IsValidKey(authToken))
             {
-                //log the last activity date
-                OsbideUser authUser = GetActiveUser(authToken);
-                authUser.LastVsActivity = DateTime.Now;
-                Db.SaveChanges();
-
+                LogUserTransaction(authToken);
                 isValid = true;
             }
             return isValid;
@@ -105,6 +123,7 @@ namespace OSBIDE.Web.Services
             if (auth.IsValidKey(authToken) == true)
             {
                 OsbideUser authUser = GetActiveUser(authToken);
+                LogUserTransaction(authUser);
 
                 //replace the error log's sender information with what we obtained from the auth key
                 errorLog.Sender = null;
@@ -152,8 +171,7 @@ namespace OSBIDE.Web.Services
             OsbideUser authUser = GetActiveUser(authToken);
 
             //log the last activity date
-            authUser.LastVsActivity = DateTime.Now;
-            Db.SaveChanges();
+            LogUserTransaction(authUser);
 
             log.Sender = null;
             log.SenderId = authUser.Id;

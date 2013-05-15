@@ -37,6 +37,7 @@ namespace OSBIDE.Library.ServiceClient
         private bool _isReceivingData = true;
         private TransmissionStatus _sendStatus = new TransmissionStatus();
         private TransmissionStatus _receiveStatus = new TransmissionStatus();
+        private bool _canCheckKey = true;
 
         #endregion
 
@@ -228,7 +229,7 @@ namespace OSBIDE.Library.ServiceClient
 
         private void CheckKey()
         {
-            while (IsSendingData)
+            while (_canCheckKey == true)
             {
                 lock (_cache)
                 {
