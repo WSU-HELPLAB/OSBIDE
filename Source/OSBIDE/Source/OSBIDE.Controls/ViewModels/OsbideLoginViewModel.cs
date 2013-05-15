@@ -171,7 +171,7 @@ namespace OSBIDE.Controls.ViewModels
 #if DEBUG
                 return "http://localhost:24867/Account/Create";
 #else
-                return "http://osbide.osble.org/Account/Create";
+                return "http://osbide.com/Account/Create";
 #endif
             }
         }

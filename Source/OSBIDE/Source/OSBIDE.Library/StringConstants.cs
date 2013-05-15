@@ -67,7 +67,7 @@ namespace OSBIDE.Library
 #if DEBUG
                 return "http://localhost:24867/Feed";
 #else
-                return "http://osbide.osble.org/Feed";
+                return "http://osbide.com/Feed";
 #endif
             }
         }
@@ -79,7 +79,7 @@ namespace OSBIDE.Library
 #if DEBUG
                 return "http://localhost:24867/Account/Create";
 #else
-                return "http://osbide.osble.org/Account/Create";
+                return "http://osbide.com/Account/Create";
 #endif
             }
         }
@@ -91,7 +91,7 @@ namespace OSBIDE.Library
 #if DEBUG
                 return "http://localhost:24867/PrivateQuestion";
 #else
-                return "http://osbide.osble.org/PrivateQuestion";
+                return "http://osbide.com/PrivateQuestion";
 #endif
             }
         }
@@ -103,7 +103,7 @@ namespace OSBIDE.Library
 #if DEBUG
                 return "http://localhost:24867/Chat";
 #else
-                return "http://osbide.osble.org/Chat";
+                return "http://osbide.com/Chat";
 #endif
             }
         }
@@ -115,7 +115,7 @@ namespace OSBIDE.Library
 #if DEBUG
                 return "http://localhost:24867/Profile";
 #else
-                return "http://osbide.osble.org/Profile";
+                return "http://osbide.com/Profile";
 #endif
             }
         }

@@ -84,7 +84,17 @@ namespace OSBIDE.Web.Services
         public bool IsValidKey(string authToken)
         {
             Authentication auth = new Authentication();
-            return auth.IsValidKey(authToken);
+            bool isValid = false;
+            if (auth.IsValidKey(authToken))
+            {
+                //log the last activity date
+                OsbideUser authUser = GetActiveUser(authToken);
+                authUser.LastVsActivity = DateTime.Now;
+                Db.SaveChanges();
+
+                isValid = true;
+            }
+            return isValid;
         }
 
         [OperationContract]
