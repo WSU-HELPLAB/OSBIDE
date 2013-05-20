@@ -47,8 +47,8 @@
     <AssemblyOriginatorKeyFile>OSBIDE.Controls.key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Awesomium.Core, Version=1.7.0.5, Culture=neutral, PublicKeyToken=e1a0d7c8071a5214, processorArchitecture=x86" />
-    <Reference Include="awesomium.windows.controls, Version=1.7.0.5, Culture=neutral, PublicKeyToken=7a34e179b8b61c39, processorArchitecture=x86" />
+    <Reference Include="Awesomium.Core, Version=1.7.1.0, Culture=neutral, PublicKeyToken=e1a0d7c8071a5214, processorArchitecture=x86" />
+    <Reference Include="Awesomium.Windows.Controls, Version=1.7.1.0, Culture=neutral, PublicKeyToken=7a34e179b8b61c39, processorArchitecture=x86" />
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
@@ -124,6 +124,7 @@
       <DependentUpon>AccountWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="GifImage.cs" />
+    <Compile Include="OsbideResourceInterceptor.cs" />
     <Compile Include="OsbideStatusControl.xaml.cs">
       <DependentUpon>OsbideStatusControl.xaml</DependentUpon>
     </Compile>

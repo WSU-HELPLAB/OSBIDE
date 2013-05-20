@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using OSBIDE.Library;
 
-namespace OSBIDE.Library.Models
+namespace OSBIDE.Controls
 {
     public class OsbideResourceInterceptor : IResourceInterceptor
     {
