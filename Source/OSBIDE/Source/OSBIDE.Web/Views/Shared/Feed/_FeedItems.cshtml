@@ -53,20 +53,19 @@
                 @{string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName); }
                 @Html.Partial(partialName, item)
             </div>
-            <div class="feed-item-comments">
-                <!-- turned off for now -->
-                @foreach (LogComment comment in item.Comments)
-                {
-                    //@Html.Partial("_CommentSingle", comment)
-                }
-                
-            </div>
             <div class="feed-item-footer">
                 <ul>
+                    <li><a class="anchor-pointer" onclick="expandComments('feed-item-comments-@lastLogId')">@item.Comments.Count Comment(s)</a></li>
                     <li><a href="@Url.Action("Details", "Feed", new { id = idString, component = OsbideVsComponent.FeedDetails })">Details</a></li>
-                    <li>@item.Comments.Count Comment(s)</li>
                     <li><span class="feed-item-date">@item.MostRecentOccurance.ToString("MM/dd @ hh:mmtt")</span></li>
                 </ul>
+            </div>
+            <div class="feed-item-comments" id="feed-item-comments-@lastLogId" style="display:none;">
+                @foreach (LogComment comment in item.Comments)
+                {
+                    @Html.Partial("_CommentSingle", comment)
+                }
+
             </div>
         </div>
         <div style="clear: both;">

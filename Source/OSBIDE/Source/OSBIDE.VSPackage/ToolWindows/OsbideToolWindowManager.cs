@@ -108,6 +108,7 @@ namespace OSBIDE.VSPackage
             {
                 return;
             }
+            _cache[e.Component.ToString()] = e.Url;
             switch (e.Component)
             {
                 case OsbideVsComponent.AskTheProfessor:

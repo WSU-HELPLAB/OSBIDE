@@ -57,7 +57,6 @@ namespace OSBIDE.Web.Models
             {
                 currentAggregate = new AggregateFeedItem(feedItems[0]);
                 aggregateItems.Add(currentAggregate);
-                currentAggregate.HelpfulMarks += feedItems[0].HelpfulComments;
                 previousItem = feedItems[0];
             }
             for (int i = 1; i < feedItems.Count; i++)

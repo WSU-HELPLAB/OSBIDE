@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using OSBIDE.Controls.Views;
+using OSBIDE.Library;
+using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 namespace OSBIDE.VSPackage
 {
@@ -26,11 +28,13 @@ namespace OSBIDE.VSPackage
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
             // the object returned by the Content property.
             BrowserView view = new BrowserView();
+            FileCache cache = OSBIDE_VSPackagePackage.CacheInstance;
             view.ViewModel = new Controls.ViewModels.BrowserViewModel()
             {
-                
+                Url = StringConstants.ActivityFeedUrl,
+                AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString()
             };
-            base.Content = new BrowserView();
+            base.Content = view;
 
         }
     }

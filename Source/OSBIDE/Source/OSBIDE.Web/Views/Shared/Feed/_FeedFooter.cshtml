@@ -8,18 +8,23 @@
 <section>
     @Html.ActionLink("Load earlier posts...", "Index", new { timestamp = Model.LastPollDate.AddHours(-10).Ticks }, new { id = "load-old-posts" })
 </section>
+<div id="hidden-workspace">
+</div>
+
 <script type="text/javascript">
     $(document).ready(function () {
 
         //get recent feed items
         getRecentFeedItems();
 
+        //get updates for current items
+        getCurrentFeedItemUpdates();
+
         //display hidden 
         showLastHidden();
 
         //listen for clicks to load older messages
-        $("#load-old-posts").click(function(e)
-        {
+        $("#load-old-posts").click(function (e) {
             e.preventDefault();
             $("#load-old-posts").text("Loading...");
             var feedId = getOldestFeedId();
@@ -33,8 +38,23 @@
             }
             );
         });
+
+        //disable footer selection
+        $('.feed-item-footer').disableSelection();
     }
     );
+
+    function expandComments(element) {
+        element = "#" + element;
+        if ($(element).find('.log-comment-single').length > 0) {
+            if ($(element).css('display') == 'none') {
+                $(element).css('display', 'block');
+            }
+            else {
+                $(element).css('display', 'none')
+            }
+        }
+    }
 
     function getOldPostsSuccess(html) {
         $("#load-old-posts").text("Load earlier posts...");
@@ -84,17 +104,37 @@
         if (lastId == undefined) {
             lastId = "@Model.LastLogId";
         }
-    return lastId;
-}
+        return lastId;
+    }
 
+    function getCurrentFeedItemUpdates() {
+        var dataIds = Array();
+        var i = 0;
+        $(".feed-item-single").each(function (item) {
+            dataIds[i] = { LastLogId: $(this).attr('data-id') };
+            i++;
+        });
+        $.ajax(
+            {
+                url: "@Url.Action("GetItemUpdates", "Feed")",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataIds),
+                dataType: "html",
+                type: "POST"/*,
+                success: getRecentFeedItemsSuccess,
+                complete: function () { setTimeout(getRecentFeedItems, 40000); }
+                */
+            }
+            );
+    }
 
-function getRecentFeedItems() {
+    function getRecentFeedItems() {
 
-    //find most recent log id
-    var lastId = getMostRecentFeedId();
-    $.ajax(
-        {
-            url: "@Url.Action("RecentFeedItems", "Feed")",
+        //find most recent log id
+        var lastId = getMostRecentFeedId();
+        $.ajax(
+            {
+                url: "@Url.Action("RecentFeedItems", "Feed")",
                 data: { id: lastId, userId: "@Model.SingleUserId" },
                 dataType: "html",
                 type: "GET",
@@ -107,12 +147,13 @@ function getRecentFeedItems() {
     function getRecentFeedItemsSuccess(html) {
         var trimmed = $.trim(html);
         if (trimmed.length > 0) {
-            $("#feed-items").prepend(html);
+            $("#hidden-workspace").append(html);
+            if ($("#hidden-workspace").find('.feed-item-single').length > 0) {
+                $("#feed-items").prepend(html);
+            }
+            $("#hidden-workspace").empty();
         }
     }
 
 
 </script>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryui")
-}

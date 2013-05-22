@@ -82,6 +82,13 @@ namespace OSBIDE.Web.Controllers
             return View("AjaxFeed", aggregateFeed);
         }
 
+        [HttpPost]
+        public ActionResult GetItemUpdates(List<FeedViewModel> items)
+        {
+            //todo: make a query
+            return View();
+        }
+
         /// <summary>
         /// Returns a raw feed of past feed items without any extra HTML chrome.  Used for AJAX updates to an existing feed.
         /// </summary>

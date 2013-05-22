@@ -52,6 +52,10 @@ input[type="checkbox"] {
     vertical-align:middle;
 }
 
+.anchor-pointer {
+    cursor:pointer;
+}
+
 #body {
     margin:7px;
 }
@@ -77,15 +81,24 @@ input[type="checkbox"] {
     margin-top:10px;
 }
 
+.feed-item-comments {
+    background:#F5F5F9;
+    margin-top:7px;
+    padding:3px;
+}
+
 .feed-item-date {
     font-size:9px;
     font-weight:bold;
 }
 
 .feed-item-footer {
-    background:#F5F5F9;
-    padding:4px;
     margin-top:5px;
+}
+
+.feed-item-footer li {
+    display:inline;
+    padding-left:7px;
 }
 
 .feed-item-single {
@@ -151,6 +164,10 @@ input[type="checkbox"] {
 .log-comment-content {
     margin-left: 55px;
 }
+
+    .log-comment-content h2 {
+        color:black;
+    }
 
 .log-comment-profile-picture {
     float: left;
