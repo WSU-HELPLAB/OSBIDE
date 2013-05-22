@@ -62,7 +62,7 @@ namespace OSBIDE.VSPackage
         private ILogger _errorLogger = new LocalErrorLogger();
         private ServiceClient _client;
         private OsbideContext _db;
-        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        private ObjectCache _cache = CacheInstance;
         private string _userName = null;
         private string _userPassword = null;
         private string _webServiceKey = null;
@@ -71,6 +71,14 @@ namespace OSBIDE.VSPackage
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
         private bool _isOsbideUpToDate = true;
+
+        public static FileCache CacheInstance
+        {
+            get
+            {
+                return new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+            }
+        }
 
         /// <summary>
         /// Default constructor of the package.
