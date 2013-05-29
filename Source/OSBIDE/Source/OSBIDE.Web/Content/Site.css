@@ -90,6 +90,7 @@ input[type="checkbox"] {
 .feed-item-date {
     font-size:9px;
     font-weight:bold;
+    color:black;
 }
 
 .feed-item-footer {
@@ -98,7 +99,7 @@ input[type="checkbox"] {
 
 .feed-item-footer li {
     display:inline;
-    padding-left:7px;
+    padding-right:7px;
 }
 
 .feed-item-single {

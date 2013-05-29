@@ -19,6 +19,16 @@ namespace OSBIDE.Library.Models
         public int UserId { get; set; }
         public virtual OsbideUser User { get; set; }
 
+        public HelpfulLogComment()
+        {
+        }
+
+        public HelpfulLogComment(HelpfulLogComment other)
+        {
+            Comment = new LogComment(other.Comment);
+            User = new OsbideUser(other.User);
+        }
+
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<HelpfulLogComment>()

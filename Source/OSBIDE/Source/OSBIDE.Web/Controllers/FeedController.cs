@@ -8,6 +8,7 @@ using OSBIDE.Web.Models.ViewModels;
 using OSBIDE.Web.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Objects;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -83,10 +84,28 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetItemUpdates(List<FeedViewModel> items)
+        public ActionResult GetItemUpdates(List<GetItemUpdatesViewModel> items)
         {
-            //todo: make a query
-            return View();
+            if (items != null)
+            {
+                List<int> logIds = items.Select(i => i.LogId).ToList();
+                DateTime lastPollDate = new DateTime(items.First().LastPollTick);
+                var query = from comment in Db.LogComments.Include("HelpfulMarks").Include("Author").AsNoTracking()
+                            where logIds.Contains(comment.LogId)
+                            && comment.DatePosted > lastPollDate
+                            select comment;
+                List<LogComment> comments = query.ToList();
+                long lastPollTick = items[0].LastPollTick;
+                var maxCommentTick = comments.Select(c => c.DatePosted);
+                if(maxCommentTick.Count() > 0)
+                {
+                    lastPollTick = maxCommentTick.Max().Ticks;
+                }
+                var result = new { LastPollTick = lastPollTick, Comments = comments };
+                ViewBag.LastPollTick = lastPollTick;
+                return View(comments);
+            }
+            return View(new List<LogComment>());
         }
 
         /// <summary>

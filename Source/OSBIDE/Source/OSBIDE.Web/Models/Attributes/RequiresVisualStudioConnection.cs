@@ -21,7 +21,7 @@ namespace OSBIDE.Web.Models.Attributes
             OsbideUser user = auth.GetActiveUser(key);
             
             //is the user a student?
-            if (user.Role == SystemRole.Student)
+            if (user.Email != null && user.Role == SystemRole.Student)
             {
                 DateTime lastActivity = DateTime.Now;
                 using (OsbideContext db = OsbideContext.DefaultWebConnection)

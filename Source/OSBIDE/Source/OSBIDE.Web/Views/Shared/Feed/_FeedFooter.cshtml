@@ -10,6 +10,7 @@
 </section>
 <div id="hidden-workspace">
 </div>
+<div id="hidden-updates-workspace" style="display: none;"></div>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -95,23 +96,25 @@
         var lastId = $(".feed-item-single").last().attr("data-id");
         if (lastId == undefined) {
             lastId = "@(Model.LastLogId + 1)";
+    }
+    return lastId;
+}
+
+function getMostRecentFeedId() {
+    var lastId = $(".feed-item-single").first().attr("data-id");
+    if (lastId == undefined) {
+        lastId = "@Model.LastLogId";
         }
         return lastId;
     }
 
-    function getMostRecentFeedId() {
-        var lastId = $(".feed-item-single").first().attr("data-id");
-        if (lastId == undefined) {
-            lastId = "@Model.LastLogId";
-        }
-        return lastId;
-    }
-
+    var lastUpdateCheck = "@Model.LastPollDate.Ticks";
     function getCurrentFeedItemUpdates() {
         var dataIds = Array();
         var i = 0;
         $(".feed-item-single").each(function (item) {
-            dataIds[i] = { LastLogId: $(this).attr('data-id') };
+            //var lastPollTick = lastUpdateCheck;//$(this).find('.feed-item-comments').first().attr('data-lastPoleDate');
+            dataIds[i] = { LogId: $(this).attr('data-id'), LastPollTick: lastUpdateCheck };
             i++;
         });
         $.ajax(
@@ -120,12 +123,56 @@
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(dataIds),
                 dataType: "html",
-                type: "POST"/*,
-                success: getRecentFeedItemsSuccess,
-                complete: function () { setTimeout(getRecentFeedItems, 40000); }
-                */
+                type: "POST",
+                success: getCurrentFeedItemUpdatesSuccess,
+                complete: function () { setTimeout(getCurrentFeedItemUpdates, 40000); }
             }
             );
+    }
+
+    function getCurrentFeedItemUpdatesSuccess(html) {
+
+        var trimmed = $.trim(html);
+        if (trimmed.length > 0) {
+
+            //get all current log comments
+            var dataIds = Array();
+            $('.log-comment-single').each(function (index) {
+                dataIds.push($(this).attr('data-id'));
+            });
+
+
+            $('#hidden-updates-workspace').append(html);
+            lastUpdateCheck = $('#last-poll-tick').val();
+
+            //loop through children
+            $('#hidden-updates-workspace').children('.log-comment-single').each(function (index) {
+                if (dataIds.indexOf($(this).attr('data-id')) < 0) {
+                    var commentsIdString = '#feed-item-comments-' + $(this).attr('data-logId');
+                    if ($(commentsIdString).length > 0) {
+
+                        //append the comment
+                        $(commentsIdString).append(this);
+
+                        //update comment count text
+                        var commentCountIdString = '#expand-comments-' + $(this).attr('data-logId');
+                        if ($(commentCountIdString).length > 0) {
+                            var commentStr = $(commentsIdString).find('.log-comment-single').length + ' Comment(s)';
+                            $(commentCountIdString).text(commentStr);
+                        }
+                    }
+                }
+            });
+        }
+        $('#hidden-updates-workspace').empty();
+        /*
+        $.each(json.Comments, function (key, value) {
+            var commentHtmlId = '#log-comment-single-' + value.Id;
+            if ($(commentHtmlId).length == 0) {
+
+            }
+        });
+        */
     }
 
     function getRecentFeedItems() {

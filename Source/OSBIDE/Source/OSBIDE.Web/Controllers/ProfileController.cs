@@ -80,12 +80,15 @@ namespace OSBIDE.Web.Controllers
             if (vm.User.Id == CurrentUser.Id)
             {   
                 List<int> eventLogIds = Db.EventLogSubscriptions.Where(s => s.UserId == vm.User.Id).Select(s => s.LogId).ToList();
-                foreach (int logId in eventLogIds)
+                if (eventLogIds.Count > 0)
                 {
-                    subscriptionsQuery.AddEventId(logId);
+                    foreach (int logId in eventLogIds)
+                    {
+                        subscriptionsQuery.AddEventId(logId);
+                    }
+                    vm.EventLogSubscriptions = AggregateFeedItem.FromFeedItems(subscriptionsQuery.Execute());
                 }
-
-                vm.EventLogSubscriptions = AggregateFeedItem.FromFeedItems(subscriptionsQuery.Execute());
+                
             }
 
             return View(vm);

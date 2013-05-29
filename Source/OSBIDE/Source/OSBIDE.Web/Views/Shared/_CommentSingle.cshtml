@@ -6,7 +6,7 @@
     HelpfulLogComment helpful = comment.HelpfulMarks.Where(m => m.UserId == CurrentUser.Id).FirstOrDefault();
     int helpfulCount = comment.HelpfulMarks.Count();
 }
-<section class="log-comment-single">
+<section class="log-comment-single" data-id="@Model.Id" data-logId="@Model.LogId">
     <div class="log-comment-profile-picture">
         <img src="@Url.Action("Picture", "Profile", new { id = comment.AuthorId, size = 48 })" title="profile image" alt="profile image" style="float:left;" />
     </div>
