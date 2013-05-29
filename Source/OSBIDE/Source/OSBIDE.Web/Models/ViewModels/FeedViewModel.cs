@@ -1,4 +1,5 @@
 ﻿using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,8 @@ namespace OSBIDE.Web.Models.ViewModels
         public int SingleUserId { get; set; }
         public List<IOsbideEvent> EventFilterOptions { get; set; }
         public List<IOsbideEvent> UserEventFilterOptions { get; set; }
-
+        public List<ErrorType> ErrorTypes { get; set; }
+        public ErrorType SelectedErrorType { get; set; }
         public FeedViewModel()
         {
             Feed = new List<AggregateFeedItem>();
@@ -23,6 +25,7 @@ namespace OSBIDE.Web.Models.ViewModels
             LastPollDate = DateTime.Now;
             EventFilterOptions = new List<IOsbideEvent>();
             UserEventFilterOptions = new List<IOsbideEvent>();
+            ErrorTypes = new List<ErrorType>();
         }
     }
 }

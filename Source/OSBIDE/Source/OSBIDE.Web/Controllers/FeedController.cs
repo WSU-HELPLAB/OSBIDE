@@ -24,7 +24,7 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last event received by the user.  Used for AJAX updates</param>
         /// <returns></returns>
-        public ActionResult Index(long timestamp = -1)
+        public ActionResult Index(long timestamp = -1, int errorType = -1)
         {
             string[] errors = base.GetRecentCompileErrors(CurrentUser);
             ActivityFeedQuery query = BuildBasicQuery();
@@ -40,7 +40,7 @@ namespace OSBIDE.Web.Controllers
                 query.StartDate = DateTime.Now.AddHours(-10);
                 
             }
-
+            
             //and finally, retrieve our list of feed items
             var maxIdQuery = Db.EventLogs.Select(l => l.Id);
             if (maxIdQuery.Count() > 0)
@@ -58,6 +58,16 @@ namespace OSBIDE.Web.Controllers
             vm.Feed = aggregateFeed;
             vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.PrettyName).ToList();
             vm.UserEventFilterOptions = query.ActiveEvents;
+            vm.ErrorTypes = Db.ErrorTypes.Distinct().ToList();
+            vm.SelectedErrorType = new ErrorType();
+            if (errorType > 0)
+            {
+                vm.SelectedErrorType = Db.ErrorTypes.Where(e => e.Id == errorType).FirstOrDefault();
+                if (vm.SelectedErrorType == null)
+                {
+                    vm.SelectedErrorType = new ErrorType();
+                }
+            }
             return View(vm);
         }
 
@@ -264,6 +274,12 @@ namespace OSBIDE.Web.Controllers
         [HttpPost]
         public ActionResult ApplyFeedFilter()
         {
+            string errorType = "";
+            if (Request.Form.AllKeys.Contains("error-type"))
+            {
+                errorType = Request.Form["error-type"];
+            }
+
             UserFeedSetting feedSetting = Db.UserFeedSettings.Where(u => u.UserId == CurrentUser.Id).FirstOrDefault();
             if (feedSetting == null)
             {
@@ -295,7 +311,7 @@ namespace OSBIDE.Web.Controllers
             //save changes
             Db.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { errorType = errorType });
         }
 
         /// <summary>

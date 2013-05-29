@@ -63,8 +63,69 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         private void UpdateUserScores()
         {
+            //scoring:
+            // 1 pt for each FeedCommentEvent / AskForHelpEvent
+            // 3 pts for each log comment
+            // 7 pts for each helpful mark
+            var onePtQuery = from log in Db.EventLogs
+                             where (log.LogType == FeedCommentEvent.Name || log.LogType == AskForHelpEvent.Name)
+                             group log by log.SenderId into logGroup
+                             select new { UserId = logGroup.Key, LogCount = logGroup.Count() };
+
+            var threePtQuery = from comment in Db.LogComments
+                               group comment by comment.AuthorId into commentGroup
+                               select new { UserId = commentGroup.Key, CommentCount = commentGroup.Count() };
+
+            var sevenPtQuery = from helpful in Db.HelpfulLogComments
+                               group helpful by helpful.Comment.AuthorId into helpfulGroup
+                               select new { UserId = helpfulGroup.Key, HelpfulCount = helpfulGroup.Count() };
+
+            Dictionary<int, int> scores = new Dictionary<int, int>();
+            foreach (var row in onePtQuery)
+            {
+                if (scores.ContainsKey(row.UserId) == false)
+                {
+                    scores.Add(row.UserId, 0);
+                }
+                scores[row.UserId] += row.LogCount;
+            }
+
+            foreach (var row in threePtQuery)
+            {
+                if (scores.ContainsKey(row.UserId) == false)
+                {
+                    scores.Add(row.UserId, 0);
+                }
+                scores[row.UserId] += (row.CommentCount * 3);
+            }
+            foreach (var row in sevenPtQuery)
+            {
+                if (scores.ContainsKey(row.UserId) == false)
+                {
+                    scores.Add(row.UserId, 0);
+                }
+                scores[row.UserId] += (row.HelpfulCount * 7);
+            }
+
+            //remove all user scores
+            Db.DeleteUserScores();
+
+            //add in new ones
+            foreach (int userKey in scores.Keys)
+            {
+                UserScore score = new UserScore()
+                {
+                    UserId = userKey,
+                    Score = scores[userKey],
+                    LastCalculated = DateTime.Now
+                };
+                Db.UserScores.Add(score);
+            }
+            Db.SaveChanges();
+
             //TODO: This query doesn't work right as it gives helpful marks to the person who makred as helpful instead of
             //the original author
+            /*
             var query = from user in Db.Users
                         join comment2 in Db.LogComments on user.Id equals comment2.AuthorId into comments
                         join helpfulMark in Db.HelpfulLogComments on user.Id equals helpfulMark.UserId into helpfulComments
@@ -93,6 +154,7 @@ namespace OSBIDE.Web.Controllers
                 score.LastCalculated = DateTime.Now;
             }
             Db.SaveChanges();
+             * */
         }
 
         /// <summary>
@@ -146,17 +208,17 @@ namespace OSBIDE.Web.Controllers
                                               join build in Db.BuildEvents on log.Id equals build.EventLogId
                                               join buildError in Db.BuildEventErrorListItems on build.Id equals buildError.BuildEventId
                                               join error in Db.ErrorListItems on buildError.ErrorListItemId equals error.Id
-                                              where 
+                                              where
                                                 error.Description.ToLower().StartsWith("error") == true
                                                 && log.SenderId == user.Id
                                               select error).ToList();
-            
+
             //now that we have the errors, pull out the code
             string pattern = "error ([^:]+)";
             foreach (ErrorListItem item in errorItems)
             {
                 Match match = Regex.Match(item.Description, pattern);
-                
+
                 //ignore bad matches
                 if (match.Groups.Count == 2)
                 {

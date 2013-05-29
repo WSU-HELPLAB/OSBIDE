@@ -12,7 +12,9 @@ namespace OSBIDE.Web.Models.ViewModels
         public FeedViewModel Feed { get; set; }
         public List<LogComment> RecentComments { get; set; }
         public List<AggregateFeedItem> EventLogSubscriptions { get; set; }
-
+        public UserScore Score { get; set; }
+        public int NumberOfComments { get; set; }
+        public int NumberOfPosts { get; set; }
         public ProfileViewModel()
         {
             Feed = new FeedViewModel();

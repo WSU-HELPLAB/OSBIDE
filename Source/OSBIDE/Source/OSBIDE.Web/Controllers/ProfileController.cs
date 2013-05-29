@@ -67,6 +67,17 @@ namespace OSBIDE.Web.Controllers
             vm.Feed.LastLogId = -1;
             vm.Feed.SingleUserId = vm.User.Id;
             vm.Feed.LastPollDate = query.StartDate;
+            vm.Score = Db.UserScores.Where(s => s.UserId == vm.User.Id).FirstOrDefault();
+            vm.NumberOfPosts = (from e in Db.EventLogs
+                                where (e.LogType == FeedCommentEvent.Name || e.LogType == AskForHelpEvent.Name)
+                                && e.SenderId == vm.User.Id
+                                select e
+                                ).Count();
+            vm.NumberOfComments = Db.LogComments.Where(c => c.AuthorId == vm.User.Id).Count();
+            if (vm.Score == null)
+            {
+                vm.Score = new UserScore();
+            }
             var maxQuery = Db.EventLogs.Where(e => e.SenderId == vm.User.Id).Select(e => e.Id);
             if (maxQuery.Count() > 0)
             {

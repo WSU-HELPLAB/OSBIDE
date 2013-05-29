@@ -18,7 +18,17 @@
         {
             <span>@Html.ActionLink("(Edit your profile)", "Edit")</span>
         }
-        <h2>User Stats</h2>
+        <table>
+            <tr>
+                <td><strong>@Model.Score.Score</strong> points</td>
+            </tr>
+            <tr>
+                <td><strong>@Model.NumberOfPosts</strong> post(s)</td>
+            </tr>
+            <tr>
+                <td><strong>@Model.NumberOfComments</strong> comment(s)</td>
+            </tr>
+        </table>
     </div>
 </section>
 @if (Model.User.Id == currentUser.Id)

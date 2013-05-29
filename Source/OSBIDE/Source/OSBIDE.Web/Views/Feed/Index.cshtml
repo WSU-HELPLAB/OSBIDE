@@ -21,7 +21,7 @@
 }
 @using(Html.BeginForm("ApplyFeedFilter", "Feed"))
 {
-    <section id="filter-options" style="display:none;">
+    <section id="filter-options" style="display: none;">
         <h2>Filter by Activity Type:</h2>
         <div>
             @foreach (IOsbideEvent evt in Model.EventFilterOptions)
@@ -38,9 +38,20 @@
         </div>
         <h2>Filter by Error Type:</h2>
         <div>
-            to be implemented...
+            <select name="error-type">
+                <option value=""></option>
+                @foreach (ErrorType error in Model.ErrorTypes)
+                {
+                    string selectedText = "";
+                    if (error.Name.CompareTo(Model.SelectedErrorType.Name) == 0)
+                    {
+                        selectedText = @"selected=""selected""";
+                    }
+                    <option @Html.Raw(selectedText) value="@error.Id">@error.Name</option>
+                }
+            </select>
         </div>
-            <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
+        <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
     </section>
 }
@@ -53,6 +64,6 @@
         else {
             $("#filter-options").slideUp();
         }
-        
+
     });
 </script>

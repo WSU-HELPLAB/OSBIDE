@@ -194,6 +194,21 @@ namespace OSBIDE.Library.Models
             }
         }
 
+        public bool DeleteUserScores()
+        {
+            bool retval = true;
+            try
+            {
+                var context = ((IObjectContextAdapter)this).ObjectContext;
+                context.ExecuteStoreCommand("TRUNCATE TABLE UserScores");
+            }
+            catch (Exception)
+            {
+                retval = false;
+            }
+            return retval;
+        }
+
         /// <summary>
         /// Inserts a user that has a preexisting ID into the database context.  Most likely to be used
         /// when inserting a user that already exists in another context.
