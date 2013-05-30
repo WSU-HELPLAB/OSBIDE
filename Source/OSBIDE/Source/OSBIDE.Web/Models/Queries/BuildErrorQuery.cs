@@ -16,7 +16,7 @@ namespace OSBIDE.Web.Models.Queries
         {
         }
 
-        public IQueryable<FeedItem> Execute()
+        public override IQueryable<FeedItem> Execute()
         {
             if (BuildErrorTypeId > 0)
             {
@@ -85,6 +85,7 @@ namespace OSBIDE.Web.Models.Queries
                 return feedItems.AsQueryable();
 
             }
+            return new List<FeedItem>().AsQueryable();
         }
     }
 }

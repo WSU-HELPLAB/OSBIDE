@@ -39,7 +39,7 @@
         <h2>Filter by Error Type:</h2>
         <div>
             <select name="error-type">
-                <option value=""></option>
+                <option value="-1">No Filter</option>
                 @foreach (ErrorType error in Model.ErrorTypes)
                 {
                     string selectedText = "";

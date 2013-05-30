@@ -26,6 +26,7 @@ namespace OSBIDE.Web.Models.ViewModels
             EventFilterOptions = new List<IOsbideEvent>();
             UserEventFilterOptions = new List<IOsbideEvent>();
             ErrorTypes = new List<ErrorType>();
+            SelectedErrorType = new ErrorType();
         }
     }
 }

@@ -108,7 +108,7 @@ namespace OSBIDE.Web.Models.Queries
             eventIds.Add(id);
         }
 
-        public IQueryable<FeedItem> Execute()
+        public virtual IQueryable<FeedItem> Execute()
         {
             List<FeedItem> feedItems = new List<FeedItem>();
 

@@ -82,9 +82,15 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last feed item received by the client</param>
         /// <returns></returns>
-        public ActionResult RecentFeedItems(int id, int userId = -1)
+        public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1)
         {
-            ActivityFeedQuery query = BuildBasicQuery();
+            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            if (errorType > 0)
+            {
+                query = new BuildErrorQuery(Db);
+                (query as BuildErrorQuery).BuildErrorTypeId = errorType;
+            }
+            BuildBasicQuery(query);
             query.MinLogId = id;
             query.MaxQuerySize = 10;
 
@@ -129,9 +135,15 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the first feed item received by the client.</param>
         /// <returns></returns>
-        public ActionResult OldFeedItems(int id, int count, int userId)
+        public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1)
         {
-            ActivityFeedQuery query = BuildBasicQuery();
+            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            if (errorType > 0)
+            {
+                query = new BuildErrorQuery(Db);
+                (query as BuildErrorQuery).BuildErrorTypeId = errorType;
+            }
+            BuildBasicQuery(query);
             query.MaxLogId = id;
             query.MaxQuerySize = count;
 
