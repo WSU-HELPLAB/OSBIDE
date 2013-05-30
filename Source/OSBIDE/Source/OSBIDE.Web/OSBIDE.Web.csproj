@@ -166,6 +166,8 @@
     <Compile Include="Models\FileCacheHelper.cs" />
     <Compile Include="Models\ObjectBinder.cs" />
     <Compile Include="Models\Queries\ActivityFeedQuery.cs" />
+    <Compile Include="Models\Queries\BuildErrorQuery.cs" />
+    <Compile Include="Models\Queries\IOsbideQuery.cs" />
     <Compile Include="Models\Queries\StudentSubscriptionsQuery.cs" />
     <Compile Include="Models\ViewModels\AssignmentsViewModel.cs" />
     <Compile Include="Models\ViewModels\BuildDiffViewModel.cs" />

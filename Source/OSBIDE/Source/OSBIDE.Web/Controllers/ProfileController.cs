@@ -63,7 +63,7 @@ namespace OSBIDE.Web.Controllers
 
             //build the feed view model
             vm.Feed = new FeedViewModel();
-            vm.Feed.Feed = AggregateFeedItem.FromFeedItems(query.Execute());
+            vm.Feed.Feed = AggregateFeedItem.FromFeedItems(query.Execute().ToList());
             vm.Feed.LastLogId = -1;
             vm.Feed.SingleUserId = vm.User.Id;
             vm.Feed.LastPollDate = query.StartDate;
@@ -97,7 +97,7 @@ namespace OSBIDE.Web.Controllers
                     {
                         subscriptionsQuery.AddEventId(logId);
                     }
-                    vm.EventLogSubscriptions = AggregateFeedItem.FromFeedItems(subscriptionsQuery.Execute());
+                    vm.EventLogSubscriptions = AggregateFeedItem.FromFeedItems(subscriptionsQuery.Execute().ToList());
                 }
                 
             }
@@ -145,7 +145,7 @@ namespace OSBIDE.Web.Controllers
 
             vm.UsersInCourse = Db.Users.Where(u => u.SchoolId == CurrentUser.SchoolId).ToList();
             StudentSubscriptionsQuery subs = new StudentSubscriptionsQuery(Db, CurrentUser);
-            List<OsbideUser> subscriptionsAsUsers = subs.Execute();
+            List<OsbideUser> subscriptionsAsUsers = subs.Execute().ToList();
             List<UserSubscription> subscriptions = Db
                 .UserSubscriptions.Where(s => s.ObserverSchoolId == CurrentUser.SchoolId)
                 .Where(s => s.ObserverInstitutionId == CurrentUser.InstitutionId)

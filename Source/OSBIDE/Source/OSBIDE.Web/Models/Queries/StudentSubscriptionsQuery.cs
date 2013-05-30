@@ -9,7 +9,7 @@ namespace OSBIDE.Web.Models.Queries
     /// <summary>
     /// Will retrieve a list of users to which the current user (observer) is subscribed.
     /// </summary>
-    public class StudentSubscriptionsQuery
+    public class StudentSubscriptionsQuery : IOsbideQuery<OsbideUser>
     {
         private OsbideContext _db;
         private OsbideUser _observer;
@@ -24,7 +24,7 @@ namespace OSBIDE.Web.Models.Queries
             _observer = observer;
         }
 
-        public List<OsbideUser> Execute()
+        public IQueryable<OsbideUser> Execute()
         {
             List<OsbideUser> subjects = new List<OsbideUser>();
 
@@ -35,7 +35,7 @@ namespace OSBIDE.Web.Models.Queries
                         where subscription.ObserverSchoolId == _observer.SchoolId
                            && subscription.ObserverInstitutionId == _observer.InstitutionId
                         select user).ToList();
-            return subjects;
+            return subjects.AsQueryable();
         }
     }
 }

@@ -8,12 +8,12 @@ using System.Web;
 
 namespace OSBIDE.Web.Models.Queries
 {
-    public class ActivityFeedQuery
+    public class ActivityFeedQuery : IOsbideQuery<FeedItem>
     {
-        private OsbideContext _db;
-        private List<IOsbideEvent> eventSelectors = new List<IOsbideEvent>();
-        private List<OsbideUser> subscriptionSubjects = new List<OsbideUser>();
-        private List<int> eventIds = new List<int>();
+        protected OsbideContext _db;
+        protected List<IOsbideEvent> eventSelectors = new List<IOsbideEvent>();
+        protected List<OsbideUser> subscriptionSubjects = new List<OsbideUser>();
+        protected List<int> eventIds = new List<int>();
 
         public ActivityFeedQuery(OsbideContext db)
         {
@@ -108,7 +108,7 @@ namespace OSBIDE.Web.Models.Queries
             eventIds.Add(id);
         }
 
-        public List<FeedItem> Execute()
+        public IQueryable<FeedItem> Execute()
         {
             List<FeedItem> feedItems = new List<FeedItem>();
 
@@ -246,7 +246,7 @@ namespace OSBIDE.Web.Models.Queries
                 feedItems.Add(item);
             }
 
-            return feedItems;
+            return feedItems.AsQueryable();
         }
     }
 }

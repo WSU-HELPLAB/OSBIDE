@@ -27,7 +27,13 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Index(long timestamp = -1, int errorType = -1)
         {
             string[] errors = base.GetRecentCompileErrors(CurrentUser);
-            ActivityFeedQuery query = BuildBasicQuery();
+            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            if(errorType > 0)
+            {
+                query = new BuildErrorQuery(Db);
+                (query as BuildErrorQuery).BuildErrorTypeId = errorType;
+            }
+            BuildBasicQuery(query);
             FeedViewModel vm = new FeedViewModel();
 
             if (timestamp > 0)
@@ -51,7 +57,7 @@ namespace OSBIDE.Web.Controllers
             {
                 vm.LastLogId = 0;
             }
-            List<FeedItem> feedItems = query.Execute();
+            List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
             this.UpdateLogSubscriptions(CurrentUser);
             vm.LastPollDate = query.StartDate;
@@ -77,7 +83,7 @@ namespace OSBIDE.Web.Controllers
         /// <param name="id">The ID of the last feed item received by the client</param>
         /// <returns></returns>
         public ActionResult RecentFeedItems(int id, int userId = -1)
-        {            
+        {
             ActivityFeedQuery query = BuildBasicQuery();
             query.MinLogId = id;
             query.MaxQuerySize = 10;
@@ -88,7 +94,7 @@ namespace OSBIDE.Web.Controllers
                 query.ClearSubscriptionSubjects();
                 query.AddSubscriptionSubject(Db.Users.Where(u => u.Id == userId).FirstOrDefault());
             }
-            List<FeedItem> feedItems = query.Execute();
+            List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
             return View("AjaxFeed", aggregateFeed);
         }
@@ -136,7 +142,7 @@ namespace OSBIDE.Web.Controllers
                 query.AddSubscriptionSubject(Db.Users.Where(u => u.Id == userId).FirstOrDefault());
             }
 
-            List<FeedItem> feedItems = query.Execute();
+            List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
             return View("AjaxFeed", aggregateFeed);
         }
@@ -163,7 +169,7 @@ namespace OSBIDE.Web.Controllers
             {
                 query.AddEventId(logId);
             }
-            List<FeedItem> feedItems = query.Execute();
+            List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateItems = AggregateFeedItem.FromFeedItems(feedItems);
 
             FeedDetailsViewModel vm = new FeedDetailsViewModel();
@@ -318,16 +324,19 @@ namespace OSBIDE.Web.Controllers
         /// Constructs a basic query to be further manipulated by other functions in this class
         /// </summary>
         /// <returns></returns>
-        private ActivityFeedQuery BuildBasicQuery()
+        private ActivityFeedQuery BuildBasicQuery(ActivityFeedQuery query = null)
         {
+            //check for null query
+            if (query == null)
+            {
+                query = new ActivityFeedQuery(Db);
+            }
+
             //pull down the current user's list of subscriptions
-            List<OsbideUser> subscriptions = new StudentSubscriptionsQuery(Db, CurrentUser).Execute();
+            List<OsbideUser> subscriptions = new StudentSubscriptionsQuery(Db, CurrentUser).Execute().ToList();
 
             //and add himself to the list as well (so that his posts show up in the feed)
             subscriptions.Add(CurrentUser);
-
-            //now, make the query
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
 
             //add the event types that the user wants to see
             UserFeedSetting feedSettings = Db.UserFeedSettings.Where(u => u.UserId == CurrentUser.Id).FirstOrDefault();
