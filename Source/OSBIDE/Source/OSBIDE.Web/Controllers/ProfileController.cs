@@ -258,7 +258,15 @@ namespace OSBIDE.Web.Controllers
             System.Drawing.Bitmap userBitmap;
             if (user != null)
             {
-                userBitmap = user.GetProfileImage();
+                try
+                {
+                    userBitmap = user.GetProfileImage();
+                }
+                catch (Exception)
+                {
+                    IdenticonRenderer renderer = new IdenticonRenderer();
+                    userBitmap = renderer.Render(1, 128);
+                }
             }
             else
             {
