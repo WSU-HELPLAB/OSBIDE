@@ -19,7 +19,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OSBIDE.VSPackage</RootNamespace>
-    <AssemblyName>OSBIDE.VSPackage</AssemblyName>
+    <AssemblyName>OSBIDE</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
