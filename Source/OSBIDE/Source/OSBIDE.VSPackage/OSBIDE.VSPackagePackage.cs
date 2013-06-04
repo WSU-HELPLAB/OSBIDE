@@ -249,8 +249,12 @@ namespace OSBIDE.VSPackage
              * */
         }
 
-        private void ShowAwesomiumError()
+        private void ShowAwesomiumError(Exception ex)
         {
+            if (ex != null)
+            {
+                _errorLogger.WriteToLog("Awesomium Error: " + ex.Message, LogPriority.HighPriority);
+            }
             MessageBox.Show("It appears as though your system is missing prerequisite components necessary for OSBIDE to operate properly.  Until this is resolved, you will not be able to access certain OSBIDE components within Visual Studio.  You can download the prerequisite files and obtain support by visiting http://osbide.codeplex.com.", "OSBIDE", MessageBoxButton.OK);
         }
 
@@ -262,9 +266,9 @@ namespace OSBIDE.VSPackage
                 {
                     _manager.OpenActivityFeedWindow();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ShowAwesomiumError();
+                    ShowAwesomiumError(ex);
                 }
             }
             else
@@ -281,9 +285,9 @@ namespace OSBIDE.VSPackage
                 {
                     _manager.OpenActivityFeedDetailsWindow();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ShowAwesomiumError();
+                    ShowAwesomiumError(ex);
                 }
             }
             else
@@ -300,9 +304,9 @@ namespace OSBIDE.VSPackage
                 {
                     _manager.OpenChatWindow();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ShowAwesomiumError();
+                    ShowAwesomiumError(ex);
                 }
             }
             else
@@ -319,9 +323,9 @@ namespace OSBIDE.VSPackage
                 {
                     _manager.OpenProfileWindow();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ShowAwesomiumError();
+                    ShowAwesomiumError(ex);
                 }
             }
             else
@@ -336,9 +340,9 @@ namespace OSBIDE.VSPackage
             {
                 _manager.OpenCreateAccountWindow();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ShowAwesomiumError();
+                ShowAwesomiumError(ex);
             }
 
         }
@@ -351,9 +355,9 @@ namespace OSBIDE.VSPackage
                 {
                     _manager.OpenAskTheProfessorWindow();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    ShowAwesomiumError();
+                    ShowAwesomiumError(ex);
                 }
             }
             else
