@@ -41,9 +41,15 @@ namespace OSBIDE.VSPackage
             }
             view.ViewModel = new Controls.ViewModels.BrowserViewModel()
             {
-                Url = url,
-                AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString()
+                Url = StringConstants.CreateAccountUrl
             };
+            try
+            {
+                view.ViewModel.AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString();
+            }
+            catch (Exception)
+            {
+            }
             base.Content = view;
 
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using OSBIDE.Controls.Views;
 using OSBIDE.Library;
+using System;
 using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 namespace OSBIDE.VSPackage
@@ -31,9 +32,15 @@ namespace OSBIDE.VSPackage
             FileCache cache = OSBIDE_VSPackagePackage.CacheInstance;
             view.ViewModel = new Controls.ViewModels.BrowserViewModel()
             {
-                Url = StringConstants.ActivityFeedUrl,
-                AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString()
+                Url = StringConstants.CreateAccountUrl
             };
+            try
+            {
+                view.ViewModel.AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString();
+            }
+            catch (Exception)
+            {
+            }
             base.Content = view;
 
         }

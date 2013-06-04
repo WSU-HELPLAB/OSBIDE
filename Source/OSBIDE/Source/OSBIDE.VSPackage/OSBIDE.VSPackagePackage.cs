@@ -108,6 +108,19 @@ namespace OSBIDE.VSPackage
             Assembly.Load("OSBIDE.Library");
             Assembly.Load("OSBIDE.Controls");
 
+            //force load awesomium dlls
+            /*
+            try
+            {
+                Assembly.Load("Awesomium.Core, Version=1.7.1.0, Culture=neutral, PublicKeyToken=e1a0d7c8071a5214");
+                Assembly.Load("Awesomium.Windows.Controls, Version=1.7.1.0, Culture=neutral, PublicKeyToken=7a34e179b8b61c39");
+            }
+            catch (Exception ex)
+            {
+                _errorLogger.WriteToLog("Error loading awesomium DLLs: " + ex.Message, LogPriority.HighPriority);
+            }
+             * */
+
             // Add our command handlers for menu (commands must exist in the .vsct file)
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
@@ -163,6 +176,8 @@ namespace OSBIDE.VSPackage
             //create our web service
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
 
+            _webServiceClient.LibraryVersionNumberCompleted += CheckServiceVersionComplete;
+
             //pull saved user data
             _userName = _cache[StringConstants.UserNameCacheKey] as string;
             _userPassword = _cache[StringConstants.PasswordCacheKey] as string;
@@ -206,7 +221,18 @@ namespace OSBIDE.VSPackage
             }
 
             //check web service version number against ours
-            CheckServiceVersion();
+            try
+            {
+                _webServiceClient.LibraryVersionNumberAsync();
+            }
+            catch (Exception ex)
+            {
+                //write to the log file
+                _errorLogger.WriteToLog(string.Format("LibraryVersionNumberAsync error: {0}", ex.Message), LogPriority.HighPriority);
+
+                //turn off future service calls for now
+                _isOsbideUpToDate = false;
+            }
 
             if (_isOsbideUpToDate)
             {
@@ -216,6 +242,7 @@ namespace OSBIDE.VSPackage
 
             _manager = new OsbideToolWindowManager(_cache as FileCache, this);
         }
+        
         #endregion
 
         #region AC Code
@@ -477,35 +504,36 @@ namespace OSBIDE.VSPackage
             }
         }
 
-        private void CheckServiceVersion()
+        void CheckServiceVersionComplete(object sender, LibraryVersionNumberCompletedEventArgs e)
         {
-            string remoteVersionNumber = "";
+            string remoteVersionNumber = e.Result;
             string packageUrl = "";
 
-            //wrap web service calls in a try/catch just in case the endpoint can't be found
-            try
-            {
-                remoteVersionNumber = _webServiceClient.LibraryVersionNumber();
-                packageUrl = _webServiceClient.OsbidePackageUrl();
-            }
-            catch (Exception ex)
-            {
-                //write to the log file
-                _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message), LogPriority.HighPriority);
-
-                //turn off future service calls for now
-                _isOsbideUpToDate = false;
-
-                return;
-            }
-
-            //we have a version mismatch, stop sending data to the server & delete localDb
+            //if we have a version mismatch, stop sending data to the server & delete localDb
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
+                
+                //wrap web service calls in a try/catch just in case the endpoint can't be found
+                try
+                {
+                    packageUrl = _webServiceClient.OsbidePackageUrl();
+                }
+                catch (Exception ex)
+                {
+                    //write to the log file
+                    _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message), LogPriority.HighPriority);
+
+                    //turn off future service calls for now
+                    _isOsbideUpToDate = false;
+
+                    return;
+                }
+
                 _isOsbideUpToDate = false;
                 File.Delete(StringConstants.LocalDatabasePath);
                 UpdateAvailableWindow.ShowModalDialog(packageUrl);
             }
+            
         }
 
         /// <summary>
