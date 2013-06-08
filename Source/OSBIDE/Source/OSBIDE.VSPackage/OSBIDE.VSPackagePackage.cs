@@ -506,8 +506,19 @@ namespace OSBIDE.VSPackage
 
         void CheckServiceVersionComplete(object sender, LibraryVersionNumberCompletedEventArgs e)
         {
-            string remoteVersionNumber = e.Result;
+            
+            string remoteVersionNumber = "";
             string packageUrl = "";
+
+            try
+            {
+                remoteVersionNumber = e.Result;
+            }
+            catch (Exception)
+            {
+                //something bad happened so just clear out of the function
+                return;
+            }
 
             //if we have a version mismatch, stop sending data to the server & delete localDb
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
