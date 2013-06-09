@@ -232,7 +232,7 @@ namespace OSBIDE.Web.Controllers
             if (count == 0)
             {
                 LogComment comment = Db.LogComments.Where(c => c.Id == commentId).FirstOrDefault();
-                if (commentId != null)
+                if (commentId != 0)
                 {
                     HelpfulLogComment help = new HelpfulLogComment()
                     {

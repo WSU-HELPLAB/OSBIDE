@@ -7,6 +7,6 @@ namespace OSBIDE.Web.Models.Queries
 {
     public interface IOsbideQuery<T>
     {
-        IQueryable<T> Execute();
+        IList<T> Execute();
     }
 }

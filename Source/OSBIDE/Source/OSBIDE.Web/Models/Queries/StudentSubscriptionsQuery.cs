@@ -24,7 +24,7 @@ namespace OSBIDE.Web.Models.Queries
             _observer = observer;
         }
 
-        public IQueryable<OsbideUser> Execute()
+        public IList<OsbideUser> Execute()
         {
             List<OsbideUser> subjects = new List<OsbideUser>();
 
@@ -35,7 +35,7 @@ namespace OSBIDE.Web.Models.Queries
                         where subscription.ObserverSchoolId == _observer.SchoolId
                            && subscription.ObserverInstitutionId == _observer.InstitutionId
                         select user).ToList();
-            return subjects.AsQueryable();
+            return subjects;
         }
     }
 }

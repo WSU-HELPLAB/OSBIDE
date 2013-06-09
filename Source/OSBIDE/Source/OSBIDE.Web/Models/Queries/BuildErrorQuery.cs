@@ -16,7 +16,7 @@ namespace OSBIDE.Web.Models.Queries
         {
         }
 
-        public override IQueryable<FeedItem> Execute()
+        public override IList<FeedItem> Execute()
         {
             if (BuildErrorTypeId > 0)
             {
@@ -82,10 +82,10 @@ namespace OSBIDE.Web.Models.Queries
                     item.Event = row.BuildEvent;
                     feedItems.Add(item);
                 }
-                return feedItems.AsQueryable();
+                return feedItems;
 
             }
-            return new List<FeedItem>().AsQueryable();
+            return new List<FeedItem>();
         }
     }
 }
