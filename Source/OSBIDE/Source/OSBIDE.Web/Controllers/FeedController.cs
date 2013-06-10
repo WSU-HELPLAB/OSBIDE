@@ -26,6 +26,8 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult Index(long timestamp = -1, int errorType = -1)
         {
+            return View("Disabled");
+
             string[] errors = base.GetRecentCompileErrors(CurrentUser);
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
             if(errorType > 0)
