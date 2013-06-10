@@ -31,7 +31,7 @@ namespace OSBIDE.Web.Controllers
                 string region = string.Format("chat_{0}", sendingRoomId);
                 GlobalCache.Remove(CurrentUser.Id.ToString(), region);
             }
-            DateTime minDate = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
+            DateTime minDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 1, 0, 0));
 
             //get all chat messages that are associated with the requested room and have been issued within the last hour
             List<ChatMessage> chatMessages = (from message in Db.ChatMessages
@@ -169,7 +169,7 @@ namespace OSBIDE.Web.Controllers
                     {
                         AuthorId = CurrentUser.Id,
                         Message = message,
-                        MessageDate = DateTime.Now,
+                        MessageDate = DateTime.UtcNow,
                         RoomId = chatRoomId
                     };
                     Db.ChatMessages.Add(chat);

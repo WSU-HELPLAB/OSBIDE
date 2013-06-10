@@ -55,7 +55,7 @@ namespace OSBIDE.Web.Services
             OsbideUser dbUser = Db.Users.Where(u => u.Id == user.Id).FirstOrDefault();
             if (dbUser != null)
             {
-                dbUser.LastVsActivity = DateTime.Now;
+                dbUser.LastVsActivity = DateTime.UtcNow;
                 Db.SaveChanges();
             }
         }

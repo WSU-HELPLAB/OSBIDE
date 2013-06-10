@@ -59,7 +59,7 @@ namespace OSBIDE.Library.Events
 
         public SubmitEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             SolutionData = new byte[0];
         }
 

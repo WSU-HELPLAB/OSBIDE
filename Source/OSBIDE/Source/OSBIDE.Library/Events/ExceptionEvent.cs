@@ -64,7 +64,7 @@ namespace OSBIDE.Library.Events
 
         public ExceptionEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             StackFrames = new List<StackFrame>();
         }
     }

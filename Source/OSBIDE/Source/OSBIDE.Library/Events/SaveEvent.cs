@@ -45,7 +45,7 @@ namespace OSBIDE.Library.Events
 
         public SaveEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
         }
     }
 }

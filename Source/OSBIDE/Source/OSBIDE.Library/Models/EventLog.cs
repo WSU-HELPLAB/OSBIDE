@@ -63,7 +63,7 @@ namespace OSBIDE.Library.Models
 
         public EventLog()
         {
-            DateReceived = DateTime.Now;
+            DateReceived = DateTime.UtcNow;
             AssemblyVersion = OSBIDE.Library.StringConstants.LibraryVersion;
             Subscriptions = new List<EventLogSubscription>();
             Comments = new List<LogComment>();
@@ -89,7 +89,7 @@ namespace OSBIDE.Library.Models
         public EventLog(IOsbideEvent evt)
             : this()
         {
-            DateReceived = DateTime.Now;
+            DateReceived = DateTime.UtcNow;
             LogType = evt.EventName;
             Data = new EventLogData()
             {

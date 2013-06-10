@@ -60,7 +60,7 @@ namespace OSBIDE.Library.Events
 
         public DebugEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             DebugOutput = "";
             LineNumber = -1;
         }

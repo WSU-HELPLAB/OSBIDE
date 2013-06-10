@@ -58,7 +58,7 @@ namespace OSBIDE.Library.Events
         {
             base.SubmitEventRequested(sender, e);
             IOsbideEvent evt = e.Event;
-            evt.EventDate = DateTime.Now;
+            evt.EventDate = DateTime.UtcNow;
             evt.SolutionName = dte.Solution.FullName;
 
             //send off to the service client
@@ -96,7 +96,7 @@ namespace OSBIDE.Library.Events
         {
             base.DocumentSaved(document);
             SaveEvent save = new SaveEvent();
-            save.EventDate = DateTime.Now;
+            save.EventDate = DateTime.UtcNow;
             save.SolutionName = dte.Solution.FullName;
             save.Document = (CodeDocument)DocumentFactory.FromDteDocument(document);
 
@@ -116,7 +116,7 @@ namespace OSBIDE.Library.Events
                     BuildEvent build = new BuildEvent();
                     List<string> filesWithErrors = new List<string>();
                     build.SolutionName = dte.Solution.FullName;
-                    build.EventDate = DateTime.Now;
+                    build.EventDate = DateTime.UtcNow;
 
                     //start at 1 when iterating through Error List
                     for (int i = 1; i <= dte.ToolWindows.ErrorList.ErrorItems.Count; i++)
@@ -198,11 +198,11 @@ namespace OSBIDE.Library.Events
         public override void EditorLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {
             base.EditorLineChanged(StartPoint, EndPoint, Hint);
-            if (LastEditorActivityEvent < DateTime.Now.Subtract(new TimeSpan(0, 1, 0)))
+            if (LastEditorActivityEvent < DateTime.UtcNow.Subtract(new TimeSpan(0, 1, 0)))
             {
-                LastEditorActivityEvent = DateTime.Now;
+                LastEditorActivityEvent = DateTime.UtcNow;
                 EditorActivityEvent activity = new EditorActivityEvent();
-                activity.EventDate = DateTime.Now;
+                activity.EventDate = DateTime.UtcNow;
                 activity.SolutionName = Path.GetFileName(dte.Solution.FullName);
                 NotifyEventCreated(this, new EventCreatedArgs(activity));
             }
@@ -262,7 +262,7 @@ namespace OSBIDE.Library.Events
                 ex.DocumentName = dte.Solution.FullName;
             }
 
-            ex.EventDate = DateTime.Now;
+            ex.EventDate = DateTime.UtcNow;
             ex.ExceptionAction = (int)ExceptionAction;
             ex.ExceptionCode = Code;
             ex.ExceptionDescription = Description;

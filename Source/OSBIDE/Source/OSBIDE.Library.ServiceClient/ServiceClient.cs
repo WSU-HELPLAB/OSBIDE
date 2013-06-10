@@ -368,7 +368,7 @@ namespace OSBIDE.Library.ServiceClient
                     savedLogs.Add(result);
 
                     //update our submission status
-                    SendStatus.LastTransmissionTime = DateTime.Now;
+                    SendStatus.LastTransmissionTime = DateTime.UtcNow;
                     SendStatus.LastTransmission = log;
                     SendStatus.CompletedTransmissions++;
                 }
@@ -477,7 +477,7 @@ namespace OSBIDE.Library.ServiceClient
         private void EventsFromServerLoop()
         {
             //start with a really long time ago
-            DateTime startDate = DateTime.Now.Subtract(new TimeSpan(365, 0, 0, 0, 0));
+            DateTime startDate = DateTime.UtcNow.Subtract(new TimeSpan(365, 0, 0, 0, 0));
 
             SqlCeConnection conn = null;
             OsbideContext db = null;

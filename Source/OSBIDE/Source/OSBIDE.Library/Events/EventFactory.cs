@@ -47,7 +47,7 @@ namespace OSBIDE.Library.Events
                 DebugActions action = (DebugActions)debugCommands.IndexOf(commandName);
                 DebugEvent debug = new DebugEvent();
                 debug.SolutionName = dte.Solution.FullName;
-                debug.EventDate = DateTime.Now;
+                debug.EventDate = DateTime.UtcNow;
 
                 //sometimes document name can be null
                 try
@@ -104,7 +104,7 @@ namespace OSBIDE.Library.Events
             {
                 CutCopyPasteEvent ccp = new CutCopyPasteEvent();
                 ccp.SolutionName = dte.Solution.FullName;
-                ccp.EventDate = DateTime.Now;
+                ccp.EventDate = DateTime.UtcNow;
                 ccp.EventAction = cutCopyPasteCommands.IndexOf(commandName);
                 ccp.Content = Clipboard.GetText();
                 //sometimes document name can be null

@@ -23,14 +23,14 @@ namespace OSBIDE.Web.Models.Attributes
             //is the user a student?
             if (user.Email != null && user.Role == SystemRole.Student)
             {
-                DateTime lastActivity = DateTime.Now;
+                DateTime lastActivity = DateTime.UtcNow;
                 using (OsbideContext db = OsbideContext.DefaultWebConnection)
                 {
                     lastActivity = db.Users.Where(u => u.Id == user.Id).Select(u => u.LastVsActivity).FirstOrDefault();
                 }
 
                 //only allow access if they've been active in Visual Studio in the last 10 minutes
-                if (lastActivity < DateTime.Now.Subtract(new TimeSpan(0, 0, 10, 0, 0)))
+                if (lastActivity < DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 10, 0, 0)))
                 {
                     filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Error", action = "RequiresActiveVsConnection" }));
                 }

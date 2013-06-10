@@ -22,7 +22,7 @@ namespace OSBIDE.Web.Controllers
         [HttpPost]
         public ActionResult Index(PrivateQuestion model)
         {
-            model.SubmissionDate = DateTime.Now;
+            model.SubmissionDate = DateTime.UtcNow;
             try
             {
                 Db.PrivateQuestions.Add(model);

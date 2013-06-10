@@ -47,7 +47,7 @@ namespace OSBIDE.Library.Events
 
         public SolutionDownloadEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
         }
     }
 }

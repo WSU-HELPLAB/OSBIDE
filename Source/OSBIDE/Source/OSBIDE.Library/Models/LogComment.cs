@@ -67,7 +67,7 @@ namespace OSBIDE.Library.Models
 
         public LogComment()
         {
-            DatePosted = DateTime.Now;
+            DatePosted = DateTime.UtcNow;
             ChildComments = new List<LogComment>();
             HelpfulMarks = new List<HelpfulLogComment>();
         }

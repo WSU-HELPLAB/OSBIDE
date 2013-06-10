@@ -275,7 +275,7 @@ namespace OSBIDE.Library.Models
         {
             LogSubscriptions = new List<EventLogSubscription>();
             Role = SystemRole.Student;
-            LastVsActivity = DateTime.Now;
+            LastVsActivity = DateTime.UtcNow;
         }
 
         public OsbideUser(OsbideUser copyUser)

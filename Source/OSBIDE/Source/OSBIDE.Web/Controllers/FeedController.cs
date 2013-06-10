@@ -43,7 +43,7 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                query.StartDate = DateTime.Now.AddHours(-10);
+                query.StartDate = DateTime.UtcNow.AddHours(-10);
                 
             }
             

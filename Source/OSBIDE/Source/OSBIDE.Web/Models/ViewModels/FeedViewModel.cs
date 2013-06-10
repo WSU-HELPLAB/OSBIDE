@@ -22,7 +22,7 @@ namespace OSBIDE.Web.Models.ViewModels
             Feed = new List<AggregateFeedItem>();
             SingleUserId = -1;
             LastLogId = -1;
-            LastPollDate = DateTime.Now;
+            LastPollDate = DateTime.UtcNow;
             EventFilterOptions = new List<IOsbideEvent>();
             UserEventFilterOptions = new List<IOsbideEvent>();
             ErrorTypes = new List<ErrorType>();

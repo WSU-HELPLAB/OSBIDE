@@ -41,7 +41,7 @@ namespace OSBIDE.Library.Events
 
         public FeedCommentEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             SolutionName = "";
         }
 

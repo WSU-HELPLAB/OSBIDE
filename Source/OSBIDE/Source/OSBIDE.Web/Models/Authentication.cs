@@ -124,7 +124,7 @@ namespace OSBIDE.Web.Models
 
             //Set a really long expiration date for the cookie.  Note that the server's copy of the
             //hash key will expire much sooner than this.
-            cookie.Expires = DateTime.Now.AddDays(360);
+            cookie.Expires = DateTime.UtcNow.AddDays(360);
 
             //and then store it in the next response
             if (HttpContext.Current != null)
@@ -146,7 +146,7 @@ namespace OSBIDE.Web.Models
                 try
                 {
                     HttpCookie cookie = HttpContext.Current.Request.Cookies.Get(ProfileCookieKey);
-                    cookie.Expires = DateTime.Now.AddDays(-1d);
+                    cookie.Expires = DateTime.UtcNow.AddDays(-1d);
                     HttpContext.Current.Response.Cookies.Set(cookie);
                 }
                 catch (Exception)
@@ -164,7 +164,7 @@ namespace OSBIDE.Web.Models
         public string ComputeHash(string text)
         {
             //build our string to hash
-            string date = DateTime.Now.ToLongTimeString();
+            string date = DateTime.UtcNow.ToLongTimeString();
             string hashString = text + date;
 
             //compute the hash

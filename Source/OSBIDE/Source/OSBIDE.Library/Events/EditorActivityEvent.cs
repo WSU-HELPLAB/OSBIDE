@@ -38,7 +38,7 @@ namespace OSBIDE.Library.Events
 
         public EditorActivityEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
         }
     }
 }

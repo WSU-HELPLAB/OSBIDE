@@ -136,7 +136,7 @@ namespace OSBIDE.Library.Events
         {
             ErrorItems = new List<BuildEventErrorListItem>();
             Breakpoints = new List<BuildEventBreakPoint>();
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             Documents = new List<BuildDocument>();
         }
 

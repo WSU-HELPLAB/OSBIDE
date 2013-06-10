@@ -60,7 +60,7 @@ namespace OSBIDE.Library.Events
 
         public CutCopyPasteEvent()
         {
-            EventDate = DateTime.Now;
+            EventDate = DateTime.UtcNow;
             DocumentName = "";
             Content = "";
         }

@@ -275,7 +275,7 @@ namespace DiffMatchPatch
             }
             else
             {
-                deadline = DateTime.Now +
+                deadline = DateTime.UtcNow +
                     new TimeSpan(((long)(Diff_Timeout * 1000)) * 10000);
             }
             return diff_main(text1, text2, checklines, deadline);
@@ -532,7 +532,7 @@ namespace DiffMatchPatch
             for (int d = 0; d < max_d; d++)
             {
                 // Bail out if deadline is reached.
-                if (DateTime.Now > deadline)
+                if (DateTime.UtcNow > deadline)
                 {
                     break;
                 }

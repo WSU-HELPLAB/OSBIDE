@@ -43,7 +43,7 @@ namespace OSBIDE.Web.Controllers
             if (lastScoreUpdate != null)
             {
                 DateTime lastUpdate = (DateTime)lastScoreUpdate;
-                if (lastUpdate.AddDays(1) > DateTime.Now)
+                if (lastUpdate.AddDays(1) > DateTime.UtcNow)
                 {
                     needsScoreUpdate = false;
                 }
@@ -51,7 +51,7 @@ namespace OSBIDE.Web.Controllers
             if (needsScoreUpdate == true)
             {
                 UpdateUserScores();
-                GlobalCache["lastScoreUpdate"] = DateTime.Now;
+                GlobalCache["lastScoreUpdate"] = DateTime.UtcNow;
             }
 
             //make current user available to all views
@@ -117,7 +117,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     UserId = userKey,
                     Score = scores[userKey],
-                    LastCalculated = DateTime.Now
+                    LastCalculated = DateTime.UtcNow
                 };
                 Db.UserScores.Add(score);
             }
@@ -151,7 +151,7 @@ namespace OSBIDE.Web.Controllers
                     Db.UserScores.Add(score);
                 }
                 score.Score = (1 * entry.LogCount) + (3 * entry.CommentsCount) + (7 * entry.HelpfulCommentsCount);
-                score.LastCalculated = DateTime.Now;
+                score.LastCalculated = DateTime.UtcNow;
             }
             Db.SaveChanges();
              * */
@@ -240,7 +240,7 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         protected string[] GetRecentCompileErrors(OsbideUser user)
         {
-            return GetRecentCompileErrors(user, DateTime.Now.Subtract(new TimeSpan(0, 24, 0, 0, 0)));
+            return GetRecentCompileErrors(user, DateTime.UtcNow.Subtract(new TimeSpan(0, 24, 0, 0, 0)));
         }
 
         protected List<int> ParseIdString(string idStr)

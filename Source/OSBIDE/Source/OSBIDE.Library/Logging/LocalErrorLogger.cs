@@ -45,7 +45,7 @@ namespace OSBIDE.Library.Logging
                     {
                         string text = string.Format("{0},{1},{2}",
                             message.Priority,
-                            DateTime.Now.ToString("HH:mm:ss"),
+                            DateTime.UtcNow.ToString("HH:mm:ss"),
                             message.Message
                             );
                         writer.WriteLine(text);

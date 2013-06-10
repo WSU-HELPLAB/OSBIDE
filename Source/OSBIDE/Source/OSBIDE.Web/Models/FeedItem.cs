@@ -38,7 +38,7 @@ namespace OSBIDE.Web.Models
                 {
                     return Log.DateReceived;
                 }
-                return DateTime.Now;
+                return DateTime.UtcNow;
             }
         }
         public FeedItem()

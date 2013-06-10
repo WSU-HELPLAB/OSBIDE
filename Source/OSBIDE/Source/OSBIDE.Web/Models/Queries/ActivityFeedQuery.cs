@@ -24,7 +24,7 @@ namespace OSBIDE.Web.Models.Queries
             _db = db;
 
             StartDate = DateTime.MinValue;
-            EndDate = DateTime.Now.AddDays(1.0);
+            EndDate = DateTime.UtcNow.AddDays(1.0);
             MinLogId = -1;
             MaxLogId = -1;
             MaxQuerySize = -1;
