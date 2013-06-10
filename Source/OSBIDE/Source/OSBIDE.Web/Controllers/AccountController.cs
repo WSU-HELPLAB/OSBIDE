@@ -101,7 +101,7 @@ namespace OSBIDE.Web.Controllers
                         feedSetting.SetSetting(evt, true);
                     }
                     Db.UserFeedSettings.Add(feedSetting);
-                    Db.SaveChanges();                    
+                    Db.SaveChanges();
 
                     //log user in
                     Authentication auth = new Authentication();
@@ -190,28 +190,28 @@ namespace OSBIDE.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                OsbideUser user = (from u in Db.Users
-                                   where u.SchoolId.CompareTo(vm.SchoolId) == 0
-                                   && u.InstitutionId.CompareTo(vm.InstitutionId) == 0
-                                   && u.Email.CompareTo(vm.EmailAddress) == 0
-                                   select u).FirstOrDefault();
+                OsbideUser user = Db.Users.Where(e => e.Email.ToLower() == vm.EmailAddress.ToLower()).FirstOrDefault();
                 if (user != null)
                 {
-                    Authentication auth = new Authentication();
-                    string newPassword = auth.GenerateRandomString(7);
-                    UserPassword password = Db.UserPasswords.Where(up => up.UserId == user.Id).FirstOrDefault();
-                    if (password != null)
-                    {
-                        //update password
-                        password.Password = UserPassword.EncryptPassword(newPassword, user);
-                        Db.SaveChanges();
 
-                        //send email
-                        string body = "Your OSBIDE password has been reset.\n Your new password is: \"" + newPassword + "\".\n\nPlease change this password as soon as possible.";
-                        List<MailAddress> to = new List<MailAddress>();
-                        to.Add(new MailAddress(user.Email));
-                        Email.Send("[OSBIDE] Password Reset Request", body, to);
-                        vm.PasswordResetRequestComplete = true;
+                    if (user.SchoolId == vm.SchoolId && user.InstitutionId == vm.InstitutionId)
+                    {
+                        Authentication auth = new Authentication();
+                        string newPassword = auth.GenerateRandomString(7);
+                        UserPassword password = Db.UserPasswords.Where(up => up.UserId == user.Id).FirstOrDefault();
+                        if (password != null)
+                        {
+                            //update password
+                            password.Password = UserPassword.EncryptPassword(newPassword, user);
+                            Db.SaveChanges();
+
+                            //send email
+                            string body = "Your OSBIDE password has been reset.\n Your new password is: \"" + newPassword + "\".\n\nPlease change this password as soon as possible.";
+                            List<MailAddress> to = new List<MailAddress>();
+                            to.Add(new MailAddress(user.Email));
+                            Email.Send("[OSBIDE] Password Reset Request", body, to);
+                            vm.PasswordResetRequestComplete = true;
+                        }
                     }
                     else
                     {
@@ -220,9 +220,14 @@ namespace OSBIDE.Web.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Account not found.  Please check the supplied email address and institution information.");       
+                    ModelState.AddModelError("", "Account not found.  Please check the supplied email address and institution information.");
                 }
             }
+            else
+            {
+                ModelState.AddModelError("", "Account not found.  Please check the supplied email address and institution information.");
+            }
+
             vm.Schools = Db.Schools.ToList();
             return View(vm);
         }

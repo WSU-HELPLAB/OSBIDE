@@ -25,7 +25,7 @@ else
     <table class="form-entry">
         <tr>
             <th>@Html.LabelFor(m => m.SchoolId):</th>
-            <td>@Html.DropDownListFor(m => m.SchoolId, new SelectList(Model.Schools, "Id", "School"), String.Empty)</td>
+            <td>@Html.DropDownListFor(m => m.SchoolId, new SelectList(Model.Schools, "Id", "Name"), String.Empty)</td>
             <td>@Html.ValidationMessageFor(m => m.SchoolId)</td>
         </tr>
         <tr>
