@@ -20,6 +20,10 @@ namespace OSBIDE.Web.App_Start
                 "~/Scripts/Osbide.*"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
+                        "~/Scripts/knockout-{version}.js"
+                        ));
+
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(
                         "~/Scripts/jquery-ui-{version}.js"));
 

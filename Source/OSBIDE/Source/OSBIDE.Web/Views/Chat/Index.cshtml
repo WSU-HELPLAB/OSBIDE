@@ -6,14 +6,14 @@
     ViewBag.Title = "OSBIDE Chat";
     string roomUserFormatString = "user-{0}-{1}";  //format: user-[roomId]-[userId]
 }
-<style type="text/css">
 
+<style type="text/css">
     #chat-window {
         height: 400px;
-        width:800px;
+        width: 800px;
         overflow: auto;
         border: 1px solid #d3d3d3;
-        float:left;
+        float: left;
     }
 
         #chat-window pre {
@@ -21,38 +21,38 @@
         }
 
     #create-message {
-        float:left;
-        margin-top:15px;
-        width:800px;
+        float: left;
+        margin-top: 15px;
+        width: 800px;
     }
 
-    .room-users{
-        padding-left:7px;
-        padding-bottom:7px;
+    .room-users {
+        padding-left: 7px;
+        padding-bottom: 7px;
     }
 
     .room-user {
-        padding-bottom:4px;
+        padding-bottom: 4px;
     }
 
     #room-list {
-        position:relative;
-        margin-left:810px;
-        width:200px;    
+        position: relative;
+        margin-left: 810px;
+        width: 200px;
     }
 
     .room-name {
-        display:inline;
+        display: inline;
     }
 
     .room-user-inactive {
-        display:none;
+        display: none;
     }
-
-    
 </style>
 <h1>@Model.ActiveRoom.Name</h1>
 <section id="chat-window">
+    <div id="old-messages">
+    </div>
     @foreach (ChatMessage message in Model.Messages)
     {
         if (message.Author == null)
@@ -72,6 +72,20 @@
             </div>
         </section>
     }
+    <div id="new-messages" data-bind="foreach: messages">
+        <section class="log-comment-single" data-bind="data-id: value: Id, data-timestamp: MessageDate.Ticks">
+            <div class="log-comment-profile-picture">
+                <img title="profile image" alt="profile image" style="float: left;" data-bind="src: profileSource" />
+            </div>
+            <div class="log-comment-content">
+                <h1 data-bind="value: Author.FirstAndLastName"></h1>
+                <h2 data-bind="value: MessageDate"></h2>
+                <p>
+                    <pre data-bind="value: Message"></pre>
+                </p>
+            </div>
+        </section>
+    </div>
 </section>
 <section id="create-message">
     @using (@Html.BeginForm("PostMessage", "Chat", FormMethod.Post, new { id = "submit-form" }))
@@ -82,10 +96,10 @@
         <br />
         <table>
             <tr>
-                <td style="padding-right:7px;">
+                <td style="padding-right: 7px;">
                     <input type="submit" value="Post" id="submit-message" />
                 </td>
-                <td style="padding-right:4px;">
+                <td style="padding-right: 4px;">
                     <input type="checkbox" id="enter-as-send" name="enter-as-send" />
                 </td>
                 <td>
@@ -112,7 +126,7 @@
             }
             <li class="room-li">
                 <h2 class="room-name @roomActive" data-id="@room.Id">@room.Name <span class="room-user-count"></span></h2>
-                @if(room.Id != Model.ActiveRoom.Id)
+                @if (room.Id != Model.ActiveRoom.Id)
                 {
                     <a class="button" href="@Url.Action("Index", new { id = room.Id, sendingRoomId = Model.ActiveRoom.Id })">Join</a>
                 }
@@ -123,7 +137,7 @@
                         <li id="@itemId" data-userId="@user.Id" data-roomId="@room.Id" class="room-user room-user-inactive">
                             <table>
                                 <tr>
-                                    <td style="padding-right:6px;">
+                                    <td style="padding-right: 6px;">
                                         <img src="@Url.Action("Picture", "Profile", new { id = user.Id, size = 16 })" title="profile image" alt="profile image" style="" />
                                     </td>
                                     <td>
@@ -138,181 +152,192 @@
         }
     </ul>
 </section>
-<script type="text/javascript">
-    var scrollbarLocked = true;
-    $(document).ready(function () {
+@section Scripts {
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/jqueryui")
 
-        //listen for key down events
-        $("#chat-box").keydown(chatBoxKeyDown);
 
-        //listen for submit events
-        $("#submit-form").submit(sendMessage);
+    <script type="text/javascript">
+        var scrollbarLocked = true;
+        $(document).ready(function () {
 
-        //scroll to bottom of chat window
-        $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+            //listen for key down events
+            $("#chat-box").keydown(chatBoxKeyDown);
 
-        //listen to see if we're at the bottom of the chat window
-        $("#chat-window").scroll(chatWindowScroll);
+            //listen for submit events
+            $("#submit-form").submit(sendMessage);
 
-        //listen for requests to load earlier messages
-        $("#load-earlier-messages").click(function (e) {
+            //scroll to bottom of chat window
+            $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+
+            //listen to see if we're at the bottom of the chat window
+            $("#chat-window").scroll(chatWindowScroll);
+
+            //listen for requests to load earlier messages
+            $("#load-earlier-messages").click(function (e) {
             
-            //find most recent chat message
-            var firstTimestamp = $(".log-comment-single").first().attr("data-timestamp");
-            if (firstTimestamp == undefined) {
-                firstTimestamp = $('#default-time').val();
-            }
-            var roomId = "@Model.ActiveRoom.Id";
-            $("#load-earlier-messages").text("Loading...");
-            $.ajax(
-            {
-                url: "@Url.Action("OldMessages", "Chat")",
-                data: { chatRoomId: roomId, firstMessageTick: firstTimestamp, count: 25 },
-                dataType: "html",
-                type: "GET",
-                success: getOldMessagesSuccess
-            }
+                //find most recent chat message
+                var firstTimestamp = $(".log-comment-single").first().attr("data-timestamp");
+                if (firstTimestamp == undefined) {
+                    firstTimestamp = $('#default-time').val();
+                }
+                var roomId = "@Model.ActiveRoom.Id";
+                $("#load-earlier-messages").text("Loading...");
+                $.ajax(
+                {
+                    url: "@Url.Action("OldMessages", "Chat")",
+                    data: { chatRoomId: roomId, firstMessageTick: firstTimestamp, count: 25 },
+                    dataType: "html",
+                    type: "GET",
+                    success: getOldMessagesSuccess
+                }
             );
-        });
+            });
 
-        //get recent messages
-        getRecentMessages();
+            //get recent messages
+            getRecentMessages();
 
-        //get chat room users
-        getRoomUsers();
-    }
+            //get chat room users
+            getRoomUsers();
+
+            //bind view models
+            ko.applyBindings(NewMessagesViewModel, document.getElementById('new-messages'));
+        }
     );
 
-    function getOldMessagesSuccess(html) {
-        $("#load-earlier-messages").text("Load earlier messages...");
-        var trimmed = $.trim(html);
-        if (trimmed.length > 0) {
-            $("#chat-window").prepend(html);
+        function NewMessagesViewModel(){
+            self.messages = Array();
         }
-        else {
-            $("#load-old-posts").text("Earlier messages not available.");
-        }
-    }
 
-    function chatWindowScroll(event) {
-        if ($('#chat-window').scrollTop() + $('#chat-window').height() > $('#chat-window').get(0).scrollHeight - 25) {
-            scrollbarLocked = true;
-        }
-        else {
-            scrollbarLocked = false;
-        }
-    }
-
-    //function responsible for updating the users in the room
-    function getRoomUsers() {
-        var roomId = "@Model.ActiveRoom.Id";
-        $.ajax(
-            {
-                url: "@Url.Action("RoomUsers")",
-                data: { chatRoomId: roomId },
-                dataType: "json",
-                type: "GET",
-                success: getRoomUsersSuccess,
-                complete: function () { setTimeout(getRoomUsers, 5000); }
+        function getOldMessagesSuccess(html) {
+            $("#load-earlier-messages").text("Load earlier messages...");
+            var trimmed = $.trim(html);
+            if (trimmed.length > 0) {
+                $("#chat-window").prepend(html);
             }
-            );
-    }
+            else {
+                $("#load-old-posts").text("Earlier messages not available.");
+            }
+        }
 
-    function getRoomUsersSuccess(jsonData) {
+        function chatWindowScroll(event) {
+            if ($('#chat-window').scrollTop() + $('#chat-window').height() > $('#chat-window').get(0).scrollHeight - 25) {
+                scrollbarLocked = true;
+            }
+            else {
+                scrollbarLocked = false;
+            }
+        }
+
+        //function responsible for updating the users in the room
+        function getRoomUsers() {
+            var roomId = "@Model.ActiveRoom.Id";
+                $.ajax(
+                    {
+                        url: "@Url.Action("RoomUsers")",
+                        data: { chatRoomId: roomId },
+                        dataType: "json",
+                        type: "GET",
+                        success: getRoomUsersSuccess,
+                        complete: function () { setTimeout(getRoomUsers, 5000); }
+                    }
+                    );
+            }
+
+            function getRoomUsersSuccess(jsonData) {
         
-        var itemIds = new Array();
+                var itemIds = new Array();
 
-        //find all active records
-        $.each(jsonData, function () {
+                //find all active records
+                $.each(jsonData, function () {
 
-            var record = this;
+                    var record = this;
 
-            //build the HTML id string for this particular record
-            var itemId = "#@roomUserFormatString"; //dynamically generated value
-            itemId = itemId.replace("{0}", record.RoomId);
-            itemId = itemId.replace("{1}", record.UserId);
-            itemIds.push(itemId);
-        });
+                    //build the HTML id string for this particular record
+                    var itemId = "#@roomUserFormatString"; //dynamically generated value
+                    itemId = itemId.replace("{0}", record.RoomId);
+                    itemId = itemId.replace("{1}", record.UserId);
+                    itemIds.push(itemId);
+                });
 
-        //loop through currently active records and turn off those that are now inactive
-        $('.room-user-active').each(function (key, value) {
-            var htmlId = "#" + value.id;
-            if ($.inArray(htmlId, itemIds) == -1) {
-                $(this).removeClass('room-user-active');
-                $(this).addClass('room-user-inactive');
+                //loop through currently active records and turn off those that are now inactive
+                $('.room-user-active').each(function (key, value) {
+                    var htmlId = "#" + value.id;
+                    if ($.inArray(htmlId, itemIds) == -1) {
+                        $(this).removeClass('room-user-active');
+                        $(this).addClass('room-user-inactive');
+                    }
+                }
+                );
+
+                //now loop through the active items and turn on ones that need to be turned on
+                $.each(itemIds, function (key, value) {
+                    $(itemIds[key]).removeClass('room-user-inactive');
+                    $(itemIds[key]).addClass('room-user-active');
+                });
+
+                //figure out how many users are in each room
+                $('.room-li').each(function (key, value) {
+                    var userCount = $(this).find('.room-user-active').length;
+                    $(this).find('.room-user-count').first().text("(" + userCount + ")");
+                });
             }
-        }
-        );
 
-        //now loop through the active items and turn on ones that need to be turned on
-        $.each(itemIds, function (key, value) {
-            $(itemIds[key]).removeClass('room-user-inactive');
-            $(itemIds[key]).addClass('room-user-active');
-        });
+            function getRecentMessages() {
 
-        //figure out how many users are in each room
-        $('.room-li').each(function (key, value) {
-            var userCount = $(this).find('.room-user-active').length;
-            $(this).find('.room-user-count').first().text("(" + userCount + ")");
-        });
-    }
+                var roomId = "@Model.ActiveRoom.Id";
 
-    function getRecentMessages() {
+                //find most recent chat message
+                var lastTimestamp = $(".log-comment-single").last().attr("data-timestamp");
+                if (lastTimestamp == undefined) {
+                    lastTimestamp = $('#default-time').val();
+                }
 
-        var roomId = "@Model.ActiveRoom.Id";
-
-        //find most recent chat message
-        var lastTimestamp = $(".log-comment-single").last().attr("data-timestamp");
-        if (lastTimestamp == undefined) {
-            lastTimestamp = $('#default-time').val();
-        }
-
-        $.ajax(
-            {
-                url: "@Url.Action("RecentMessages")",
-                data: { chatRoomId: roomId, lastMessageTick: lastTimestamp },
-                dataType: "html",
-                type: "GET",
-                success: getRecentMessagesSuccess,
-                complete: getRecentMessages
+                $.ajax(
+                    {
+                        url: "@Url.Action("RecentMessages")",
+                        data: { chatRoomId: roomId, lastMessageTick: lastTimestamp },
+                        dataType: "json",
+                        type: "GET",
+                        success: getRecentMessagesSuccess,
+                        complete: getRecentMessages
+                    }
+                    );
             }
-            );
-    }
 
-    //sends new chat messages asynchronously
-    function sendMessage(event) {
-        event.preventDefault();
-        $("#submit-message").attr("disabled", "disabled");
-        var roomId = "@Model.ActiveRoom.Id";
-        var chatMessage = $("#chat-box").val();
-        $("#chat-box").val("");
-        $.ajax(
-            {
-                url: "@Url.Action("PostMessageAsync")",
-                data: { chatRoomId: roomId, message: chatMessage },
-                dataType: "json",
-                type: "POST",
-                complete: function (event) { $("#submit-message").removeAttr("disabled"); }
-            }
-            );
-    }
-
-    function getRecentMessagesSuccess(html) {
-        $("#chat-window").append(html);
-        if (scrollbarLocked == true) {
-            $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
-        }
-    }
-
-    function chatBoxKeyDown(event) {
-        if ($("#enter-as-send").is(":checked")) {
-            if (event.which == 13) {
+            //sends new chat messages asynchronously
+            function sendMessage(event) {
                 event.preventDefault();
-                $("#submit-message").click();
+                $("#submit-message").attr("disabled", "disabled");
+                var roomId = "@Model.ActiveRoom.Id";
+                var chatMessage = $("#chat-box").val();
+                $("#chat-box").val("");
+                $.ajax(
+                    {
+                        url: "@Url.Action("PostMessageAsync")",
+                        data: { chatRoomId: roomId, message: chatMessage },
+                        dataType: "json",
+                        type: "POST",
+                        complete: function (event) { $("#submit-message").removeAttr("disabled"); }
+                    }
+                    );
             }
-        }
-    }
-</script>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryui")
+
+            function getRecentMessagesSuccess(json) {
+                //$("#chat-window").append(html);
+                NewMessagesViewModel.messages.push(json);
+                if (scrollbarLocked == true) {
+                    $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+                }
+            }
+
+            function chatBoxKeyDown(event) {
+                if ($("#enter-as-send").is(":checked")) {
+                    if (event.which == 13) {
+                        event.preventDefault();
+                        $("#submit-message").click();
+                    }
+                }
+            }
+    </script>
 }
