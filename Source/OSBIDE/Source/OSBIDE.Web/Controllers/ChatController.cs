@@ -72,7 +72,7 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpGet]
-        public JsonResult RecentMessages(int chatRoomId, long lastMessageTick)
+        public ActionResult RecentMessages(int chatRoomId, long lastMessageTick)
         {
             int timeout = 40;
             int timeoutCounter = 0;
@@ -104,8 +104,8 @@ namespace OSBIDE.Web.Controllers
                 Messages = recentMessages,
                 ActiveRoom = room
             };
-            return this.Json(vm, JsonRequestBehavior.AllowGet);
-            //return View(vm);
+            //return this.Json(vm, JsonRequestBehavior.AllowGet);
+            return View(vm);
         }
 
         public JsonResult RoomUsers(int chatRoomId)

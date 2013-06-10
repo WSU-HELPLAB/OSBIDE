@@ -72,6 +72,7 @@
             </div>
         </section>
     }
+    <!--
     <div id="new-messages" data-bind="foreach: messages">
         <section class="log-comment-single" data-bind="data-id: value: Id, data-timestamp: MessageDate.Ticks">
             <div class="log-comment-profile-picture">
@@ -86,6 +87,7 @@
             </div>
         </section>
     </div>
+        -->
 </section>
 <section id="create-message">
     @using (@Html.BeginForm("PostMessage", "Chat", FormMethod.Post, new { id = "submit-form" }))
@@ -324,8 +326,8 @@
             }
 
             function getRecentMessagesSuccess(json) {
-                //$("#chat-window").append(html);
-                NewMessagesViewModel.messages.push(json);
+                $("#chat-window").append(html);
+                //NewMessagesViewModel.messages.push(json);
                 if (scrollbarLocked == true) {
                     $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
                 }
