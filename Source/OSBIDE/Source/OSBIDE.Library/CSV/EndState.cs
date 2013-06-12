@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace OSBLE.Resources.CSVReader
+namespace OSBIDE.Library.CSV
 {
     //EndState
-    public class EndState : CSVState
+    public class EndState : CsvState
     {
-        CSVDriver _CSVDriver;
+        CsvDriver _CSVDriver;
 
-        public EndState(CSVDriver CSVDriver)
+        public EndState(CsvDriver CSVDriver)
         {
             _CSVDriver = CSVDriver;
         }

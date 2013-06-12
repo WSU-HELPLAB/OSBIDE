@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClien
 		{913528C6-350E-4CA0-936E-B75C9D8DE120} = {913528C6-350E-4CA0-936E-B75C9D8DE120}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\..\..\filecache\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\..\..\filecache\fc\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "Source\OSBIDE.Web\OSBIDE.Web.csproj", "{913528C6-350E-4CA0-936E-B75C9D8DE120}"
 EndProject
@@ -34,9 +34,9 @@ Global
 		SccProjectUniqueName3 = Source\\OSBIDE.Library.ServiceClient\\OSBIDE.Library.ServiceClient.csproj
 		SccProjectName3 = Source/OSBIDE.Library.ServiceClient
 		SccLocalPath3 = Source\\OSBIDE.Library.ServiceClient
-		SccProjectUniqueName4 = ..\\..\\..\\..\\filecache\\Main\\Source\\FileCache\\FileCache.csproj
+		SccProjectUniqueName4 = ..\\..\\..\\..\\filecache\\fc\\Main\\Source\\FileCache\\FileCache.csproj
 		SccProjectName4 = ../../../../fc/Main/Source/FileCache
-		SccLocalPath4 = ..\\..\\..\\..\\filecache\\Main\\Source\\FileCache
+		SccLocalPath4 = ..\\..\\..\\..\\filecache\\fc\\Main\\Source\\FileCache
 		SccProjectUniqueName5 = Source\\OSBIDE.Web\\OSBIDE.Web.csproj
 		SccProjectName5 = Source/OSBIDE.Web
 		SccLocalPath5 = Source\\OSBIDE.Web
@@ -126,5 +126,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

@@ -4,18 +4,17 @@ using System.Linq;
 using System.Web;
 using System.IO;
 using System.Text;
-using OSBLE.Resources;
 
-namespace OSBLE.Resources.CSVReader
+namespace OSBIDE.Library.CSV
 {
 
-    public class CSVReader
+    public class CsvReader
     {
-        private CSVDriver _CSVDriver;
+        private CsvDriver _CSVDriver;
 
-        public CSVReader(Stream CSVStream)
+        public CsvReader(Stream CSVStream)
         {
-            _CSVDriver = new CSVDriver(CSVStream);
+            _CSVDriver = new CsvDriver(CSVStream);
         }
 
         /// <summary>
