@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Library.CSV
 {
-    public class CsvDriver
+    public class CsvDriver : IDisposable
     {
         private CsvState _currentState;
         private CsvState _defaultState;
@@ -139,5 +139,10 @@ namespace OSBIDE.Library.CSV
         }
 
 
+
+        public void Dispose()
+        {
+            _CSVStream.Dispose();
+        }
     }
 }

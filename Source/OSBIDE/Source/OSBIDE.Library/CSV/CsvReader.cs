@@ -8,7 +8,7 @@ using System.Text;
 namespace OSBIDE.Library.CSV
 {
 
-    public class CsvReader
+    public class CsvReader : IDisposable
     {
         private CsvDriver _CSVDriver;
 
@@ -23,6 +23,11 @@ namespace OSBIDE.Library.CSV
         public List<List<string>> Parse()
         {
             return _CSVDriver.Drive();
+        }
+
+        public void Dispose()
+        {
+            _CSVDriver.Dispose();
         }
     }
 

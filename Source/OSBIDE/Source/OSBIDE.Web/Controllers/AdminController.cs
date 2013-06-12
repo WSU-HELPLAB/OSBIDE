@@ -1,4 +1,5 @@
-﻿using OSBIDE.Library.Models;
+﻿using OSBIDE.Library.CSV;
+using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,10 @@ namespace OSBIDE.Web.Controllers
         public ActionResult UploadRoster(HttpPostedFileBase file)
         {
             ViewBag.UploadResult = true;
+            using (CsvReader reader = new CsvReader(file.InputStream))
+            {
+
+            }
             return View("Index");
         }
     }
