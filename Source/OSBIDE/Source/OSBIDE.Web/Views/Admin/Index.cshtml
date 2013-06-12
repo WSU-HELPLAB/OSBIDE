@@ -1,8 +1,21 @@
 ﻿@{
     ViewBag.Title = "Admin Controls";
+    bool uploadRosterResult = false;
+    if(ViewBag.UploadResult != null)
+    {
+        uploadRosterResult = ViewBag.UploadResult;
+    }
 }
 <h1>Admin Controls</h1>
 
+@if (uploadRosterResult == true)
+{
+    <div class="notice">
+        <p>
+            Roster import complete.
+        </p>
+    </div>
+}
 @using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <fieldset>
