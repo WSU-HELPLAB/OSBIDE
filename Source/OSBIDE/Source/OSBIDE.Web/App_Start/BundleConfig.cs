@@ -16,6 +16,10 @@ namespace OSBIDE.Web.App_Start
                         "~/Scripts/jquery-{version}.js"
                         ));
 
+            bundles.Add(new ScriptBundle("~/bundles/moment").Include(
+                        "~/Scripts/moment-{version}.js"
+                        ));
+
             bundles.Add(new ScriptBundle("~/bundles/osbide").Include(
                 "~/Scripts/Osbide.*"
                 ));

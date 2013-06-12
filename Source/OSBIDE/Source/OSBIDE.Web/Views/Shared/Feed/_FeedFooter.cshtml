@@ -63,6 +63,7 @@
         var trimmed = $.trim(html);
         if (trimmed.length > 0) {
             $("#feed-items").append(html);
+            parseDates();
             $(".feed-item-ajax:hidden.OldFeedItems").each(function (e) {
                 $(this).removeClass("feed-item-ajax");
             });
@@ -144,6 +145,7 @@ function getMostRecentFeedId() {
 
 
             $('#hidden-updates-workspace').append(html);
+            parseDates();
             lastUpdateCheck = $('#last-poll-tick').val();
 
             //loop through children
@@ -188,6 +190,7 @@ function getMostRecentFeedId() {
         var trimmed = $.trim(html);
         if (trimmed.length > 0) {
             $("#hidden-workspace").append(html);
+            parseDates();
             if ($("#hidden-workspace").find('.feed-item-single').length > 0) {
                 $("#feed-items").prepend(html);
             }

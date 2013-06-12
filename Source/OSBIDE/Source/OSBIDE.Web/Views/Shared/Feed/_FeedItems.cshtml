@@ -48,7 +48,15 @@
             }
         </div>
         <div class="feed-item-single-right">
-            <h1><a href="@Url.Action("Index", "Profile", new { id = item.Creator.Id, component = OsbideVsComponent.UserProfile })">@item.Creator.FirstAndLastName</a> <span class="feed-item-date">@item.MostRecentOccurance.ToString("MM/dd @ hh:mmtt")</span></h1>
+            <h1><a href="@Url.Action("Index", "Profile", new { id = item.Creator.Id, component = OsbideVsComponent.UserProfile })">@item.Creator.FirstAndLastName</a> 
+                <time 
+                class="utc-time feed-item-date"
+                datetime="@Helpers.DateAsUnixTime(item.MostRecentOccurance)" 
+                data-original-date="@Helpers.RawDate(item.MostRecentOccurance)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @item.MostRecentOccurance.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+            </h1>
             <div>
                 @{string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName); }
                 @Html.Partial(partialName, item)

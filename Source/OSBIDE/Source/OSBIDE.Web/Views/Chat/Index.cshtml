@@ -65,7 +65,15 @@
             </div>
             <div class="log-comment-content">
                 <h1>@message.Author.FirstAndLastName</h1>
-                <h2>@message.MessageDate.ToString("MM/dd @ hh:mmtt")</h2>
+                <h2>
+            <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(message.MessageDate)" 
+                data-original-date="@Helpers.RawDate(message.MessageDate)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @message.MessageDate.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+        </h2>
                 <p>
                     <pre>@message.Message</pre>
                 </p>
@@ -188,6 +196,7 @@
         var trimmed = $.trim(html);
         if (trimmed.length > 0) {
             $("#chat-window").prepend(html);
+            parseDates();
         }
         else {
             $("#load-old-posts").text("Earlier messages not available.");
@@ -302,6 +311,7 @@
         if (scrollbarLocked == true) {
             $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
         }
+        parseDates();
     }
 
     function chatBoxKeyDown(event) {

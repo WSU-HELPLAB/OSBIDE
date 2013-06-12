@@ -12,7 +12,15 @@
     </div>
     <div class="log-comment-content">
         <h1>@comment.Author.FirstAndLastName</h1>
-        <h2>@comment.DatePosted.ToString("MM/dd @ hh:mmtt")</h2>
+        <h2>
+            <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(comment.DatePosted)" 
+                data-original-date="@Helpers.RawDate(comment.DatePosted)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @comment.DatePosted.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+        </h2>
         <p>
             @comment.Content
         </p>
