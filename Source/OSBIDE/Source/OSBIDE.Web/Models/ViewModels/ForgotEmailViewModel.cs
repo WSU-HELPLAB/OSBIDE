@@ -15,7 +15,7 @@ namespace OSBIDE.Web.Models.ViewModels
 
         [Required(ErrorMessage = "Please enter your school or instituion ID number.")]
         [Display(Name = "School / Institution ID")]
-        public string InstitutionId { get; set; }
+        public int InstitutionId { get; set; }
 
         public List<School> Schools { get; set; }
 

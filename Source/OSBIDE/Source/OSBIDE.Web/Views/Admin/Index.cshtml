@@ -1,5 +1,19 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Admin Controls";
 }
+<h1>Admin Controls</h1>
 
-<h2>Index</h2>
+@using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <fieldset>
+        <legend>
+            Student Subscription Uploader
+        </legend>
+        <p>
+        By using this form, you can automatically set up subscriptions for students, instructors, and TAs in a given section.
+    To do so, simply upload a two-column CSV file that lists student ID numbers and the desired section number.
+    </p>
+    <input type="file" id="file" name="file"/ onchange="check_extension(this.value)"><br />
+    <input id="upload" type="submit" value="Upload"/> 
+    </fieldset>
+}
