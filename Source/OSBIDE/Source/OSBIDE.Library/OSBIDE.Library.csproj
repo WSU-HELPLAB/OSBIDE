@@ -154,6 +154,14 @@
   <ItemGroup>
     <Compile Include="BitmapExtensions.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="CSV\CsvDriver.cs" />
+    <Compile Include="CSV\CsvParser.cs" />
+    <Compile Include="CSV\CsvReader.cs" />
+    <Compile Include="CSV\CsvState.cs" />
+    <Compile Include="CSV\DefaultState.cs" />
+    <Compile Include="CSV\EndState.cs" />
+    <Compile Include="CSV\QuoteState.cs" />
+    <Compile Include="CSV\SecondQuoteState.cs" />
     <Compile Include="Events\AskForHelpEvent.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
