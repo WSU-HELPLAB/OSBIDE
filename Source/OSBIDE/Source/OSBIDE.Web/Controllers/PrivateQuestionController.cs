@@ -40,7 +40,7 @@ namespace OSBIDE.Web.Controllers
         public ActionResult ViewQuestions()
         {
             DateTime tenDaysAgo = DateTime.Now.AddDays(-10);
-            List<PrivateQuestion> questions = Db.PrivateQuestions.Where(q => q.SubmissionDate >= tenDaysAgo).ToList();
+            List<PrivateQuestion> questions = Db.PrivateQuestions.Where(q => q.SubmissionDate >= tenDaysAgo).OrderBy(q => q.SubmissionDate).ToList();
             return View(questions);
         }
 
