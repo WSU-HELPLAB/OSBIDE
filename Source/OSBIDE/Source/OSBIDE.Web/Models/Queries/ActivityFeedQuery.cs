@@ -2,6 +2,7 @@
 using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -14,6 +15,27 @@ namespace OSBIDE.Web.Models.Queries
         protected List<IOsbideEvent> eventSelectors = new List<IOsbideEvent>();
         protected List<OsbideUser> subscriptionSubjects = new List<OsbideUser>();
         protected List<int> eventIds = new List<int>();
+        protected StringBuilder _query_base_select = new StringBuilder(@"SELECT 
+                                  log.Id
+                                , log.LogType
+                                , log.DateReceived
+                                , log.SenderId
+                                , comment.*
+                                , score.*
+                                ");
+        protected StringBuilder _query_additional_select = new StringBuilder();
+        protected StringBuilder _query_from_clause = new StringBuilder(@"
+                                FROM EventLogs log
+                                LEFT JOIN LogComments comment ON log.Id = comment.Id
+                                LEFT JOIN UserScores score ON log.SenderId = score.UserId
+                                ");
+        protected StringBuilder _query_joins = new StringBuilder();
+        protected StringBuilder _query_where_clause = new StringBuilder("WHERE 1 = 1\n");
+        protected StringBuilder _query_order_by = new StringBuilder(@"
+                                ORDER BY
+                                    log.DateReceived DESC
+                                ");
+        protected StringBuilder _query_limit = new StringBuilder();
 
         public ActivityFeedQuery(OsbideContext db)
         {
@@ -112,81 +134,113 @@ namespace OSBIDE.Web.Models.Queries
         {
             List<FeedItem> feedItems = new List<FeedItem>();
 
-            //The big one.  Basically, I'm crafting one huge join to all possible event types that we log.
-            var query = from log in _db.EventLogs.Include("Sender.Score")
-                        join ae in _db.AskForHelpEvents on log.Id equals ae.EventLogId into askForHelpEvents
-                        join be in _db.BuildEvents on log.Id equals be.EventLogId into buildEvents
-                        join cce in _db.CutCopyPasteEvents on log.Id equals cce.EventLogId into cutCopyPasteEvents
-                        join dbe in _db.DebugEvents on log.Id equals dbe.EventLogId into debugEvents
-                        join eae in _db.EditorActivityEvents on log.Id equals eae.EventLogId into editorActivityEvents
-                        join ex in _db.ExceptionEvents on log.Id equals ex.EventLogId into exceptionEvents
-                        join fi in _db.FeedCommentEvents on log.Id equals fi.EventLogId into feedCommentEvents
-                        join sa in _db.SaveEvents on log.Id equals sa.EventLogId into saveEvents
-                        join se in _db.SubmitEvents on log.Id equals se.EventLogId into submitEvents
-                        join comm in _db.LogComments on log.Id equals comm.LogId into logComments
-                        where log.DateReceived >= StartDate
-                              && log.DateReceived <= EndDate
-                              && log.Id > MinLogId
-                        orderby log.DateReceived descending
-                        select new
-                        {
-                            Log = log,
-                            AskForHelpEvent = askForHelpEvents.FirstOrDefault(),
-                            BuildEvent = buildEvents.FirstOrDefault(),
-                            CutCopyPasteEvent = cutCopyPasteEvents.FirstOrDefault(),
-                            DebugEvent = debugEvents.FirstOrDefault(),
-                            EditorActivityEvent = editorActivityEvents.FirstOrDefault(),
-                            ExceptionEvent = exceptionEvents.FirstOrDefault(),
-                            FeedCommentEvent = feedCommentEvents.FirstOrDefault(),
-                            SaveEvent = saveEvents.FirstOrDefault(),
-                            SubmitEvent = submitEvents.FirstOrDefault(),
-                            Comments = logComments,
-                            HelpfulMarks = (from helpful in _db.HelpfulLogComments
-                                            where logComments.Select(l => l.Id).Contains(helpful.CommentId)
-                                            select helpful).Count()
-                        };
+            StringBuilder queryString = new StringBuilder();
+            Dictionary<string, IOsbideEvent> aliasMap = new Dictionary<string, IOsbideEvent>();
+            //make the joins
+            string tablePrefix = "T";
+            int joinCounter = 1;
+            foreach (IOsbideEvent evt in eventSelectors)
+            {
+                string alias = string.Format("{0}{1}", tablePrefix, joinCounter);
+                aliasMap[alias] = evt;
+                string tableName = string.Format("{0}s", evt.EventName);
+                _query_additional_select.Append(string.Format(", {0}.*, {1}.Id AS {2}_Id\n", alias, alias, alias));
+                _query_joins.Append(string.Format(@"
+                        LEFT JOIN {0} {1} ON log.Id = {2}.EventLogId
+                    ", tableName
+                     , alias
+                     , alias
+                     ));
+                joinCounter++;
+            }
+
+            //were we supplied with an ending date?
+            if(EndDate < DateTime.MaxValue)
+            {
+                _query_where_clause.Append(string.Format(" AND log.DateReceived > '{0}'\n", EndDate.ToString("yyyy-MM-dd HH:mm:ss")));
+            }
+
+            //were we supplied with an starting date?
+            if (StartDate > DateTime.MinValue)
+            {
+                _query_where_clause.Append(string.Format(" AND log.DateReceived > '{0}'\n", StartDate.ToString("yyyy-MM-dd HH:mm:ss")));
+            }
+
+            //were we supplied with a minimum log Id number?
+            if (MinLogId > 0)
+            {
+                _query_where_clause.Append(string.Format(" AND log.Id > {0}\n", MinLogId));
+            }
 
             //were we supplied with a maximum ID number?
             if (MaxLogId > 0)
             {
-                query = from q in query
-                        where q.Log.Id < MaxLogId
-                        select q;
+                _query_where_clause.Append(string.Format(" AND log.Id < {0}\n", MaxLogId));
             }
 
             //if we were asked to retrieve a certain list of events, add that into the query
             if (eventIds.Count > 0)
             {
-                query = from q in query
-                        where eventIds.Contains(q.Log.Id)
-                        select q;
+                _query_where_clause.Append(string.Format(" AND log.Id IN ({0})\n", string.Join(",", eventIds)));
             }
 
             //filter by desired events if desired
             string[] eventNames = eventSelectors.Select(e => e.EventName).ToArray();
             if (eventNames.Length > 0)
             {
-                query = from q in query
-                        where eventNames.Contains(q.Log.LogType)
-                        select q;
+                //sanitize strings for query
+                for (int i = 0; i < eventNames.Length; i++)
+                {
+                    eventNames[i] = string.Format("'{0}'", eventNames[i]);
+                }
+                _query_where_clause.Append(string.Format(" AND log.LogType IN ({0})\n", string.Join(",", eventNames)));
             }
-
 
             //get list of subscription ids
             int[] subjectIds = subscriptionSubjects.Select(s => s.Id).ToArray();
             if (subjectIds.Length > 0)
             {
-                query = from q in query
-                        where subjectIds.Contains(q.Log.SenderId)
-                        select q;
+                _query_where_clause.Append(string.Format(" AND log.SenderId IN ({0})\n", string.Join(",", subjectIds)));
             }
 
             //did we only want a certain number of results returned?
             if (MaxQuerySize > 0)
             {
-                query = query.Take(MaxQuerySize);
+                _query_limit.Clear();
+                _query_limit.Append(string.Format("OFFSET 0 ROWS\nFETCH NEXT {0} ROWS ONLY", MaxQuerySize)); 
             }
 
+            //build the query
+            queryString.Append(_query_base_select);
+            queryString.Append(_query_additional_select);
+            queryString.Append(_query_from_clause);
+            queryString.Append(_query_joins);
+            queryString.Append(_query_where_clause);
+            queryString.Append(_query_order_by);
+            queryString.Append(_query_limit);
+
+            SqlConnection conn = new SqlConnection(_db.Database.Connection.ConnectionString);
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(queryString.ToString(), conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read() == true)
+                {
+                    
+                }
+            }
+            catch (Exception)
+            {
+                return feedItems;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            
+            /*
             //finally, loop through the query and build our results
             foreach (var row in query)
             {
@@ -245,7 +299,7 @@ namespace OSBIDE.Web.Models.Queries
                 item.Event = nonNullLog;
                 feedItems.Add(item);
             }
-
+            */
             return feedItems;
         }
     }
