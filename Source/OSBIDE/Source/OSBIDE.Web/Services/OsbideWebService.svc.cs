@@ -175,6 +175,7 @@ namespace OSBIDE.Web.Services
 
             log.Sender = null;
             log.SenderId = authUser.Id;
+            log.DateReceived = DateTime.UtcNow;
 
             //insert into the DB
             Db.EventLogs.Add(log);
