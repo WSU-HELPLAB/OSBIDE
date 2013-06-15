@@ -46,6 +46,44 @@ namespace OSBIDE.Library.Events
 
         public virtual List<BuildDocument> Documents { get; set; }
 
+        IOsbideEvent IOsbideEvent.FromDict(Dictionary<string, object> values)
+        {
+            BuildEvent evt = new BuildEvent();
+            if (values.ContainsKey("Id"))
+            {
+                evt.Id = (int)values["Id"];
+            }
+            if (values.ContainsKey("EventLogId"))
+            {
+                evt.EventLogId = (int)values["EventLogId"];
+            }
+            if (values.ContainsKey("EventLog"))
+            {
+                evt.EventLog = (EventLog)values["EventLog"];
+            }
+            if (values.ContainsKey("EventDate"))
+            {
+                evt.EventDate = (DateTime)values["EventDate"];
+            }
+            if (values.ContainsKey("SolutionName"))
+            {
+                evt.SolutionName = values["SolutionName"].ToString();
+            }
+            if (values.ContainsKey("ErrorItems"))
+            {
+                evt.ErrorItems = values["ErrorItems"] as List<BuildEventErrorListItem>;
+            }
+            if (values.ContainsKey("Breakpoints"))
+            {
+                evt.Breakpoints = values["Breakpoints"] as List<BuildEventBreakPoint>;
+            }
+            if (values.ContainsKey("Documents"))
+            {
+                evt.Documents = values["LineNumber"] as List<BuildDocument>;
+            }
+            return evt;
+        }
+
         /// <summary>
         /// Returns the number of critical errors (those that start with "error") that the build contains.
         /// </summary>

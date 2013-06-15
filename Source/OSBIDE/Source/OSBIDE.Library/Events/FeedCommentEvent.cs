@@ -57,5 +57,35 @@ namespace OSBIDE.Library.Events
             }
             return Comment.Substring(0, maxLength);
         }
+
+        IOsbideEvent IOsbideEvent.FromDict(Dictionary<string, object> values)
+        {
+            FeedCommentEvent evt = new FeedCommentEvent();
+            if (values.ContainsKey("Id"))
+            {
+                evt.Id = (int)values["Id"];
+            }
+            if (values.ContainsKey("EventLogId"))
+            {
+                evt.EventLogId = (int)values["EventLogId"];
+            }
+            if (values.ContainsKey("EventLog"))
+            {
+                evt.EventLog = (EventLog)values["EventLog"];
+            }
+            if (values.ContainsKey("EventDate"))
+            {
+                evt.EventDate = (DateTime)values["EventDate"];
+            }
+            if (values.ContainsKey("SolutionName"))
+            {
+                evt.SolutionName = values["SolutionName"].ToString();
+            }
+            if (values.ContainsKey("Comment"))
+            {
+                evt.Comment = values["Comment"].ToString();
+            }
+            return evt;
+        }
     }
 }

@@ -15,5 +15,6 @@ namespace OSBIDE.Library.Events
         string SolutionName { get; set; }
         string EventName { get; }
         string PrettyName { get; }
+        IOsbideEvent FromDict(Dictionary<string, object> values);
     }
 }

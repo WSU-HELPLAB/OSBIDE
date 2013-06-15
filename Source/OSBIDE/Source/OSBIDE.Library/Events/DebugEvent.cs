@@ -64,5 +64,47 @@ namespace OSBIDE.Library.Events
             DebugOutput = "";
             LineNumber = -1;
         }
+
+        IOsbideEvent IOsbideEvent.FromDict(Dictionary<string, object> values)
+        {
+            DebugEvent evt = new DebugEvent();
+            if (values.ContainsKey("Id"))
+            {
+                evt.Id = (int)values["Id"];
+            }
+            if (values.ContainsKey("EventLogId"))
+            {
+                evt.EventLogId = (int)values["EventLogId"];
+            }
+            if (values.ContainsKey("EventLog"))
+            {
+                evt.EventLog = (EventLog)values["EventLog"];
+            }
+            if (values.ContainsKey("EventDate"))
+            {
+                evt.EventDate = (DateTime)values["EventDate"];
+            }
+            if (values.ContainsKey("SolutionName"))
+            {
+                evt.SolutionName = values["SolutionName"].ToString();
+            }
+            if (values.ContainsKey("ExecutionAction"))
+            {
+                evt.ExecutionAction = (int)values["ExecutionAction"];
+            }
+            if (values.ContainsKey("DocumentName"))
+            {
+                evt.DocumentName = values["DocumentName"].ToString();
+            }
+            if (values.ContainsKey("LineNumber"))
+            {
+                evt.LineNumber = (int)values["LineNumber"];
+            }
+            if (values.ContainsKey("DebugOutput"))
+            {
+                evt.DebugOutput = values["DebugOutput"].ToString();
+            }
+            return evt;
+        }
     }
 }

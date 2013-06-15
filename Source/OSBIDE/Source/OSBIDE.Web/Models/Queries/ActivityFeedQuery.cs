@@ -2,6 +2,7 @@
 using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -16,18 +17,26 @@ namespace OSBIDE.Web.Models.Queries
         protected List<OsbideUser> subscriptionSubjects = new List<OsbideUser>();
         protected List<int> eventIds = new List<int>();
         protected StringBuilder _query_base_select = new StringBuilder(@"SELECT 
-                                  log.Id
+                                  log.Id AS log_id
                                 , log.LogType
                                 , log.DateReceived
                                 , log.SenderId
-                                , comment.*
+                                , log.AssemblyVersion
                                 , score.*
+                                , osbideUser.Id AS user_Id
+                                , osbideUser.Email
+                                , osbideUser.FirstName
+                                , osbideUser.LastName
+                                , osbideUser.SchoolId
+                                , osbideUser.InstitutionId
+                                , osbideUser.RoleValue
+                                , osbideUser.LastVsActivity
                                 ");
         protected StringBuilder _query_additional_select = new StringBuilder();
         protected StringBuilder _query_from_clause = new StringBuilder(@"
                                 FROM EventLogs log
-                                LEFT JOIN LogComments comment ON log.Id = comment.Id
                                 LEFT JOIN UserScores score ON log.SenderId = score.UserId
+                                LEFT JOIN OsbideUsers osbideUser ON log.SenderId = osbideUser.Id
                                 ");
         protected StringBuilder _query_joins = new StringBuilder();
         protected StringBuilder _query_where_clause = new StringBuilder("WHERE 1 = 1\n");
@@ -96,7 +105,10 @@ namespace OSBIDE.Web.Models.Queries
 
         public void AddEventType(IOsbideEvent evt)
         {
-            eventSelectors.Add(evt);
+            if (eventSelectors.Where(e => e.EventName.CompareTo(evt.EventName) == 0).Count() == 0)
+            {
+                eventSelectors.Add(evt);
+            }
         }
 
         public List<IOsbideEvent> ActiveEvents
@@ -133,9 +145,22 @@ namespace OSBIDE.Web.Models.Queries
         public virtual IList<FeedItem> Execute()
         {
             List<FeedItem> feedItems = new List<FeedItem>();
-
             StringBuilder queryString = new StringBuilder();
             Dictionary<string, IOsbideEvent> aliasMap = new Dictionary<string, IOsbideEvent>();
+
+            //force adding event types when querying specific log ids allows the joins to take place
+            //where they otherwise might.  The joins are needed in order to properly build the objects
+            if (eventIds.Count > 0)
+            {
+                var eventTypesQuery = (from evt in _db.EventLogs.AsNoTracking()
+                                       where eventIds.Contains(evt.Id)
+                                       select evt).ToList();
+                foreach (EventLog log in eventTypesQuery)
+                {
+                    AddEventType(EventFactory.FromName(log.LogType));
+                }
+            }
+
             //make the joins
             string tablePrefix = "T";
             int joinCounter = 1;
@@ -157,7 +182,7 @@ namespace OSBIDE.Web.Models.Queries
             //were we supplied with an ending date?
             if(EndDate < DateTime.MaxValue)
             {
-                _query_where_clause.Append(string.Format(" AND log.DateReceived > '{0}'\n", EndDate.ToString("yyyy-MM-dd HH:mm:ss")));
+                _query_where_clause.Append(string.Format(" AND log.DateReceived < '{0}'\n", EndDate.ToString("yyyy-MM-dd HH:mm:ss")));
             }
 
             //were we supplied with an starting date?
@@ -227,7 +252,55 @@ namespace OSBIDE.Web.Models.Queries
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read() == true)
                 {
-                    
+                    //read values into a dictionary for easier processing
+                    Dictionary<string, object> values = new Dictionary<string, object>();
+                    for (int i = 0; i < reader.FieldCount; i++)
+                    {
+                        string index = reader.GetName(i);
+                        if (reader[i] != null && string.IsNullOrEmpty(reader[i].ToString()) == false)
+                        {
+                            values[index] = reader[i];
+                        }
+                    }
+
+                    //find the event that isn't null
+                    IOsbideEvent nonNullEvent = null;
+                    foreach (KeyValuePair<string, IOsbideEvent> pair in aliasMap)
+                    {
+                        string dbKey = string.Format("{0}_Id", pair.Key);
+                        if (reader[dbKey] != null && string.IsNullOrEmpty(reader[dbKey].ToString()) == false)
+                        {
+                            nonNullEvent = pair.Value.FromDict(values);
+                            break;
+                        }
+                    }
+                    if (nonNullEvent != null)
+                    {
+                        FeedItem item = new FeedItem();
+                        item.Event = nonNullEvent;
+                        item.EventId = nonNullEvent.Id;
+                        item.LogId = (int)reader[0];
+                        item.Log = new EventLog()
+                        {
+                            Id = (int)reader[0],
+                            LogType = reader["LogType"].ToString(),
+                            DateReceived = (DateTime)reader["DateReceived"],
+                            SenderId = (int)reader["SenderId"],
+                            Sender = new OsbideUser()
+                            {
+                                Email = reader["Email"].ToString(),
+                                FirstName = reader["FirstName"].ToString(),
+                                Id = (int)reader["user_Id"],
+                                InstitutionId = (int)reader["institutionId"],
+                                LastName = reader["LastName"].ToString(),
+                                LastVsActivity = (DateTime)reader["LastVsActivity"],
+                                Role = (SystemRole)reader["RoleValue"],
+                                SchoolId = (int)reader["SchoolId"]
+                            },
+                            AssemblyVersion = reader["AssemblyVersion"].ToString()
+                        };
+                        feedItems.Add(item);
+                    }
                 }
             }
             catch (Exception)
@@ -239,67 +312,21 @@ namespace OSBIDE.Web.Models.Queries
                 conn.Close();
             }
 
-            
-            /*
-            //finally, loop through the query and build our results
-            foreach (var row in query)
+            //pull comments for all feed items
+            Dictionary<int, FeedItem> itemsDict = new Dictionary<int, FeedItem>();
+            foreach(FeedItem item in feedItems)
             {
-                FeedItem item = new FeedItem();
-                item.LogId = row.Log.Id;
-                item.Log = row.Log;
-                item.Comments = row.Comments.ToList();
-                item.HelpfulComments = row.HelpfulMarks;
-
-                //figure out what goes into the "Event" property
-                IOsbideEvent nonNullLog = null;
-                if (row.AskForHelpEvent != null)
-                {
-                    nonNullLog = row.AskForHelpEvent;
-                }
-                else if (row.BuildEvent != null)
-                {
-                    nonNullLog = row.BuildEvent;
-                }
-                else if (row.CutCopyPasteEvent != null)
-                {
-                    nonNullLog = row.CutCopyPasteEvent;
-                }
-                else if (row.DebugEvent != null)
-                {
-                    nonNullLog = row.DebugEvent;
-                }
-                else if (row.EditorActivityEvent != null)
-                {
-                    nonNullLog = row.EditorActivityEvent;
-                }
-                else if (row.ExceptionEvent != null)
-                {
-                    nonNullLog = row.ExceptionEvent;
-                }
-                else if (row.FeedCommentEvent != null)
-                {
-                    nonNullLog = row.FeedCommentEvent;
-                }
-                else if (row.SaveEvent != null)
-                {
-                    nonNullLog = row.SaveEvent;
-                }
-                else if (row.SubmitEvent != null)
-                {
-                    nonNullLog = row.SubmitEvent;
-                }
-                else
-                {
-                    //everything was null.  Skip this record.
-                    continue;
-                }
-
-                //add in event information
-                item.EventId = nonNullLog.Id;
-                item.Event = nonNullLog;
-                feedItems.Add(item);
+                itemsDict[item.LogId] = item;
             }
-            */
+            int[] logIds = itemsDict.Keys.ToArray();
+            var commentsQuery = from comment in _db.LogComments
+                                where logIds.Contains(comment.LogId)
+                                select comment;
+            foreach (LogComment comment in commentsQuery)
+            {
+                itemsDict[comment.LogId].Comments.Add(comment);
+                itemsDict[comment.LogId].Log.Comments.Add(comment);
+            }
             return feedItems;
         }
     }

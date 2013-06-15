@@ -43,8 +43,8 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                query.StartDate = DateTime.UtcNow.AddHours(-10);
-                
+                query.StartDate = DateTime.MinValue;
+                query.MaxQuerySize = 20;
             }
             
             //and finally, retrieve our list of feed items
@@ -60,7 +60,14 @@ namespace OSBIDE.Web.Controllers
             List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
             this.UpdateLogSubscriptions(CurrentUser);
-            vm.LastPollDate = query.StartDate;
+            try
+            {
+                vm.LastPollDate = aggregateFeed.Select(a => a.MostRecentOccurance).Max();
+            }
+            catch (Exception)
+            {
+                vm.LastPollDate = DateTime.MinValue.AddDays(2);
+            }
             vm.Feed = aggregateFeed;
             vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.PrettyName).ToList();
             vm.UserEventFilterOptions = query.ActiveEvents;

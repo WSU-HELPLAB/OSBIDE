@@ -74,6 +74,40 @@ namespace OSBIDE.Library.Events
         {
         }
 
+        IOsbideEvent IOsbideEvent.FromDict(Dictionary<string, object> values)
+        {
+            SubmitEvent evt = new SubmitEvent();
+            if (values.ContainsKey("Id"))
+            {
+                evt.Id = (int)values["Id"];
+            }
+            if (values.ContainsKey("EventLogId"))
+            {
+                evt.EventLogId = (int)values["EventLogId"];
+            }
+            if (values.ContainsKey("EventLog"))
+            {
+                evt.EventLog = (EventLog)values["EventLog"];
+            }
+            if (values.ContainsKey("EventDate"))
+            {
+                evt.EventDate = (DateTime)values["EventDate"];
+            }
+            if (values.ContainsKey("SolutionName"))
+            {
+                evt.SolutionName = values["SolutionName"].ToString();
+            }
+            if (values.ContainsKey("AssignmentName"))
+            {
+                evt.AssignmentName = values["AssignmentName"].ToString();
+            }
+            if (values.ContainsKey("SolutionData"))
+            {
+                evt.SolutionData = values["SolutionData"] as byte[];
+            }
+            return evt;
+        }
+
         /// <summary>
         /// Creates a binary of the current solution.
         /// </summary>
