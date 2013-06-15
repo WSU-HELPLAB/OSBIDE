@@ -303,8 +303,12 @@ namespace OSBIDE.Web.Models.Queries
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                ServerLog log = new ServerLog();
+                log.LogMessage = ex.Message;
+                _db.ServerLogs.Add(log);
+                _db.SaveChanges();
                 return feedItems;
             }
             finally
