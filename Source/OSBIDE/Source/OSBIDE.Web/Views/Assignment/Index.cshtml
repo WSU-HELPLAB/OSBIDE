@@ -36,7 +36,15 @@
     {
         <tr>
             <td>@submit.EventLog.Sender.FullName</td>
-            <td>@submit.EventLog.DateReceived</td>
+            <td>
+                <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(submit.EventLog.DateReceived)" 
+                data-original-date="@Helpers.RawDate(submit.EventLog.DateReceived)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @submit.EventLog.DateReceived.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+                </td>
             <td>@Html.ActionLink("Download", "DownloadSingle", new { id = submit.EventLogId }, new { })</td>
         </tr>
     }
