@@ -7,13 +7,12 @@
     string roomUserFormatString = "user-{0}-{1}";  //format: user-[roomId]-[userId]
 }
 <style type="text/css">
-
     #chat-window {
         height: 400px;
-        width:800px;
+        width: 800px;
         overflow: auto;
         border: 1px solid #d3d3d3;
-        float:left;
+        float: left;
     }
 
         #chat-window pre {
@@ -21,35 +20,33 @@
         }
 
     #create-message {
-        float:left;
-        margin-top:15px;
-        width:800px;
+        float: left;
+        margin-top: 15px;
+        width: 800px;
     }
 
-    .room-users{
-        padding-left:7px;
-        padding-bottom:7px;
+    .room-users {
+        padding-left: 7px;
+        padding-bottom: 7px;
     }
 
     .room-user {
-        padding-bottom:4px;
+        padding-bottom: 4px;
     }
 
     #room-list {
-        position:relative;
-        margin-left:810px;
-        width:200px;    
+        position: relative;
+        margin-left: 810px;
+        width: 200px;
     }
 
     .room-name {
-        display:inline;
+        display: inline;
     }
 
     .room-user-inactive {
-        display:none;
+        display: none;
     }
-
-    
 </style>
 <h1>@Model.ActiveRoom.Name</h1>
 <section id="chat-window">
@@ -66,14 +63,14 @@
             <div class="log-comment-content">
                 <h1>@message.Author.FirstAndLastName</h1>
                 <h2>
-            <time 
+                    <time 
                 class="utc-time"
                 datetime="@Helpers.DateAsUnixTime(message.MessageDate)" 
                 data-original-date="@Helpers.RawDate(message.MessageDate)" 
                 data-date-format="MM/DD/YYYY hh:mm A">
-                @message.MessageDate.ToString("MM/dd @ hh:mmtt") (UTC)
-            </time>
-        </h2>
+                        @message.MessageDate.ToString("MM/dd @ hh:mmtt") (UTC)
+                    </time>
+                </h2>
                 <p>
                     <pre>@message.Message</pre>
                 </p>
@@ -90,10 +87,10 @@
         <br />
         <table>
             <tr>
-                <td style="padding-right:7px;">
+                <td style="padding-right: 7px;">
                     <input type="submit" value="Post" id="submit-message" />
                 </td>
-                <td style="padding-right:4px;">
+                <td style="padding-right: 4px;">
                     <input type="checkbox" id="enter-as-send" name="enter-as-send" />
                 </td>
                 <td>
@@ -110,85 +107,110 @@
 </section>
 <section id="room-list">
     <h1>Available Rooms</h1>
-    <ul id="rooms">
-        @foreach (ChatRoom room in Model.Rooms)
-        {
-            string roomActive = "room-inactive";
-            if (room.Id == Model.ActiveRoom.Id)
-            {
-                roomActive = "room-active";
-            }
-            <li class="room-li">
-                <h2 class="room-name @roomActive" data-id="@room.Id">@room.Name <span class="room-user-count"></span></h2>
-                @if(room.Id != Model.ActiveRoom.Id)
-                {
-                    <a class="button" href="@Url.Action("Index", new { id = room.Id, sendingRoomId = Model.ActiveRoom.Id })">Join</a>
-                }
-                <ul class="room-users">
-                    @foreach (OsbideUser user in Model.Users)
-                    {
-                        string itemId = string.Format(roomUserFormatString, room.Id, user.Id);
-                        <li id="@itemId" data-userId="@user.Id" data-roomId="@room.Id" class="room-user room-user-inactive">
-                            <table>
-                                <tr>
-                                    <td style="padding-right:6px;">
-                                        <img src="@Url.Action("Picture", "Profile", new { id = user.Id, size = 16 })" title="profile image" alt="profile image" style="" />
-                                    </td>
-                                    <td>
-                                        @user.FirstAndLastName
-                                    </td>
-                                </tr>
-                            </table>
-                        </li>
-                    }
-                </ul>
-            </li>
-        }
+    <ul id="rooms" data-bind="foreach: ChatRooms">
+        <li class="room-li">
+            <h2 data-bind="attr: {class: RoomHeaderClassName}, text: RoomName"><span class="room-user-count" data-bind="text: RoomUserCount"></span></h2>
+            <!-- ko if: IsActiveRoom == "false" -->
+            <a class="button" href="#" data-bind="attr: {href: RoomUrl}">Join</a>
+            <!-- /ko -->
+            <ul class="room-users" data-bind="foreach: RoomUsers">
+                <li data-bind="attr: {data-userId: UserId, data-roomId: RoomId}" class="room-user room-user-inactive">
+                    <table>
+                        <tr>
+                            <td style="padding-right: 6px;">
+                                <img src="#" data-bind="attr: {src: ProfilePictureSource}" title="profile image" alt="profile image" style="" />
+                            </td>
+                            <td data-bind="text: FirstAndLastName"></td>
+                        </tr>
+                    </table>
+                </li>
+            </ul>
+        </li>
     </ul>
 </section>
-<script type="text/javascript">
-    var scrollbarLocked = true;
-    $(document).ready(function () {
 
-        //listen for key down events
-        $("#chat-box").keydown(chatBoxKeyDown);
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/knockout")
+    <script type="text/javascript">
 
-        //listen for submit events
-        $("#submit-form").submit(sendMessage);
+        function RoomUserViewModel()
+        {
+            var self = this;
+            self.UserId = "";
+            self.RoomId = "";
+            self.ProfilePictureSource = "";
+            self.FirstName = "";
+            self.LastName = "";
+            self.FirstAndLastName = ko.computed(function(){
+                return self.FirstName + " " + self.LastName;
+            });
+        }
 
-        //scroll to bottom of chat window
-        $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+        function ChatRoomUsersViewModel()
+        {
+            var self = this;
+            self.ChatRooms = ko.observableArray([
+                @foreach (ChatRoom room in Model.Rooms)
+                {
+                    <text>{ 
+                    RoomName: "@room.Name",
+                    RoomHeaderClassName: "",
+                    RoomUserCount: "(0)",
+                    IsActiveRoom: "@( (Model.ActiveRoom.Id == room.Id).ToString().ToLower() )",
+                    RoomUrl: "@Url.Action("Index", new { id = room.Id, sendingRoomId = Model.ActiveRoom.Id })",
+                    RoomUsers: []
+                    },
+                </text>
+                }
+            ]);
+        }
 
-        //listen to see if we're at the bottom of the chat window
-        $("#chat-window").scroll(chatWindowScroll);
+        var scrollbarLocked = true;
+        $(document).ready(function () {
 
-        //listen for requests to load earlier messages
-        $("#load-earlier-messages").click(function (e) {
+            //listen for key down events
+            $("#chat-box").keydown(chatBoxKeyDown);
 
-            //find most recent chat message
-            var firstTimestamp = $(".log-comment-single").first().attr("data-timestamp");
-            if (firstTimestamp == undefined) {
-                firstTimestamp = $('#default-time').val();
-            }
-            var roomId = "@Model.ActiveRoom.Id";
-            $("#load-earlier-messages").text("Loading...");
-            $.ajax(
-            {
-                url: "@Url.Action("OldMessages", "Chat")",
+            //listen for submit events
+            $("#submit-form").submit(sendMessage);
+
+            //scroll to bottom of chat window
+            $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+
+            //listen to see if we're at the bottom of the chat window
+            $("#chat-window").scroll(chatWindowScroll);
+
+            //listen for requests to load earlier messages
+            $("#load-earlier-messages").click(function (e) {
+
+                //find most recent chat message
+                var firstTimestamp = $(".log-comment-single").first().attr("data-timestamp");
+                if (firstTimestamp == undefined) {
+                    firstTimestamp = $('#default-time').val();
+                }
+                var roomId = "@Model.ActiveRoom.Id";
+                $("#load-earlier-messages").text("Loading...");
+                $.ajax(
+                {
+                    url: "@Url.Action("OldMessages", "Chat")",
                 data: { chatRoomId: roomId, firstMessageTick: firstTimestamp, count: 25 },
                 dataType: "html",
                 type: "GET",
                 success: getOldMessagesSuccess
             }
             );
-        });
+            });
 
-        //get recent messages
-        getRecentMessages();
+            //get recent messages
+            getRecentMessages();
 
-        //get chat room users
-        //getRoomUsers();
-    }
+            //get chat room users
+            //getRoomUsers();
+
+            //Apply VM bindings
+            ko.applyBindings(new ChatRoomUsersViewModel(), document.getElementById("room-list"));
+        }
     );
 
     function getOldMessagesSuccess(html) {
@@ -215,6 +237,7 @@
     //function responsible for updating the users in the room
     function getRoomUsers() {
         var roomId = "@Model.ActiveRoom.Id";
+
         $.ajax(
             {
                 url: "@Url.Action("RoomUsers")",
@@ -322,7 +345,5 @@
             }
         }
     }
-</script>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryui")
+    </script>
 }

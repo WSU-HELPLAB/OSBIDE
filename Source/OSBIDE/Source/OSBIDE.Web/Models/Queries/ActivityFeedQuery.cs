@@ -1,5 +1,6 @@
 ﻿using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
+using OSBIDE.Web.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -244,7 +245,7 @@ namespace OSBIDE.Web.Models.Queries
             queryString.Append(_query_order_by);
             queryString.Append(_query_limit);
 
-            SqlConnection conn = new SqlConnection(_db.Database.Connection.ConnectionString);
+            SqlConnection conn = new SqlConnection(ControllerBase.DefaultConnectionString);
             try
             {
                 conn.Open();

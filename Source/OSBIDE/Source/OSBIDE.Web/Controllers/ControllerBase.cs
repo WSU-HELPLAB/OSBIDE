@@ -21,6 +21,20 @@ namespace OSBIDE.Web.Controllers
         protected FileCache GlobalCache { get; private set; }
         protected FileCache UserCache { get; private set; }
 
+        public static string DefaultConnectionString
+        {
+            get
+            {
+                string conn = "";
+#if DEBUG
+                conn = System.Configuration.ConfigurationManager.ConnectionStrings["OsbideDebugContext"].ConnectionString;
+#else
+                conn = System.Configuration.ConfigurationManager.ConnectionStrings["OsbideReleaseContext"].ConnectionString;
+#endif
+                return conn;
+            }
+        }
+
         public ControllerBase()
         {
             //set up DB
