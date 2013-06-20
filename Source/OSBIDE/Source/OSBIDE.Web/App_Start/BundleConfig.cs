@@ -25,7 +25,8 @@ namespace OSBIDE.Web.App_Start
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
-                        "~/Scripts/knockout-{version}.js"
+                        "~/Scripts/knockout-{version}.js",
+                        "~/Scripts/knockout.mapping-{version}.debug"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include(

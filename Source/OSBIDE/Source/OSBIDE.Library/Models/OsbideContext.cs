@@ -34,6 +34,7 @@ namespace OSBIDE.Library.Models
         public DbSet<UserScore> UserScores { get; set; }
         public DbSet<PrivateQuestion> PrivateQuestions { get; set; }
         public DbSet<ServerLog> ServerLogs { get; set; }
+        public DbSet<ProfileImage> ProfileImages { get; set; }
 
         public DbSet<AskForHelpEvent> AskForHelpEvents { get; set; }
         public DbSet<BuildEvent> BuildEvents { get; set; }

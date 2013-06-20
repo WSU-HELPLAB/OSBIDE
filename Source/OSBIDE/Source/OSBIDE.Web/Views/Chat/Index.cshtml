@@ -107,24 +107,26 @@
 </section>
 <section id="room-list">
     <h1>Available Rooms</h1>
-    <ul id="rooms" data-bind="foreach: ChatRooms">
+    <ul id="rooms" data-bind="foreach: {data: Rooms, as: 'room'}">
         <li class="room-li">
-            <h2 data-bind="attr: {class: RoomHeaderClassName}, text: RoomName"><span class="room-user-count" data-bind="text: RoomUserCount"></span></h2>
+            <h2 data-bind="attr: {class: RoomHeaderClassName}, text: Name"><span class="room-user-count" data-bind="text: UserCount"></span></h2>
             <!-- ko if: IsActiveRoom == "false" -->
-            <a class="button" href="#" data-bind="attr: {href: RoomUrl}">Join</a>
+            <a class="button" href="#" data-bind="attr: {href: Url}">Join</a>
             <!-- /ko -->
-            <ul class="room-users" data-bind="foreach: RoomUsers">
-                <li data-bind="attr: {data-userId: UserId, data-roomId: RoomId}" class="room-user room-user-inactive">
+            <!-- ko if: IsActiveRoom == "true" -->
+            <ul class="room-users" data-bind="foreach: {data: Users, as: 'user'}">
+                <li data-bind="attr: {data-userId: user.Id, data-roomId: room.Id}" class="room-user room-user-inactive">
                     <table>
                         <tr>
                             <td style="padding-right: 6px;">
-                                <img src="#" data-bind="attr: {src: ProfilePictureSource}" title="profile image" alt="profile image" style="" />
+                                <img src="#" data-bind="attr: {src: user.ProfileImageUrl}" title="profile image" alt="profile image" style="" />
                             </td>
-                            <td data-bind="text: FirstAndLastName"></td>
+                            <td data-bind="text: user.FirstAndLastName"></td>
                         </tr>
                     </table>
                 </li>
             </ul>
+            <!-- /ko -->
         </li>
     </ul>
 </section>
@@ -146,7 +148,7 @@
                 return self.FirstName + " " + self.LastName;
             });
         }
-
+        
         function ChatRoomUsersViewModel()
         {
             var self = this;
@@ -165,6 +167,8 @@
                 }
             ]);
         }
+        
+        var roomsViewModel = @string.Format("{0};", Json.Encode(new {}))
 
         var scrollbarLocked = true;
         $(document).ready(function () {

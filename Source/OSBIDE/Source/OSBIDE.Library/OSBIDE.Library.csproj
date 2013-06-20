@@ -200,6 +200,7 @@
     <Compile Include="Models\EventLogSubscription.cs" />
     <Compile Include="Models\HelpfulLogComment.cs" />
     <Compile Include="Models\PrivateQuestion.cs" />
+    <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />
     <Compile Include="Models\UserFeedSetting.cs" />
     <Compile Include="Models\UserScore.cs" />

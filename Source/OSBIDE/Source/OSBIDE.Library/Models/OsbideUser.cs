@@ -31,7 +31,9 @@ namespace OSBIDE.Library.Models
         private string _lastName = "";
         private int _schoolId;
         private int _institutionId = -1;
-        private byte[] _profileImage;
+        
+        [NonSerialized]
+        private ProfileImage _profileImage;
 
         protected void OnPropertyChanged(string propertyName)
         {
@@ -152,9 +154,8 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        [Column(TypeName = "image")]
         [DataMember]
-        public byte[] ProfileImage
+        public virtual ProfileImage ProfileImage
         {
             get
             {
@@ -163,7 +164,6 @@ namespace OSBIDE.Library.Models
             set
             {
                 _profileImage = value;
-                OnPropertyChanged("ProfileImage");
             }
         }
 
@@ -245,19 +245,16 @@ namespace OSBIDE.Library.Models
 
         public virtual UserScore Score { get; set; }
 
-        public void SetProfileImage(Bitmap bmp)
-        {
-            MemoryStream stream = new MemoryStream();
-            bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-            stream.Position = 0;
-            ProfileImage = stream.ToArray();
-        }
+        [NotMapped]
+        public string ProfileImageUrl { get; set; }
 
-        public Bitmap GetProfileImage()
+        public void SetProfileImage(System.Drawing.Bitmap bmp)
         {
-            MemoryStream stream = new MemoryStream(ProfileImage);
-            Bitmap bmp = new Bitmap(stream);
-            return bmp;
+            if (ProfileImage == null)
+            {
+                ProfileImage = new ProfileImage();
+            }
+            ProfileImage.SetProfileImage(bmp);
         }
 
         public static OsbideUser GenericUser()
@@ -266,8 +263,7 @@ namespace OSBIDE.Library.Models
             {
                 FirstName = "Ann",
                 LastName = "Onymous",
-                InstitutionId = -1,
-                ProfileImage = new byte[0]
+                InstitutionId = -1
             };
         }
 
@@ -286,7 +282,6 @@ namespace OSBIDE.Library.Models
             FirstName = copyUser.FirstName;
             LastName = copyUser.LastName;
             InstitutionId = copyUser.InstitutionId;
-            ProfileImage = copyUser.ProfileImage;
             Email = copyUser.Email;
             SchoolId = copyUser.SchoolId;
             LastVsActivity = copyUser.LastVsActivity;

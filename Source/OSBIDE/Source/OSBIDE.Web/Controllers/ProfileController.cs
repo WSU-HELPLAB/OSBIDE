@@ -254,18 +254,20 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public FileStreamResult Picture(int id, int size = 128)
         {
-            OsbideUser user = Db.Users.Where(u => u.Id == id).FirstOrDefault();
+            ProfileImage image = Db.ProfileImages.Where(p => p.UserID == id).FirstOrDefault();
             System.Drawing.Bitmap userBitmap;
-            if (user != null)
+            if (image != null)
             {
                 try
                 {
-                    userBitmap = user.GetProfileImage();
+                    userBitmap = image.GetProfileImage();
                 }
                 catch (Exception)
                 {
                     IdenticonRenderer renderer = new IdenticonRenderer();
-                    userBitmap = renderer.Render(1, 128);
+                    userBitmap = renderer.Render(image.User.Email.GetHashCode(), 128);
+                    image.SetProfileImage(userBitmap);
+                    Db.SaveChanges();
                 }
             }
             else
@@ -283,9 +285,6 @@ namespace OSBIDE.Web.Controllers
                 graph.SmoothingMode = SmoothingMode.AntiAlias;
                 graph.DrawImage(bmp, new Rectangle(0, 0, size, size));
                 userBitmap = bmp;
-            }
-            else
-            {
             }
 
             MemoryStream stream = new MemoryStream();

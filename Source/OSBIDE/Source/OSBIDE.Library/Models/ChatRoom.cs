@@ -21,8 +21,21 @@ namespace OSBIDE.Library.Models
 
         public bool IsDefaultRoom { get; set; }
 
+        [NotMapped]
+        public int UserCount { get; set; }
+
+        [NotMapped]
+        public string Url { get; set; }
+
+        [NotMapped]
+        public bool IsActiveRoom { get; set; }
+
+        [NotMapped]
+        public List<OsbideUser> Users { get; set; }
+
         public ChatRoom()
         {
+            Users = new List<OsbideUser>();
             IsDefaultRoom = false;
         }
     }
