@@ -28,6 +28,7 @@ namespace OSBIDE.Web.Models.Queries
                               && log.DateReceived <= EndDate
                               && log.Id > MinLogId
                               && error.BuildErrorTypeId == BuildErrorTypeId
+                              orderby log.DateReceived descending
                             select new
                             {
                                 Log = log,

@@ -255,6 +255,7 @@ namespace OSBIDE.Web.Controllers
         public FileStreamResult Picture(int id, int size = 128)
         {
             ProfileImage image = Db.ProfileImages.Where(p => p.UserID == id).FirstOrDefault();
+            IdenticonRenderer renderer = new IdenticonRenderer();
             System.Drawing.Bitmap userBitmap;
             if (image != null)
             {
@@ -264,7 +265,7 @@ namespace OSBIDE.Web.Controllers
                 }
                 catch (Exception)
                 {
-                    IdenticonRenderer renderer = new IdenticonRenderer();
+                    
                     userBitmap = renderer.Render(image.User.Email.GetHashCode(), 128);
                     image.SetProfileImage(userBitmap);
                     Db.SaveChanges();
@@ -272,8 +273,24 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                IdenticonRenderer renderer = new IdenticonRenderer();
-                userBitmap = renderer.Render(1, 128);
+                OsbideUser user = Db.Users.Where(u => u.Id == id).FirstOrDefault();
+                if (user != null && user.ProfileImage == null)
+                {
+                    try
+                    {
+                        user.SetProfileImage(renderer.Render(user.Email.GetHashCode(), 128));
+                        userBitmap = user.ProfileImage.GetProfileImage();
+                        Db.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+                        userBitmap = renderer.Render(1, 128);
+                    }
+                }
+                else
+                {
+                    userBitmap = renderer.Render(1, 128);
+                }
             }
 
             if (size != 128)
