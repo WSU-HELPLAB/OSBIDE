@@ -11,6 +11,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public OsbideUser User { get; set; }
         public FeedViewModel Feed { get; set; }
         public List<LogComment> RecentComments { get; set; }
+        public List<LogComment> CommentsMadeByOthers { get; set; }
         public List<AggregateFeedItem> EventLogSubscriptions { get; set; }
         public UserScore Score { get; set; }
         public int NumberOfComments { get; set; }

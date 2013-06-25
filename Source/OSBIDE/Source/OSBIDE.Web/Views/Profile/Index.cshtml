@@ -95,19 +95,77 @@
     </section>
 }
 <section id="recent-comments">
-    <h1>Recent Comments</h1>
-    @foreach (LogComment comment in Model.RecentComments)
-    {
-        <section class="comment-single">
-            @Html.ActionLink("On a post", "Details", "Feed", new { id = comment.Log.Id, component = OsbideVsComponent.FeedDetails }, new { })
-            by
-            @Html.ActionLink(comment.Log.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.AuthorId, component = OsbideVsComponent.UserProfile }, new { }):
-            <blockquote>@comment.Content</blockquote>
-        </section>
-    }
+    <h1>Recent Comments by @Model.User.FirstName</h1>
     @if (Model.RecentComments.Count() == 0)
     {
         @:No recent comments.
+    }
+    else
+    {
+        <table class="comments-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event Author</th>
+                    <th>Message</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (LogComment comment in Model.RecentComments)
+                {
+                    <tr>
+                        <td class="comments-table-date"><time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(comment.DatePosted)" 
+                data-original-date="@Helpers.RawDate(comment.DatePosted)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                            @comment.DatePosted.ToString("MM/dd @ hh:mmtt") (UTC)
+                        </time></td>
+                        <td class="comments-table-message-author">@Html.ActionLink(comment.Log.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.AuthorId, component = OsbideVsComponent.UserProfile }, new { })</td>
+                        <td class="comments-table-content">@comment.Content</td>
+                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.Log.Id, component = OsbideVsComponent.FeedDetails }, new { })</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>
+<section id="recent-comments-by-others">
+    <h1>Recent Comments Made on @Model.User.FirstName's Events</h1>
+    @if (Model.RecentComments.Count() == 0)
+    {
+        @:No recent comments.
+    }
+    else
+    {
+        <table class="comments-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Message Author</th>
+                    <th>Message</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (LogComment comment in Model.CommentsMadeByOthers)
+                {
+                    <tr>
+                        <td class="comments-table-date"><time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(comment.DatePosted)" 
+                data-original-date="@Helpers.RawDate(comment.DatePosted)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                            @comment.DatePosted.ToString("MM/dd @ hh:mmtt") (UTC)
+                        </time></td>
+                        <td class="comments-table-message-author">@Html.ActionLink(comment.Author.FirstAndLastName, "Index", "Profile", new { id = comment.AuthorId, component = OsbideVsComponent.UserProfile }, new { })</td>
+                        <td class="comments-table-content">@comment.Content</td>
+                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.Log.Id, component = OsbideVsComponent.FeedDetails }, new { })</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
 </section>
 <section>

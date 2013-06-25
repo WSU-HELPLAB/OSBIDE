@@ -73,6 +73,32 @@ input[type="checkbox"] {
     margin-right: 5px;
 }
 
+.comments-table {
+    border-collapse:collapse;
+    width:500px;
+}
+
+.comments-table th, .comments-table td {
+        padding:4px;
+        border: 1px solid gray;
+    }
+
+.comments-table-content {
+    vertical-align:top;
+    width:300px;
+}
+
+.comments-table-date {
+    font-size: 10px;
+    font-weight:bold;
+    width:50px;
+}
+
+.comments-table-message-author {
+    font-size: 11px;
+    width:75px;
+}
+
 #feed-footer {
     clear:both;
 }
@@ -194,6 +220,11 @@ input[type="checkbox"] {
 }
 
 #recent-comments {
+    clear:both;
+    padding-bottom:25px;
+}
+
+#recent-comments-by-others {
     clear:both;
     padding-bottom:25px;
 }

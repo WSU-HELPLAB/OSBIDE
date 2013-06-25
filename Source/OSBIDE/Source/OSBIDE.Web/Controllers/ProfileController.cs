@@ -85,7 +85,18 @@ namespace OSBIDE.Web.Controllers
             }
 
             //find recent comments
-            vm.RecentComments = Db.LogComments.Where(c => c.AuthorId == vm.User.Id).Take(25).ToList();
+            vm.RecentComments = (from comment in Db.LogComments
+                                where comment.AuthorId == vm.User.Id
+                                orderby comment.DatePosted descending
+                                select comment
+                                ).Take(25).ToList();
+
+            //recent comments made by others
+            vm.CommentsMadeByOthers = (from comment in Db.LogComments
+                                       where comment.Log.SenderId == vm.User.Id
+                                       orderby comment.DatePosted descending
+                                       select comment
+                                       ).Take(25).ToList();
 
             //show subscriptions only if the user is accessing his own page
             if (vm.User.Id == CurrentUser.Id)
