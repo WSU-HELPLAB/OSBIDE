@@ -25,5 +25,12 @@ namespace OSBIDE.Library.Models
         public string ActionParameters { get; set; }
 
         public string ControllerName { get; set; }
+
+        public DateTime AccessDate { get; set; }
+
+        public ActionRequestLog()
+        {
+            AccessDate = DateTime.UtcNow;
+        }
     }
 }
