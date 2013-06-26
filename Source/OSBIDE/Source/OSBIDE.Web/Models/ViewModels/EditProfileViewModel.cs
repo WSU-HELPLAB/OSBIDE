@@ -28,11 +28,14 @@ namespace OSBIDE.Web.Models.ViewModels
         public string UpdateEmailSuccessMessage { get; set; }
         public string UpdatePasswordSuccessMessage { get; set; }
 
+        public bool SendEmailForCommentsOnMyPosts { get; set; }
+
         public List<OsbideUser> UsersInCourse { get; set; }
         public Dictionary<int, UserSubscription> UserSubscriptions { get; set; }
 
         public EditProfileViewModel()
         {
+            SendEmailForCommentsOnMyPosts = false;
             UsersInCourse = new List<OsbideUser>();
             UserSubscriptions = new Dictionary<int, UserSubscription>();
         }

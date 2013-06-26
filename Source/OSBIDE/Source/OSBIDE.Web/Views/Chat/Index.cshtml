@@ -109,11 +109,11 @@
     <h1>Available Rooms</h1>
     <ul id="rooms" data-bind="foreach: {data: Rooms, as: 'room'}">
         <li class="room-li">
-            <h2 data-bind="attr: {class: RoomHeaderClassName}, text: Name"><span class="room-user-count" data-bind="text: UserCount"></span></h2>
-            <!-- ko if: IsActiveRoom == "false" -->
-            <a class="button" href="#" data-bind="attr: {href: Url}">Join</a>
+            <h2 data-bind="text: Name"><span class="room-user-count" data-bind="text: UserCount"></span></h2>
+            <!-- ko if: room.Id() != $parent.ActiveRoom.Id() -->
+            <a class="button" href="#" >Join</a>
             <!-- /ko -->
-            <!-- ko if: IsActiveRoom == "true" -->
+            <!-- ko if: room.Id() == $parent.ActiveRoom.Id() -->
             <ul class="room-users" data-bind="foreach: {data: Users, as: 'user'}">
                 <li data-bind="attr: {data-userId: user.Id, data-roomId: room.Id}" class="room-user room-user-inactive">
                     <table>
@@ -149,26 +149,22 @@
             });
         }
         
-        function ChatRoomUsersViewModel()
-        {
-            var self = this;
-            self.ChatRooms = ko.observableArray([
-                @foreach (ChatRoom room in Model.Rooms)
+        @{
+            var simpleModel = new
+            {
+                ActiveRoom = Model.ActiveRoom,
+                Rooms = Model.Rooms,
+                Users = Model.Users.Select(u => new 
                 {
-                    <text>{ 
-                    RoomName: "@room.Name",
-                    RoomHeaderClassName: "",
-                    RoomUserCount: "(0)",
-                    IsActiveRoom: "@( (Model.ActiveRoom.Id == room.Id).ToString().ToLower() )",
-                    RoomUrl: "@Url.Action("Index", new { id = room.Id, sendingRoomId = Model.ActiveRoom.Id })",
-                    RoomUsers: []
-                    },
-                </text>
-                }
-            ]);
+                    Id = u.Id,
+                    FirstAndLastName = u.FirstAndLastName,
+                    ProfileImageUrl = ""                    
+                })
+                
+            };
         }
-        
-        var roomsViewModel = @string.Format("{0};", Json.Encode(new {}))
+
+        var ChatRoomUsersViewModel = ko.mapping.fromJS(@Html.Raw(string.Format("{0}", Json.Encode(simpleModel))));
 
         var scrollbarLocked = true;
         $(document).ready(function () {
@@ -213,7 +209,7 @@
             //getRoomUsers();
 
             //Apply VM bindings
-            ko.applyBindings(new ChatRoomUsersViewModel(), document.getElementById("room-list"));
+            ko.applyBindings(ChatRoomUsersViewModel, document.getElementById("room-list"));
         }
     );
 
