@@ -163,12 +163,13 @@
             };
         }
 
-        var ChatRoomUsersViewModel = {'Users': {} };
+        var rawViewModel = {'Users': {} };
 
         @foreach(var item in simpleModel.Users)
         {
-            @:ChatRoomUsersViewModel["Users"]["user_@item.Id"] = @Html.Raw(Json.Encode(item));
+            @:rawViewModel["Users"]["user_@item.Id"] = @Html.Raw(Json.Encode(item));
         }
+        var ChatRoomUsersViewModel = ko.mapping.fromJS(rawViewModel);
 
         var scrollbarLocked = true;
         $(document).ready(function () {
