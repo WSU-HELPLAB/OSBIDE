@@ -126,7 +126,7 @@
                 <ul class="room-users">
                     @foreach (ChatRoomUserViewModel user in Model.Users)
                     {
-                        <li data-userId="@user.Id" data-roomId="@room.Id" class="@user.CssClasses" data-bind="attr: { 'class': $root.Users[@string.Format("'user_{0}'", user.Id)].CssClasses }">
+                        <li data-userId="@user.Id" data-roomId="@room.Id" class="@user.CssClasses" data-bind="attr: { 'class': $root.Users[@string.Format("'user_{0}'", user.Id)].CssClasses() }">
                             <table>
                                 <tr>
                                     <td style="padding-right: 6px;">
