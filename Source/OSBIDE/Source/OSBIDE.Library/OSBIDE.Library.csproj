@@ -170,6 +170,7 @@
     <Compile Include="Models\ActionRequestLog.cs" />
     <Compile Include="Models\BuildDocument.cs" />
     <Compile Include="Models\BuildError.cs" />
+    <Compile Include="Models\ChatRoomUser.cs" />
     <Compile Include="Models\ErrorType.cs" />
     <Compile Include="Models\BuildEventBreakPoint.cs" />
     <Compile Include="Models\BuildEventErrorListItem.cs" />

@@ -245,9 +245,6 @@ namespace OSBIDE.Library.Models
 
         public virtual UserScore Score { get; set; }
 
-        [NotMapped]
-        public string ProfileImageUrl { get; set; }
-
         public void SetProfileImage(System.Drawing.Bitmap bmp)
         {
             if (ProfileImage == null)

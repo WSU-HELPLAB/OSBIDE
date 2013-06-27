@@ -109,19 +109,19 @@
     <h1>Available Rooms</h1>
     <ul id="rooms" data-bind="foreach: {data: Rooms, as: 'room'}">
         <li class="room-li">
-            <h2 data-bind="text: Name"><span class="room-user-count" data-bind="text: UserCount"></span></h2>
+            <h2 data-bind="text: Name()"><span class="room-user-count" data-bind="text: UserCount()"></span></h2>
             <!-- ko if: room.Id() != $parent.ActiveRoom.Id() -->
             <a class="button" href="#" >Join</a>
             <!-- /ko -->
             <!-- ko if: room.Id() == $parent.ActiveRoom.Id() -->
-            <ul class="room-users" data-bind="foreach: {data: Users, as: 'user'}">
-                <li data-bind="attr: {data-userId: user.Id, data-roomId: room.Id}" class="room-user room-user-inactive">
+            <ul class="room-users" data-bind="foreach: {data: $parent.Users(), as: 'user'}">
+                <li data-bind="attr: { 'data-userId': user.Id(), 'data-roomId': room.Id(), 'class': CssClasses() }">
                     <table>
                         <tr>
                             <td style="padding-right: 6px;">
-                                <img src="#" data-bind="attr: {src: user.ProfileImageUrl}" title="profile image" alt="profile image" style="" />
+                                <img src="#" data-bind="attr: {src: user.ProfileImageUrl()}" title="profile image" alt="profile image" style="" width="24" height="24" />
                             </td>
-                            <td data-bind="text: user.FirstAndLastName"></td>
+                            <td data-bind="text: user.FirstAndLastName()"></td>
                         </tr>
                     </table>
                 </li>
@@ -158,7 +158,8 @@
                 {
                     Id = u.Id,
                     FirstAndLastName = u.FirstAndLastName,
-                    ProfileImageUrl = ""                    
+                    ProfileImageUrl = u.ProfileImageUrl,
+                    CssClasses = u.CssClasses
                 })
                 
             };
@@ -206,7 +207,7 @@
             getRecentMessages();
 
             //get chat room users
-            //getRoomUsers();
+            getRoomUsers();
 
             //Apply VM bindings
             ko.applyBindings(ChatRoomUsersViewModel, document.getElementById("room-list"));
@@ -237,56 +238,27 @@
     //function responsible for updating the users in the room
     function getRoomUsers() {
         var roomId = "@Model.ActiveRoom.Id";
-
+        var jsModel = ko.mapping.toJS(ChatRoomUsersViewModel);
+        var jsUsers = {};
+        $.each(jsModel.Users, function(key, value){
+            jsUsers[value.Id] = value.CssClasses;
+        });
+        jsUsers.ChatRoomId = roomId;
         $.ajax(
             {
                 url: "@Url.Action("RoomUsers")",
-                data: { chatRoomId: roomId },
+                data: jsUsers,
                 dataType: "json",
-                type: "GET",
+                type: "POST",
                 success: getRoomUsersSuccess,
-                complete: function () { setTimeout(getRoomUsers, 5000); }
+                complete: getRoomUsers
             }
             );
+        
     }
 
     function getRoomUsersSuccess(jsonData) {
-
-        var itemIds = new Array();
-
-        //find all active records
-        $.each(jsonData, function () {
-
-            var record = this;
-
-            //build the HTML id string for this particular record
-            var itemId = "#@roomUserFormatString"; //dynamically generated value
-            itemId = itemId.replace("{0}", record.RoomId);
-            itemId = itemId.replace("{1}", record.UserId);
-            itemIds.push(itemId);
-        });
-
-        //loop through currently active records and turn off those that are now inactive
-        $('.room-user-active').each(function (key, value) {
-            var htmlId = "#" + value.id;
-            if ($.inArray(htmlId, itemIds) == -1) {
-                $(this).removeClass('room-user-active');
-                $(this).addClass('room-user-inactive');
-            }
-        }
-        );
-
-        //now loop through the active items and turn on ones that need to be turned on
-        $.each(itemIds, function (key, value) {
-            $(itemIds[key]).removeClass('room-user-inactive');
-            $(itemIds[key]).addClass('room-user-active');
-        });
-
-        //figure out how many users are in each room
-        $('.room-li').each(function (key, value) {
-            var userCount = $(this).find('.room-user-active').length;
-            $(this).find('.room-user-count').first().text("(" + userCount + ")");
-        });
+        ko.mapping.fromJS(jsonData, ChatRoomUsersViewModel);
     }
 
     function getRecentMessages() {

@@ -9,6 +9,7 @@ using System.Runtime.Caching;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 
 namespace OSBIDE.Web.Controllers
 {
@@ -16,7 +17,7 @@ namespace OSBIDE.Web.Controllers
     [RequiresVisualStudioConnectionForStudents]
     public class ChatController : ControllerBase
     {
-        public ActionResult Index(int id = -1, int sendingRoomId = -1)
+        public ActionResult Index(int id = -1)
         {
             if (id == -1)
             {
@@ -26,31 +27,101 @@ namespace OSBIDE.Web.Controllers
                     .FirstOrDefault()
                     .Id;
             }
-            if (sendingRoomId != -1)
+
+            //remove the user from all other rooms by setting last active date to a long time ago
+            List<ChatRoomUser> records = Db.ChatRoomUsers.Where(u => u.UserId == CurrentUser.Id).Where(u => u.RoomId != id).ToList();
+            foreach (ChatRoomUser record in records)
             {
-                string region = string.Format("chat_{0}", sendingRoomId);
-                GlobalCache.Remove(CurrentUser.Id.ToString(), region);
+                record.LastActivity = DateTime.MinValue;
             }
-            DateTime minDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 1, 0, 0));
+
+            //Add a chat message indicating that the user has entered the room
+            /*
+            ChatMessage message = new ChatMessage()
+            {
+                AuthorId = CurrentUser.Id,
+                Message = string.Format("{0} has entered the chat room.", CurrentUser.FirstName),
+                MessageDate = DateTime.UtcNow,
+                RoomId = id
+            };
+            Db.ChatMessages.Add(message);
+            Db.SaveChanges();
+             * */
+
+
+            ChatRoomViewModel vm = BuildViewModel(id);
+            return View(vm);
+        }
+
+        private ChatRoomViewModel BuildViewModel(int activeRoomId)
+        {
+            //log the user into the database
+            ChatRoomUser cru = Db.ChatRoomUsers
+                .Where(u => u.UserId == CurrentUser.Id)
+                .Where(u => u.RoomId == activeRoomId)
+                .FirstOrDefault();
+
+            if (cru == null)
+            {
+                cru = new ChatRoomUser()
+                {
+                    RoomId = activeRoomId,
+                    UserId = CurrentUser.Id
+                };
+                Db.ChatRoomUsers.Add(cru);
+            }
+            cru.LastActivity = DateTime.UtcNow;
+            Db.SaveChanges();
 
             //get all chat messages that are associated with the requested room and have been issued within the last hour
             List<ChatMessage> chatMessages = (from message in Db.ChatMessages
                                   .Include("Author")
-                                              where message.RoomId == id
-                                              && message.MessageDate > minDate
-                                              select message).ToList();
-            ChatRoom room = Db.ChatRooms.Where(r => r.Id == id).FirstOrDefault();
-            ChatRoomViewModel vm = new ChatRoomViewModel()
+                                              where message.RoomId == activeRoomId
+                                              orderby message.MessageDate descending
+                                              select message).Take(25).ToList();
+            ChatRoom room = Db.ChatRooms.Where(r => r.Id == activeRoomId).FirstOrDefault();
+            ChatRoomViewModel vm = new ChatRoomViewModel();
+            
+            //find the last date that we're returning
+            DateTime minDate = DateTime.MinValue.AddDays(1);
+            if(chatMessages.Count > 0)
             {
-                Messages = chatMessages,
-                ActiveRoom = room,
-                InitialDocumentDate = minDate,
-                Rooms = Db.ChatRooms.Where(r => r.SchoolId == CurrentUser.SchoolId).ToList(),
-                Users = Db.Users.Where(u => u.SchoolId == CurrentUser.SchoolId).OrderBy(u => u.FirstName).ToList()
-            };
+                minDate = chatMessages.LastOrDefault().MessageDate;
+            }
 
-            return View(vm);
-            //return View("Disabled");
+            vm.Messages = chatMessages;
+            vm.ActiveRoom = room;
+            vm.InitialDocumentDate = minDate;
+            vm.Rooms = Db.ChatRooms.Where(r => r.SchoolId == CurrentUser.SchoolId).ToList();
+            vm.Users = new List<ChatRoomUserViewModel>();
+
+            DateTime minActivityDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 15));
+            var roomUsers = from chatUser in Db.ChatRoomUsers
+                            where chatUser.User.SchoolId == CurrentUser.SchoolId
+                            && chatUser.RoomId == activeRoomId
+                            && chatUser.LastActivity > minActivityDate
+                            select chatUser.UserId;
+            Dictionary<int, int> activeUsers = new Dictionary<int, int>();
+            foreach (int user in roomUsers)
+            {
+                activeUsers[user] = user;
+            }
+            foreach(OsbideUser user in Db.Users.Where(u => u.SchoolId == CurrentUser.SchoolId).OrderBy(u => u.FirstName))
+            {
+                ChatRoomUserViewModel cvm = new ChatRoomUserViewModel(user);
+                if (activeUsers.ContainsKey(user.Id))
+                {
+                    cvm.IsCssVisible = true;
+                }
+
+                UrlHelper u = new UrlHelper(this.ControllerContext.RequestContext);
+                string url = u.Action("Picture", "Profile", new { id = cvm.Id, size = 24 });
+                cvm.ProfileImageUrl = url;
+
+                vm.Users.Add(cvm);
+            }
+
+            return vm;
         }
 
         [HttpGet]
@@ -109,8 +180,97 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
-        public JsonResult RoomUsers(int chatRoomId)
+        public JsonResult RoomUsers()
         {
+            const string chatRoomIdKey = "ChatRoomId";
+            int chatRoomId = 0;
+            int timeout = 10;
+            int timeoutCounter = 0;
+            TimeSpan timeBetweenQueries = new TimeSpan(0, 0, 0, 2);
+            bool hasRequestTimedOut = false;
+
+            Int32.TryParse(Request[chatRoomIdKey], out chatRoomId);
+
+            List<ChatRoomUserViewModel> users = new List<ChatRoomUserViewModel>();
+            foreach (string key in Request.Form.AllKeys)
+            {
+                //ignore chat room key
+                if (key.CompareTo(chatRoomIdKey) != 0)
+                {
+                    int userId = 0;
+                    if (Int32.TryParse(key, out userId))
+                    {
+                        users.Add(new ChatRoomUserViewModel()
+                        {
+                            CssClasses = Request[key],
+                            Id = userId
+                        });
+                    }
+                }
+            }
+
+            SortedList<int, int> originalIds = new SortedList<int, int>();
+
+            foreach (ChatRoomUserViewModel user in users)
+            {
+                //only add visible users
+                if (user.IsCssVisible)
+                {
+                    originalIds.Add(user.Id, user.Id);
+                }
+            }
+
+            ChatRoomViewModel updatedModel = null;
+            while (hasRequestTimedOut == false)
+            {
+                updatedModel = BuildViewModel(chatRoomId);
+                SortedList<int, int> updatedIds = new SortedList<int, int>();
+                foreach (ChatRoomUserViewModel user in updatedModel.Users)
+                {
+                    if (user.IsCssVisible == true)
+                    {
+                        updatedIds.Add(user.Id, user.Id);
+                    }
+                }
+
+                //loop through original keys.  If a key exists in the updated keys but not in the original, then
+                //someone has joined the room.
+                foreach (int key in originalIds.Keys)
+                {
+                    if (updatedIds.ContainsKey(key) == false)
+                    {
+                        hasRequestTimedOut = true;
+                        break;
+                    }
+                }
+
+                //loop through the updated keys. If a key exists in the original keys but not the updated list,
+                //then someone has left the room.
+                if (hasRequestTimedOut == false)
+                {
+                    foreach (int key in updatedIds.Keys)
+                    {
+                        if (originalIds.ContainsKey(key) == false)
+                        {
+                            hasRequestTimedOut = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (hasRequestTimedOut == false)
+                {
+                    Thread.Sleep(timeBetweenQueries);
+                    timeoutCounter++;
+                    if (timeoutCounter == timeout)
+                    {
+                        hasRequestTimedOut = true;
+                    }
+                }
+            }
+            return this.Json(updatedModel, JsonRequestBehavior.AllowGet);
+
+            /*
             //record the user as being logged into the room
             string region = string.Format("chat_{0}", chatRoomId);
             GlobalCache.Add(CurrentUser.Id.ToString(), CurrentUser.FirstAndLastName, new CacheItemPolicy() { SlidingExpiration = new TimeSpan(0, 0, 0, 10) }, region);
@@ -148,6 +308,8 @@ namespace OSBIDE.Web.Controllers
                 }
             }
             return this.Json(vms, JsonRequestBehavior.AllowGet);
+             * */
+            return this.Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

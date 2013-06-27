@@ -11,14 +11,14 @@ namespace OSBIDE.Web.Models.ViewModels
         public List<ChatMessage> Messages { get; set; }
         public ChatRoom ActiveRoom { get; set; }
         public List<ChatRoom> Rooms { get; set; }
-        public List<OsbideUser> Users { get; set; }
+        public List<ChatRoomUserViewModel> Users { get; set; }
         public DateTime InitialDocumentDate { get; set; }
         
 
         public ChatRoomViewModel()
         {
             Rooms = new List<ChatRoom>();
-            Users = new List<OsbideUser>();
+            Users = new List<ChatRoomUserViewModel>();
             Messages = new List<ChatMessage>();
         }
     }

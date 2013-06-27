@@ -180,7 +180,7 @@
     <Compile Include="Models\Queries\StudentSubscriptionsQuery.cs" />
     <Compile Include="Models\ViewModels\AssignmentsViewModel.cs" />
     <Compile Include="Models\ViewModels\BuildDiffViewModel.cs" />
-    <Compile Include="Models\ViewModels\ChatRoomUsersViewModel.cs" />
+    <Compile Include="Models\ViewModels\ChatRoomUserViewModel.cs" />
     <Compile Include="Models\ViewModels\ChatRoomViewModel.cs" />
     <Compile Include="Models\ViewModels\CreateAccountViewModel.cs" />
     <Compile Include="Models\Attributes\ApplyDataContractResolverAttribute.cs" />
