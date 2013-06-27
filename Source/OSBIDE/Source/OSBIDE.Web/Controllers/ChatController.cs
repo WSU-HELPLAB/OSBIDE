@@ -94,8 +94,8 @@ namespace OSBIDE.Web.Controllers
             vm.InitialDocumentDate = minDate;
             vm.Rooms = Db.ChatRooms.Where(r => r.SchoolId == CurrentUser.SchoolId).ToList();
             vm.Users = new List<ChatRoomUserViewModel>();
-
-            DateTime minActivityDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 15));
+            
+            DateTime minActivityDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 5));
             var roomUsers = from chatUser in Db.ChatRoomUsers
                             where chatUser.User.SchoolId == CurrentUser.SchoolId
                             && chatUser.RoomId == activeRoomId
@@ -184,7 +184,7 @@ namespace OSBIDE.Web.Controllers
         {
             const string chatRoomIdKey = "ChatRoomId";
             int chatRoomId = 0;
-            int timeout = 10;
+            int timeout = 20;
             int timeoutCounter = 0;
             TimeSpan timeBetweenQueries = new TimeSpan(0, 0, 0, 2);
             bool hasRequestTimedOut = false;
@@ -234,7 +234,7 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //loop through original keys.  If a key exists in the updated keys but not in the original, then
-                //someone has joined the room.
+                //someone has left the room.
                 foreach (int key in originalIds.Keys)
                 {
                     if (updatedIds.ContainsKey(key) == false)
@@ -245,7 +245,7 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //loop through the updated keys. If a key exists in the original keys but not the updated list,
-                //then someone has left the room.
+                //then someone has joined the room.
                 if (hasRequestTimedOut == false)
                 {
                     foreach (int key in updatedIds.Keys)
@@ -268,7 +268,14 @@ namespace OSBIDE.Web.Controllers
                     }
                 }
             }
-            return this.Json(updatedModel, JsonRequestBehavior.AllowGet);
+
+            var simpleUsers = updatedModel.Users.Select(u => new
+            {
+                Id = u.Id,
+                CssClasses = u.CssClasses
+            });
+
+            return this.Json(simpleUsers, JsonRequestBehavior.AllowGet);
 
             /*
             //record the user as being logged into the room

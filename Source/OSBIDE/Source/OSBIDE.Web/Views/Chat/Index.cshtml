@@ -107,26 +107,40 @@
 </section>
 <section id="room-list">
     <h1>Available Rooms</h1>
-    <ul id="rooms" data-bind="foreach: {data: Rooms, as: 'room'}">
+    <ul id="rooms">
         <li class="room-li">
-            <h2 data-bind="text: Name()"><span class="room-user-count" data-bind="text: UserCount()"></span></h2>
-            <!-- ko if: room.Id() != $parent.ActiveRoom.Id() -->
-            <a class="button" href="#" >Join</a>
-            <!-- /ko -->
-            <!-- ko if: room.Id() == $parent.ActiveRoom.Id() -->
-            <ul class="room-users" data-bind="foreach: {data: $parent.Users(), as: 'user'}">
-                <li data-bind="attr: { 'data-userId': user.Id(), 'data-roomId': room.Id(), 'class': CssClasses() }">
-                    <table>
-                        <tr>
-                            <td style="padding-right: 6px;">
-                                <img src="#" data-bind="attr: {src: user.ProfileImageUrl()}" title="profile image" alt="profile image" style="" width="24" height="24" />
-                            </td>
-                            <td data-bind="text: user.FirstAndLastName()"></td>
-                        </tr>
-                    </table>
-                </li>
-            </ul>
-            <!-- /ko -->
+            @foreach (ChatRoom room in Model.Rooms)
+            {
+                string roomActive = "room-inactive";
+                if (room.Id == Model.ActiveRoom.Id)
+                {
+                    roomActive = "room-active";
+                }
+                <h2 class="room-name @roomActive">@room.Name<span class="room-user-count"></span></h2>    
+                if (room.Id != Model.ActiveRoom.Id)
+                {
+                    <a class="button" href="@Url.Action("Index", "Chat", new { id = room.Id })">Join</a>
+                }
+                else
+                {
+                <ul class="room-users">
+                    @foreach (ChatRoomUserViewModel user in Model.Users)
+                    {
+                        <li data-userId="@user.Id" data-roomId="@room.Id" class="@user.CssClasses" data-bind="attr: { 'class': $root.Users[@string.Format("'user_{0}'", user.Id)].CssClasses }">
+                            <table>
+                                <tr>
+                                    <td style="padding-right: 6px;">
+                                        <img src="@Url.Action("Picture", "Profile", new { id = user.Id })" 
+                                            title="profile image" alt="profile image" style="" width="24" height="24" />
+                                    </td>
+                                    <td>@user.FirstAndLastName</td>
+                                </tr>
+                            </table>
+                        </li>
+                    }
+                </ul>
+                }
+            }
         </li>
     </ul>
 </section>
@@ -136,39 +150,31 @@
     @Scripts.Render("~/bundles/knockout")
     <script type="text/javascript">
 
-        function RoomUserViewModel()
-        {
-            var self = this;
-            self.UserId = "";
-            self.RoomId = "";
-            self.ProfilePictureSource = "";
-            self.FirstName = "";
-            self.LastName = "";
-            self.FirstAndLastName = ko.computed(function(){
-                return self.FirstName + " " + self.LastName;
-            });
-        }
-        
         @{
             var simpleModel = new
             {
-                ActiveRoom = Model.ActiveRoom,
-                Rooms = Model.Rooms,
-                Users = Model.Users.Select(u => new 
+                Users = Model.Users.Select(u => new
                 {
                     Id = u.Id,
                     FirstAndLastName = u.FirstAndLastName,
-                    ProfileImageUrl = u.ProfileImageUrl,
                     CssClasses = u.CssClasses
                 })
-                
+
             };
         }
 
-        var ChatRoomUsersViewModel = ko.mapping.fromJS(@Html.Raw(string.Format("{0}", Json.Encode(simpleModel))));
+        var ChatRoomUsersViewModel = {'Users': {} };
+
+        @foreach(var item in simpleModel.Users)
+        {
+            @:ChatRoomUsersViewModel["Users"]["user_@item.Id"] = @Html.Raw(Json.Encode(item));
+        }
 
         var scrollbarLocked = true;
         $(document).ready(function () {
+
+            //Apply VM bindings
+            ko.applyBindings(ChatRoomUsersViewModel, document.getElementById("room-users"));
 
             //listen for key down events
             $("#chat-box").keydown(chatBoxKeyDown);
@@ -195,11 +201,11 @@
                 $.ajax(
                 {
                     url: "@Url.Action("OldMessages", "Chat")",
-                data: { chatRoomId: roomId, firstMessageTick: firstTimestamp, count: 25 },
-                dataType: "html",
-                type: "GET",
-                success: getOldMessagesSuccess
-            }
+                    data: { chatRoomId: roomId, firstMessageTick: firstTimestamp, count: 25 },
+                    dataType: "html",
+                    type: "GET",
+                    success: getOldMessagesSuccess
+                }
             );
             });
 
@@ -208,62 +214,66 @@
 
             //get chat room users
             getRoomUsers();
-
-            //Apply VM bindings
-            ko.applyBindings(ChatRoomUsersViewModel, document.getElementById("room-list"));
         }
     );
 
-    function getOldMessagesSuccess(html) {
-        $("#load-earlier-messages").text("Load earlier messages...");
-        var trimmed = $.trim(html);
-        if (trimmed.length > 0) {
-            $("#chat-window").prepend(html);
-            parseDates();
-        }
-        else {
-            $("#load-old-posts").text("Earlier messages not available.");
-        }
-    }
-
-    function chatWindowScroll(event) {
-        if ($('#chat-window').scrollTop() + $('#chat-window').height() > $('#chat-window').get(0).scrollHeight - 25) {
-            scrollbarLocked = true;
-        }
-        else {
-            scrollbarLocked = false;
-        }
-    }
-
-    //function responsible for updating the users in the room
-    function getRoomUsers() {
-        var roomId = "@Model.ActiveRoom.Id";
-        var jsModel = ko.mapping.toJS(ChatRoomUsersViewModel);
-        var jsUsers = {};
-        $.each(jsModel.Users, function(key, value){
-            jsUsers[value.Id] = value.CssClasses;
-        });
-        jsUsers.ChatRoomId = roomId;
-        $.ajax(
-            {
-                url: "@Url.Action("RoomUsers")",
-                data: jsUsers,
-                dataType: "json",
-                type: "POST",
-                success: getRoomUsersSuccess,
-                complete: getRoomUsers
+        function getOldMessagesSuccess(html) {
+            $("#load-earlier-messages").text("Load earlier messages...");
+            var trimmed = $.trim(html);
+            if (trimmed.length > 0) {
+                $("#chat-window").prepend(html);
+                parseDates();
             }
+            else {
+                $("#load-old-posts").text("Earlier messages not available.");
+            }
+        }
+
+        function chatWindowScroll(event) {
+            if ($('#chat-window').scrollTop() + $('#chat-window').height() > $('#chat-window').get(0).scrollHeight - 25) {
+                scrollbarLocked = true;
+            }
+            else {
+                scrollbarLocked = false;
+            }
+        }
+
+        //function responsible for updating the users in the room
+        function getRoomUsers() {
+            var roomId = "@Model.ActiveRoom.Id";
+            var jsModel = ko.mapping.toJS(ChatRoomUsersViewModel);
+            var jsUsers = {};
+            $.each(jsModel.Users, function (key, value) {
+                jsUsers[value.Id] = value.CssClasses;
+            });
+            jsUsers.ChatRoomId = roomId;
+            $.ajax(
+                {
+                    url: "@Url.Action("RoomUsers")",
+                    data: jsUsers,
+                    dataType: "json",
+                    type: "POST",
+                    success: getRoomUsersSuccess,
+                    complete: getRoomUsers
+                }
             );
-        
-    }
 
-    function getRoomUsersSuccess(jsonData) {
-        ko.mapping.fromJS(jsonData, ChatRoomUsersViewModel);
-    }
+        }
 
-    function getRecentMessages() {
+        function getRoomUsersSuccess(jsonData) {
+            
+            var prettyData = {'Users': {} };
 
-        var roomId = "@Model.ActiveRoom.Id";
+            $.each(jsonData, function(key, value){
+                var userKey = 'user_' + value.Id;
+                prettyData['Users'][userKey] = value;
+            });
+            ko.mapping.fromJS(prettyData, ChatRoomUsersViewModel);
+        }
+
+        function getRecentMessages() {
+
+            var roomId = "@Model.ActiveRoom.Id";
 
         //find most recent chat message
         var lastTimestamp = $(".log-comment-single").last().attr("data-timestamp");
