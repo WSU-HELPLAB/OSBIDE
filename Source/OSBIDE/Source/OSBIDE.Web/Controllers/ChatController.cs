@@ -17,6 +17,7 @@ namespace OSBIDE.Web.Controllers
     [RequiresVisualStudioConnectionForStudents]
     public class ChatController : ControllerBase
     {
+        public const TimeSpan CHAT_TIMEOUT = new TimeSpan(0, 0, 7);
         public ActionResult Index(int id = -1)
         {
             if (id == -1)
@@ -39,7 +40,7 @@ namespace OSBIDE.Web.Controllers
             ChatRoomUser userRecord = Db.ChatRoomUsers.Where(u => u.UserId == CurrentUser.Id).Where(u => u.RoomId == id).FirstOrDefault();
             if (userRecord != null)
             {
-                if (userRecord.LastActivity < DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 5)))
+                if (userRecord.LastActivity < DateTime.UtcNow.Subtract(CHAT_TIMEOUT))
                 {
                     ChatMessage message = new ChatMessage()
                     {
@@ -98,8 +99,8 @@ namespace OSBIDE.Web.Controllers
             vm.InitialDocumentDate = minDate;
             vm.Rooms = Db.ChatRooms.Where(r => r.SchoolId == CurrentUser.SchoolId).ToList();
             vm.Users = new List<ChatRoomUserViewModel>();
-            
-            DateTime minActivityDate = DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 0, 5));
+
+            DateTime minActivityDate = DateTime.UtcNow.Subtract(CHAT_TIMEOUT);
             var roomUsers = from chatUser in Db.ChatRoomUsers
                             where chatUser.User.SchoolId == CurrentUser.SchoolId
                             && chatUser.RoomId == activeRoomId
@@ -180,7 +181,6 @@ namespace OSBIDE.Web.Controllers
                 Messages = recentMessages,
                 ActiveRoom = room
             };
-            //return this.Json(vm, JsonRequestBehavior.AllowGet);
             return View(vm);
         }
 
@@ -243,32 +243,42 @@ namespace OSBIDE.Web.Controllers
                     }
                 }
 
-                //merge the list of active and inactive users into a single list
-                mergedIdList = new SortedList<int, int>();
-                foreach (int key in originalIds.Keys)
+                //do the easy diff check first
+                if (originalIds.Count != updatedIds.Count)
                 {
-                    if (mergedIdList.ContainsKey(key) == false)
-                    {
-                        mergedIdList.Add(key, key);
-                    }
+                    hasRequestTimedOut = true;
                 }
-                foreach (int key in updatedIds.Keys)
+                else
                 {
-                    if (mergedIdList.ContainsKey(key) == false)
-                    {
-                        mergedIdList.Add(key, key);
-                    }
-                }
 
-                //now, loop through the list of merged keys to find any changes
-                foreach (int key in mergedIdList.Keys)
-                {
-                    //If the merged list differs from either the original or updated, that means that 
-                    //at least one user has left or joined the chat room since the original request was made.
-                    //In this case, we need to send back the updated list to the client immediately.
-                    if (originalIds.ContainsKey(key) == false || updatedIds.ContainsKey(key) == false)
+                    //merge the list of active and inactive users into a single list
+                    mergedIdList = new SortedList<int, int>();
+                    foreach (int key in originalIds.Keys)
                     {
-                        hasRequestTimedOut = true;
+                        if (mergedIdList.ContainsKey(key) == false)
+                        {
+                            mergedIdList.Add(key, key);
+                        }
+                    }
+                    foreach (int key in updatedIds.Keys)
+                    {
+                        if (mergedIdList.ContainsKey(key) == false)
+                        {
+                            mergedIdList.Add(key, key);
+                        }
+                    }
+
+                    //now, loop through the list of merged keys to find any changes
+                    foreach (int key in mergedIdList.Keys)
+                    {
+                        //If the merged list differs from either the original or updated, that means that 
+                        //at least one user has left or joined the chat room since the original request was made.
+                        //In this case, we need to send back the updated list to the client immediately.
+                        if (originalIds.ContainsKey(key) == false || updatedIds.ContainsKey(key) == false)
+                        {
+                            hasRequestTimedOut = true;
+                            break;
+                        }
                     }
                 }
 
@@ -291,47 +301,6 @@ namespace OSBIDE.Web.Controllers
             });
 
             return this.Json(simpleUsers, JsonRequestBehavior.AllowGet);
-
-            /*
-            //record the user as being logged into the room
-            string region = string.Format("chat_{0}", chatRoomId);
-            GlobalCache.Add(CurrentUser.Id.ToString(), CurrentUser.FirstAndLastName, new CacheItemPolicy() { SlidingExpiration = new TimeSpan(0, 0, 0, 10) }, region);
-
-            List<ChatRoom> rooms = Db.ChatRooms.ToList();
-            List<ChatRoomUsersViewModel> vms = new List<ChatRoomUsersViewModel>();
-            foreach (ChatRoom room in rooms)
-            {
-                region = string.Format("chat_{0}", room.Id);
-                Dictionary<int, string> users = new Dictionary<int, string>();
-                string[] keys = null;
-                try
-                {
-                    keys = GlobalCache.GetKeys(region);
-                }
-                catch (Exception)
-                {
-                    //cache doesn't exist.  continue onto next iteration of main loop.
-                    continue;
-                }
-                foreach (string key in keys)
-                {
-                    if (string.IsNullOrEmpty(key) == false)
-                    {
-                        int userId = -1;
-                        if (Int32.TryParse(key, out userId) == true)
-                        {
-                            vms.Add(new ChatRoomUsersViewModel()
-                            {
-                                RoomId = room.Id,
-                                UserId = userId
-                            });
-                        }
-                    }
-                }
-            }
-            return this.Json(vms, JsonRequestBehavior.AllowGet);
-             * */
-            return this.Json(new { }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
