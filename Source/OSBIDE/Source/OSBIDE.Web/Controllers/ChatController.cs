@@ -17,7 +17,7 @@ namespace OSBIDE.Web.Controllers
     [RequiresVisualStudioConnectionForStudents]
     public class ChatController : ControllerBase
     {
-        public const TimeSpan CHAT_TIMEOUT = new TimeSpan(0, 0, 7);
+        private TimeSpan CHAT_TIMEOUT = new TimeSpan(0, 0, 7);
         public ActionResult Index(int id = -1)
         {
             if (id == -1)
