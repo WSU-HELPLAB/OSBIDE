@@ -30,7 +30,7 @@ namespace OSBIDE.Web.Models.Attributes
                 }
 
                 //only allow access if they've been active in Visual Studio in the last 10 minutes
-                if (lastActivity < DateTime.UtcNow.Subtract(new TimeSpan(0, 0, 10, 0, 0)))
+                if (lastActivity < DateTime.UtcNow.Subtract(new TimeSpan(0, 1, 0, 0, 0)))
                 {
                     filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Error", action = "RequiresActiveVsConnection" }));
                 }
