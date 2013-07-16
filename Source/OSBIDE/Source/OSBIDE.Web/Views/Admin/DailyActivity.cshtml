@@ -1,5 +1,17 @@
-﻿@{
-    ViewBag.Title = "DailyActivity";
+﻿@using OSBIDE.Web.Models
+@using OSBIDE.Web.Models.ViewModels
+@using OSBIDE.Library.Models
+@model DailyActivityViewModel
+@{
+    ViewBag.Title = "Daily Activity";
 }
-
-<h2>DailyActivity</h2>
+<table>
+    <tr>
+        <td>Student: </td>
+        <td>@Html.DropDownListFor(m => m.SelectedStudentId, new SelectList(Model.Students, "Id", "FullName"), String.Empty)</td>
+    </tr>
+    <tr>
+        <td>Date:</td>
+        <td>@Html.EditorFor(m => m.SelectedDate)</td>
+    </tr>
+</table>

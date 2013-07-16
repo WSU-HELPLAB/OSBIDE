@@ -1,6 +1,7 @@
 ﻿using OSBIDE.Library.CSV;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
+using OSBIDE.Web.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,13 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult DailyActivity(int? userId, DateTime? day)
         {
+            DailyActivityViewModel vm = new DailyActivityViewModel();
             if (userId != null && day != null)
             {
             }
-            List<OsbideUser> students = Db.Users.Where(u => u.Role == SystemRole.Student).ToList();
+            vm.Students = Db.Users.Where(u => u.RoleValue == (int)SystemRole.Student).OrderBy(s => s.LastName).ToList();
             
-            return View();
+            return View(vm);
         }
 
         [HttpPost]
