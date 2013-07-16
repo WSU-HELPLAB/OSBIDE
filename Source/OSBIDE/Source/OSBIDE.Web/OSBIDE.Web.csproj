@@ -379,6 +379,7 @@
     <Content Include="Views\Shared\Disabled.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\PrivateQuestion\ViewQuestions.cshtml" />
+    <Content Include="Views\Admin\DailyActivity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -387,7 +388,7 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\filecache\fc\Main\Source\FileCache\FileCache.csproj">
+    <ProjectReference Include="..\..\..\..\..\..\fc\Main\Source\FileCache\FileCache.csproj">
       <Project>{e13fd5fe-7d45-4a90-8fbb-c498bd144940}</Project>
       <Name>FileCache</Name>
     </ProjectReference>

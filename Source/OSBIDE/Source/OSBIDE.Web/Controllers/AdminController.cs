@@ -20,6 +20,16 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
+        public ActionResult DailyActivity(int? userId, DateTime? day)
+        {
+            if (userId != null && day != null)
+            {
+            }
+            List<OsbideUser> students = Db.Users.Where(u => u.Role == SystemRole.Student).ToList();
+            
+            return View();
+        }
+
         [HttpPost]
         public ActionResult UploadRoster(HttpPostedFileBase file)
         {
