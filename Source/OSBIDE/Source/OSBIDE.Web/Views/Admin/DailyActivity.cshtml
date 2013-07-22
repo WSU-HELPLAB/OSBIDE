@@ -5,13 +5,17 @@
 @{
     ViewBag.Title = "Daily Activity";
 }
-<table>
-    <tr>
-        <td>Student: </td>
-        <td>@Html.DropDownListFor(m => m.SelectedStudentId, new SelectList(Model.Students, "Id", "FullName"), String.Empty)</td>
-    </tr>
-    <tr>
-        <td>Date:</td>
-        <td>@Html.EditorFor(m => m.SelectedDate)</td>
-    </tr>
-</table>
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>Student: </td>
+            <td>@Html.DropDownListFor(m => m.SelectedStudentId, new SelectList(Model.Students, "Id", "FullName"), String.Empty)</td>
+        </tr>
+        <tr>
+            <td>Date:</td>
+            <td>@Html.TextBoxFor(m => m.SelectedDate, new {@class = "datepicker"})</td>
+        </tr>
+    </table>
+    <input type="submit" value="View Activity" />
+}

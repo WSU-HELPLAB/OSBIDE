@@ -10,6 +10,11 @@ function documentReady() {
             $(this).css("visibility", "visible");
         });
     });
+
+    //set up all datepicker elements
+    $(".datepicker").each(function () {
+        $(this).datepicker();
+    });
 }
 
 //converts UTC times to local (browser) times
