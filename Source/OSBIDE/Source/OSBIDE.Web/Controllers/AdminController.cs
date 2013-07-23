@@ -21,14 +21,51 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
-        public ActionResult DailyActivity(int? userId, DateTime? day)
+        public ActionResult DailyActivity(int? SelectedStudentId, DateTime? SelectedDate)
         {
             DailyActivityViewModel vm = new DailyActivityViewModel();
-            if (userId != null && day != null)
+            if (SelectedStudentId != null && SelectedDate != null)
             {
+                vm.SelectedDate = (DateTime)SelectedDate;
+                vm.SelectedStudentId = (int)SelectedStudentId;
+                DateTime tomorrow = vm.SelectedDate.AddDays(1);
+
+                //pull event logs
+                List<EventLog> logs = Db.EventLogs
+                                        .Where(u => u.SenderId == vm.SelectedStudentId)
+                                        .Where(e => e.DateReceived > vm.SelectedDate)
+                                        .Where(e => e.DateReceived < tomorrow)
+                                        .ToList();
+                foreach (EventLog log in logs)
+                {
+                    vm.ActivityItems.Add(log.DateReceived, log);
+                }
+
+                //pull request logs
+                List<ActionRequestLog> requestLogs = Db.ActionRequestLogs
+                                                       .Where(l => l.CreatorId == vm.SelectedStudentId)
+                                                       .Where(l => l.AccessDate > vm.SelectedDate)
+                                                       .Where(l => l.AccessDate < tomorrow)
+                                                       .ToList();
+                foreach (ActionRequestLog log in requestLogs)
+                {
+                    vm.ActivityItems.Add(log.AccessDate, log);
+                }
+
+                //pull comments
+                List<LogComment> comments = Db.LogComments
+                                              .Where(c => c.AuthorId == vm.SelectedStudentId)
+                                              .Where(c => c.DatePosted > vm.SelectedDate)
+                                              .Where(c => c.DatePosted < tomorrow)
+                                              .ToList();
+                foreach (LogComment comment in comments)
+                {
+                    vm.ActivityItems.Add(comment.DatePosted, comment);
+                }
+
             }
             vm.Students = Db.Users.Where(u => u.RoleValue == (int)SystemRole.Student).OrderBy(s => s.LastName).ToList();
-            
+
             return View(vm);
         }
 
@@ -84,15 +121,15 @@ namespace OSBIDE.Web.Controllers
             {
                 List<int> sectionList = sectionGroups[section];
                 List<UserSubscription> dbSubs = (from sub in Db.UserSubscriptions
-                                                where 
-                                                (
-                                                    sectionList.Contains(sub.ObserverInstitutionId)
-                                                    || sectionList.Contains(sub.SubjectInstitutionId)
-                                                )
-                                                && sub.ObserverSchoolId == CurrentUser.SchoolId
-                                                select sub
+                                                 where
+                                                 (
+                                                     sectionList.Contains(sub.ObserverInstitutionId)
+                                                     || sectionList.Contains(sub.SubjectInstitutionId)
+                                                 )
+                                                 && sub.ObserverSchoolId == CurrentUser.SchoolId
+                                                 select sub
                                                 ).ToList();
-                                                
+
                 foreach (int observerId in sectionGroups[section])
                 {
                     foreach (int subjectId in sectionGroups[section])

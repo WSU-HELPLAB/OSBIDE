@@ -5,7 +5,7 @@
 @{
     ViewBag.Title = "Daily Activity";
 }
-@using (Html.BeginForm())
+@using (Html.BeginForm("DailyActivity", "Admin", FormMethod.Get))
 {
     <table>
         <tr>
@@ -14,7 +14,7 @@
         </tr>
         <tr>
             <td>Date:</td>
-            <td>@Html.TextBoxFor(m => m.SelectedDate, new {@class = "datepicker"})</td>
+            <td>@Html.EditorFor(m => m.SelectedDate)</td>
         </tr>
     </table>
     <input type="submit" value="View Activity" />
