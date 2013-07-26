@@ -51,7 +51,7 @@ namespace OSBIDE.VSPackage
     [ProvideToolWindow(typeof(ChatToolWindow))]
     [ProvideToolWindow(typeof(UserProfileToolWindow))]
     [ProvideToolWindow(typeof(CreateAccountToolWindow))]
-    [ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
+    //[ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(GuidList.guidOSBIDE_VSPackagePkgString)]
     public sealed class OSBIDE_VSPackagePackage : Package, IDisposable
@@ -162,14 +162,20 @@ namespace OSBIDE.VSPackage
                 mcs.AddCommand(menuAccountWin);
 
                 //submit assignment command
+                //(commented out for Fall 2013 release at instructor request)
+                /*
                 CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
                 MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
                 mcs.AddCommand(submitMenuItem);
+                */
 
-                //ask the professor window
+                //ask the professor window 
+                //(commented out for Fall 2013 release at instructor request)
+                /*
                 CommandID askProfessorWindowId = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideAskTheProfessor);
                 MenuCommand menuAskProfessorWin = new MenuCommand(ShowAskProfessorTool, askProfessorWindowId);
                 mcs.AddCommand(menuAskProfessorWin);
+                 * */
 
             }
 

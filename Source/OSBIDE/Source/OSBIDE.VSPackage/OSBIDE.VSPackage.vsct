@@ -117,6 +117,7 @@
         </Strings>
       </Button>
 
+		<!-- Commented out for Fall 2013 release at instructor request 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideAskTheProfessor" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidImages" id="bmpPic1" />
@@ -125,6 +126,7 @@
           <ButtonText>Ask the Professor</ButtonText>
         </Strings>
       </Button>
+	  -->
 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideCreateAccountTool" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
@@ -135,6 +137,7 @@
         </Strings>
       </Button>
 
+		<!-- Commented out for Fall 2013 release at instructor request 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideSubmitAssignmentCommand" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
@@ -143,6 +146,7 @@
           <ButtonText>Submit Assignment</ButtonText>
         </Strings>
       </Button>
+	  -->
 
 
     </Buttons>
