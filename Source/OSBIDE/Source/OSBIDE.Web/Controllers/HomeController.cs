@@ -22,6 +22,7 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
+        [AllowHtml]
         public int PostComment(string logId, string comment, string returnUrl)
         {
             int id = -1;
