@@ -420,6 +420,12 @@ namespace OSBIDE.VSPackage
                 }
             }
 
+            //AC: Restrict "ask for help" to approx 20 lines
+            if (vm.Code.Length > 750)
+            {
+                vm.Code = vm.Code.Substring(0, 750);
+            }
+
             //show message dialog
             MessageBoxResult result = AskForHelpForm.ShowModalDialog(vm);
             if (result == MessageBoxResult.OK)

@@ -11,7 +11,7 @@
         >
     <StackPanel Orientation="Vertical">
         <TextBlock Text="Ask For Help" FontSize="24" Foreground="CornflowerBlue" FontWeight="Bold" />
-        <TextBlock Text="Code segemnt:" FontWeight="Bold" />
+        <TextBlock Text="Code segemnt (truncated to 750 characters or less):" FontWeight="Bold" />
         <ScrollViewer Height="300">
             <TextBlock Text="{Binding Path=Code}" TextWrapping="Wrap" x:Name="CodeSegment" />
         </ScrollViewer>
