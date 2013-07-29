@@ -20,7 +20,7 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        [AllowHtml]
+        [ValidateInput(false)]
         public ActionResult Index(PrivateQuestion model)
         {
             model.SubmissionDate = DateTime.UtcNow;

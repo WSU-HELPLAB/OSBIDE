@@ -127,9 +127,6 @@ namespace OSBIDE.Library.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-#if !DEBUG
-            modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
-#endif
 
             //load in any model builder extensions (usually foreign key relationships)
             //from the models

@@ -291,7 +291,7 @@ namespace OSBIDE.Web.Controllers
         /// <param name="comment"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowHtml]
+        [ValidateInput(false)]
         public ActionResult PostFeedComment(string comment)
         {
             OsbideWebService client = new OsbideWebService();
