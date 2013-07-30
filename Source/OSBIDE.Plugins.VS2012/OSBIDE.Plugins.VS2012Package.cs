@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace WashingtonStateUniversity.OSBIDE_Plugins_VS2012
+namespace OSBIDE.Plugins.VS2012
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.

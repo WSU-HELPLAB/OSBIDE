@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WashingtonStateUniversity.OSBIDE_Plugins_VS2012 {
+namespace OSBIDE.Plugins.VS2012 {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WashingtonStateUniversity.OSBIDE_Plugins_VS2012 {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WashingtonStateUniversity.OSBIDE_Plugins_VS2012.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OSBIDE.Plugins.VS2012.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

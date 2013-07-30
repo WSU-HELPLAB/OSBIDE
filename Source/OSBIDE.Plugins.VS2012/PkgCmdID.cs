@@ -2,7 +2,7 @@
 // MUST match PkgCmdID.h
 using System;
 
-namespace WashingtonStateUniversity.OSBIDE_Plugins_VS2012
+namespace OSBIDE.Plugins.VS2012
 {
     static class PkgCmdIDList
     {

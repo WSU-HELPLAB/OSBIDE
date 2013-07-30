@@ -12,7 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WashingtonStateUniversity.OSBIDE_Plugins_VS2012
+namespace OSBIDE.Plugins.VS2012
 {
     /// <summary>
     /// Interaction logic for MyControl.xaml
