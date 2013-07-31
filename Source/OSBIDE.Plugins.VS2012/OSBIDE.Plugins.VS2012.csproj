@@ -18,7 +18,7 @@
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WashingtonStateUniversity.OSBIDE_Plugins_VS2012</RootNamespace>
+    <RootNamespace>OSBIDE.Plugins.VS2012</RootNamespace>
     <AssemblyName>OSBIDE.Plugins.VS2012</AssemblyName>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
@@ -43,6 +43,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
@@ -57,10 +60,14 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
@@ -152,6 +159,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -175,6 +184,28 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
+      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
+      <Name>FileCache.Signed</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
+      <Project>{9ea09e78-0541-4233-b189-ee1dbd56520d}</Project>
+      <Name>OSBIDE.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Library.ServiceClient\OSBIDE.Library.ServiceClient.csproj">
+      <Project>{5aaf5126-7931-40f4-9b46-92ce15c47cca}</Project>
+      <Name>OSBIDE.Library.ServiceClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
+      <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
+      <Name>OSBIDE.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Plugins.Base\OSBIDE.Plugins.Base.csproj">
+      <Project>{ebdd4bd1-66a0-4cb5-b9fa-416a3b67a8a9}</Project>
+      <Name>OSBIDE.Plugins.Base</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

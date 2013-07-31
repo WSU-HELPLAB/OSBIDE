@@ -25,7 +25,7 @@
 
   <!--The Commands section is where we the commands, menus and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidOSBIDE_Plugins_VS2012Pkg">
+  <Commands package="guidOSBIDE_VSPackagePkg">
     <!-- Inside this section we have different sub-sections: one for the menus, another  
     for the menu groups, one for the buttons (the actual commands), one for the combos 
     and the last one for the bitmaps used. Each element is identified by a command id that  
@@ -34,21 +34,23 @@
     group; your package should define its own command set in order to avoid collisions  
     with command ids defined by other packages. -->
 
-    
+
     <!-- In this section you can define new menu groups. A menu group is a container for 
          other menus or buttons (commands); from a visual point of view you can see the 
          group as the part of a menu contained between two lines. The parent of a group 
          must be a menu. -->
     <Groups>
 
-      <Group guid="guidOSBIDE_Plugins_VS2012CmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
-      
 
+      <Group guid="guidOSBIDE_ContextMenuCmdSet" id="MyContextMenuGroup" priority="0x0100">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
+      </Group>
 
     </Groups>
-    
+
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button 
         or combo box in a toolbar. -->
@@ -61,26 +63,94 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
 
-      <Button guid="guidOSBIDE_Plugins_VS2012CmdSet" id="cmdidMyCommand" priority="0x0100" type="Button">
-        <Parent guid="guidOSBIDE_Plugins_VS2012CmdSet" id="MyMenuGroup" />
+      <Button guid="guidOSBIDE_ContextMenuCmdSet" id="cmdOsbideAskForHelp" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_ContextMenuCmdSet" id="MyContextMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>My Command name</ButtonText>
+          <CommandName>cmdOsbideAskForHelp</CommandName>
+          <ButtonText>Ask For Help...</ButtonText>
         </Strings>
       </Button>
 
-
-      <Button guid="guidOSBIDE_Plugins_VS2012CmdSet" id="cmdidMyTool" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic2" />
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideLogin" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
-          <ButtonText>My Tool Window</ButtonText>
+          <CommandName>cmdidOsbideCommand</CommandName>
+          <ButtonText>Log into OSBIDE</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideActivityFeedTool" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideActivityFeedTool</CommandName>
+          <ButtonText>OSBIDE Activity Feed</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideActivityFeedDetailsTool" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideActivityFeedDetailsTool</CommandName>
+          <ButtonText>OSBIDE Feed Item Details</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideChatTool" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideChatTool</CommandName>
+          <ButtonText>OSBIDE Chat</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideUserProfileTool" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideUserProfileTool</CommandName>
+          <ButtonText>My OSBIDE Profile</ButtonText>
+        </Strings>
+      </Button>
+
+      <!-- Commented out for Fall 2013 release at instructor request 
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideAskTheProfessor" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideAskTheProfessor</CommandName>
+          <ButtonText>Ask the Professor</ButtonText>
+        </Strings>
+      </Button>
+	  -->
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideCreateAccountTool" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideCreateAccountTool</CommandName>
+          <ButtonText>Create OSBIDE Account</ButtonText>
+        </Strings>
+      </Button>
+
+      <!-- Commented out for Fall 2013 release at instructor request 
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideSubmitAssignmentCommand" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <CommandName>cmdidOsbideSubmitAssignmentCommand</CommandName>
+          <ButtonText>Submit Assignment</ButtonText>
+        </Strings>
+      </Button>
+	  -->
 
 
     </Buttons>
-   
+
     <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
     <Bitmaps>
       <!--  The bitmap id is defined in a way that is a little bit different from the others: 
@@ -89,9 +159,9 @@
             inside a button definition. An important aspect of this declaration is that the element id 
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
       <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
-      
+
     </Bitmaps>
- 
+
   </Commands>
 
 
@@ -100,19 +170,29 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidOSBIDE_Plugins_VS2012Pkg" value="{d36f74b0-6e55-4872-8696-0ca1d5a2203e}" />
-    
+    <GuidSymbol name="guidOSBIDE_VSPackagePkg" value="{7c5b177b-3f09-4035-980f-ca0e57597b71}" />
+
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidOSBIDE_Plugins_VS2012CmdSet" value="{8917860c-7c5d-4f90-a9dc-db2fb42ddf67}">
+    <GuidSymbol name="guidOSBIDE_VSPackageCmdSet" value="{1511c427-ab1b-403a-8f75-e1bcfe3bb986}">
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="cmdidMyCommand" value="0x0100" />
-      <IDSymbol name="cmdidMyTool" value="0x0101" />
+      <IDSymbol name="cmdidOsbideLogin" value="0x0100" />
+      <IDSymbol name="cmdidOsbideSubmitAssignmentCommand" value="0x0102" />
+      <IDSymbol name="cmdidOsbideActivityFeedTool" value="0x0103"/>
+      <IDSymbol name="cmdidOsbideActivityFeedDetailsTool" value="0x0104"/>
+      <IDSymbol name="cmdidOsbideChatTool" value="0x0105"/>
+      <IDSymbol name="cmdidOsbideUserProfileTool" value="0x0106"/>
+      <IDSymbol name="cmdidOsbideCreateAccountTool" value="0x0108"/>
+      <IDSymbol name="cmdidOsbideAskTheProfessor" value="0x0109"/>
     </GuidSymbol>
-    
-    
-    
-    <GuidSymbol name="guidImages" value="{49313693-4f3c-4405-a09e-68fb11d265bf}" >
+
+    <GuidSymbol name="guidOSBIDE_ContextMenuCmdSet" value="{eee1c7ba-00ea-4b22-88d7-6cb17837c3d8}">
+      <IDSymbol name="MyContextMenuGroup" value="0x1020" />
+      <IDSymbol name="cmdOsbideAskForHelp" value="0x0107" />
+    </GuidSymbol>
+
+
+    <GuidSymbol name="guidImages" value="{2c2e304a-bd77-433d-82b8-2bca50f18dcf}" >
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />
