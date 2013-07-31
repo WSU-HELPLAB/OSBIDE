@@ -58,7 +58,7 @@ namespace OSBIDE.Plugins.VS2012
     //[ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(CommonGuidList.guidOSBIDE_VSPackagePkgString)]
-    public sealed class OSBIDE_Plugins_VS2012Package : Package, IDisposable
+    public sealed class OSBIDE_Plugins_VS2012Package : Package, IDisposable, IVsShellPropertyEvents
     {
         private OsbideWebServiceClient _webServiceClient = null;
         private bool _hasWebServiceError = false;
@@ -71,6 +71,7 @@ namespace OSBIDE.Plugins.VS2012
         private string _userPassword = null;
         private string _webServiceKey = null;
         private OsbideToolWindowManager _manager = null;
+        private uint _EventSinkCookie;
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
@@ -175,6 +176,14 @@ namespace OSBIDE.Plugins.VS2012
                 mcs.AddCommand(menuAskProfessorWin);
                  * */
 
+                // -- Set an event listener for shell property changes
+                var shellService = GetService(typeof(SVsShell)) as IVsShell;
+                if (shellService != null)
+                {
+                    ErrorHandler.ThrowOnFailure(shellService.
+                      AdviseShellPropertyChanges(this, out _EventSinkCookie));
+                } 
+
             }
 
             //create our web service
@@ -246,6 +255,32 @@ namespace OSBIDE.Plugins.VS2012
 
 
         #region AC Code
+
+        public int OnShellPropertyChange(int propid, object propValue)
+        {
+            // --- We handle the event if zombie state changes from true to false
+            if ((int)__VSSPROPID.VSSPROPID_Zombie == propid)
+            {
+                if ((bool)propValue == false)
+                {
+                    // --- Show the commandbar
+                    var dte = GetService(typeof(SDTE)) as DTE2;
+                    var cbs = ((Microsoft.VisualStudio.CommandBars.CommandBars)dte.CommandBars);
+                    Microsoft.VisualStudio.CommandBars.CommandBar cb = cbs["OSBIDE Toolbar"];
+                    cb.Visible = true;
+
+                    // --- Unsubscribe from events
+                    var shellService = GetService(typeof(SVsShell)) as IVsShell;
+                    if (shellService != null)
+                    {
+                        ErrorHandler.ThrowOnFailure(shellService.
+                          UnadviseShellPropertyChanges(_EventSinkCookie));
+                    }
+                    _EventSinkCookie = 0;
+                }
+            }
+            return VSConstants.S_OK;
+        }
 
         /// <summary>
         /// This function is called when the user clicks the menu item that shows the 
