@@ -18,6 +18,6 @@ namespace OSBIDE.Plugins.Base
         public const uint cmdOsbideAskForHelp = 0x107;
         public const uint cmdidOsbideCreateAccountTool = 0x108;
         public const uint cmdidOsbideAskTheProfessor = 0x109;
-
+        public const uint cmdidOsbideLoginToolWin = 0x10B;
     };
 }

@@ -59,6 +59,10 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN" />
       </Group>
 
+      <Group guid="guidOSBIDE_OsbideToolsMenuCmdSet" id="OsbideToolsMenu" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      </Group>
+      
     </Groups>
 
     <!--Buttons section. -->
@@ -84,6 +88,15 @@
 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideLogin" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="login" />
+        <Strings>
+          <CommandName>cmdidOsbideCommand</CommandName>
+          <ButtonText>Log into OSBIDE</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidOSBIDE_OsbideToolsMenuCmdSet" id="cmdidOsbideLoginToolWin" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_OsbideToolsMenuCmdSet" id="OsbideToolsMenu" />
         <Icon guid="guidImages" id="login" />
         <Strings>
           <CommandName>cmdidOsbideCommand</CommandName>
@@ -201,6 +214,11 @@
       <IDSymbol name="cmdOsbideAskForHelp" value="0x0107" />
     </GuidSymbol>
 
+    <GuidSymbol name="guidOSBIDE_OsbideToolsMenuCmdSet" value="{1511c427-ab1b-403a-8f75-e1bcfe3bb987}">
+      <IDSymbol name="OsbideToolsMenu" value="0x1020" />
+      <IDSymbol name="cmdidOsbideLoginToolWin" value="0x010B" />
+    </GuidSymbol>
+    
 
     <GuidSymbol name="guidImages" value="{2c2e304a-bd77-433d-82b8-2bca50f18dcf}" >
       <IDSymbol name="profile" value="1" />

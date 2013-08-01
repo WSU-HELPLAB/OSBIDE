@@ -47,14 +47,10 @@ namespace OSBIDE.Plugins.VS2012
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(ActivityFeedToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
-    [ProvideToolWindow(typeof(ActivityFeedDetailsToolWindow), 
-        Style = VsDockStyle.Tabbed, Window = "8FE2DF1D-E0DA-4EBE-9D5C-415D40E487B5")]
-    [ProvideToolWindow(typeof(ChatToolWindow), 
-        Style = VsDockStyle.Tabbed, 
-        Window = "8FE2DF1D-E0DA-4EBE-9D5C-415D40E487B5"
-        )]
-    [ProvideToolWindow(typeof(UserProfileToolWindow), Style = VsDockStyle.Tabbed, Window = "8FE2DF1D-E0DA-4EBE-9D5C-415D40E487B5")]
-    [ProvideToolWindow(typeof(CreateAccountToolWindow), Style = VsDockStyle.Tabbed, Window = "8FE2DF1D-E0DA-4EBE-9D5C-415D40E487B5")]
+    [ProvideToolWindow(typeof(ActivityFeedDetailsToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
+    [ProvideToolWindow(typeof(ChatToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
+    [ProvideToolWindow(typeof(UserProfileToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
+    [ProvideToolWindow(typeof(CreateAccountToolWindow), Style = VsDockStyle.Tabbed, Window = "3ae79031-e1bc-11d0-8f78-00a0c9110057")]
     //[ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(CommonGuidList.guidOSBIDE_VSPackagePkgString)]
@@ -124,10 +120,15 @@ namespace OSBIDE.Plugins.VS2012
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
-                // Create the command for the menu item.
+                //login toolbar item.
                 CommandID menuCommandID = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideCommand);
                 MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
                 mcs.AddCommand(menuItem);
+
+                //login toolbar menu option.
+                CommandID loginMenuOption = new CommandID(CommonGuidList.guidOSBIDE_OsbideToolsMenuCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideLoginToolWin);
+                MenuCommand menuLoginMenuOption = new MenuCommand(MenuItemCallback, loginMenuOption);
+                mcs.AddCommand(menuLoginMenuOption);
 
                 //activity feed
                 CommandID activityFeedId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideActivityFeedTool);

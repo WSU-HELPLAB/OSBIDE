@@ -10,6 +10,7 @@ namespace OSBIDE.Plugins.Base
     {
         public const string guidOSBIDE_VSPackagePkgString = "7c5b177b-3f09-4035-980f-ca0e57597b71";
         public const string guidOSBIDE_VSPackageCmdSetString = "1511c427-ab1b-403a-8f75-e1bcfe3bb986";
+        public const string guidOSBIDE_OsbideToolsMenuString = "1511c427-ab1b-403a-8f75-e1bcfe3bb987";
 
         public const string guidToolWindowPersistanceString = "eee1c7ba-00ea-4b22-88d7-6cb17837c3d3";
         public const string guidOsbideActivityFeedTool = "eee1c7ba-00ea-4b22-88d7-6cb17837c3d4";
@@ -22,5 +23,6 @@ namespace OSBIDE.Plugins.Base
 
         public static readonly Guid guidOSBIDE_VSPackageCmdSet = new Guid(guidOSBIDE_VSPackageCmdSetString);
         public static readonly Guid guidOSBIDE_ContextMenuCmdSet = new Guid(guidOSBIDE_ContextMenuCmdSetString);
+        public static readonly Guid guidOSBIDE_OsbideToolsMenuCmdSet = new Guid(guidOSBIDE_OsbideToolsMenuString);
     };
 }
