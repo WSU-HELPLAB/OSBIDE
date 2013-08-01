@@ -4,9 +4,9 @@
 @using OSBIDE.Library
 @model OSBIDE.Web.Models.ViewModels.FeedDetailsViewModel
 @{
-    ViewBag.Title = "Details";
     string detailsIds = Model.Ids;
     int firstLogId = Model.FeedItem.Items.Select(m => m.LogId).Min();
+    ViewBag.Title = string.Format("Details - {0}", firstLogId);
 }
 @if (Model == null)
 {
@@ -19,7 +19,15 @@
     </div>
     <div class="feed-item-single-right">
         <h1><a href="@Url.Action("Index", "Profile", new { id = Model.FeedItem.Creator.Id, component = OsbideVsComponent.UserProfile })">@Model.FeedItem.Creator.FirstAndLastName</a></h1>
-        <div class="feed-item-date">@Model.FeedItem.MostRecentOccurance.ToString("MM/dd @ hh:mmtt")</div>
+        <div class="feed-item-date">
+            <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(Model.FeedItem.MostRecentOccurance)" 
+                data-original-date="@Helpers.RawDate(Model.FeedItem.MostRecentOccurance)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @Model.FeedItem.MostRecentOccurance.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+            </div>
         @{string partialName = string.Format("Feed/_{0}", Model.FeedItem.FeedItemType); }
         <div>@Html.Partial(partialName, Model.FeedItem)</div>
         <div>

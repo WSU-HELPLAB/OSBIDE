@@ -4,4 +4,8 @@
     FeedCommentEvent comment = Model.Items.First().Event as FeedCommentEvent;
 } 
 @Model.Creator.FirstName wrote: <br />
-@comment.GetShortComment(150)...
+@comment.GetShortComment(150)
+@if (comment.Comment.Length > 150)
+{
+    @:...
+}

@@ -7,4 +7,8 @@
     AskForHelpEvent help = Model.Items.First().Event as AskForHelpEvent;
 } 
 @Model.Creator.FirstName asked the following question: <br />
-@help.GetShortComment(150)...
+@help.GetShortComment(150)
+@if(help.UserComment.Length > 150)
+{
+    @:...
+}
