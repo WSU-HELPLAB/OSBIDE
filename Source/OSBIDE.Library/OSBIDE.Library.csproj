@@ -110,6 +110,10 @@
     <Reference Include="EnvDTE90a, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
+    <Reference Include="FileCache.Signed, Version=1.2.1.0, Culture=neutral, PublicKeyToken=7542c4e7f6a4d381, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\FileCache.Signed.1.2.1\lib\FileCache.Signed.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <HintPath>..\..\packages\DotNetZip.1.9.1.8\lib\net20\Ionic.Zip.dll</HintPath>
     </Reference>
@@ -230,18 +234,13 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="library key.snk" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
-      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
-      <Name>FileCache.Signed</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
