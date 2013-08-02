@@ -48,7 +48,7 @@ namespace OSBIDE.Plugins.Base
             }
             view.ViewModel = new Controls.ViewModels.BrowserViewModel()
             {
-                Url = StringConstants.CreateAccountUrl
+                Url = StringConstants.ActivityFeedUrl
             };
             try
             {

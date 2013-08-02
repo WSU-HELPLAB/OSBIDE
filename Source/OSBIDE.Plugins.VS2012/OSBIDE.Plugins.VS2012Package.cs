@@ -73,6 +73,8 @@ namespace OSBIDE.Plugins.VS2012
         //changed the way the web service operates
         private bool _isOsbideUpToDate = true;
 
+        private bool _hasStartupErrors = false;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -122,12 +124,12 @@ namespace OSBIDE.Plugins.VS2012
             {
                 //login toolbar item.
                 CommandID menuCommandID = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideCommand);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
+                MenuCommand menuItem = new MenuCommand(OpenLoginScreen, menuCommandID);
                 mcs.AddCommand(menuItem);
 
                 //login toolbar menu option.
                 CommandID loginMenuOption = new CommandID(CommonGuidList.guidOSBIDE_OsbideToolsMenuCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideLoginToolWin);
-                MenuCommand menuLoginMenuOption = new MenuCommand(MenuItemCallback, loginMenuOption);
+                MenuCommand menuLoginMenuOption = new MenuCommand(OpenLoginScreen, loginMenuOption);
                 mcs.AddCommand(menuLoginMenuOption);
 
                 //activity feed
@@ -189,47 +191,79 @@ namespace OSBIDE.Plugins.VS2012
 
             //create our web service
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
-
-            _webServiceClient.LibraryVersionNumberCompleted += CheckServiceVersionComplete;
+            _webServiceClient.LibraryVersionNumberCompleted += InitStepThree_CheckServiceVersionComplete;
+            _webServiceClient.LoginCompleted += InitStepTwo_LoginCompleted;
 
             //pull saved user data
             _userName = _cache[StringConstants.UserNameCacheKey] as string;
             _userPassword = _cache[StringConstants.PasswordCacheKey] as string;
 
+            //set up tool window manager
+            _manager = new OsbideToolWindowManager(_cache as FileCache, this);
+
+            //set up service logger
+            _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
+            _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
+            _client.PropertyChanged += ServiceClientPropertyChanged;
+
             //display a user notification if we don't have any user on file
             if (_userName == null || _userPassword == null)
             {
-                _isOsbideUpToDate = false;
+                _hasStartupErrors = true;
                 MessageBoxResult result = MessageBox.Show("Thank you for installing OSBIDE.  To complete the installation, you must enter your user information, which can be done by clicking on the \"Tools\" menu and selecting \"Log into OSBIDE\".", "Welcome to OSBIDE", MessageBoxButton.OK);
             }
             else
             {
-                string authKey = "";
+                //step #1: attempt login
+                string hashedPassword = UserPassword.EncryptPassword(_userPassword, _userName);
+
                 try
                 {
-                    string hashedPassword = UserPassword.EncryptPassword(_userPassword, _userName);
-                    authKey = _webServiceClient.Login(_userName, hashedPassword);
-                    if (authKey.Length == 0)
-                    {
-                        MessageBoxResult result = MessageBox.Show("It appears as though your OSBIDE user name or password has changed since the last time you opened Visual Studio.  Would you like to log back into OSBIDE?", "Log Into OSBIDE", MessageBoxButton.YesNo);
-                        if (result == MessageBoxResult.Yes)
-                        {
-                            MenuItemCallback(this, EventArgs.Empty);
-                        }
-                    }
+                    _webServiceClient.LoginAsync(_userName, hashedPassword);
                 }
                 catch (Exception ex)
                 {
                     _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
-                    _hasWebServiceError = true;
-                }
-                if (authKey.Length > 0)
-                {
-                    _cache[StringConstants.AuthenticationCacheKey] = authKey;
+                    _hasStartupErrors = true;
                 }
             }
+            
+        }
+        #endregion
 
-            //check web service version number against ours
+
+
+        #region AC Code
+
+        /// <summary>
+        /// The function continues the initialization process, picking up where Initialize() left off
+        /// having called OSBIDE's login service
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InitStepTwo_LoginCompleted(object sender, LoginCompletedEventArgs e)
+        {
+            string authKey = "";
+            if (e != null)
+            {
+                if (e.Result != null)
+                {
+                    authKey = e.Result;
+                }
+            }
+            if (authKey.Length <= 0)
+            {
+                MessageBoxResult result = MessageBox.Show("It appears as though your OSBIDE user name or password has changed since the last time you opened Visual Studio.  Would you like to log back into OSBIDE?", "Log Into OSBIDE", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    OpenLoginScreen(this, EventArgs.Empty);
+                }
+            } else
+            {
+                _cache[StringConstants.AuthenticationCacheKey] = authKey;
+            }
+
+            //having logged in, we can now check to make sure we're up to date
             try
             {
                 _webServiceClient.LibraryVersionNumberAsync();
@@ -238,24 +272,71 @@ namespace OSBIDE.Plugins.VS2012
             {
                 //write to the log file
                 _errorLogger.WriteToLog(string.Format("LibraryVersionNumberAsync error: {0}", ex.Message), LogPriority.HighPriority);
-
-                //turn off future service calls for now
-                _isOsbideUpToDate = false;
+                _hasStartupErrors = true;
             }
-
-            if (_isOsbideUpToDate)
-            {
-                _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
-                _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
-            }
-
-            _manager = new OsbideToolWindowManager(_cache as FileCache, this);
         }
-        #endregion
 
+        /// <summary>
+        /// This function continues the initialization process by picking up where InitStepTwo_LoginCompleted() left off.
+        /// Namely, we assume that we've gone through the login process and have just received word if the local copy of
+        /// OSBIDE is up to date.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void InitStepThree_CheckServiceVersionComplete(object sender, LibraryVersionNumberCompletedEventArgs e)
+        {
 
+            string remoteVersionNumber = "";
 
-        #region AC Code
+            if (e != null)
+            {
+                if (e.Result != null)
+                {
+                    remoteVersionNumber = e.Result;
+                }
+            }
+
+            //if we have a version mismatch, stop sending data to the server & delete localDb
+            if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
+            {
+                _isOsbideUpToDate = false;
+                File.Delete(StringConstants.LocalDatabasePath);
+                UpdateAvailableWindow.ShowModalDialog(StringConstants.OsbidePackageUrl);
+            }
+
+            //if we're all up to date and had no startup errors, then we can start sending logs to the server
+            if (_isOsbideUpToDate == true && _hasStartupErrors == false)
+            {
+                _client.StartSending();
+            }
+
+        }
+
+        /// <summary>
+        /// Used to determine client send status
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void ServiceClientPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var dte = GetService(typeof(SDTE)) as DTE2;
+            var cbs = ((Microsoft.VisualStudio.CommandBars.CommandBars)dte.CommandBars);
+            Microsoft.VisualStudio.CommandBars.CommandBar cb = cbs["OSBIDE Toolbar"];
+            Microsoft.VisualStudio.CommandBars.CommandBarControl toolsControl = cb.Controls["Log into OSBIDE"];
+            Microsoft.VisualStudio.CommandBars.CommandBarButton loginButton = toolsControl as Microsoft.VisualStudio.CommandBars.CommandBarButton;
+
+            if (_client.IsSendingData == true)
+            {
+                loginButton.Picture = (stdole.StdPicture)IconConverter.GetIPictureDispFromImage(Resources.login_active);
+                loginButton.TooltipText = "Connected to OSBIDE";
+            }
+            else
+            {
+                loginButton.Picture = (stdole.StdPicture)IconConverter.GetIPictureDispFromImage(Resources.login);
+                loginButton.TooltipText = "Not connected to OSBIDE.  Click to log in.";
+            }
+            
+        }
 
         public int OnShellPropertyChange(int propid, object propValue)
         {
@@ -499,11 +580,8 @@ namespace OSBIDE.Plugins.VS2012
         }
 
         /// <summary>
-        /// This function is the callback used to execute a command when the a menu item is clicked.
-        /// See the Initialize method to see how the menu item is associated to this function using
-        /// the OleMenuCommandService service and the MenuCommand class.
         /// </summary>
-        private void MenuItemCallback(object sender, EventArgs e)
+        private void OpenLoginScreen(object sender, EventArgs e)
         {
             IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             Guid clsid = Guid.Empty;
@@ -535,65 +613,32 @@ namespace OSBIDE.Plugins.VS2012
                     //write to the log file
                     _errorLogger.WriteToLog(string.Format("SaveUser error: {0}", ex.Message), LogPriority.HighPriority);
 
-                    //turn off future service calls for now
-                    _isOsbideUpToDate = false;
+                    //turn off client sending if we run into an error
+                    if (_client != null)
+                    {
+                        _client.StopSending();
+                    }
                 }
 
                 //If we got back a valid user, turn on log saving
                 if (_userName != null && _userPassword != null)
                 {
-                    _isOsbideUpToDate = true;
-
+                    //turn on client sending
+                    if (_client != null)
+                    {
+                        _client.StartSending();
+                    }
                     MessageBox.Show("Welcome to OSBIDE!");
                 }
                 else
                 {
-                    _isOsbideUpToDate = false;
+                    //turn off client sending if the user didn't log in.
+                    if (_client != null)
+                    {
+                        _client.StopSending();
+                    }
                 }
             }
-        }
-
-        void CheckServiceVersionComplete(object sender, LibraryVersionNumberCompletedEventArgs e)
-        {
-
-            string remoteVersionNumber = "";
-            string packageUrl = "";
-
-            try
-            {
-                remoteVersionNumber = e.Result;
-            }
-            catch (Exception)
-            {
-                //something bad happened so just clear out of the function
-                return;
-            }
-
-            //if we have a version mismatch, stop sending data to the server & delete localDb
-            if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
-            {
-
-                //wrap web service calls in a try/catch just in case the endpoint can't be found
-                try
-                {
-                    packageUrl = _webServiceClient.OsbidePackageUrl();
-                }
-                catch (Exception ex)
-                {
-                    //write to the log file
-                    _errorLogger.WriteToLog(string.Format("CheckServiceVersion error: {0}", ex.Message), LogPriority.HighPriority);
-
-                    //turn off future service calls for now
-                    _isOsbideUpToDate = false;
-
-                    return;
-                }
-
-                _isOsbideUpToDate = false;
-                File.Delete(StringConstants.LocalDatabasePath);
-                UpdateAvailableWindow.ShowModalDialog(packageUrl);
-            }
-
         }
 
         /// <summary>

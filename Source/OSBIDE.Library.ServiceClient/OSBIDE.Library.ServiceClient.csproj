@@ -68,10 +68,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="FileCache.Signed, Version=1.2.1.0, Culture=neutral, PublicKeyToken=7542c4e7f6a4d381, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\FileCache.Signed.1.2.1\lib\FileCache.Signed.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -124,6 +120,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
+      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
+      <Name>FileCache.Signed</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{A38761C0-8F42-4C04-9DAA-05989B3971D0}</Project>
       <Name>OSBIDE.Library</Name>

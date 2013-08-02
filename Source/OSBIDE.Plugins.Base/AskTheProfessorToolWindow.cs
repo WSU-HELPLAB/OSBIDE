@@ -36,7 +36,7 @@ namespace OSBIDE.Plugins.Base
             FileCache cache = Cache.CacheInstance;
             view.ViewModel = new Controls.ViewModels.BrowserViewModel()
             {
-                Url = StringConstants.CreateAccountUrl
+                Url = StringConstants.AskTheProfessorUrl
             };
             try
             {

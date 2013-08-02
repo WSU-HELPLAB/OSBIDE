@@ -46,6 +46,10 @@
     <Reference Include="EntityFramework">
       <HintPath>..\..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="FileCache.Signed, Version=1.2.1.0, Culture=neutral, PublicKeyToken=7542c4e7f6a4d381, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\FileCache.Signed.1.2.1\lib\FileCache.Signed.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
@@ -173,13 +177,11 @@
     <None Include="Resources\Images.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\login.png" />
+    <None Include="Resources\login_active.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
-      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
-      <Name>FileCache.Signed</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
       <Project>{9ea09e78-0541-4233-b189-ee1dbd56520d}</Project>
       <Name>OSBIDE.Controls</Name>

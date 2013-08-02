@@ -5,7 +5,6 @@ using System.Text;
 using OSBIDE.Library.Models;
 using OSBIDE.Library.Events;
 using OSBIDE.Library;
-using System.Data.SqlServerCe;
 using System.Threading;
 using System.Runtime.Caching;
 using System.Data.Entity.Validation;
@@ -27,17 +26,14 @@ namespace OSBIDE.Library.ServiceClient
         private EventHandlerBase _events;
         private List<EventLog> _pendingLogs = new List<EventLog>();
         private ILogger _logger;
-        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
+        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory);
         private Task _eventLogTask;
         private Task _sendLocalErrorsTask;
         private Task _checkKeyTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
-        private bool _isSendingData = true;
-        private bool _isReceivingData = true;
+        private bool _isSendingData = false;
         private TransmissionStatus _sendStatus = new TransmissionStatus();
-        private TransmissionStatus _receiveStatus = new TransmissionStatus();
-        private bool _canCheckKey = true;
 
         #endregion
 
@@ -61,24 +57,7 @@ namespace OSBIDE.Library.ServiceClient
                 OnPropertyChanged("IsSendingData");
             }
         }
-        public bool IsReceivingData
-        {
-            get
-            {
-                lock (this)
-                {
-                    return _isReceivingData;
-                }
-            }
-            private set
-            {
-                lock (this)
-                {
-                    _isReceivingData = value;
-                }
-                OnPropertyChanged("IsSendingData");
-            }
-        }
+        
         public TransmissionStatus SendStatus
         {
             get
@@ -89,16 +68,7 @@ namespace OSBIDE.Library.ServiceClient
                 }
             }
         }
-        public TransmissionStatus ReceiveStatus
-        {
-            get
-            {
-                lock (this)
-                {
-                    return _receiveStatus;
-                }
-            }
-        }
+        
         #endregion
 
         #region constructor
@@ -121,56 +91,11 @@ namespace OSBIDE.Library.ServiceClient
                 SaveLogsToCache(new List<EventLog>());
             }
             
-            //send off saved local errors
-            _sendLocalErrorsTask = Task.Factory.StartNew(
-                () =>
-                {
-                    try
-                    {
-                        SendLocalErrorLogs();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.WriteToLog("Error sending local logs to server: " + ex.Message, LogPriority.MediumPriority);
-                    }
-                }
-                );
-
-            //register a thread to keep our service key from going stale
-            _checkKeyTask = Task.Factory.StartNew(
-                () =>
-                {
-                    try
-                    {
-                        CheckKey();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.WriteToLog("Error in CheckKey: " + ex.Message, LogPriority.MediumPriority);
-                    }
-                }
-                );
-
-            //set up and begin event log thread
-            //(turned off for fall study)
-            /*
-            _eventLogTask = Task.Factory.StartNew(
-                () =>
-                {
-                    PullFromServer();
-                }
-                );
-             * */
         }
 
         #endregion
 
         #region public methods
-
-        protected void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         /// <summary>
         /// Returns a singleton instance of <see cref="ServiceClient"/>.  Unlike a normal
@@ -199,28 +124,59 @@ namespace OSBIDE.Library.ServiceClient
             return _instance;
         }
 
-        public void TurnOnReceiving()
+        /// <summary>
+        /// Will stop data from being sent to the server
+        /// </summary>
+        public void StopSending()
         {
-            IsReceivingData = true;
-
-            //only start a new thread if the existing one has finished
-            if (_eventLogTask.IsCompleted == true)
-            {
-                //turned off for fall study
-                /*
-                _eventLogTask = Task.Factory.StartNew(
-                () =>
-                {
-                    PullFromServer();
-                }
-                );
-                 * */
-            }
+            IsSendingData = false;
         }
 
-        public void TurnOnSending()
+        /// <summary>
+        /// Begins sending data to the server
+        /// </summary>
+        public void StartSending()
         {
+            bool wasNotSending = true;
+            if (IsSendingData == true)
+            {
+                wasNotSending = false;
+            }
             IsSendingData = true;
+
+            //only start the tasks if we were not sending in the first place.
+            if (wasNotSending == true)
+            {
+                //send off saved local errors
+                _sendLocalErrorsTask = Task.Factory.StartNew(
+                    () =>
+                    {
+                        try
+                        {
+                            SendLocalErrorLogs();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.WriteToLog("Error sending local logs to server: " + ex.Message, LogPriority.MediumPriority);
+                        }
+                    }
+                    );
+
+                //register a thread to keep our service key from going stale
+                _checkKeyTask = Task.Factory.StartNew(
+                    () =>
+                    {
+                        try
+                        {
+                            CheckKey();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.WriteToLog("Error in CheckKey: " + ex.Message, LogPriority.MediumPriority);
+                        }
+                    }
+                    );
+            }
         }
 
         #endregion
@@ -229,7 +185,7 @@ namespace OSBIDE.Library.ServiceClient
 
         private void CheckKey()
         {
-            while (_canCheckKey == true)
+            while (IsSendingData == true)
             {
                 lock (_cache)
                 {
@@ -440,155 +396,14 @@ namespace OSBIDE.Library.ServiceClient
 
         #endregion
 
-        #region private receive methods
-        private void PullFromServer()
-        {
-            try
-            {
-                ReceiveStatus.IsActive = true;
-
-                //not used for fall release 
-                //EventsFromServerLoop();
-            }
-            catch (TimeoutException tex)
-            {
-                IsReceivingData = false;
-                _logger.WriteToLog("EventsFromServerLoop timeout exception: " + tex.Message, LogPriority.HighPriority);
-            }
-            catch (DbEntityValidationException ex)
-            {
-                IsReceivingData = false;
-                foreach (DbEntityValidationResult result in ex.EntityValidationErrors)
-                {
-                    foreach (DbValidationError error in result.ValidationErrors)
-                    {
-                        _logger.WriteToLog("EventsFromServerLoop insert log exception: " + error.ErrorMessage, LogPriority.HighPriority);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.WriteToLog("EventsFromServerLoop exception: " + ex.Message, LogPriority.HighPriority);
-                IsReceivingData = false;
-            }
-            ReceiveStatus.IsActive = false;
-        }
-
-        private void EventsFromServerLoop()
-        {
-            //start with a really long time ago
-            DateTime startDate = DateTime.UtcNow.Subtract(new TimeSpan(365, 0, 0, 0, 0));
-
-            SqlCeConnection conn = null;
-            OsbideContext db = null;
-
-            //make sure we have SQL Server CE installed before we continue
-            if (OsbideContext.HasSqlServerCE)
-            {
-                conn = new SqlCeConnection(StringConstants.LocalDataConnectionString);
-                db = new OsbideContext(conn, true);
-            }
-            else
-            {
-                throw new Exception("Error connecting to SQL Server CE database");
-            }
-
-            while (IsReceivingData)
-            {
-                //use most recent event log as a basis for determining where we need to fill in potential gaps in data
-                EventLog mostRecentLog = (from log in db.EventLogs
-                                          orderby log.DateReceived descending
-                                          select log).FirstOrDefault();
-
-                if (mostRecentLog != null)
-                {
-                    startDate = mostRecentLog.DateReceived;
-                }
-                else
-                {
-                    //AC Note: mostRecentLog cannot be NULL because we use it to set the last transmission
-                    //time.  This can probably be simplified.
-                    mostRecentLog = new EventLog();
-                    mostRecentLog.DateReceived = startDate;
-                }
-
-                EventLog[] logs = new EventLog[0];// _webServiceClient.GetPastEvents(startDate, true);
-                ReceiveStatus.LastTransmissionTime = mostRecentLog.DateReceived;
-
-                //find all unique User Ids
-                List<int> eventLogIds = new List<int>();
-                foreach (EventLog log in logs)
-                {
-                    int index = eventLogIds.BinarySearch(log.SenderId);
-                    if (index < 0)
-                    {
-                        //from http://msdn.microsoft.com/en-us/library/w4e7fxsh.aspx:
-                        //taking the bitwise NOT of the index returns the first element that
-                        //is larger than the supplied index, thereby inserting the current
-                        //element in the right place.
-                        eventLogIds.Insert(~index, log.SenderId);
-                    }
-                }
-
-                //see if we're missing any ids in our local DB
-                var eventLogQuery = from id in eventLogIds
-                                    select id;
-                int[] foundIds = new int[0];
-
-                //From http://brandonzeider.me/2011/microsoft-net/entity-frameworksql-server-ce-thread-safety/
-                //suggestion is to thread lock db calls to prevent memory access violations.
-                lock (db)
-                {
-                    var idQuery = from user in db.Users
-                                  where eventLogIds.Contains(user.Id)
-                                  select user.Id;
-                    foundIds = idQuery.ToArray();
-                }
-
-                foreach (int id in foundIds)
-                {
-                    eventLogIds.Remove(id);
-                }
-                /*
-                //if we have any remaining ids, then we need to make the appropriate db call
-                if (eventLogIds.Count > 0)
-                {
-                    OsbideUser[] missingUsers = _webServiceClient.GetUsers(eventLogIds.ToArray());
-                    foreach (OsbideUser user in missingUsers)
-                    {
-                        lock (db)
-                        {
-                            db.InsertUserWithId(user);
-                        }
-                    }
-                }*/
-
-                //finally, insert the event logs
-                foreach (EventLog log in logs)
-                {
-                    bool successfulInsert = db.InsertEventLogWithId(log);
-
-                    if (successfulInsert && log.LogType == SubmitEvent.Name)
-                    {
-                        SubmitEvent submit = (SubmitEvent)EventFactory.FromZippedBinary(log.Data.BinaryData, new OsbideDeserializationBinder());
-                        submit.EventLogId = log.Id;
-
-                        lock (db)
-                        {
-                            db.SubmitEvents.Add(submit);
-                            db.SaveChanges();
-                        }
-                    }
-
-                }
-            }
-
-            ReceiveStatus.IsActive = false;
-            db.Dispose();
-        }
-        #endregion
-
         #region private helpers
+
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         private void SaveLogsToCache(List<EventLog> logs)
         {
             _cache.Set(_cacheKey, logs.ToArray(), new CacheItemPolicy(), _cacheRegion);

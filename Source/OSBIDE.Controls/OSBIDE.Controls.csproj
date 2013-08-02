@@ -151,25 +151,17 @@
     <Compile Include="ViewModels\AssignmentSubmissionsViewModel.cs" />
     <Compile Include="ViewModels\BrowserViewModel.cs" />
     <Compile Include="ViewModels\OsbideLoginViewModel.cs" />
-    <Compile Include="ViewModels\OsbideStatusViewModel.cs" />
     <Compile Include="ViewModels\SubmissionEntryViewModel.cs" />
     <Compile Include="ViewModels\SubmitAssignmentViewModel.cs" />
-    <Compile Include="ViewModels\TransmissionStatusViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\AskForHelpForm.xaml.cs">
       <DependentUpon>AskForHelpForm.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\AssignmentSubmissions.xaml.cs">
-      <DependentUpon>AssignmentSubmissions.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\BrowserView.xaml.cs">
       <DependentUpon>BrowserView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OsbideLoginControl.xaml.cs">
       <DependentUpon>OsbideLoginControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\OsbideStatus.xaml.cs">
-      <DependentUpon>OsbideStatus.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SubmissionEntry.xaml.cs">
       <DependentUpon>SubmissionEntry.xaml</DependentUpon>
@@ -179,9 +171,6 @@
     </Compile>
     <Compile Include="UpdateAvailableWindow.xaml.cs">
       <DependentUpon>UpdateAvailableWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\TransmissionStatus.xaml.cs">
-      <DependentUpon>TransmissionStatus.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -222,19 +211,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\AssignmentSubmissions.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\BrowserView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\OsbideLoginControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\OsbideStatus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -247,10 +228,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UpdateAvailableWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\TransmissionStatus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -294,10 +271,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-    if not exist "$(TargetDir)x86" md "$(TargetDir)x86"
-    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\x86\*.*" "$(TargetDir)x86"
-    if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
-    xcopy /s /y "$(SolutionDir)packages\Microsoft.SqlServer.Compact.4.0.8876.1\NativeBinaries\amd64\*.*" "$(TargetDir)amd64"</PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
