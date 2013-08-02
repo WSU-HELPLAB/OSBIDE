@@ -33,6 +33,8 @@ namespace OSBIDE.Plugins.Base
             // we are not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
             // the object returned by the Content property.
             BrowserView view = new BrowserView();
+            view.BrowserViewModelChanged += view_BrowserViewModelChanged;
+            view.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             FileCache cache = Cache.CacheInstance;
             string url = "";
             try
@@ -55,6 +57,23 @@ namespace OSBIDE.Plugins.Base
             {
             }
             base.Content = view;
+        }
+
+        void view_BrowserViewModelChanged(object sender, BrowserViewModelChangedEventArgs e)
+        {
+            if (e.OldModel != null)
+            {
+                e.OldModel.PropertyChanged -= ViewModel_PropertyChanged;
+            }
+            if (e.NewModel != null)
+            {
+                e.NewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+        }
+
+        void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            
         }
     }
 }

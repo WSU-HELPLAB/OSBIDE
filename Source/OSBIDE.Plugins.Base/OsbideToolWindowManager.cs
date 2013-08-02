@@ -24,6 +24,7 @@ namespace OSBIDE.Plugins.Base
         private BrowserViewModel _activityFeedDetailsVm = new BrowserViewModel();
         private BrowserViewModel _createAccountVm = new BrowserViewModel();
         private BrowserViewModel _askTheProfessorVm = new BrowserViewModel();
+        private static int _detailsToolWindowId = 0;
 
         public OsbideToolWindowManager(FileCache cache, Package vsPackage)
         {
@@ -53,7 +54,10 @@ namespace OSBIDE.Plugins.Base
         public void OpenActivityFeedDetailsWindow(Package vsPackage = null)
         {
             _activityFeedDetailsVm.AuthKey = _cache[StringConstants.AuthenticationCacheKey] as string;
-            OpenToolWindow(new ActivityFeedDetailsToolWindow(), _activityFeedDetailsVm, vsPackage);
+            OpenToolWindow(new ActivityFeedDetailsToolWindow(), _activityFeedDetailsVm, vsPackage, _detailsToolWindowId);
+
+            //ensures that we get a new tool window with each click
+            _detailsToolWindowId++;
         }
 
         public void OpenActivityFeedWindow(Package vsPackage = null)
@@ -74,13 +78,13 @@ namespace OSBIDE.Plugins.Base
             OpenToolWindow(new AskTheProfessorToolWindow(), _askTheProfessorVm, vsPackage);
         }
 
-        private void OpenToolWindow(ToolWindowPane pane, BrowserViewModel vm, Package vsPackage)
+        private void OpenToolWindow(ToolWindowPane pane, BrowserViewModel vm, Package vsPackage, int toolId = 0)
         {
             if (vsPackage == null)
             {
                 vsPackage = _vsPackage;
             }
-            ToolWindowPane window = vsPackage.FindToolWindow(pane.GetType(), 0, true);
+            ToolWindowPane window = vsPackage.FindToolWindow(pane.GetType(), toolId, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException("oops!");

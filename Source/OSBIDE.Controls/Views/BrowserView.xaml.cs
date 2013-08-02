@@ -4,6 +4,7 @@ using OSBIDE.Controls.ViewModels;
 using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -19,11 +20,25 @@ using System.Windows.Shapes;
 
 namespace OSBIDE.Controls.Views
 {
+    public class BrowserViewModelChangedEventArgs : EventArgs
+    {
+        public BrowserViewModel OldModel { get; private set; }
+        public BrowserViewModel NewModel { get; private set; }
+        public BrowserViewModelChangedEventArgs(BrowserViewModel old, BrowserViewModel newModel)
+            : base()
+        {
+            OldModel = old;
+            NewModel = newModel;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for BrowserView.xaml
     /// </summary>
     public partial class BrowserView : UserControl
     {
+        public event EventHandler<BrowserViewModelChangedEventArgs> BrowserViewModelChanged = delegate { };
+
         public BrowserView()
         {
             InitializeComponent();
@@ -49,9 +64,11 @@ namespace OSBIDE.Controls.Views
                 {
                     ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 }
+                BrowserViewModel oldModel = this.DataContext as BrowserViewModel;
                 this.DataContext = value;
                 ViewModel.PropertyChanged += ViewModel_PropertyChanged;
                 Dispatcher.Invoke(new Action(UpdateUrl));
+                BrowserViewModelChanged(this, new BrowserViewModelChangedEventArgs(oldModel, value));
             }
         }
 
