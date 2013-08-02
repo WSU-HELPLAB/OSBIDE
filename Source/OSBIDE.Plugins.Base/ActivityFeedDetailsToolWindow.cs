@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using OSBIDE.Controls.Views;
 using System.Runtime.Caching;
 using OSBIDE.Library;
+using OSBIDE.Controls.ViewModels;
 namespace OSBIDE.Plugins.Base
 {
     [Guid("eee1c7ba-00ea-4b22-88d7-6cb17837c3d5")]
@@ -73,7 +74,14 @@ namespace OSBIDE.Plugins.Base
 
         void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            
+            if (sender != null)
+            {
+                BrowserViewModel vm = sender as BrowserViewModel;
+                if (vm != null)
+                {
+                    //vm.Url
+                }
+            }
         }
     }
 }

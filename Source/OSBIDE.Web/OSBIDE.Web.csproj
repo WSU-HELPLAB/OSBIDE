@@ -320,11 +320,6 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
       <Name>OSBIDE.Library</Name>
