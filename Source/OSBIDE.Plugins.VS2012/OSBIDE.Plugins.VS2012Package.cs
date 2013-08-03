@@ -205,6 +205,7 @@ namespace OSBIDE.Plugins.VS2012
             _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
             _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
             _client.PropertyChanged += ServiceClientPropertyChanged;
+            UpdateSendStatus();
 
             //display a user notification if we don't have any user on file
             if (_userName == null || _userPassword == null)
@@ -309,7 +310,6 @@ namespace OSBIDE.Plugins.VS2012
             {
                 _client.StartSending();
             }
-
         }
 
         /// <summary>
@@ -318,6 +318,12 @@ namespace OSBIDE.Plugins.VS2012
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void ServiceClientPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+
+            UpdateSendStatus();
+        }
+
+        private void UpdateSendStatus()
         {
             var dte = GetService(typeof(SDTE)) as DTE2;
             var cbs = ((Microsoft.VisualStudio.CommandBars.CommandBars)dte.CommandBars);
@@ -335,7 +341,6 @@ namespace OSBIDE.Plugins.VS2012
                 loginButton.Picture = (stdole.StdPicture)IconConverter.GetIPictureDispFromImage(Resources.login);
                 loginButton.TooltipText = "Not connected to OSBIDE.  Click to log in.";
             }
-            
         }
 
         public int OnShellPropertyChange(int propid, object propValue)
