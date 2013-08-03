@@ -26,7 +26,7 @@ namespace OSBIDE.Library.ServiceClient
         private EventHandlerBase _events;
         private List<EventLog> _pendingLogs = new List<EventLog>();
         private ILogger _logger;
-        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory);
+        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
         private Task _eventLogTask;
         private Task _sendLocalErrorsTask;
         private Task _checkKeyTask;

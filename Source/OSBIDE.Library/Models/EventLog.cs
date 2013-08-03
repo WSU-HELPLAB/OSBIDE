@@ -59,7 +59,21 @@ namespace OSBIDE.Library.Models
         private IList<LogComment> _comments;
 
         [IgnoreDataMember]
-        public virtual IList<EventLogSubscription> Subscriptions { get; set; }
+        [NonSerialized]
+        private IList<EventLogSubscription> _subscriptions = new List<EventLogSubscription>();
+
+        [IgnoreDataMember]
+        public virtual IList<EventLogSubscription> Subscriptions
+        {
+            get
+            {
+                return _subscriptions;
+            }
+            set
+            {
+                _subscriptions = value;
+            }
+        }
 
         public EventLog()
         {

@@ -34,8 +34,8 @@ namespace OSBIDE.Web.Models
             _cache = FileCacheHelper.GetGlobalCacheInstance();
             _cache.DefaultRegion = "AuthenticationService";
 
-            //have our cache kill things after 60 minutes
-            _cache.DefaultPolicy = new CacheItemPolicy() { SlidingExpiration = new TimeSpan(0, 0, 60, 0, 0) };
+            //have our cache kill things after 2 days
+            _cache.DefaultPolicy = new CacheItemPolicy() { SlidingExpiration = new TimeSpan(2, 0, 0, 0, 0) };
         }
 
         /// <summary>
