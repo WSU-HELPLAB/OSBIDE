@@ -38,26 +38,29 @@ namespace OSBIDE.Plugins.Base
             // the object returned by the Content property.
             BrowserView view = new BrowserView();
             FileCache cache = Cache.CacheInstance;
-            string url = "";
+            string url = StringConstants.ProfileUrl;
             try
             {
                 url = cache[OsbideVsComponent.UserProfile.ToString()].ToString();
             }
             catch (Exception)
             {
-                url = "";
+                url = StringConstants.ProfileUrl;
             }
-            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
-            {
-                Url = StringConstants.ProfileUrl
-            };
+            string authKey = "";
             try
             {
-                view.ViewModel.AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString();
+                authKey = cache[StringConstants.AuthenticationCacheKey].ToString();
             }
             catch (Exception)
             {
+                authKey = "";
             }
+            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
+            {
+                Url = url,
+                AuthKey = authKey
+            };
             base.Content = view;
 
         }

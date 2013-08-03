@@ -34,17 +34,20 @@ namespace OSBIDE.Plugins.Base
             // the object returned by the Content property.
             BrowserView view = new BrowserView();
             FileCache cache = Cache.CacheInstance;
-            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
-            {
-                Url = StringConstants.AskTheProfessorUrl
-            };
+            string authKey = "";
             try
             {
-                view.ViewModel.AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString();
+                authKey = cache[StringConstants.AuthenticationCacheKey].ToString();
             }
             catch (Exception)
             {
+                authKey = "";
             }
+            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
+            {
+                Url = StringConstants.AskTheProfessorUrl,
+                AuthKey = authKey
+            };
             base.Content = view;
         }
     }

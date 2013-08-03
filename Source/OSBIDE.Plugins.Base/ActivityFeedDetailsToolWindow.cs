@@ -46,17 +46,20 @@ namespace OSBIDE.Plugins.Base
             {
                 url = "";
             }
-            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
-            {
-                Url = StringConstants.ActivityFeedUrl
-            };
+            string authKey = "";
             try
             {
-                view.ViewModel.AuthKey = cache[StringConstants.AuthenticationCacheKey].ToString();
+                authKey = cache[StringConstants.AuthenticationCacheKey].ToString();
             }
             catch (Exception)
             {
+                authKey = "";
             }
+            view.ViewModel = new Controls.ViewModels.BrowserViewModel()
+            {
+                Url = url,
+                AuthKey = authKey
+            };
             base.Content = view;
         }
 
