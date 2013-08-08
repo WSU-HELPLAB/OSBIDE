@@ -5,7 +5,12 @@
 @model OSBIDE.Web.Models.AggregateFeedItem
 @{
     int buildCount = 1;
-    int errorCount = (Model.Items.First().Event as BuildEvent).CriticalErrorCount;
+    BuildEvent build = (Model.Items.First().Event as BuildEvent); 
+    int errorCount = build.CriticalErrorCount;
+    foreach(BuildEventErrorListItem errorItem in build.CriticalErrorItems)
+    {
+        //errorItem.ErrorListItem.
+    }
 }
 @Model.Creator.FirstName attempted to compile &quot;@Path.GetFileNameWithoutExtension(Model.Items.First().Event.SolutionName)&quot;
 @if(buildCount != 1)

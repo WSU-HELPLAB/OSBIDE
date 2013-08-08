@@ -248,13 +248,25 @@ namespace OSBIDE.Web.Controllers
 
         /// <summary>
         /// Will return a list of recent compile errors for the given user.  Will pull errors that occurred within the last
-        /// 24 hours.
+        /// 48 hours.
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         protected string[] GetRecentCompileErrors(OsbideUser user)
         {
-            return GetRecentCompileErrors(user, DateTime.UtcNow.Subtract(new TimeSpan(0, 24, 0, 0, 0)));
+            //AC: for debugging, making this much larger than what is indicated (will revert on release)
+            return GetRecentCompileErrors(user, DefaultErrorLookback);
+        }
+
+        /// <summary>
+        /// The default amount of time to "look back" for similar errors caused by other users
+        /// </summary>
+        protected DateTime DefaultErrorLookback
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(new TimeSpan(365, 48, 0, 0, 0));
+            }
         }
 
         protected List<int> ParseIdString(string idStr)

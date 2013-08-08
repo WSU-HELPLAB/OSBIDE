@@ -26,7 +26,6 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult Index(long timestamp = -1, int errorType = -1)
         {
-            string[] errors = base.GetRecentCompileErrors(CurrentUser);
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
             if(errorType > 0)
             {
@@ -81,6 +80,17 @@ namespace OSBIDE.Web.Controllers
                     vm.SelectedErrorType = new ErrorType();
                 }
             }
+
+            //build the "you and 5 others got this error"-type messages
+            vm.RecentUserErrors = base.GetRecentCompileErrors(CurrentUser).ToList();
+
+            List<int> buildLogIds = feedItems.Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0).Select(i => i.LogId).ToList();
+            DateTime maxLookback = base.DefaultErrorLookback;
+            List<BuildError> classBuildErrors = (from error in Db.BuildErrors.Include("BuildErrorType")
+                      where buildLogIds.Contains(error.LogId)
+                      && error.Log.DateReceived > maxLookback
+                      select error).ToList();
+            vm.RecentClassErrors = classBuildErrors;
             return View(vm);
         }
 
@@ -109,6 +119,7 @@ namespace OSBIDE.Web.Controllers
             }
             List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
+
             return View("AjaxFeed", aggregateFeed);
         }
 

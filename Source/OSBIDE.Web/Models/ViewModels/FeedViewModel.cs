@@ -17,6 +17,9 @@ namespace OSBIDE.Web.Models.ViewModels
         public List<IOsbideEvent> UserEventFilterOptions { get; set; }
         public List<ErrorType> ErrorTypes { get; set; }
         public ErrorType SelectedErrorType { get; set; }
+        public List<string> RecentUserErrors { get; set; }
+        public List<BuildError> RecentClassErrors { get; set; }
+
         public FeedViewModel()
         {
             Feed = new List<AggregateFeedItem>();
@@ -27,6 +30,8 @@ namespace OSBIDE.Web.Models.ViewModels
             UserEventFilterOptions = new List<IOsbideEvent>();
             ErrorTypes = new List<ErrorType>();
             SelectedErrorType = new ErrorType();
+            RecentUserErrors = new List<string>();
+            RecentClassErrors = new List<BuildError>();
         }
     }
 }
