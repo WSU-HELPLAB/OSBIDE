@@ -79,7 +79,7 @@
 
       <Button guid="guidOSBIDE_ContextMenuCmdSet" id="cmdOsbideAskForHelp" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_ContextMenuCmdSet" id="MyContextMenuGroup" />
-        <Icon guid="guidImages" id="generic" />
+        <Icon guid="guidImages" id="askForHelp" />
         <Strings>
           <CommandName>cmdOsbideAskForHelp</CommandName>
           <ButtonText>Ask For Help...</ButtonText>
@@ -143,6 +143,24 @@
         </Strings>
       </Button>
 
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideDocumentationTool" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="documentation" />
+        <Strings>
+          <CommandName>cmdidOsbideDocumentationTool</CommandName>
+          <ButtonText>View OSBIDE Manual</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideWebLinkTool" priority="0x0100" type="Button">
+        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="webLink" />
+        <Strings>
+          <CommandName>cmdidOsbideWebLinkTool</CommandName>
+          <ButtonText>View OSBIDE in browser</ButtonText>
+        </Strings>
+      </Button>
+      
       <!-- Commented out for Fall 2013 release at instructor request 
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideAskTheProfessor" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
@@ -184,7 +202,7 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used 
             inside a button definition. An important aspect of this declaration is that the element id 
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="profile, generic, feed, chat, login, loginActive"/>
+      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="profile, generic, feed, chat, login, loginActive, documentation, askForHelp, webLink"/>
 
     </Bitmaps>
 
@@ -207,6 +225,8 @@
       <IDSymbol name="cmdidOsbideCreateAccountTool" value="0x0108"/>
       <IDSymbol name="cmdidOsbideAskTheProfessor" value="0x0109"/>
       <IDSymbol name="OsbideToolbar" value="0x0110"/>
+      <IDSymbol name="cmdidOsbideDocumentationTool" value="0x10C"/>
+      <IDSymbol name="cmdidOsbideWebLinkTool" value="0x10D"/>
     </GuidSymbol>
 
     <GuidSymbol name="guidOSBIDE_ContextMenuCmdSet" value="{eee1c7ba-00ea-4b22-88d7-6cb17837c3d8}">
@@ -227,6 +247,9 @@
       <IDSymbol name="chat" value="4" />
       <IDSymbol name="login" value="5" />
       <IDSymbol name="loginActive" value="6" />
+      <IDSymbol name="documentation" value="7" />
+      <IDSymbol name="askForHelp" value="8" />
+      <IDSymbol name="webLink" value="9" />
     </GuidSymbol>
   </Symbols>
 

@@ -163,6 +163,16 @@ namespace OSBIDE.Plugins.VS2012
                 MenuCommand menuAccountWin = new MenuCommand(ShowCreateAccountTool, createAccountWindowId);
                 mcs.AddCommand(menuAccountWin);
 
+                //OSBIDE documentation link
+                CommandID documentationId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideDocumentationTool);
+                MenuCommand documentationWin = new MenuCommand(OpenDocumentation, documentationId);
+                mcs.AddCommand(documentationWin);
+
+                //OSBIDE web link
+                CommandID webLinkId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideWebLinkTool);
+                MenuCommand webLinkWin = new MenuCommand(OpenOsbideWebLink, webLinkId);
+                mcs.AddCommand(webLinkWin);
+
                 //submit assignment command
                 //(commented out for Fall 2013 release at instructor request)
                 /*
@@ -405,6 +415,18 @@ namespace OSBIDE.Plugins.VS2012
                 _errorLogger.WriteToLog("Awesomium Error: " + ex.Message, LogPriority.HighPriority);
             }
             MessageBox.Show("It appears as though your system is missing prerequisite components necessary for OSBIDE to operate properly.  Until this is resolved, you will not be able to access certain OSBIDE components within Visual Studio.  You can download the prerequisite files and obtain support by visiting http://osbide.codeplex.com.", "OSBIDE", MessageBoxButton.OK);
+        }
+
+        private void OpenDocumentation(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(StringConstants.DocumentationUrl));
+        }
+
+        private void OpenOsbideWebLink(object sender, EventArgs e)
+        {
+            string authKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+            string url = string.Format("{0}?auth={1}", StringConstants.ActivityFeedUrl, authKey);
+            Process.Start(new ProcessStartInfo(url));
         }
 
         private void ShowActivityFeedTool(object sender, EventArgs e)

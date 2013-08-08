@@ -124,6 +124,14 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string DocumentationUrl
+        {
+            get
+            {
+                return "http://osbide.codeplex.com/documentation";
+            }
+        }
+
         public static string LocalDatabasePath
         {
             get

@@ -35,7 +35,6 @@ namespace OSBIDE.Plugins.Base
             // the object returned by the Content property.
             BrowserView view = new BrowserView();
             view.BrowserViewModelChanged += view_BrowserViewModelChanged;
-            view.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             FileCache cache = Cache.CacheInstance;
             string url = "";
             try
@@ -60,6 +59,7 @@ namespace OSBIDE.Plugins.Base
                 Url = url,
                 AuthKey = authKey
             };
+            view.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             base.Content = view;
         }
 
