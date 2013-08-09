@@ -17,7 +17,6 @@
     {
         subscriptions[log.LogId] = log.LogId;
     }
-    
 }
 @foreach (AggregateFeedItem item in Model)
 {
@@ -58,7 +57,9 @@
             </time>
             </h1>
             <div>
-                @{string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName); }
+                @{
+                    string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName); 
+                    }
                 @Html.Partial(partialName, item)
             </div>
             <div class="feed-item-footer">

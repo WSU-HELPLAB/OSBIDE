@@ -1,4 +1,8 @@
 ﻿@model OSBIDE.Web.Models.ViewModels.FeedViewModel
+@{
+    ViewBag.RecentUserErrors = Model.RecentUserErrors;
+    ViewBag.RecentClassErrors = Model.RecentClassErrors;
+}
 <style type="text/css">
     .feed-item-ajax {
         display: none;

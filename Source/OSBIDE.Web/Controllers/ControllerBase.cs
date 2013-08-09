@@ -236,7 +236,7 @@ namespace OSBIDE.Web.Controllers
                 //ignore bad matches
                 if (match.Groups.Count == 2)
                 {
-                    string errorCode = match.Groups[1].Value;
+                    string errorCode = match.Groups[1].Value.ToLower().Trim();
                     if (errorCode.Length > 0 && errors.Contains(errorCode) == false)
                     {
                         errors.Add(errorCode);

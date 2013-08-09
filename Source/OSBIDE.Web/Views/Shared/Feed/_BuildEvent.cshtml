@@ -5,11 +5,36 @@
 @model OSBIDE.Web.Models.AggregateFeedItem
 @{
     int buildCount = 1;
-    BuildEvent build = (Model.Items.First().Event as BuildEvent); 
+    BuildEvent build = (Model.Items.First().Event as BuildEvent);
     int errorCount = build.CriticalErrorCount;
-    foreach(BuildEventErrorListItem errorItem in build.CriticalErrorItems)
+    List<string> recentUserErrors = new List<string>();
+    List<UserBuildErrorsByType> recentClassErrors = new List<UserBuildErrorsByType>();
+    List<string> criticalBuildErrors = build.CriticalErrorNames;
+    int othersWithErrors = 0;
+    bool hasSameUserError = false;
+    if(ViewBag.RecentUserErrors != null)
     {
-        //errorItem.ErrorListItem.
+        recentUserErrors = ViewBag.RecentUserErrors as List<string>;
+    }
+    if(ViewBag.RecentClassErrors  != null)
+    {
+        recentClassErrors = ViewBag.RecentClassErrors as List<UserBuildErrorsByType>;
+    }
+    foreach(string userError in recentUserErrors)
+    {
+        if(criticalBuildErrors.Contains(userError) == true)
+        {
+            hasSameUserError = true;
+            break;
+        }
+    }
+    foreach(string buildError in criticalBuildErrors)
+    {
+        UserBuildErrorsByType error = recentClassErrors.Where(c => c.ErrorName.CompareTo(buildError) == 0).FirstOrDefault();
+        if(error != null)
+        {
+            othersWithErrors += error.Errors.Count;
+        }           
     }
 }
 @Model.Creator.FirstName attempted to compile &quot;@Path.GetFileNameWithoutExtension(Model.Items.First().Event.SolutionName)&quot;
@@ -18,3 +43,8 @@
     <text>@buildCount times</text>
 }
 and encountered @errorCount error(s).
+@if (hasSameUserError == true)
+{
+    @:You and
+}
+@othersWithErrors others have had the same build error.

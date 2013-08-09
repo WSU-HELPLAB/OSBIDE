@@ -18,7 +18,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public List<ErrorType> ErrorTypes { get; set; }
         public ErrorType SelectedErrorType { get; set; }
         public List<string> RecentUserErrors { get; set; }
-        public List<BuildError> RecentClassErrors { get; set; }
+        public List<UserBuildErrorsByType> RecentClassErrors { get; set; }
 
         public FeedViewModel()
         {
@@ -31,7 +31,7 @@ namespace OSBIDE.Web.Models.ViewModels
             ErrorTypes = new List<ErrorType>();
             SelectedErrorType = new ErrorType();
             RecentUserErrors = new List<string>();
-            RecentClassErrors = new List<BuildError>();
+            RecentClassErrors = new List<UserBuildErrorsByType>();
         }
     }
 }

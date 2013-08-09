@@ -27,7 +27,7 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Index(long timestamp = -1, int errorType = -1)
         {
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
-            if(errorType > 0)
+            if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
                 (query as BuildErrorQuery).BuildErrorTypeId = errorType;
@@ -45,7 +45,7 @@ namespace OSBIDE.Web.Controllers
                 query.StartDate = DateTime.MinValue;
                 query.MaxQuerySize = 20;
             }
-            
+
             //and finally, retrieve our list of feed items
             var maxIdQuery = Db.EventLogs.Select(l => l.Id);
             if (maxIdQuery.Count() > 0)
@@ -84,12 +84,24 @@ namespace OSBIDE.Web.Controllers
             //build the "you and 5 others got this error"-type messages
             vm.RecentUserErrors = base.GetRecentCompileErrors(CurrentUser).ToList();
 
+            List<UserBuildErrorsByType> classBuildErrors = new List<UserBuildErrorsByType>();
             List<int> buildLogIds = feedItems.Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0).Select(i => i.LogId).ToList();
             DateTime maxLookback = base.DefaultErrorLookback;
-            List<BuildError> classBuildErrors = (from error in Db.BuildErrors.Include("BuildErrorType")
-                      where buildLogIds.Contains(error.LogId)
-                      && error.Log.DateReceived > maxLookback
-                      select error).ToList();
+            var classBuilds = (from error in Db.BuildErrors.Include("BuildErrorType")
+                                                            where buildLogIds.Contains(error.LogId)
+                                                            && error.Log.DateReceived > maxLookback
+                                                            && error.Log.SenderId != CurrentUser.Id
+                                                            group error by error.BuildErrorType.Name into e
+                                                            select new { ErrorName = e.Key, Errors = e }).ToList();
+            foreach (var item in classBuilds)
+            {
+                classBuildErrors.Add(new UserBuildErrorsByType()
+                {
+                    Errors = item.Errors.ToList(),
+                    ErrorName = item.ErrorName
+                });
+            }
+
             vm.RecentClassErrors = classBuildErrors;
             return View(vm);
         }
@@ -137,7 +149,7 @@ namespace OSBIDE.Web.Controllers
                 List<LogComment> comments = query.ToList();
                 long lastPollTick = items[0].LastPollTick;
                 var maxCommentTick = comments.Select(c => c.DatePosted);
-                if(maxCommentTick.Count() > 0)
+                if (maxCommentTick.Count() > 0)
                 {
                     lastPollTick = maxCommentTick.Max().Ticks;
                 }
@@ -308,7 +320,7 @@ namespace OSBIDE.Web.Controllers
             OsbideWebService client = new OsbideWebService();
             Authentication auth = new Authentication();
             string key = auth.GetAuthenticationKey();
-            if(string.IsNullOrEmpty(comment) == false)
+            if (string.IsNullOrEmpty(comment) == false)
             {
                 EventLog log = new EventLog();
                 log.SenderId = CurrentUser.Id;

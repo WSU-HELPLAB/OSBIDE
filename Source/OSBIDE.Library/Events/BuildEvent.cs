@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using EnvDTE;
+using System.Text.RegularExpressions;
 
 namespace OSBIDE.Library.Events
 {
@@ -102,6 +103,29 @@ namespace OSBIDE.Library.Events
                     }
                 }
                 return counter;
+            }
+        }
+
+        [NotMapped]
+        public List<string> CriticalErrorNames
+        {
+            get
+            {
+                List<string> errors = new List<string>(ErrorItems.Count);
+                string pattern = "error ([^:]+)";
+                Dictionary<string, ErrorType> errorTypes = new Dictionary<string, ErrorType>();
+                foreach (BuildEventErrorListItem item in ErrorItems)
+                {
+                    Match match = Regex.Match(item.ErrorListItem.Description, pattern);
+
+                    //ignore bad matches
+                    if (match.Groups.Count == 2)
+                    {
+                        string errorCode = match.Groups[1].Value.ToLower().Trim();
+                        errors.Add(errorCode);
+                    }
+                }
+                return errors;
             }
         }
 
