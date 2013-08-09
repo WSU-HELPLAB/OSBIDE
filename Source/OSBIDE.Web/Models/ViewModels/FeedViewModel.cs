@@ -28,7 +28,6 @@ namespace OSBIDE.Web.Models.ViewModels
             LastPollDate = DateTime.UtcNow;
             EventFilterOptions = new List<IOsbideEvent>();
             UserEventFilterOptions = new List<IOsbideEvent>();
-            ErrorTypes = new List<ErrorType>();
             SelectedErrorType = new ErrorType();
             RecentUserErrors = new List<string>();
             RecentClassErrors = new List<UserBuildErrorsByType>();

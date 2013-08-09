@@ -149,12 +149,11 @@ input[type="checkbox"] {
 
 .feed-item-single-left {
     float:left;
-    padding-right:10px;
     width: 75px;
 }
 
 .feed-item-single-right {
-    padding-left:80px;
+    padding-left:90px;
 }
 
 .field-validation-error {

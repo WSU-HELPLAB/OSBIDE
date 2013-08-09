@@ -1,6 +1,7 @@
 ﻿@using OSBIDE.Library.Models
 @using OSBIDE.Library.Events
 @using OSBIDE.Web.Models
+@using System.Web.Mvc
 @helper DateAsUnixTime(DateTime dt)
 {
     @Convert.ToInt64((dt - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds);
@@ -9,4 +10,10 @@
 @helper RawDate(DateTime dt)
 {
     @dt.ToString("s")
+}
+
+@helper ProfileImage(int userId, int imageSize = 48, string titleText = "profile image", string altText = "profile image", string additionalStyle = "")
+{
+    var urlHelpler = new UrlHelper(Request.RequestContext);
+    <img src="@urlHelpler.Action("Picture", "Profile", new { id = userId, size = imageSize })" title="@titleText" alt="@altText" style="@additionalStyle" />
 }

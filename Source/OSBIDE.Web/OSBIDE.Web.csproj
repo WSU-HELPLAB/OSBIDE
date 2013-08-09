@@ -214,6 +214,8 @@
     <Content Include="Content\icons\loading.gif" />
     <Content Include="Content\icons\follow.png" />
     <Content Include="Content\icons\unfollow.png" />
+    <Content Include="Content\icons\users_16.png" />
+    <Content Include="Content\icons\users_24.png" />
     <Content Include="Content\Reset.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themes\base\highlight\arta.css" />

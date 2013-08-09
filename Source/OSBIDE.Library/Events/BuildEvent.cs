@@ -93,16 +93,7 @@ namespace OSBIDE.Library.Events
         {
             get
             {
-                int counter = 0;
-                foreach (BuildEventErrorListItem errorItem in ErrorItems)
-                {
-                    //ignore non-errors
-                    if (errorItem.ErrorListItem.Description.ToLower().StartsWith("error") == true)
-                    {
-                        counter++;
-                    }
-                }
-                return counter;
+                return CriticalErrorNames.Count;
             }
         }
 
@@ -111,21 +102,12 @@ namespace OSBIDE.Library.Events
         {
             get
             {
-                List<string> errors = new List<string>(ErrorItems.Count);
-                string pattern = "error ([^:]+)";
-                Dictionary<string, ErrorType> errorTypes = new Dictionary<string, ErrorType>();
-                foreach (BuildEventErrorListItem item in ErrorItems)
-                {
-                    Match match = Regex.Match(item.ErrorListItem.Description, pattern);
 
-                    //ignore bad matches
-                    if (match.Groups.Count == 2)
-                    {
-                        string errorCode = match.Groups[1].Value.ToLower().Trim();
-                        errors.Add(errorCode);
-                    }
-                }
-                return errors;
+                var query = from item in ErrorItems
+                            where item.ErrorListItem.CriticalErrorName != null
+                            && item.ErrorListItem.CriticalErrorName.Length > 0
+                            select item.ErrorListItem.CriticalErrorName;
+                return query.Distinct().ToList();
             }
         }
 

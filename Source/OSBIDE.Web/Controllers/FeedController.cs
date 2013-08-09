@@ -84,20 +84,52 @@ namespace OSBIDE.Web.Controllers
             //build the "you and 5 others got this error"-type messages
             vm.RecentUserErrors = base.GetRecentCompileErrors(CurrentUser).ToList();
 
+            //This code does the following:
+            // 1. Find all errors being sent out
+            // 2. Find students who have recently had these errors
+            // 3. Add this info to our VM
+            
+            //step 1
+            List<BuildEvent> feedBuildEvents = feedItems
+                .Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0)
+                .Select(i => i.Event)
+                .Cast<BuildEvent>()
+                .ToList();
+            SortedList<string, string> sortedFeedBuildErrors = new SortedList<string, string>(feedBuildEvents.Count);
+            List<string> feedBuildErrors;
+            foreach (BuildEvent build in feedBuildEvents)
+            {
+                foreach (BuildEventErrorListItem errorItem in build.ErrorItems)
+                {
+                    string key = errorItem.ErrorListItem.CriticalErrorName;
+                    if (string.IsNullOrEmpty(key) == false)
+                    {
+                        if (sortedFeedBuildErrors.ContainsKey(key) == false)
+                        {
+                            sortedFeedBuildErrors.Add(key, key);
+                        }
+                    }
+                }
+            }
+
+            //convert the above to a normal list once we're done
+            feedBuildErrors = sortedFeedBuildErrors.Keys.ToList();
+
+            //step 2: find other students who have also had these errors
             List<UserBuildErrorsByType> classBuildErrors = new List<UserBuildErrorsByType>();
-            List<int> buildLogIds = feedItems.Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0).Select(i => i.LogId).ToList();
             DateTime maxLookback = base.DefaultErrorLookback;
-            var classBuilds = (from error in Db.BuildErrors.Include("BuildErrorType")
-                                                            where buildLogIds.Contains(error.LogId)
-                                                            && error.Log.DateReceived > maxLookback
-                                                            && error.Log.SenderId != CurrentUser.Id
-                                                            group error by error.BuildErrorType.Name into e
-                                                            select new { ErrorName = e.Key, Errors = e }).ToList();
+            var classBuilds = (from buildError in Db.BuildErrors
+                               where feedBuildErrors.Contains(buildError.BuildErrorType.Name)
+                               && buildError.Log.DateReceived > maxLookback
+                               && buildError.Log.SenderId != CurrentUser.Id
+                               group buildError by buildError.BuildErrorType.Name into be
+                               select new { ErrorName = be.Key, Users = be.Select(s => s.Log.SenderId).Distinct() }).ToList();
+
             foreach (var item in classBuilds)
             {
                 classBuildErrors.Add(new UserBuildErrorsByType()
                 {
-                    Errors = item.Errors.ToList(),
+                    UserIds = item.Users.ToList(),
                     ErrorName = item.ErrorName
                 });
             }

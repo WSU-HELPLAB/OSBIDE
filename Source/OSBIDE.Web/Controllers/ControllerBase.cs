@@ -225,27 +225,11 @@ namespace OSBIDE.Web.Controllers
                                               where
                                                 error.Description.ToLower().StartsWith("error") == true
                                                 && log.SenderId == user.Id
+                                                && log.DateReceived > timeframe
                                               select error).ToList();
-
-            //now that we have the errors, pull out the code
-            string pattern = "error ([^:]+)";
-            foreach (ErrorListItem item in errorItems)
-            {
-                Match match = Regex.Match(item.Description, pattern);
-
-                //ignore bad matches
-                if (match.Groups.Count == 2)
-                {
-                    string errorCode = match.Groups[1].Value.ToLower().Trim();
-                    if (errorCode.Length > 0 && errors.Contains(errorCode) == false)
-                    {
-                        errors.Add(errorCode);
-                    }
-                }
-            }
-            return errors.ToArray();
+            return errorItems.Where(e => e.CriticalErrorName.Length > 0).Select(e => e.CriticalErrorName).ToArray();
         }
-
+        
         /// <summary>
         /// Will return a list of recent compile errors for the given user.  Will pull errors that occurred within the last
         /// 48 hours.
@@ -254,7 +238,6 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         protected string[] GetRecentCompileErrors(OsbideUser user)
         {
-            //AC: for debugging, making this much larger than what is indicated (will revert on release)
             return GetRecentCompileErrors(user, DefaultErrorLookback);
         }
 
@@ -265,7 +248,7 @@ namespace OSBIDE.Web.Controllers
         {
             get
             {
-                return DateTime.UtcNow.Subtract(new TimeSpan(365, 48, 0, 0, 0));
+                return DateTime.UtcNow.Subtract(new TimeSpan(0, 48, 0, 0, 0));
             }
         }
 

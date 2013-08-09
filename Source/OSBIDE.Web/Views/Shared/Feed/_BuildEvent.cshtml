@@ -10,41 +10,74 @@
     List<string> recentUserErrors = new List<string>();
     List<UserBuildErrorsByType> recentClassErrors = new List<UserBuildErrorsByType>();
     List<string> criticalBuildErrors = build.CriticalErrorNames;
-    int othersWithErrors = 0;
-    bool hasSameUserError = false;
-    if(ViewBag.RecentUserErrors != null)
+    List<ErrorType> AllErrorTypes = new List<ErrorType>();
+    if (ViewBag.RecentUserErrors != null)
     {
         recentUserErrors = ViewBag.RecentUserErrors as List<string>;
     }
-    if(ViewBag.RecentClassErrors  != null)
+    if (ViewBag.RecentClassErrors != null)
     {
         recentClassErrors = ViewBag.RecentClassErrors as List<UserBuildErrorsByType>;
     }
-    foreach(string userError in recentUserErrors)
+    if (ViewBag.ErrorTypes != null)
     {
-        if(criticalBuildErrors.Contains(userError) == true)
+        AllErrorTypes = ViewBag.ErrorTypes as List<ErrorType>;
+    }
+
+    //building the basic output message
+    string outputString = "{0} attempted to compile \"{1}\" {2} and encountered {3} errors{4}";
+    string param0 = Model.Creator.FirstName;
+    string param1 = Path.GetFileNameWithoutExtension(Model.Items.First().Event.SolutionName);
+    string param2 = "";
+    string param3 = errorCount.ToString();
+    string param4 = ".";
+    if (buildCount > 1)
+    {
+        param2 = string.Format("{0} times", buildCount);
+    }
+    if (errorCount > 0)
+    {
+        param4 = ":";
+    }
+}
+@string.Format(outputString, param0, param1, param2, param3, param4)
+<table>
+    @foreach (string error in criticalBuildErrors)
+    {
+        //what is the error type that we're having?
+        ErrorType thisError = AllErrorTypes.Where(e => e.Name.CompareTo(error) == 0).FirstOrDefault();
+        if (thisError == null)
         {
-            hasSameUserError = true;
-            break;
+            thisError = new ErrorType();
         }
-    }
-    foreach(string buildError in criticalBuildErrors)
-    {
-        UserBuildErrorsByType error = recentClassErrors.Where(c => c.ErrorName.CompareTo(buildError) == 0).FirstOrDefault();
-        if(error != null)
+
+        //did the viewer also have this issue?
+        bool viewerHasError = recentUserErrors.Contains(error);
+
+        //did others in the class have this issue?
+        UserBuildErrorsByType match = recentClassErrors.Where(c => c.ErrorName.CompareTo(error) == 0).FirstOrDefault();
+        int otherUserErrorCount = 0;
+        if (match != null)
         {
-            othersWithErrors += error.Errors.Count;
-        }           
+            otherUserErrorCount = match.UserIds.Count;
+        }
+    
+        <tr>
+            <td style="padding: 4px;">@Html.ActionLink(error, "Index", "Feed", new { errorType = thisError.Id }, new { })
+            </td>
+            <td style="padding: 4px;">
+                @if (viewerHasError == true)
+                {
+                    @Helpers.ProfileImage(ViewBag.CurrentUser.Id, 16, "you've also recently had this errror", "you've also recently had this errror")
+                }
+            </td>
+            <td style="padding: 4px;">
+                @if (otherUserErrorCount > 0)
+                {
+                    string altMessage = string.Format("{0} other(s) have also recently had this error.", otherUserErrorCount);
+                    <img src="~/Content/icons/users_16.png" alt="@altMessage" title="@altMessage"/>
+                }
+            </td>
+        </tr>
     }
-}
-@Model.Creator.FirstName attempted to compile &quot;@Path.GetFileNameWithoutExtension(Model.Items.First().Event.SolutionName)&quot;
-@if(buildCount != 1)
-{
-    <text>@buildCount times</text>
-}
-and encountered @errorCount error(s).
-@if (hasSameUserError == true)
-{
-    @:You and
-}
-@othersWithErrors others have had the same build error.
+</table>

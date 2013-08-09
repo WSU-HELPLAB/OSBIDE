@@ -9,11 +9,11 @@ namespace OSBIDE.Web.Models
     public class UserBuildErrorsByType
     {
         public string ErrorName { get; set; }
-        public List<BuildError> Errors { get; set; }
+        public List<int> UserIds { get; set; }
 
         public UserBuildErrorsByType()
         {
-            Errors = new List<BuildError>();
+            UserIds = new List<int>();
         }
     }
 }

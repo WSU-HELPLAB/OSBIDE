@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using EnvDTE80;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace OSBIDE.Library.Models
 {
@@ -28,7 +30,31 @@ namespace OSBIDE.Library.Models
 
         [Required]
         public string Description { get; set; }
-        
+
+        [NonSerialized]
+        private string _criticalErrorName = null;
+
+        [NotMapped]
+        public string CriticalErrorName
+        {
+            get
+            {
+                //storing result prevents multiple regex matches (should speed up execution time)
+                if (_criticalErrorName == null)
+                {
+                    string pattern = "error ([^:]+)";
+                    Match match = Regex.Match(Description, pattern);
+
+                    //ignore bad matches
+                    if (match.Groups.Count == 2)
+                    {
+                        _criticalErrorName = match.Groups[1].Value.ToLower().Trim();
+                    }
+                }
+                return _criticalErrorName;
+            }
+        }
+
         public static ErrorListItem FromErrorItem(ErrorItem item)
         {
             ErrorListItem eli = new ErrorListItem();
