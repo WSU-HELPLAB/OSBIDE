@@ -60,9 +60,13 @@ namespace OSBIDE.Plugins.Base
             _detailsToolWindowId++;
         }
 
-        public void OpenActivityFeedWindow(Package vsPackage = null)
+        public void OpenActivityFeedWindow(Package vsPackage = null, string url = "")
         {
             _activityFeedVm.AuthKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+            if (string.IsNullOrEmpty(url) == false)
+            {
+                _activityFeedVm.Url = url;
+            }
             OpenToolWindow(new ActivityFeedToolWindow(), _activityFeedVm, vsPackage);
         }
 

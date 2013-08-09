@@ -24,6 +24,7 @@ using System.Windows.Documents;
 using OSBIDE.Controls.Views;
 using System.IO;
 using OSBIDE.Controls;
+using Microsoft.VisualStudio.CommandBars;
 
 namespace OSBIDE.Plugins.VS2012
 {
@@ -57,17 +58,15 @@ namespace OSBIDE.Plugins.VS2012
     public sealed class OSBIDE_Plugins_VS2012Package : Package, IDisposable, IVsShellPropertyEvents
     {
         private OsbideWebServiceClient _webServiceClient = null;
-        private bool _hasWebServiceError = false;
         private OsbideEventHandler _eventHandler = null;
         private ILogger _errorLogger = new LocalErrorLogger();
         private ServiceClient _client;
-        private OsbideContext _db;
         private FileCache _cache = Cache.CacheInstance;
         private string _userName = null;
         private string _userPassword = null;
-        private string _webServiceKey = null;
         private OsbideToolWindowManager _manager = null;
         private uint _EventSinkCookie;
+        private EnvDTE.CommandBarEvents _osbideErrorListEvent;
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
@@ -98,7 +97,7 @@ namespace OSBIDE.Plugins.VS2012
         /// </summary>
         protected override void Initialize()
         {
-            Debug.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
             //AC: Explicity load in assemblies.  Necessary for serialization (why?)
@@ -195,8 +194,24 @@ namespace OSBIDE.Plugins.VS2012
                 {
                     ErrorHandler.ThrowOnFailure(shellService.
                       AdviseShellPropertyChanges(this, out _EventSinkCookie));
-                } 
+                }
 
+            }
+
+            //add right-click context menu to the VS Error List
+            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+            if (dte != null)
+            {
+                CommandBars cmdBars = (CommandBars)dte.CommandBars;
+                CommandBar errorListBar = cmdBars[10];
+                
+                CommandBarControl osbideControl = errorListBar.Controls.Add(MsoControlType.msoControlButton,
+                                                                      System.Reflection.Missing.Value,
+                                                                      System.Reflection.Missing.Value, 1, true);
+                // Set the caption of the submenuitem
+                osbideControl.Caption = "View Error in OSBIDE";
+                _osbideErrorListEvent = (EnvDTE.CommandBarEvents)dte.Events.get_CommandBarEvents(osbideControl);
+                _osbideErrorListEvent.Click += osbideCommandBarEvent_Click;
             }
 
             //create our web service
@@ -238,7 +253,7 @@ namespace OSBIDE.Plugins.VS2012
                     _hasStartupErrors = true;
                 }
             }
-            
+
         }
         #endregion
 
@@ -269,7 +284,8 @@ namespace OSBIDE.Plugins.VS2012
                 {
                     OpenLoginScreen(this, EventArgs.Empty);
                 }
-            } else
+            }
+            else
             {
                 _cache[StringConstants.AuthenticationCacheKey] = authKey;
             }
@@ -331,6 +347,34 @@ namespace OSBIDE.Plugins.VS2012
         {
 
             UpdateSendStatus();
+        }
+
+        private void osbideCommandBarEvent_Click(object CommandBarControl, ref bool Handled, ref bool CancelDefault)
+        {
+            ErrorListItem listItem = new ErrorListItem();
+            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
+            if (dte != null)
+            {
+                Array selectedItems = (Array)dte.ToolWindows.ErrorList.SelectedItems;
+                if (selectedItems != null)
+                {
+                    foreach (ErrorItem item in selectedItems)
+                    {
+                        listItem = ErrorListItem.FromErrorItem(item);
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(listItem.CriticalErrorName) == false)
+            {
+                string url = string.Format("{0}?errorTypeStr={1}&component={2}", StringConstants.ActivityFeedUrl, listItem.CriticalErrorName, OsbideVsComponent.FeedOverview);
+                OpenActivityFeedWindow(url);
+            }
+            else
+            {
+                MessageBox.Show("OSBIDE only supports search for errors");
+            }
+
         }
 
         private void UpdateSendStatus()
@@ -429,14 +473,14 @@ namespace OSBIDE.Plugins.VS2012
             Process.Start(new ProcessStartInfo(url));
         }
 
-        private void ShowActivityFeedTool(object sender, EventArgs e)
+        private void OpenActivityFeedWindow(string url = "")
         {
             object cacheItem = _cache[StringConstants.AuthenticationCacheKey];
             if (cacheItem != null && string.IsNullOrEmpty(cacheItem.ToString()) == false)
             {
                 try
                 {
-                    _manager.OpenActivityFeedWindow();
+                    _manager.OpenActivityFeedWindow(null, url);
                 }
                 catch (Exception ex)
                 {
@@ -447,7 +491,11 @@ namespace OSBIDE.Plugins.VS2012
             {
                 MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
             }
-           
+        }
+
+        private void ShowActivityFeedTool(object sender, EventArgs e)
+        {
+            OpenActivityFeedWindow();
         }
 
         private void ShowActivityFeedDetailsTool(object sender, EventArgs e)
