@@ -24,9 +24,22 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last event received by the user.  Used for AJAX updates</param>
         /// <returns></returns>
-        public ActionResult Index(long timestamp = -1, int errorType = -1)
+        public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "")
         {
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
+
+            //Two ways that we can receive an error type: by name (errorTypeStr) or by ID (errorType).
+            //First, we check the string and see if we can match it to an ID number.  Then, we check
+            //to see if we have a valid ID number.  If it doesn't work out, just work as normal.
+            if (string.IsNullOrEmpty(errorTypeStr) == false)
+            {
+                errorTypeStr = errorTypeStr.ToLower().Trim();
+                ErrorType type = Db.ErrorTypes.Where(e => e.Name.CompareTo(errorTypeStr) == 0).FirstOrDefault();
+                if (type != null)
+                {
+                    errorType = type.Id;
+                }
+            }
             if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
@@ -422,13 +435,13 @@ namespace OSBIDE.Web.Controllers
 
             //pull down the current user's list of subscriptions
             List<OsbideUser> subscriptions = new StudentSubscriptionsQuery(Db, CurrentUser).Execute().ToList();
-
+            
             //and add himself to the list as well (so that his posts show up in the feed)
             subscriptions.Add(CurrentUser);
 
             //add the event types that the user wants to see
             UserFeedSetting feedSettings = Db.UserFeedSettings.Where(u => u.UserId == CurrentUser.Id).FirstOrDefault();
-            if (feedSettings == null)
+            if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
                 foreach (IOsbideEvent evt in ActivityFeedQuery.GetAllEvents())
                 {
