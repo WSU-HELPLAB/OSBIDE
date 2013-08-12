@@ -19,7 +19,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public List<DocumentError> DocumentErrors { get; set; }
         public BuildDiffViewModel()
         {
-            LineErrorMargin = 3;
+            LineErrorMargin = 5;
             DocumentErrors = new List<DocumentError>();
         }
 

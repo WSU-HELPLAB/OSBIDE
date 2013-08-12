@@ -108,6 +108,8 @@
     <p>This section allows you to select whose feed notifications that you will see in your activity feed.  Note that you are required to be subscribed to certain users.</p>
     @using (Html.BeginForm())
     {
+        <input type="submit" name="updateSubscriptions" value="Update Subscriptions" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         <table>
             <thead>
             </thead>

@@ -121,9 +121,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountWindow.xaml.cs">
-      <DependentUpon>AccountWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GifImage.cs" />
     <Compile Include="OsbideResourceInterceptor.cs" />
     <Compile Include="OsbideStatusControl.xaml.cs">
@@ -199,10 +196,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="AccountWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="OsbideStatusControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

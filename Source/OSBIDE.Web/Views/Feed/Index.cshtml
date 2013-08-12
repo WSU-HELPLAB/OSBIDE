@@ -19,22 +19,25 @@
         <input id="filter-options-button" type="button" value="Filter Options" />
     </section>
 }
-@using(Html.BeginForm("ApplyFeedFilter", "Feed"))
+@using (Html.BeginForm("ApplyFeedFilter", "Feed"))
 {
     <section id="filter-options" style="display: none;">
         <h2>Filter by Activity Type:</h2>
         <div>
-            @foreach (IOsbideEvent evt in Model.EventFilterOptions)
-            {
-                string checkbox = "";
-                if (Model.UserEventFilterOptions.Where(o => o.EventName == evt.EventName).Count() > 0)
+            <ul>
+                @foreach (IOsbideEvent evt in Model.EventFilterOptions)
                 {
-                    checkbox = @"checked=""checked""";
+                    string checkbox = "";
+                    if (Model.UserEventFilterOptions.Where(o => o.EventName == evt.EventName).Count() > 0)
+                    {
+                        checkbox = @"checked=""checked""";
+                    }
+                    <li>
+                        <input @Html.Raw(checkbox) type="checkbox" id="event_@evt.EventName" name="event_@evt.EventName" />
+                        <label for="event_@evt.EventName">@evt.PrettyName</label>
+                    </li>
                 }
-                <input @Html.Raw(checkbox) type="checkbox" id="event_@evt.EventName" name="event_@evt.EventName" />
-                <label for="event_@evt.EventName">@evt.PrettyName</label>
-                @:&nbsp;&nbsp;&nbsp;
-            }
+            </ul>
         </div>
         <h2>Filter by Error Type:</h2>
         <div>

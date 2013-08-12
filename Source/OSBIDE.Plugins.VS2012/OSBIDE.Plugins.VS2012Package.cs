@@ -594,7 +594,7 @@ namespace OSBIDE.Plugins.VS2012
         public void ShowAskForHelp(object sender, EventArgs e)
         {
             object cacheItem = _cache[StringConstants.AuthenticationCacheKey];
-            if (cacheItem != null && string.IsNullOrEmpty(cacheItem.ToString()) == false)
+            if (cacheItem != null && string.IsNullOrEmpty(cacheItem.ToString()) == true)
             {
                 MessageBox.Show("You must be logged into OSBIDE in order to access this window.");
                 return;
@@ -606,10 +606,16 @@ namespace OSBIDE.Plugins.VS2012
             DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
             if (dte != null)
             {
-                TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
+                dynamic selection = dte.ActiveDocument.Selection;
                 if (selection != null)
                 {
-                    vm.Code = selection.Text;
+                    try
+                    {
+                        vm.Code = selection.Text;
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
             }
 

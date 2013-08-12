@@ -26,18 +26,22 @@
         <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" FontSize="14">Log into OSBIDE:</TextBlock>
 
         <!--1,0 and 1,1-->
-        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Email Address:</TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmailTextBox" Text="{Binding Path=Email, Mode=TwoWay}" Margin="0,5,0,0" />
+        <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Email Address:
+            <Hyperlink x:Name="ForgotEmailLink" NavigateUri="http://osbide.com/account/ForgotEmail">(Help)</Hyperlink>
+        </TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="EmailTextBox" Text="{Binding Path=Email, Mode=TwoWay}" Margin="0,5,0,0" TabIndex="0" />
 
         <!--2,0 and 2,1-->
-        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Password:</TextBlock>
-        <PasswordBox Grid.Row="2" Grid.Column="1" x:Name="PasswordTextBox" Margin="0,5,0,0" />
+        <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,5,0,0">Password:
+                <Hyperlink x:Name="ForgotPasswordLink" NavigateUri="http://osbide.com/account/ForgotPassword">(Help)</Hyperlink>
+        </TextBlock>
+        <PasswordBox Grid.Row="2" Grid.Column="1" x:Name="PasswordTextBox" Margin="0,5,0,0" TabIndex="1" />
 
-        <!--3,0 and 3,1 -->
+        <!--3,0 -->
         <TextBlock Margin="0,0,15,0" VerticalAlignment="Bottom" Grid.Row="3">
                 <Hyperlink x:Name="CreateAccountLink" Command="{Binding Path=CreateAccountCommand}">Create New Account</Hyperlink>
         </TextBlock>
-
+        
         <!--4,0-->
         <TextBlock Grid.Row="4" Grid.Column="0" VerticalAlignment="Bottom">
             <Hyperlink x:Name="PrivacyPolicyLink" NavigateUri="http://osbide.codeplex.com/wikipage?title=Privacy%20Policy" >
@@ -57,10 +61,10 @@
                 </winForms:PictureBox>
             </wfi:WindowsFormsHost>
             <!--<controls:GifImage x:Name="LoadingIcon" Stretch="None" GifSource="../Images/ajax-loader.gif" Visibility="{Binding Path=LoadingIconVisible}" AutoStart="True" />-->
-            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=LoginCommand}">Log in</Button>
-            <Button x:Name="CancelButton" Width="50" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=CancelCommand}">Cancel</Button>
+            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=LoginCommand}" TabIndex="3">Log in</Button>
+            <Button x:Name="CancelButton" Width="50" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=CancelCommand}" TabIndex="4">Cancel</Button>
         </StackPanel>
-        
+
         <!-- 5,1 -->
         <TextBlock Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" FontWeight="Bold" Foreground="Red" Text="{Binding Path=ErrorText}" Margin="0,0,10,0" />
     </Grid>

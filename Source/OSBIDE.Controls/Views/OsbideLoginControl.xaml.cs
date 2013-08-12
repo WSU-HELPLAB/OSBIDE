@@ -31,6 +31,8 @@ namespace OSBIDE.Controls.Views
 
             CreateAccountLink.RequestNavigate += RequestNavigate;
             PrivacyPolicyLink.RequestNavigate += RequestNavigate;
+            ForgotEmailLink.RequestNavigate += RequestNavigate;
+            ForgotPasswordLink.RequestNavigate += RequestNavigate;
         }
 
         void PasswordTextBox_PasswordChanged(object sender, RoutedEventArgs e)

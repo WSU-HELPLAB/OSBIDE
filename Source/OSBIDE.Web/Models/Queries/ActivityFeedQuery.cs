@@ -94,13 +94,14 @@ namespace OSBIDE.Web.Models.Queries
         //returns a list of all possible events that a user can subscribe to
         public static List<IOsbideEvent> GetAllEvents()
         {
-            //TODO: Are these the only three that we care to show in the feed?
             List<IOsbideEvent> events = new List<IOsbideEvent>();
             events.Add(new BuildEvent());
             events.Add(new ExceptionEvent());
             events.Add(new FeedCommentEvent());
             events.Add(new AskForHelpEvent());
-            events.Add(new SubmitEvent());
+            
+            //AC: turned off for fall 2013 study
+            //events.Add(new SubmitEvent());
             return events;
         }
 
