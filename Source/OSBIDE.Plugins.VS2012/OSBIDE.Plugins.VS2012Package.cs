@@ -270,12 +270,21 @@ namespace OSBIDE.Plugins.VS2012
         private void InitStepTwo_LoginCompleted(object sender, LoginCompletedEventArgs e)
         {
             string authKey = "";
-            if (e != null)
+            try
             {
-                if (e.Result != null)
+                if (e != null)
                 {
-                    authKey = e.Result;
+                    if (e.Result != null)
+                    {
+                        authKey = e.Result;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
+                _hasStartupErrors = true;
+                return;
             }
             if (authKey.Length <= 0)
             {
@@ -315,19 +324,27 @@ namespace OSBIDE.Plugins.VS2012
 
             string remoteVersionNumber = "";
 
-            if (e != null)
+            try
             {
-                if (e.Result != null)
+                if (e != null)
                 {
-                    remoteVersionNumber = e.Result;
+                    if (e.Result != null)
+                    {
+                        remoteVersionNumber = e.Result;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _errorLogger.WriteToLog("Web service error: " + ex.Message, LogPriority.HighPriority);
+                _hasStartupErrors = true;
+                return;
             }
 
             //if we have a version mismatch, stop sending data to the server & delete localDb
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
                 _isOsbideUpToDate = false;
-                File.Delete(StringConstants.LocalDatabasePath);
                 UpdateAvailableWindow.ShowModalDialog(StringConstants.OsbidePackageUrl);
             }
 

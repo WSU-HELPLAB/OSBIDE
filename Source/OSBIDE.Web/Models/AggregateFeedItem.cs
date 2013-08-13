@@ -1,4 +1,5 @@
-﻿using OSBIDE.Library.Models;
+﻿using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,53 @@ namespace OSBIDE.Web.Models
 
         public static List<AggregateFeedItem> FromFeedItems(IList<FeedItem> feedItems)
         {
+            /* AC: While this works, it won't serve at the moment
+            LinkedList<FeedItem> feedItemsLinkedList = new LinkedList<FeedItem>(feedItems);
+            LinkedListNode<FeedItem> node = feedItemsLinkedList.First;
+            LinkedListNode<FeedItem> next;
+            bool isOnBuildEvent = false;
+            int lastAuthorId = 0;
+            IOsbideEvent lastEvent = new BuildEvent();
+            while (node != null)
+            {
+                next = node.Next;
+                if (node.Value != null)
+                {
+                    if (node.Value.Log.LogType.CompareTo(BuildEvent.Name) == 0)
+                    {
+                        BuildEvent build = node.Value.Event as BuildEvent;
+                        if (build != null)
+                        {
+                            //is this an empty error build event?
+                            if (build.CriticalErrorCount == 0)
+                            {
+                                //have we already seen one immediately before this one?  If so,
+                                //remove from the event chain.
+                                if (isOnBuildEvent == true 
+                                    && lastAuthorId == node.Value.Log.SenderId
+                                    && lastEvent.SolutionName.CompareTo(node.Value.Event.SolutionName) == 0
+                                    )
+                                {
+                                    feedItemsLinkedList.Remove(node);
+                                }
+                                else
+                                {
+                                    isOnBuildEvent = true;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isOnBuildEvent = false;
+                    }
+                }
+                lastAuthorId = node.Value.Log.SenderId;
+                lastEvent = node.Value.Event;
+                node = next;
+            }
+            feedItems = feedItemsLinkedList.ToList();
+             * */
             List<AggregateFeedItem> aggregateItems = new List<AggregateFeedItem>();
 
             //prime the loop
@@ -80,6 +128,8 @@ namespace OSBIDE.Web.Models
                 }
                 previousItem = item;
             }
+
+
             return aggregateItems;
         }
     }

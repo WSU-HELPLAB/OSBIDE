@@ -126,15 +126,22 @@ namespace OSBIDE.Controls.ViewModels
             ButtonsEnabled = true;
 
             //hash longer than 0 means success
-            if (e.Result.Length > 0)
+            try
             {
-                AuthenticationHash = e.Result;
-                Result = MessageBoxResult.OK;
-                RequestClose(this, EventArgs.Empty);
+                if (e.Result.Length > 0)
+                {
+                    AuthenticationHash = e.Result;
+                    Result = MessageBoxResult.OK;
+                    RequestClose(this, EventArgs.Empty);
+                }
+                else
+                {
+                    ErrorText = "Invalid email or password.";
+                }
             }
-            else
+            catch (Exception)
             {
-                ErrorText = "Invalid email or password.";
+                ErrorText = "Error processing request (http).";
             }
         }
 
