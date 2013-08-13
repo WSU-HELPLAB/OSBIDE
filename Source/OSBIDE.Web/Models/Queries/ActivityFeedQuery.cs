@@ -234,7 +234,7 @@ namespace OSBIDE.Web.Models.Queries
             if (MaxQuerySize > 0)
             {
                 _query_limit.Clear();
-                _query_limit.Append(string.Format("OFFSET 0 ROWS\nFETCH NEXT {0} ROWS ONLY", MaxQuerySize)); 
+                _query_limit.Append(string.Format("OFFSET 0 ROWS\n FETCH NEXT {0} ROWS ONLY", MaxQuerySize)); 
             }
 
             //build the query

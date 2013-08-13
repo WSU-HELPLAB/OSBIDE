@@ -19,6 +19,17 @@ namespace OSBIDE.Web.Controllers
     [RequiresVisualStudioConnectionForStudents]
     public class FeedController : ControllerBase
     {
+        private UserFeedSetting _userSettings = new UserFeedSetting();
+        public FeedController()
+        {
+            _userSettings = (from setting in Db.UserFeedSettings
+                            where setting.UserId == CurrentUser.Id
+                            orderby setting.Id descending
+                            select setting)
+                            .Take(1)
+                            .FirstOrDefault();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -95,13 +106,21 @@ namespace OSBIDE.Web.Controllers
             }
 
             //build the "you and 5 others got this error"-type messages
+            BuildEventRelations(vm, feedItems);
+
+            return View(vm);
+        }
+
+        private void BuildEventRelations(FeedViewModel vm, List<FeedItem> feedItems)
+        {
+            //build the "you and 5 others got this error"-type messages
             vm.RecentUserErrors = base.GetRecentCompileErrors(CurrentUser).ToList();
 
             //This code does the following:
             // 1. Find all errors being sent out
             // 2. Find students who have recently had these errors
             // 3. Add this info to our VM
-            
+
             //step 1
             List<BuildEvent> feedBuildEvents = feedItems
                 .Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0)
@@ -148,7 +167,6 @@ namespace OSBIDE.Web.Controllers
             }
 
             vm.RecentClassErrors = classBuildErrors;
-            return View(vm);
         }
 
         /// <summary>
@@ -176,6 +194,14 @@ namespace OSBIDE.Web.Controllers
             }
             List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
+
+            //build the "you and 5 others got this error"-type messages
+            FeedViewModel vm = new FeedViewModel();
+            BuildEventRelations(vm, feedItems);
+
+            ViewBag.RecentUserErrors = vm.RecentUserErrors;
+            ViewBag.RecentClassErrors = vm.RecentClassErrors;
+            ViewBag.ErrorTypes = vm.ErrorTypes;
 
             return View("AjaxFeed", aggregateFeed);
         }
@@ -231,6 +257,16 @@ namespace OSBIDE.Web.Controllers
 
             List<FeedItem> feedItems = query.Execute().ToList();
             List<AggregateFeedItem> aggregateFeed = AggregateFeedItem.FromFeedItems(feedItems);
+
+
+            //build the "you and 5 others got this error"-type messages
+            FeedViewModel vm = new FeedViewModel();
+            BuildEventRelations(vm, feedItems);
+
+            ViewBag.RecentUserErrors = vm.RecentUserErrors;
+            ViewBag.RecentClassErrors = vm.RecentClassErrors;
+            ViewBag.ErrorTypes = vm.ErrorTypes;
+
             return View("AjaxFeed", aggregateFeed);
         }
 
@@ -387,13 +423,19 @@ namespace OSBIDE.Web.Controllers
                 errorType = Request.Form["error-type"];
             }
 
-            UserFeedSetting feedSetting = Db.UserFeedSettings.Where(u => u.UserId == CurrentUser.Id).FirstOrDefault();
+            UserFeedSetting feedSetting = _userSettings;
             if (feedSetting == null)
             {
                 feedSetting = new UserFeedSetting();
                 feedSetting.UserId = CurrentUser.Id;
-                Db.UserFeedSettings.Add(feedSetting);
             }
+            else
+            {
+                feedSetting = new UserFeedSetting(feedSetting);
+                feedSetting.Id = 0;
+                feedSetting.SettingsDate = DateTime.UtcNow;
+            }
+            Db.UserFeedSettings.Add(feedSetting);
 
             //clear out existing settings
             feedSetting.Settings = 0;
@@ -435,12 +477,12 @@ namespace OSBIDE.Web.Controllers
 
             //pull down the current user's list of subscriptions
             List<OsbideUser> subscriptions = new StudentSubscriptionsQuery(Db, CurrentUser).Execute().ToList();
-            
+
             //and add himself to the list as well (so that his posts show up in the feed)
             subscriptions.Add(CurrentUser);
 
             //add the event types that the user wants to see
-            UserFeedSetting feedSettings = Db.UserFeedSettings.Where(u => u.UserId == CurrentUser.Id).FirstOrDefault();
+            UserFeedSetting feedSettings = _userSettings;
             if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
                 foreach (IOsbideEvent evt in ActivityFeedQuery.GetAllEvents())

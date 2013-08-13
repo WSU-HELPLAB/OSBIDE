@@ -25,12 +25,27 @@ namespace OSBIDE.Library.Models
     public class UserFeedSetting
     {
         [Key]
+        public int Id { get; set; }
+
         [ForeignKey("User")]
         public int UserId { get; set; }
         public virtual OsbideUser User { get; set; }
+        public DateTime SettingsDate { get; set; }
 
         public int Settings { get; set; }
 
+        public UserFeedSetting()
+        {
+            SettingsDate = DateTime.UtcNow;
+        }
+
+        public UserFeedSetting(UserFeedSetting other) : this()
+        {
+            this.Id = other.Id;
+            this.Settings = other.Settings;
+            this.UserId = other.UserId;
+            this.SettingsDate = other.SettingsDate;
+        }
 
         public bool HasSetting(FeedSetting setting)
         {
