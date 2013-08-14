@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using OSBIDE.Library.Models;
+using OSBIDE.Library.Events;
 
 namespace OSBIDE.Web.Models.ViewModels
 {
@@ -10,8 +11,8 @@ namespace OSBIDE.Web.Models.ViewModels
     {
         public OsbideUser User { get; set; }
         public FeedViewModel Feed { get; set; }
-        public List<LogComment> RecentComments { get; set; }
-        public List<LogComment> CommentsMadeByOthers { get; set; }
+        public List<LogCommentEvent> RecentComments { get; set; }
+        public List<LogCommentEvent> CommentsMadeByOthers { get; set; }
         public List<AggregateFeedItem> EventLogSubscriptions { get; set; }
         public UserScore Score { get; set; }
         public int NumberOfComments { get; set; }
@@ -19,7 +20,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public ProfileViewModel()
         {
             Feed = new FeedViewModel();
-            RecentComments = new List<LogComment>();
+            RecentComments = new List<LogCommentEvent>();
             EventLogSubscriptions = new List<AggregateFeedItem>();
         }
     }

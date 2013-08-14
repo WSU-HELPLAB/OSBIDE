@@ -42,7 +42,7 @@ namespace OSBIDE.Library.Models
         public string AssemblyVersion { get; set; }
 
         [IgnoreDataMember]
-        public virtual IList<LogComment> Comments
+        public virtual IList<LogCommentEvent> Comments
         {
             get
             {
@@ -56,7 +56,7 @@ namespace OSBIDE.Library.Models
 
         [IgnoreDataMember]
         [NonSerialized]
-        private IList<LogComment> _comments;
+        private IList<LogCommentEvent> _comments;
 
         [IgnoreDataMember]
         [NonSerialized]
@@ -80,7 +80,7 @@ namespace OSBIDE.Library.Models
             DateReceived = DateTime.UtcNow;
             AssemblyVersion = OSBIDE.Library.StringConstants.LibraryVersion;
             Subscriptions = new List<EventLogSubscription>();
-            Comments = new List<LogComment>();
+            Comments = new List<LogCommentEvent>();
             Data = new EventLogData();
         }
 

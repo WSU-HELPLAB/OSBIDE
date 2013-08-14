@@ -394,6 +394,7 @@
     <Content Include="Views\PrivateQuestion\ViewQuestions.cshtml" />
     <Content Include="Views\Admin\DailyActivity.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\Feed\_LogCommentEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

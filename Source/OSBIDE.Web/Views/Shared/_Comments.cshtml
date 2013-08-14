@@ -1,4 +1,5 @@
 ﻿@using OSBIDE.Library.Models
+@using OSBIDE.Library.Events
 @model OSBIDE.Library.Models.EventLog
 @{
     OsbideUser CurrentUser = ViewBag.CurrentUser;
@@ -9,7 +10,7 @@
     {
         <text>No comments.</text>
     }
-    @foreach (LogComment comment in Model.Comments)
+    @foreach (LogCommentEvent comment in Model.Comments)
     {
         @Html.Partial("_CommentSingle", comment)
     }

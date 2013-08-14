@@ -1,0 +1,17 @@
+﻿@using OSBIDE.Library.Events
+@model OSBIDE.Web.Models.AggregateFeedItem  
+@{
+    LogCommentEvent comment = Model.Items.First().Event as LogCommentEvent;
+    Model.Items.First().LogId = comment.SourceEventLogId;
+    IOsbideEvent evt = EventFactory.FromName(comment.SourceEventLog.LogType);
+} 
+@Model.Creator.FirstName commented on
+@if (Model.Creator.Id == comment.SourceEventLog.SenderId)
+{
+    @:their own
+}
+else
+{
+    @comment.SourceEventLog.Sender.FirstName@:'s
+}
+@evt.PrettyName.ToLower()@:.

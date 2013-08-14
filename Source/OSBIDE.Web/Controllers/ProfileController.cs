@@ -73,7 +73,7 @@ namespace OSBIDE.Web.Controllers
                                 && e.SenderId == vm.User.Id
                                 select e
                                 ).Count();
-            vm.NumberOfComments = Db.LogComments.Where(c => c.AuthorId == vm.User.Id).Count();
+            vm.NumberOfComments = Db.LogCommentEvents.Where(c => c.EventLog.SenderId == vm.User.Id).Count();
             if (vm.Score == null)
             {
                 vm.Score = new UserScore();
@@ -89,21 +89,21 @@ namespace OSBIDE.Web.Controllers
             // 2. Find all comments made by others on posts authored by the current user
             // 3. Find all comments made by others on posts on which the current user has written a comment
 
-            DateTime maxLookback = base.DefaultErrorLookback;
+            DateTime maxLookback = DateTime.UtcNow.AddDays(-14);
 
             //1. find recent comments
-            vm.RecentComments = (from comment in Db.LogComments
-                                where comment.AuthorId == vm.User.Id
-                                && comment.DatePosted >= maxLookback
-                                orderby comment.DatePosted descending
+            vm.RecentComments = (from comment in Db.LogCommentEvents
+                                where comment.EventLog.SenderId == vm.User.Id
+                                && comment.EventDate >= maxLookback
+                                orderby comment.EventDate descending
                                 select comment
                                 ).ToList();
 
             //2. recent comments made by others on posts authored by the current user
-            vm.CommentsMadeByOthers = (from comment in Db.LogComments
-                                       where comment.Log.SenderId == vm.User.Id
-                                       && comment.DatePosted >= maxLookback
-                                       orderby comment.DatePosted descending
+            vm.CommentsMadeByOthers = (from comment in Db.LogCommentEvents
+                                       where comment.SourceEventLog.SenderId == vm.User.Id
+                                       && comment.EventDate >= maxLookback
+                                       orderby comment.EventDate descending
                                        select comment
                                        ).ToList();
 

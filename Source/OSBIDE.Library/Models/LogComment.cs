@@ -9,7 +9,7 @@ using System.Text;
 namespace OSBIDE.Library.Models
 {
     //TODO: Write custom delete trigger for this model.
-    public class LogComment : IModelBuilderExtender
+    class LogComment : IModelBuilderExtender
     {
         [Key]
         public int Id { get; set; }
@@ -95,12 +95,6 @@ namespace OSBIDE.Library.Models
                 catch (Exception)
                 {
                 }
-                //AC: adding helpful marks may cause a stack overflow.
-                /*
-                foreach (HelpfulLogComment helpful in other.HelpfulMarks)
-                {
-                    HelpfulMarks.Add(new HelpfulLogComment(helpful));
-                }*/
             }
         }
 

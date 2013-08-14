@@ -11,7 +11,7 @@ namespace OSBIDE.Web.Models
     {
         public List<FeedItem> Items { get; set; }
         public string FeedItemType { get; set; }
-        public List<LogComment> Comments { get; set; }
+        public List<LogCommentEvent> Comments { get; set; }
         public OsbideUser Creator { get; set; }
         public DateTime MostRecentOccurance { get; set; }
         public string PrettyName { get; set; }
@@ -32,7 +32,7 @@ namespace OSBIDE.Web.Models
         public AggregateFeedItem()
         {
             Items = new List<FeedItem>();
-            Comments = new List<LogComment>();
+            Comments = new List<LogCommentEvent>();
         }
 
         public AggregateFeedItem(FeedItem item)

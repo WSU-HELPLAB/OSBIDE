@@ -1,4 +1,5 @@
 ﻿using OSBIDE.Library.CSV;
+using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models.ViewModels;
@@ -53,14 +54,14 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //pull comments
-                List<LogComment> comments = Db.LogComments
-                                              .Where(c => c.AuthorId == vm.SelectedStudentId)
-                                              .Where(c => c.DatePosted > vm.SelectedDate)
-                                              .Where(c => c.DatePosted < tomorrow)
+                List<LogCommentEvent> comments = Db.LogCommentEvents
+                                              .Where(c => c.EventLog.SenderId == vm.SelectedStudentId)
+                                              .Where(c => c.EventDate > vm.SelectedDate)
+                                              .Where(c => c.EventDate < tomorrow)
                                               .ToList();
-                foreach (LogComment comment in comments)
+                foreach (LogCommentEvent comment in comments)
                 {
-                    vm.ActivityItems.Add(comment.DatePosted, comment);
+                    vm.ActivityItems.Add(comment.EventDate, comment);
                 }
 
             }

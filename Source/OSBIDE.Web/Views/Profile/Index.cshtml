@@ -1,6 +1,7 @@
 ﻿@using OSBIDE.Library.Models
 @using OSBIDE.Web.Models.ViewModels
 @using OSBIDE.Web.Models
+@using OSBIDE.Library.Events
 @using OSBIDE.Library
 @model OSBIDE.Web.Models.ViewModels.ProfileViewModel
 @{
@@ -63,12 +64,12 @@
                             rowClass = "alt-row";
                         }
                         var lastComment = (from comment in item.Comments
-                                           orderby comment.DatePosted descending
+                                           orderby comment.EventDate descending
                                            select comment).FirstOrDefault();
                         string lastCommentText = "not available";
                         if (lastComment != null)
                         {
-                            lastCommentText = lastComment.DatePosted.ToString("MM/dd @ hh:mmtt");
+                            lastCommentText = lastComment.EventDate.ToString("MM/dd @ hh:mmtt");
                         }
                     
                         <tr class="@rowClass">
@@ -112,19 +113,19 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (LogComment comment in Model.RecentComments)
+                @foreach (LogCommentEvent comment in Model.RecentComments)
                 {
                     <tr>
                         <td class="comments-table-date"><time 
                 class="utc-time"
-                datetime="@Helpers.DateAsUnixTime(comment.DatePosted)" 
-                data-original-date="@Helpers.RawDate(comment.DatePosted)" 
+                datetime="@Helpers.DateAsUnixTime(comment.EventDate)" 
+                data-original-date="@Helpers.RawDate(comment.EventDate)" 
                 data-date-format="MM/DD/YYYY hh:mm A">
-                            @comment.DatePosted.ToString("MM/dd @ hh:mmtt") (UTC)
+                            @comment.EventDate.ToString("MM/dd @ hh:mmtt") (UTC)
                         </time></td>
-                        <td class="comments-table-message-author">@Html.ActionLink(comment.Log.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.AuthorId, component = OsbideVsComponent.UserProfile }, new { })</td>
+                        <td class="comments-table-message-author">@Html.ActionLink(comment.EventLog.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.EventLog.SenderId, component = OsbideVsComponent.UserProfile }, new { })</td>
                         <td class="comments-table-content">@comment.Content</td>
-                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.Log.Id, component = OsbideVsComponent.FeedDetails }, new { })</td>
+                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.SourceEventLogId, component = OsbideVsComponent.FeedDetails }, new { })</td>
                     </tr>
                 }
             </tbody>
@@ -149,19 +150,19 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (LogComment comment in Model.CommentsMadeByOthers)
+                @foreach (LogCommentEvent comment in Model.CommentsMadeByOthers)
                 {
                     <tr>
                         <td class="comments-table-date"><time 
                 class="utc-time"
-                datetime="@Helpers.DateAsUnixTime(comment.DatePosted)" 
-                data-original-date="@Helpers.RawDate(comment.DatePosted)" 
+                datetime="@Helpers.DateAsUnixTime(comment.EventDate)" 
+                data-original-date="@Helpers.RawDate(comment.EventDate)" 
                 data-date-format="MM/DD/YYYY hh:mm A">
-                            @comment.DatePosted.ToString("MM/dd @ hh:mmtt") (UTC)
+                            @comment.EventDate.ToString("MM/dd @ hh:mmtt") (UTC)
                         </time></td>
-                        <td class="comments-table-message-author">@Html.ActionLink(comment.Author.FirstAndLastName, "Index", "Profile", new { id = comment.AuthorId, component = OsbideVsComponent.UserProfile }, new { })</td>
+                        <td class="comments-table-message-author">@Html.ActionLink(comment.EventLog.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.EventLog.SenderId, component = OsbideVsComponent.UserProfile }, new { })</td>
                         <td class="comments-table-content">@comment.Content</td>
-                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.Log.Id, component = OsbideVsComponent.FeedDetails }, new { })</td>
+                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.SourceEventLogId, component = OsbideVsComponent.FeedDetails }, new { })</td>
                     </tr>
                 }
             </tbody>

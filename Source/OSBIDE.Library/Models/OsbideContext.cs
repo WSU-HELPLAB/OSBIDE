@@ -22,7 +22,7 @@ namespace OSBIDE.Library.Models
         public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
         public DbSet<UserPassword> UserPasswords { get; set; }
         public DbSet<School> Schools { get; set; }
-        public DbSet<LogComment> LogComments { get; set; }
+        
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
         public DbSet<ErrorListItem> ErrorListItems { get; set; }
@@ -56,6 +56,7 @@ namespace OSBIDE.Library.Models
         public DbSet<CodeDocumentErrorListItem> CodeDocumentErrorListItems { get; set; }
         public DbSet<SubmitEvent> SubmitEvents { get; set; }
         public DbSet<FeedCommentEvent> FeedCommentEvents { get; set; }
+        public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
 
         public OsbideContext()
             : base()

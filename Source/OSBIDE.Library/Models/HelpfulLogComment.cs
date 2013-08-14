@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OSBIDE.Library.Events;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,7 +13,7 @@ namespace OSBIDE.Library.Models
         [Key]
         [Column(Order=0)]
         public int CommentId { get; set; }
-        public virtual LogComment Comment { get; set; }
+        public virtual LogCommentEvent Comment { get; set; }
 
         [Key]
         [Column(Order = 1)]
@@ -25,7 +26,7 @@ namespace OSBIDE.Library.Models
 
         public HelpfulLogComment(HelpfulLogComment other)
         {
-            Comment = new LogComment(other.Comment);
+            Comment = new LogCommentEvent(other.Comment);
             User = new OsbideUser(other.User);
         }
 

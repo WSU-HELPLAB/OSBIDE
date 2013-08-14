@@ -15,7 +15,7 @@ namespace OSBIDE.Web.Models
         public int EventId { get; set; }
         public IOsbideEvent Event { get; set; }
 
-        public List<LogComment> Comments { get; set; }
+        public List<LogCommentEvent> Comments { get; set; }
 
         public int HelpfulComments { get; set; }
 
@@ -43,7 +43,7 @@ namespace OSBIDE.Web.Models
         }
         public FeedItem()
         {
-            Comments = new List<LogComment>();
+            Comments = new List<LogCommentEvent>();
         }
     }
 }

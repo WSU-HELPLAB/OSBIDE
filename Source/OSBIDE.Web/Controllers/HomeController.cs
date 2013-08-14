@@ -4,6 +4,7 @@ using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models;
 using OSBIDE.Web.Models.ViewModels;
+using OSBIDE.Web.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,24 +33,29 @@ namespace OSBIDE.Web.Controllers
             int id = -1;
             if (Int32.TryParse(logId, out id) == true)
             {
-                LogComment logComment = new LogComment()
+                LogCommentEvent logComment = new LogCommentEvent()
                 {
-                    AuthorId = CurrentUser.Id,
                     Content = comment,
-                    LogId = id
+                    SourceEventLogId = id,
+                    SolutionName = "OSBIDE"
                 };
-
-                Db.LogComments.Add(logComment);
-                Db.SaveChanges();
+                OsbideWebService client = new OsbideWebService();
+                Authentication auth = new Authentication();
+                string key = auth.GetAuthenticationKey();
+                if (string.IsNullOrEmpty(comment) == false)
+                {
+                    EventLog log = new EventLog(logComment, CurrentUser);
+                    client.SubmitLog(log, key);
+                }
 
                 //notify interested parties via email
 
                 //find others that have posted on this same thread
-                List<OsbideUser> otherComments = Db.LogComments
-                    .Where(l => l.LogId == id)
-                    .Where(l => l.AuthorId != CurrentUser.Id)
-                    .Where(l => l.Author.ReceiveNotificationEmails == true)
-                    .Select(l => l.Author)
+                List<OsbideUser> otherComments = Db.LogCommentEvents
+                    .Where(l => l.SourceEventLogId == id)
+                    .Where(l => l.EventLog.SenderId != CurrentUser.Id)
+                    .Where(l => l.EventLog.Sender.ReceiveNotificationEmails == true)
+                    .Select(l => l.EventLog.Sender)
                     .ToList();
 
                 //find those that are subscribed to this thread
@@ -95,7 +101,7 @@ namespace OSBIDE.Web.Controllers
                     string body = "Greetings,\n{0} has commented on a post that you have previously been involved with:\n\"{1}\"\nTo view this "
                     + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
                     + "These automated messages can be turned off by editing your user profile.";
-                    body = string.Format(body, logComment.Author.FirstAndLastName, logComment.Content, url);
+                    body = string.Format(body, logComment.EventLog.Sender.FirstAndLastName, logComment.Content, url);
                     List<MailAddress> to = new List<MailAddress>();
                     foreach (OsbideUser user in emailList.Values)
                     {

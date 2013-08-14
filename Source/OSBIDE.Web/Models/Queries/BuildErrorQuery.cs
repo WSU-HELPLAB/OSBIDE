@@ -23,7 +23,7 @@ namespace OSBIDE.Web.Models.Queries
                 var query = from error in _db.BuildErrors
                             join log in _db.EventLogs on error.LogId equals log.Id
                             join be in _db.BuildEvents on log.Id equals be.EventLogId
-                            join comm in _db.LogComments on log.Id equals comm.LogId into logComments
+                            join comm in _db.LogCommentEvents on log.Id equals comm.SourceEventLogId into logComments
                             where log.DateReceived >= StartDate
                               && log.DateReceived <= EndDate
                               && log.Id > MinLogId

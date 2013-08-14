@@ -19,7 +19,8 @@ namespace OSBIDE.Library.Models
         ExceptionEvent = 4,
         FeedCommentEvent = 8,
         AskForHelpEvent = 16,
-        SubmitEvent = 32
+        SubmitEvent = 32,
+        LogCommentEvent = 64
     };
 
     public class UserFeedSetting
@@ -73,6 +74,9 @@ namespace OSBIDE.Library.Models
                 case FeedSetting.SubmitEvent:
                     evt = new SubmitEvent();
                     break;
+                case FeedSetting.LogCommentEvent:
+                    evt = new LogCommentEvent();
+                    break;
             }
             return evt;
         }
@@ -113,6 +117,10 @@ namespace OSBIDE.Library.Models
             {
                 option = FeedSetting.FeedCommentEvent;
             }
+            else if (evt.EventName == LogCommentEvent.Name)
+            {
+                option = FeedSetting.LogCommentEvent;
+            }
             else if (evt.EventName == SubmitEvent.Name)
             {
                 option = FeedSetting.SubmitEvent;
@@ -138,6 +146,10 @@ namespace OSBIDE.Library.Models
             else if (evt.EventName == FeedCommentEvent.Name)
             {
                 option = FeedSetting.FeedCommentEvent;
+            }
+            else if (evt.EventName == LogCommentEvent.Name)
+            {
+                option = FeedSetting.LogCommentEvent;
             }
             else if (evt.EventName == SubmitEvent.Name)
             {

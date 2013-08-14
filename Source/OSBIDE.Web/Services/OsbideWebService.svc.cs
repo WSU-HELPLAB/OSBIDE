@@ -287,6 +287,10 @@ namespace OSBIDE.Web.Services
             {
                 Db.FeedCommentEvents.Add((FeedCommentEvent)evt);
             }
+            else if (log.LogType == LogCommentEvent.Name)
+            {
+                Db.LogCommentEvents.Add((LogCommentEvent)evt);
+            }
             else if (log.LogType == SaveEvent.Name)
             {
                 Db.SaveEvents.Add((SaveEvent)evt);

@@ -99,6 +99,7 @@ namespace OSBIDE.Web.Models.Queries
             events.Add(new ExceptionEvent());
             events.Add(new FeedCommentEvent());
             events.Add(new AskForHelpEvent());
+            events.Add(new LogCommentEvent());
             
             //AC: turned off for fall 2013 study
             //events.Add(new SubmitEvent());
@@ -318,6 +319,15 @@ namespace OSBIDE.Web.Models.Queries
                 conn.Close();
             }
 
+            //update comments that will appear in the activity feed (as opposed to being attached to another log)
+            foreach (FeedItem item in feedItems)
+            {
+                if (item.Event is LogCommentEvent)
+                {
+                    item.Event = _db.LogCommentEvents.Find(item.EventId);
+                }
+            }
+
             //pull comments for all feed items
             Dictionary<int, FeedItem> itemsDict = new Dictionary<int, FeedItem>();
             foreach(FeedItem item in feedItems)
@@ -325,13 +335,13 @@ namespace OSBIDE.Web.Models.Queries
                 itemsDict[item.LogId] = item;
             }
             int[] logIds = itemsDict.Keys.ToArray();
-            var commentsQuery = from comment in _db.LogComments
-                                where logIds.Contains(comment.LogId)
+            var commentsQuery = from comment in _db.LogCommentEvents
+                                where logIds.Contains(comment.SourceEventLogId)
                                 select comment;
-            foreach (LogComment comment in commentsQuery)
+            foreach (LogCommentEvent comment in commentsQuery)
             {
-                itemsDict[comment.LogId].Comments.Add(comment);
-                itemsDict[comment.LogId].Log.Comments.Add(comment);
+                itemsDict[comment.SourceEventLogId].Comments.Add(comment);
+                itemsDict[comment.SourceEventLogId].Log.Comments.Add(comment);
             }
             return feedItems;
         }

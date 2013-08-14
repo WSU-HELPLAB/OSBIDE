@@ -213,13 +213,13 @@ namespace OSBIDE.Web.Controllers
             {
                 List<int> logIds = items.Select(i => i.LogId).ToList();
                 DateTime lastPollDate = new DateTime(items.First().LastPollTick);
-                var query = from comment in Db.LogComments.Include("HelpfulMarks").Include("Author").AsNoTracking()
-                            where logIds.Contains(comment.LogId)
-                            && comment.DatePosted > lastPollDate
+                var query = from comment in Db.LogCommentEvents.Include("HelpfulMarks").Include("EventLog").Include("EventLog.Sender").AsNoTracking()
+                            where logIds.Contains(comment.SourceEventLogId)
+                            && comment.EventDate > lastPollDate
                             select comment;
-                List<LogComment> comments = query.ToList();
+                List<LogCommentEvent> comments = query.ToList();
                 long lastPollTick = items[0].LastPollTick;
-                var maxCommentTick = comments.Select(c => c.DatePosted);
+                var maxCommentTick = comments.Select(c => c.EventDate);
                 if (maxCommentTick.Count() > 0)
                 {
                     lastPollTick = maxCommentTick.Max().Ticks;
@@ -228,7 +228,7 @@ namespace OSBIDE.Web.Controllers
                 ViewBag.LastPollTick = lastPollTick;
                 return View(comments);
             }
-            return View(new List<LogComment>());
+            return View(new List<LogCommentEvent>());
         }
 
         /// <summary>
@@ -308,6 +308,14 @@ namespace OSBIDE.Web.Controllers
 
             List<AggregateFeedItem> aggregateItems = AggregateFeedItem.FromFeedItems(feedItems);
 
+            //build the "you and 5 others got this error"-type messages
+            FeedViewModel fvm = new FeedViewModel();
+            BuildEventRelations(fvm, feedItems);
+
+            ViewBag.RecentUserErrors = fvm.RecentUserErrors;
+            ViewBag.RecentClassErrors = fvm.RecentClassErrors;
+            ViewBag.ErrorTypes = fvm.ErrorTypes;
+
             FeedDetailsViewModel vm = new FeedDetailsViewModel();
             vm.Ids = id;
             vm.FeedItem = aggregateItems.FirstOrDefault();
@@ -355,7 +363,7 @@ namespace OSBIDE.Web.Controllers
                 .Count();
             if (count == 0)
             {
-                LogComment comment = Db.LogComments.Where(c => c.Id == commentId).FirstOrDefault();
+                LogCommentEvent comment = Db.LogCommentEvents.Where(c => c.Id == commentId).FirstOrDefault();
                 if (commentId != 0)
                 {
                     HelpfulLogComment help = new HelpfulLogComment()

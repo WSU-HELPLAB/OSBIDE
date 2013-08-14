@@ -86,12 +86,12 @@ namespace OSBIDE.Web.Controllers
                              group log by log.SenderId into logGroup
                              select new { UserId = logGroup.Key, LogCount = logGroup.Count() };
 
-            var threePtQuery = from comment in Db.LogComments
-                               group comment by comment.AuthorId into commentGroup
+            var threePtQuery = from comment in Db.LogCommentEvents
+                               group comment by comment.EventLog.SenderId into commentGroup
                                select new { UserId = commentGroup.Key, CommentCount = commentGroup.Count() };
 
             var sevenPtQuery = from helpful in Db.HelpfulLogComments
-                               group helpful by helpful.Comment.AuthorId into helpfulGroup
+                               group helpful by helpful.Comment.EventLog.SenderId into helpfulGroup
                                select new { UserId = helpfulGroup.Key, HelpfulCount = helpfulGroup.Count() };
 
             Dictionary<int, int> scores = new Dictionary<int, int>();

@@ -216,6 +216,10 @@ namespace OSBIDE.Library.Events
             {
                 evt = new FeedCommentEvent();
             }
+            else if (name == LogCommentEvent.Name)
+            {
+                evt = new LogCommentEvent();
+            }
             else if (name == SaveEvent.Name)
             {
                 evt = new SaveEvent();
