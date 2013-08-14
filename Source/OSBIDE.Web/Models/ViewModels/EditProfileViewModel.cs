@@ -25,8 +25,11 @@ namespace OSBIDE.Web.Models.ViewModels
         public string NewPasswordConfirm { get; set; }
         public string OldPassword { get; set; }
 
+        public bool ReceiveEmailNotifications { get; set; }
+
         public string UpdateEmailSuccessMessage { get; set; }
         public string UpdatePasswordSuccessMessage { get; set; }
+        public string UpdateEmailSettingsMessage { get; set; }
 
         public bool SendEmailForCommentsOnMyPosts { get; set; }
 
@@ -35,6 +38,7 @@ namespace OSBIDE.Web.Models.ViewModels
 
         public EditProfileViewModel()
         {
+            ReceiveEmailNotifications = false;
             SendEmailForCommentsOnMyPosts = false;
             UsersInCourse = new List<OsbideUser>();
             UserSubscriptions = new Dictionary<int, UserSubscription>();

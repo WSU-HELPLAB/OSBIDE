@@ -31,7 +31,8 @@ namespace OSBIDE.Library.Models
         private string _lastName = "";
         private int _schoolId;
         private int _institutionId = -1;
-        
+        private bool _receiveNotificationEmails = false;
+
         [NonSerialized]
         private ProfileImage _profileImage;
 
@@ -55,6 +56,19 @@ namespace OSBIDE.Library.Models
             {
                 _id = value;
                 OnPropertyChanged("Id");
+            }
+        }
+
+        public bool ReceiveNotificationEmails
+        {
+            get
+            {
+                return _receiveNotificationEmails;
+            }
+            set
+            {
+                _receiveNotificationEmails = value;
+                OnPropertyChanged("ReceiveNotificationEmails");
             }
         }
 
@@ -214,7 +228,7 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        
+
 
         /// <summary>
         /// Returns the User's full name in "Last, First" format.
@@ -269,6 +283,7 @@ namespace OSBIDE.Library.Models
             LogSubscriptions = new List<EventLogSubscription>();
             Role = SystemRole.Student;
             LastVsActivity = DateTime.UtcNow;
+            ReceiveNotificationEmails = false;
         }
 
         public OsbideUser(OsbideUser copyUser)
@@ -282,6 +297,7 @@ namespace OSBIDE.Library.Models
             Email = copyUser.Email;
             SchoolId = copyUser.SchoolId;
             LastVsActivity = copyUser.LastVsActivity;
+            ReceiveNotificationEmails = copyUser.ReceiveNotificationEmails;
         }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)

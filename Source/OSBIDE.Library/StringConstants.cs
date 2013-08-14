@@ -76,6 +76,17 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string GetActivityFeedDetailsUrl(int logId)
+        {
+            string url = "";
+#if DEBUG
+            url = "http://localhost:24867/Details/{0}";
+#else
+            url = "http://osbide.com/Details/{0}";
+#endif
+            return string.Format(url, logId);
+        }
+
         public static string CreateAccountUrl
         {
             get

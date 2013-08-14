@@ -91,17 +91,24 @@
     }
 </section>
 <section>
-    <!-- TODO: Add email preferences
-    <h1>Email Preferences</h1>
     @using (Html.BeginForm())
     {
+        <h1>Email Preferences</h1>
+        if (@Model.UpdateEmailSettingsMessage != null)
+        {
+        <div class="notice">
+            <h3>@Model.UpdateEmailSettingsMessage</h3>
+        </div>
+        }
         <table class="form-entry">
             <tr>
-                <td></td>
+                <th>Receive email notifications of activity:</th>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotifications)</td>
             </tr>
         </table>
+        <input type="submit" name="changeEmailNotifications" value="Update Settings" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
     }
-        -->
 </section>
 <section>
     <h1>Subscriptions</h1>
@@ -116,7 +123,7 @@
             <tbody>
                 @{int columnCounter = -1;
                   bool openTableRow = false;
-                  }
+                }
                 @foreach (OsbideUser user in Model.UsersInCourse)
                 {
                     //ignore current user in the list
@@ -145,7 +152,7 @@
                             <div>
                                 <a href="@Url.Action("Index", "Profile", new { id = user.Id, component = OsbideVsComponent.UserProfile })">@user.FirstAndLastName</a>
                                 <br />
-                                @if(isRequired == false)
+                                @if (isRequired == false)
                                 {
                                     @:<input id="subscription_@user.Id" name="subscription_@user.Id" type="checkbox" @isChecked @isRequired /> 
                                     <label for="subscription_@user.Id">Subscribe</label>
@@ -156,11 +163,11 @@
                                 }
                             </div>
                         </td>
-                    if (columnCounter % 4 == 3)
-                    {
-                        openTableRow = false;
+                                if (columnCounter % 4 == 3)
+                                {
+                                    openTableRow = false;
                     @:</tr>
-                                }
+                                                }
                 }
                 @if (openTableRow == true)
                 {

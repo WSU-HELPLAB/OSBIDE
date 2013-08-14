@@ -136,39 +136,6 @@ namespace OSBIDE.Web.Controllers
                 Db.UserScores.Add(score);
             }
             Db.SaveChanges();
-
-            //TODO: This query doesn't work right as it gives helpful marks to the person who makred as helpful instead of
-            //the original author
-            /*
-            var query = from user in Db.Users
-                        join comment2 in Db.LogComments on user.Id equals comment2.AuthorId into comments
-                        join helpfulMark in Db.HelpfulLogComments on user.Id equals helpfulMark.UserId into helpfulComments
-                        join log in Db.EventLogs on user.Id equals log.SenderId into logs
-                        join score in Db.UserScores on user.Id equals score.UserId into scores
-                        select new
-                        {
-                            User = user,
-                            LogCount = logs.Count(),
-                            CommentsCount = comments.Count(),
-                            HelpfulCommentsCount = helpfulComments.Count(),
-                            UserScore = scores.FirstOrDefault()
-                        };
-            foreach (var entry in query)
-            {
-                UserScore score = entry.UserScore;
-                if (score == null)
-                {
-                    score = new UserScore()
-                    {
-                        UserId = entry.User.Id,
-                    };
-                    Db.UserScores.Add(score);
-                }
-                score.Score = (1 * entry.LogCount) + (3 * entry.CommentsCount) + (7 * entry.HelpfulCommentsCount);
-                score.LastCalculated = DateTime.UtcNow;
-            }
-            Db.SaveChanges();
-             * */
         }
 
         /// <summary>

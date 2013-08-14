@@ -84,19 +84,33 @@ namespace OSBIDE.Web.Controllers
                 vm.Feed.LastLogId = maxQuery.Max();
             }
 
-            //find recent comments
+            // Build a catalog of recent commenting activity:
+            // 1. Find all comments that the user has made
+            // 2. Find all comments made by others on posts authored by the current user
+            // 3. Find all comments made by others on posts on which the current user has written a comment
+
+            DateTime maxLookback = base.DefaultErrorLookback;
+
+            //1. find recent comments
             vm.RecentComments = (from comment in Db.LogComments
                                 where comment.AuthorId == vm.User.Id
+                                && comment.DatePosted >= maxLookback
                                 orderby comment.DatePosted descending
                                 select comment
-                                ).Take(25).ToList();
+                                ).ToList();
 
-            //recent comments made by others
+            //2. recent comments made by others on posts authored by the current user
             vm.CommentsMadeByOthers = (from comment in Db.LogComments
                                        where comment.Log.SenderId == vm.User.Id
+                                       && comment.DatePosted >= maxLookback
                                        orderby comment.DatePosted descending
                                        select comment
-                                       ).Take(25).ToList();
+                                       ).ToList();
+
+
+            //TODO: implement this
+            //3. comments made by others on posts in which the current user has written a comment
+            
 
             //show subscriptions only if the user is accessing his own page
             if (vm.User.Id == CurrentUser.Id)
@@ -128,8 +142,6 @@ namespace OSBIDE.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                //two possibilities: the user wants to update his email address
-                //                   OR the user wants to update is password.  
                 // We can determine which is desired by checking which button was pressed
                 if (Request.Form["updateEmail"] != null)
                 {
@@ -143,15 +155,23 @@ namespace OSBIDE.Web.Controllers
                 {
                     UpdateSubscriptions(vm);
                 }
+                else if (Request.Form["changeEmailNotifications"] != null)
+                {
+                    UpdateEmailNotificationSettings(vm);
+                }
             }
-            return View(BuildEditViewModel());
+            return View(BuildEditViewModel(vm));
         }
 
         #region Edit helper methods
 
-        private EditProfileViewModel BuildEditViewModel()
+        private EditProfileViewModel BuildEditViewModel(EditProfileViewModel oldVm = null)
         {
             EditProfileViewModel vm = new EditProfileViewModel();
+            if (oldVm != null)
+            {
+                vm = oldVm;
+            }
             vm.User = CurrentUser;
 
             vm.UsersInCourse = Db.Users.Where(u => u.SchoolId == CurrentUser.SchoolId).ToList();
@@ -170,6 +190,12 @@ namespace OSBIDE.Web.Controllers
                 }
             }
             return vm;
+        }
+
+        private void UpdateEmailNotificationSettings(EditProfileViewModel vm)
+        {
+            CurrentUser.ReceiveNotificationEmails = vm.ReceiveEmailNotifications;
+            vm.UpdateEmailSettingsMessage = "Your email settings have been updated.";
         }
 
         private void UpdateSubscriptions(EditProfileViewModel vm)
