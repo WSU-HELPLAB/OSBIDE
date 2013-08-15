@@ -9,7 +9,7 @@ using System.Text;
 namespace OSBIDE.Library.Events
 {
     [Serializable]
-    public class FeedCommentEvent : IOsbideEvent
+    public class FeedPostEvent : IOsbideEvent
     {
         [Key]
         [Required]
@@ -28,10 +28,10 @@ namespace OSBIDE.Library.Events
         public string SolutionName { get; set; }
 
         [Required]
-        public string EventName { get { return FeedCommentEvent.Name; } }
+        public string EventName { get { return FeedPostEvent.Name; } }
 
         [NotMapped]
-        public static string Name { get { return "FeedCommentEvent"; } }
+        public static string Name { get { return "FeedPostEvent"; } }
 
         [NotMapped]
         public string PrettyName { get { return "Feed Post"; } }
@@ -39,7 +39,7 @@ namespace OSBIDE.Library.Events
         [Required]
         public string Comment { get; set; }
 
-        public FeedCommentEvent()
+        public FeedPostEvent()
         {
             EventDate = DateTime.UtcNow;
             SolutionName = "";
@@ -60,7 +60,7 @@ namespace OSBIDE.Library.Events
 
         IOsbideEvent IOsbideEvent.FromDict(Dictionary<string, object> values)
         {
-            FeedCommentEvent evt = new FeedCommentEvent();
+            FeedPostEvent evt = new FeedPostEvent();
             if (values.ContainsKey("Id"))
             {
                 evt.Id = (int)values["Id"];

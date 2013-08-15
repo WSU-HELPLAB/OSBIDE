@@ -212,9 +212,9 @@ namespace OSBIDE.Library.Events
             {
                 evt = new ExceptionEvent();
             }
-            else if (name == FeedCommentEvent.Name)
+            else if (name == FeedPostEvent.Name)
             {
-                evt = new FeedCommentEvent();
+                evt = new FeedPostEvent();
             }
             else if (name == LogCommentEvent.Name)
             {

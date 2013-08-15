@@ -162,6 +162,7 @@
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
     <Compile Include="Events\FeedCommentEvent.cs" />
+    <Compile Include="Events\HelpfulMarkGivenEvent.cs" />
     <Compile Include="Events\LogCommentEvent.cs" />
     <Compile Include="IconConverter.cs">
       <SubType>Component</SubType>

@@ -69,7 +69,7 @@ namespace OSBIDE.Web.Controllers
             vm.Feed.LastPollDate = query.StartDate;
             vm.Score = Db.UserScores.Where(s => s.UserId == vm.User.Id).FirstOrDefault();
             vm.NumberOfPosts = (from e in Db.EventLogs
-                                where (e.LogType == FeedCommentEvent.Name || e.LogType == AskForHelpEvent.Name)
+                                where (e.LogType == FeedPostEvent.Name || e.LogType == AskForHelpEvent.Name)
                                 && e.SenderId == vm.User.Id
                                 select e
                                 ).Count();

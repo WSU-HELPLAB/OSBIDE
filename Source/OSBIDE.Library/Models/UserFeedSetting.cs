@@ -17,7 +17,7 @@ namespace OSBIDE.Library.Models
         NULL = 1,
         BuildEvent = 2,
         ExceptionEvent = 4,
-        FeedCommentEvent = 8,
+        FeedPostEvent = 8,
         AskForHelpEvent = 16,
         SubmitEvent = 32,
         LogCommentEvent = 64
@@ -68,8 +68,8 @@ namespace OSBIDE.Library.Models
                 case FeedSetting.ExceptionEvent:
                     evt = new ExceptionEvent();
                     break;
-                case FeedSetting.FeedCommentEvent:
-                    evt = new FeedCommentEvent();
+                case FeedSetting.FeedPostEvent:
+                    evt = new FeedPostEvent();
                     break;
                 case FeedSetting.SubmitEvent:
                     evt = new SubmitEvent();
@@ -113,9 +113,9 @@ namespace OSBIDE.Library.Models
             {
                 option = FeedSetting.ExceptionEvent;
             }
-            else if (evt.EventName == FeedCommentEvent.Name)
+            else if (evt.EventName == FeedPostEvent.Name)
             {
-                option = FeedSetting.FeedCommentEvent;
+                option = FeedSetting.FeedPostEvent;
             }
             else if (evt.EventName == LogCommentEvent.Name)
             {
@@ -143,9 +143,9 @@ namespace OSBIDE.Library.Models
             {
                 option = FeedSetting.ExceptionEvent;
             }
-            else if (evt.EventName == FeedCommentEvent.Name)
+            else if (evt.EventName == FeedPostEvent.Name)
             {
-                option = FeedSetting.FeedCommentEvent;
+                option = FeedSetting.FeedPostEvent;
             }
             else if (evt.EventName == LogCommentEvent.Name)
             {

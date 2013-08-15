@@ -283,9 +283,9 @@ namespace OSBIDE.Web.Services
             {
                 Db.ExceptionEvents.Add((ExceptionEvent)evt);
             }
-            else if (log.LogType == FeedCommentEvent.Name)
+            else if (log.LogType == FeedPostEvent.Name)
             {
-                Db.FeedCommentEvents.Add((FeedCommentEvent)evt);
+                Db.FeedPostEvents.Add((FeedPostEvent)evt);
             }
             else if (log.LogType == LogCommentEvent.Name)
             {

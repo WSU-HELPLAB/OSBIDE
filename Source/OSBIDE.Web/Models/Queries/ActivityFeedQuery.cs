@@ -97,7 +97,7 @@ namespace OSBIDE.Web.Models.Queries
             List<IOsbideEvent> events = new List<IOsbideEvent>();
             events.Add(new BuildEvent());
             events.Add(new ExceptionEvent());
-            events.Add(new FeedCommentEvent());
+            events.Add(new FeedPostEvent());
             events.Add(new AskForHelpEvent());
             events.Add(new LogCommentEvent());
             

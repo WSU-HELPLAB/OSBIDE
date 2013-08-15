@@ -4,7 +4,7 @@
 @using System.IO
 @model OSBIDE.Web.Models.AggregateFeedItem
 @{
-    FeedCommentEvent comment = Model.Items.First().Event as FeedCommentEvent;
+    FeedPostEvent comment = Model.Items.First().Event as FeedPostEvent;
 } 
 <pre class="normal-font">
 @comment.Comment

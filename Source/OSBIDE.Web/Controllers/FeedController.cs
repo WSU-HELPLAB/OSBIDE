@@ -413,8 +413,8 @@ namespace OSBIDE.Web.Controllers
             {
                 EventLog log = new EventLog();
                 log.SenderId = CurrentUser.Id;
-                log.LogType = FeedCommentEvent.Name;
-                FeedCommentEvent commentEvent = new FeedCommentEvent();
+                log.LogType = FeedPostEvent.Name;
+                FeedPostEvent commentEvent = new FeedPostEvent();
                 commentEvent.Comment = comment;
                 log.Data.BinaryData = EventFactory.ToZippedBinary(commentEvent);
                 client.SubmitLog(log, key);

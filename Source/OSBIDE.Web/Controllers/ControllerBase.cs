@@ -78,11 +78,11 @@ namespace OSBIDE.Web.Controllers
         private void UpdateUserScores()
         {
             //scoring:
-            // 1 pt for each FeedCommentEvent / AskForHelpEvent
+            // 1 pt for each FeedPostEvent / AskForHelpEvent
             // 3 pts for each log comment
             // 7 pts for each helpful mark
             var onePtQuery = from log in Db.EventLogs
-                             where (log.LogType == FeedCommentEvent.Name || log.LogType == AskForHelpEvent.Name)
+                             where (log.LogType == FeedPostEvent.Name || log.LogType == AskForHelpEvent.Name)
                              group log by log.SenderId into logGroup
                              select new { UserId = logGroup.Key, LogCount = logGroup.Count() };
 

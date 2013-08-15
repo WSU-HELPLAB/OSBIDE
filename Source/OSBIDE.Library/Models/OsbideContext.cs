@@ -55,7 +55,7 @@ namespace OSBIDE.Library.Models
         public DbSet<CodeDocumentBreakPoint> CodeDocumentBreakPoints { get; set; }
         public DbSet<CodeDocumentErrorListItem> CodeDocumentErrorListItems { get; set; }
         public DbSet<SubmitEvent> SubmitEvents { get; set; }
-        public DbSet<FeedCommentEvent> FeedCommentEvents { get; set; }
+        public DbSet<FeedPostEvent> FeedPostEvents { get; set; }
         public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
 
         public OsbideContext()
