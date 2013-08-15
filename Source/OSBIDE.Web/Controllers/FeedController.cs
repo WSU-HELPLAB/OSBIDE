@@ -155,13 +155,13 @@ namespace OSBIDE.Web.Controllers
                                && buildError.Log.DateReceived > maxLookback
                                && buildError.Log.SenderId != CurrentUser.Id
                                group buildError by buildError.BuildErrorType.Name into be
-                               select new { ErrorName = be.Key, Users = be.Select(s => s.Log.SenderId).Distinct() }).ToList();
+                               select new { ErrorName = be.Key, Users = be.Select(s => s.Log.Sender).Distinct() }).ToList();
 
             foreach (var item in classBuilds)
             {
                 classBuildErrors.Add(new UserBuildErrorsByType()
                 {
-                    UserIds = item.Users.ToList(),
+                    Users = item.Users.ToList(),
                     ErrorName = item.ErrorName
                 });
             }

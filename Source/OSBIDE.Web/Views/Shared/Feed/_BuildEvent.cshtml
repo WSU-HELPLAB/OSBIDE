@@ -57,9 +57,30 @@
         //did others in the class have this issue?
         UserBuildErrorsByType match = recentClassErrors.Where(c => c.ErrorName.CompareTo(error) == 0).FirstOrDefault();
         int otherUserErrorCount = 0;
+        string otherUserErrorsString = "";
         if (match != null)
         {
-            otherUserErrorCount = match.UserIds.Count;
+            otherUserErrorCount = match.Users.Count;
+            switch (otherUserErrorCount)
+            {
+                case 1:
+                    otherUserErrorsString = string.Format("{0} also recently had this error", match.Users.FirstOrDefault().FirstAndLastName);
+                    break;
+                    
+                case 2:
+                    otherUserErrorsString = string.Format("{0} and {1} also recently had this error", match.Users[0].FirstAndLastName, match.Users[1].FirstAndLastName);
+                    break;
+                    
+                default:
+                    //randomly draw two users
+                    int maxVal = match.Users.Count - 1;
+                    Random rnd = new Random();
+                    int index = rnd.Next(1, maxVal);
+                    OsbideUser user1 = match.Users[index];
+                    OsbideUser user2 = match.Users[index - 1];
+                    otherUserErrorsString = string.Format("{0}, {1}, and {2} others also recently had this error", user1.FirstAndLastName, user2.FirstAndLastName, otherUserErrorCount);
+                    break;
+            }
         }
     
         <tr>
@@ -74,8 +95,7 @@
             <td style="padding: 4px;">
                 @if (otherUserErrorCount > 0)
                 {
-                    string altMessage = string.Format("{0} other(s) have also recently had this error.", otherUserErrorCount);
-                    <img src="~/Content/icons/users_16.png" alt="@altMessage" title="@altMessage"/>
+                    <img src="~/Content/icons/users_16.png" alt="@otherUserErrorsString" title="@otherUserErrorsString"/>
                 }
             </td>
         </tr>
