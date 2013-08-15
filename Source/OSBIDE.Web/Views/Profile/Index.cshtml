@@ -3,6 +3,7 @@
 @using OSBIDE.Web.Models
 @using OSBIDE.Library.Events
 @using OSBIDE.Library
+@using System.Text
 @model OSBIDE.Web.Models.ViewModels.ProfileViewModel
 @{
     ViewBag.Title = Model.User.FullName;
@@ -96,80 +97,75 @@
     </section>
 }
 <section id="recent-comments">
-    <h1>Recent Comments by @Model.User.FirstName</h1>
-    @if (Model.RecentComments.Count() == 0)
+    <h1>Recent Social Activity</h1>
+    @if (Model.SocialActivity.TopLevelLogCount == 0)
     {
-        @:No recent comments.
+        @:No recent activity.
     }
     else
     {
-        <table class="comments-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Event Author</th>
-                    <th>Message</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (LogCommentEvent comment in Model.RecentComments)
+        foreach (DateTime date in Model.SocialActivity.ActivityDates)
+        {
+            List<int> eventIds = Model.SocialActivity.GetEventIds(date);
+            
+        <div>
+            <h2>@Helpers.RelativeDate(date)</h2>
+            <ul>
+                @foreach (int logId in eventIds)
                 {
-                    <tr>
-                        <td class="comments-table-date"><time 
-                class="utc-time"
-                datetime="@Helpers.DateAsUnixTime(comment.EventDate)" 
-                data-original-date="@Helpers.RawDate(comment.EventDate)" 
-                data-date-format="MM/DD/YYYY hh:mm A">
-                            @comment.EventDate.ToString("MM/dd @ hh:mmtt") (UTC)
-                        </time></td>
-                        <td class="comments-table-message-author">@Html.ActionLink(comment.EventLog.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.EventLog.SenderId, component = OsbideVsComponent.UserProfile }, new { })</td>
-                        <td class="comments-table-content">@comment.Content</td>
-                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.SourceEventLogId, component = OsbideVsComponent.FeedDetails }, new { })</td>
-                    </tr>
+                    List<CommentActivityLog> socialLogs = Model.SocialActivity.GetLogs(date, logId);
+                    DateTime maxDate = socialLogs.Select(s => s.LogCommentEvent.EventDate).Max();
+                    string content = "";
+                    switch (socialLogs.Count)
+                    {
+                        case 1:
+                            content = string.Format("{0} commented on a post by {1}",
+                            socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            break;
+
+                        case 2:
+                            content = string.Format("{0} and {1} commented on a post by {2}",
+                            socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            break;
+
+                        case 3:
+                            content = string.Format("{0}, {1}, and {2} commented on a post by {3}",
+                            socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            socialLogs[2].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            break;
+
+                        default:
+                            content = string.Format("{0}, {1}, and {2} other(s) commented on a post by {2}",
+                            socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
+                            socialLogs.Count - 2,
+                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            break;
+                    }
+                
+                    <li>@Html.Raw(content)
+                        <span class="comments-table-date">(
+                        <time 
+                            class="utc-time"
+                            datetime="@Helpers.DateAsUnixTime(maxDate)" 
+                            data-original-date="@Helpers.RawDate(maxDate)" 
+                            data-date-format="hh:mm A">
+                            @maxDate.ToString("hh:mmtt") (UTC)
+                        </time>
+                        )</span>.
+                    </li>
                 }
-            </tbody>
-        </table>
-    }
-</section>
-<section id="recent-comments-by-others">
-    <h1>Recent Comments Made on @Model.User.FirstName's Events</h1>
-    @if (Model.RecentComments.Count() == 0)
-    {
-        @:No recent comments.
-    }
-    else
-    {
-        <table class="comments-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Message Author</th>
-                    <th>Message</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (LogCommentEvent comment in Model.CommentsMadeByOthers)
-                {
-                    <tr>
-                        <td class="comments-table-date"><time 
-                class="utc-time"
-                datetime="@Helpers.DateAsUnixTime(comment.EventDate)" 
-                data-original-date="@Helpers.RawDate(comment.EventDate)" 
-                data-date-format="MM/DD/YYYY hh:mm A">
-                            @comment.EventDate.ToString("MM/dd @ hh:mmtt") (UTC)
-                        </time></td>
-                        <td class="comments-table-message-author">@Html.ActionLink(comment.EventLog.Sender.FirstAndLastName, "Index", "Profile", new { id = comment.EventLog.SenderId, component = OsbideVsComponent.UserProfile }, new { })</td>
-                        <td class="comments-table-content">@comment.Content</td>
-                        <td>@Html.ActionLink("View Discussion", "Details", "Feed", new { id = comment.SourceEventLogId, component = OsbideVsComponent.FeedDetails }, new { })</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            </ul>
+        </div>
+        }
     }
 </section>
 <section>
-    <h1>Recent Activity</h1>
+    <h1>All Activity</h1>
     @Html.Partial("Feed/_Feed", Model.Feed)
 </section>

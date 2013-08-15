@@ -14,10 +14,10 @@ namespace OSBIDE.Web.Models.ViewModels
         [DataType(DataType.Date)]
         public DateTime SelectedDate { get; set; }
         public int SelectedStudentId { get; set; }
-        public SortedList<DateTime, object> ActivityItems { get; set; }
+        public SortedDictionary<DateTime, object> ActivityItems { get; set; }
         public DailyActivityViewModel()
         {
-            ActivityItems = new SortedList<DateTime, object>();
+            ActivityItems = new SortedDictionary<DateTime, object>();
             SelectedDate = DateTime.Now;
             Students = new List<OsbideUser>();
         }

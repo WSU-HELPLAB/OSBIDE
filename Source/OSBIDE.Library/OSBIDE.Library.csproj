@@ -203,6 +203,7 @@
     <Compile Include="Models\PrivateQuestion.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />
+    <Compile Include="Models\SocialActivityLog.cs" />
     <Compile Include="Models\UserFeedSetting.cs" />
     <Compile Include="Models\UserScore.cs" />
     <Compile Include="Models\UserSubscription.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="Models\StackFrameVariable.cs" />
     <Compile Include="Models\Triggers\ModelTrigger.cs" />
     <Compile Include="Models\UserPassword.cs" />
+    <Compile Include="NTree.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
     <Compile Include="OsbideVsComponent.cs" />
     <Compile Include="StringConstants.cs" />

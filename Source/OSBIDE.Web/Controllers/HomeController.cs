@@ -42,23 +42,30 @@ namespace OSBIDE.Web.Controllers
                 OsbideWebService client = new OsbideWebService();
                 Authentication auth = new Authentication();
                 string key = auth.GetAuthenticationKey();
+                EventLog log = null;
                 if (string.IsNullOrEmpty(comment) == false)
                 {
-                    EventLog log = new EventLog(logComment, CurrentUser);
-                    client.SubmitLog(log, key);
+                    log = new EventLog(logComment, CurrentUser);
+                    log = client.SubmitLog(log, CurrentUser);
                 }
+                else
+                {
+                    return -1;
+                }
+                logComment = Db.LogCommentEvents.Where(l => l.EventLogId == log.Id).FirstOrDefault();
 
-                //notify interested parties via email
+                //the code below performs two functions:
+                // 1. Send interested parties email notifications
+                // 2. Log the comment in the social activity log (displayed on an individual's profile page)
 
                 //find others that have posted on this same thread
-                List<OsbideUser> otherComments = Db.LogCommentEvents
+                List<OsbideUser> interestedParties = Db.LogCommentEvents
                     .Where(l => l.SourceEventLogId == id)
                     .Where(l => l.EventLog.SenderId != CurrentUser.Id)
-                    .Where(l => l.EventLog.Sender.ReceiveNotificationEmails == true)
                     .Select(l => l.EventLog.Sender)
                     .ToList();
 
-                //find those that are subscribed to this thread
+                //(email only) find those that are subscribed to this thread
                 List<OsbideUser> subscribers = (from logSub in Db.EventLogSubscriptions
                                                 join user in Db.Users on logSub.UserId equals user.Id
                                                 where logSub.LogId == id
@@ -68,23 +75,54 @@ namespace OSBIDE.Web.Controllers
 
                 //check to see if the author wants to be notified of posts
                 OsbideUser eventAuthor = Db.EventLogs.Where(l => l.Id == id).Select(l => l.Sender).FirstOrDefault();
-                                               
-                //merge the three lists together
-                SortedList<int, OsbideUser> emailList = new SortedList<int, OsbideUser>();
+
+                //master list shared between email and social activity log
+                SortedDictionary<int, OsbideUser> masterList = new SortedDictionary<int, OsbideUser>();
                 if (eventAuthor != null)
                 {
-                    if (eventAuthor.ReceiveNotificationEmails == true && eventAuthor.Id != CurrentUser.Id)
-                    {
-                        emailList.Add(eventAuthor.Id, eventAuthor);
-                    }
+                    masterList.Add(eventAuthor.Id, eventAuthor);
                 }
-                foreach (OsbideUser user in otherComments)
+                foreach (OsbideUser user in interestedParties)
                 {
-                    if (emailList.ContainsKey(user.Id) == false)
+                    if (masterList.ContainsKey(user.Id) == false)
                     {
-                        emailList.Add(user.Id, user);
+                        masterList.Add(user.Id, user);
                     }
                 }
+
+                //add the current user for activity log tracking, but not for emails
+                OsbideUser creator = new OsbideUser(CurrentUser);
+                creator.ReceiveNotificationEmails = false;  //force no email send on the current user
+                masterList.Add(creator.Id, creator);
+
+                //update social activity
+                foreach(OsbideUser user in masterList.Values)
+                {
+                    CommentActivityLog social = new CommentActivityLog()
+                    {
+                        TargetUserId = user.Id,
+                        LogCommentEventId = logComment.Id
+                    };
+                    Db.CommentActivityLogs.Add(social);
+                }
+                Db.SaveChanges();
+
+                //form the email list
+                SortedDictionary<int, OsbideUser> emailList = new SortedDictionary<int, OsbideUser>();
+
+                //add in interested parties from our master list
+                foreach (OsbideUser user in masterList.Values)
+                {
+                    if (user.ReceiveNotificationEmails == true)
+                    {
+                        if (emailList.ContainsKey(user.Id) == false)
+                        {
+                            emailList.Add(user.Id, user);
+                        }
+                    }
+                }
+
+                //add in subscribers to email list
                 foreach (OsbideUser user in subscribers)
                 {
                     if (emailList.ContainsKey(user.Id) == false)
@@ -93,7 +131,7 @@ namespace OSBIDE.Web.Controllers
                     }
                 }
 
-                
+                //send emails
                 if (emailList.Count > 0)
                 {
                     //send email

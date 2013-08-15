@@ -127,7 +127,7 @@ namespace OSBIDE.Web.Controllers
                 .Select(i => i.Event)
                 .Cast<BuildEvent>()
                 .ToList();
-            SortedList<string, string> sortedFeedBuildErrors = new SortedList<string, string>(feedBuildEvents.Count);
+            SortedDictionary<string, string> sortedFeedBuildErrors = new SortedDictionary<string, string>();
             List<string> feedBuildErrors;
             foreach (BuildEvent build in feedBuildEvents)
             {

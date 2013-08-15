@@ -147,34 +147,10 @@ namespace OSBIDE.Web.Services
             }
         }
 
-        [OperationContract]
-        [ApplyDataContractResolver]
-        public int SubmitLog(EventLog log, string authToken)
+        public EventLog SubmitLog(EventLog log, OsbideUser user)
         {
-
-            //verify request before continuing
-            Authentication auth = new Authentication();
-            if (auth.IsValidKey(authToken) == false)
-            {
-                return (int)Enums.ServiceCode.AuthenticationError;
-            }
-
-            //AC: kind of hackish, but event logs that we receive should already have an ID
-            //attached to them from being stored in the machine's local DB.  We can use 
-            //that ID to track the success/failure of asynchronous calls.
-            int localId = log.Id;
-
-            //we don't want the local id, so be sure to clear
-            log.Id = 0;
-
-            //replace sender information with what is contained in the auth key
-            OsbideUser authUser = GetActiveUser(authToken);
-
-            //log the last activity date
-            LogUserTransaction(authUser);
-
             log.Sender = null;
-            log.SenderId = authUser.Id;
+            log.SenderId = user.Id;
             log.DateReceived = DateTime.UtcNow;
 
             //insert into the DB
@@ -192,12 +168,12 @@ namespace OSBIDE.Web.Services
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
-                return (int)Enums.ServiceCode.DatabaseError;
+                return null;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
-                return (int)Enums.ServiceCode.DatabaseError;
+                return null;
             }
 
             //Tease apart log information and insert into the appropriate DB table
@@ -209,7 +185,7 @@ namespace OSBIDE.Web.Services
             }
             catch (Exception)
             {
-                return (int)Enums.ServiceCode.DatabaseError;
+                return null;
             }
             if (log.LogType == AskForHelpEvent.Name)
             {
@@ -234,7 +210,7 @@ namespace OSBIDE.Web.Services
                     {
                         string errorCode = match.Groups[1].Value.ToLower().Trim();
                         ErrorType type = Db.ErrorTypes.Where(t => t.Name == errorCode).FirstOrDefault();
-                        if(type == null)
+                        if (type == null)
                         {
                             if (errorTypes.ContainsKey(errorCode) == false)
                             {
@@ -316,17 +292,53 @@ namespace OSBIDE.Web.Services
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
-                return (int)Enums.ServiceCode.DatabaseError;
+                return null;
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
-                return (int)Enums.ServiceCode.DatabaseError;
+                return null;
+            }
+            return log;
+        }
+
+        [OperationContract]
+        [ApplyDataContractResolver]
+        public int SubmitLog(EventLog log, string authToken)
+        {
+
+            //verify request before continuing
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == false)
+            {
+                return (int)Enums.ServiceCode.AuthenticationError;
             }
 
-            //Return the ID number of the local object so that the caller knows that it's been successfully
-            //saved into the main system.
-            return localId;
+            //AC: kind of hackish, but event logs that we receive should already have an ID
+            //attached to them from being stored in the machine's local DB.  We can use 
+            //that ID to track the success/failure of asynchronous calls.
+            int localId = log.Id;
+
+            //we don't want the local id, so be sure to clear
+            log.Id = 0;
+
+            //replace sender information with what is contained in the auth key
+            OsbideUser authUser = GetActiveUser(authToken);
+
+            //log the last activity date
+            LogUserTransaction(authUser);
+
+            EventLog submittedLog = SubmitLog(log, authUser);
+            if (submittedLog == null)
+            {
+                return (int)Enums.ServiceCode.DatabaseError;
+            }
+            else
+            {
+                //Return the ID number of the local object so that the caller knows that it's been successfully
+                //saved into the main system.
+                return localId;
+            }
         }
 
         [OperationContract]

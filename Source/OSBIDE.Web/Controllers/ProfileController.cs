@@ -92,29 +92,29 @@ namespace OSBIDE.Web.Controllers
             DateTime maxLookback = DateTime.UtcNow.AddDays(-14);
 
             //1. find recent comments
-            vm.RecentComments = (from comment in Db.LogCommentEvents
-                                where comment.EventLog.SenderId == vm.User.Id
-                                && comment.EventDate >= maxLookback
-                                orderby comment.EventDate descending
-                                select comment
-                                ).ToList();
-
-            //2. recent comments made by others on posts authored by the current user
-            vm.CommentsMadeByOthers = (from comment in Db.LogCommentEvents
-                                       where comment.SourceEventLog.SenderId == vm.User.Id
-                                       && comment.EventDate >= maxLookback
-                                       orderby comment.EventDate descending
-                                       select comment
-                                       ).ToList();
-
-
-            //TODO: implement this
-            //3. comments made by others on posts in which the current user has written a comment
+            List<CommentActivityLog> socialLogs = (from social in Db.CommentActivityLogs
+                                                  .Include("TargetUser")
+                                                  .Include("LogCommentEvent")
+                                                  .Include("LogCommentEvent.SourceEventLog")
+                                                  .Include("LogCommentEvent.SourceEventLog.Sender")
+                                                  .Include("LogCommentEvent")
+                                                  .Include("LogCommentEvent.EventLog")
+                                                  .Include("LogCommentEvent.EventLog.Sender")
+                                                  where 1 == 1
+                                                  && social.LogCommentEvent.EventDate >= maxLookback
+                                                  && (social.TargetUserId == vm.User.Id || social.LogCommentEvent.SourceEventLog.SenderId == vm.User.Id)
+                                                  orderby social.LogCommentEvent.EventDate descending
+                                                  select social
+                                                ).ToList();
             
+            foreach (CommentActivityLog commentLog in socialLogs)
+            {
+                vm.SocialActivity.AddLog(commentLog);
+            }
 
             //show subscriptions only if the user is accessing his own page
             if (vm.User.Id == CurrentUser.Id)
-            {   
+            {
                 List<int> eventLogIds = Db.EventLogSubscriptions.Where(s => s.UserId == vm.User.Id).Select(s => s.LogId).ToList();
                 if (eventLogIds.Count > 0)
                 {
@@ -124,7 +124,7 @@ namespace OSBIDE.Web.Controllers
                     }
                     vm.EventLogSubscriptions = AggregateFeedItem.FromFeedItems(subscriptionsQuery.Execute().ToList());
                 }
-                
+
             }
 
             return View(vm);
@@ -145,7 +145,7 @@ namespace OSBIDE.Web.Controllers
                 // We can determine which is desired by checking which button was pressed
                 if (Request.Form["updateEmail"] != null)
                 {
-                    UpdateEmail(vm);   
+                    UpdateEmail(vm);
                 }
                 else if (Request.Form["updatePassword"] != null)
                 {
@@ -219,7 +219,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     int userId = -1;
                     string[] pieces = key.Split('_');
-                    if(pieces.Length == 2)
+                    if (pieces.Length == 2)
                     {
                         if (Int32.TryParse(pieces[1], out userId) == true)
                         {
@@ -302,7 +302,7 @@ namespace OSBIDE.Web.Controllers
                 }
                 catch (Exception)
                 {
-                    
+
                     userBitmap = renderer.Render(image.User.Email.GetHashCode(), 128);
                     image.SetProfileImage(userBitmap);
                     Db.SaveChanges();
