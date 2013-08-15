@@ -374,7 +374,7 @@ namespace OSBIDE.Web.Controllers
                     Authentication auth = new Authentication();
                     string key = auth.GetAuthenticationKey();
                     EventLog log = new EventLog(help, CurrentUser);
-                    client.SubmitLog(log, key);
+                    client.SubmitLog(log, CurrentUser);
                 }
             }
             Response.Redirect(returnUrl);
@@ -419,7 +419,7 @@ namespace OSBIDE.Web.Controllers
                 FeedPostEvent commentEvent = new FeedPostEvent();
                 commentEvent.Comment = comment;
                 log.Data.BinaryData = EventFactory.ToZippedBinary(commentEvent);
-                client.SubmitLog(log, key);
+                client.SubmitLog(log, CurrentUser);
             }
             return RedirectToAction("Index");
         }
