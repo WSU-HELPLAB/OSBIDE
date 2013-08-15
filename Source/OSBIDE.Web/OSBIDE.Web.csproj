@@ -372,8 +372,8 @@
     <Content Include="Views\Shared\_Comments.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Chat\RecentMessages.cshtml" />
-    <Content Include="Views\Shared\Feed\_FeedCommentEvent.cshtml" />
-    <Content Include="Views\Feed\Details\_FeedCommentEvent.cshtml" />
+    <Content Include="Views\Shared\Feed\_FeedPostEvent.cshtml" />
+    <Content Include="Views\Feed\Details\_FeedPostEvent.cshtml" />
     <Content Include="Views\Feed\AjaxFeed.cshtml" />
     <Content Include="Views\Shared\Feed\_FeedFooter.cshtml" />
     <Content Include="Views\Shared\Feed\_Feed.cshtml" />
@@ -395,6 +395,7 @@
     <Content Include="Views\Admin\DailyActivity.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\Feed\_LogCommentEvent.cshtml" />
+    <Content Include="Views\Shared\Feed\_HelpfulMarkGivenEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

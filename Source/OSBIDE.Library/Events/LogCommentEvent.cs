@@ -47,25 +47,10 @@ namespace OSBIDE.Library.Events
         [NotMapped]
         public string PrettyName { get { return "Comment"; } }
 
-        private int _helpfulMarkCount = 0;
-
-        /// <summary>
-        /// Returns the number of helpful marks recorded since the last call to <see cref="UpdateHelpfulMarkCount"/>.  This propery, while programmatically unnecessary,
-        /// allows proper serialization of the total number of helpful marks received by the current
-        /// comment.
-        /// </summary>
-        public int HelpfulMarkCount
-        {
-            get
-            {
-                return _helpfulMarkCount;
-            }
-        }
-
         [NonSerialized]
         [IgnoreDataMember]
-        private IList<HelpfulLogComment> _helpfulMarks;
-        public virtual IList<HelpfulLogComment> HelpfulMarks
+        private IList<HelpfulMarkGivenEvent> _helpfulMarks;
+        public virtual IList<HelpfulMarkGivenEvent> HelpfulMarks
         {
             get
             {
@@ -79,8 +64,9 @@ namespace OSBIDE.Library.Events
 
         public LogCommentEvent()
         {
+            SolutionName = "OSBIDE";
             EventDate = DateTime.UtcNow;
-            HelpfulMarks = new List<HelpfulLogComment>();
+            HelpfulMarks = new List<HelpfulMarkGivenEvent>();
         }
 
         public LogCommentEvent(LogCommentEvent other)
@@ -96,15 +82,18 @@ namespace OSBIDE.Library.Events
             }
         }
 
-        /// <summary>
-        /// See <see cref="UpdateHelpfulMarkCount"/> for a justification of this function.
-        /// </summary>
-        public void UpdateHelpfulMarkCount()
+        public string GetShortComment(int maxLength, bool includeEllipsis = true)
         {
-            if (HelpfulMarks != null)
+            string result = "";
+            if (Content.Length < maxLength)
             {
-                _helpfulMarkCount = HelpfulMarks.Count;
+                result = Content;
             }
+            else
+            {
+                result = Content.Substring(0, maxLength) + "...";
+            }
+            return result;
         }
 
         public IOsbideEvent FromDict(Dictionary<string, object> values)

@@ -161,7 +161,7 @@
     <Compile Include="Events\AskForHelpEvent.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
-    <Compile Include="Events\FeedCommentEvent.cs" />
+    <Compile Include="Events\FeedPostEvent.cs" />
     <Compile Include="Events\HelpfulMarkGivenEvent.cs" />
     <Compile Include="Events\LogCommentEvent.cs" />
     <Compile Include="IconConverter.cs">
@@ -200,7 +200,6 @@
     <Compile Include="Models\DocumentFactory.cs" />
     <Compile Include="Models\EventLogData.cs" />
     <Compile Include="Models\EventLogSubscription.cs" />
-    <Compile Include="Models\HelpfulLogComment.cs" />
     <Compile Include="Models\PrivateQuestion.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />
@@ -210,7 +209,6 @@
     <Compile Include="Models\IModelBuilderExtender.cs" />
     <Compile Include="Models\IVSDocument.cs" />
     <Compile Include="Models\LocalErrorLog.cs" />
-    <Compile Include="Models\LogComment.cs" />
     <Compile Include="Models\OsbideContextAlwaysCreateInitializer.cs" />
     <Compile Include="Models\OsbideContextModelChangeInitializer.cs" />
     <Compile Include="Models\OsbideContextSeeder.cs" />

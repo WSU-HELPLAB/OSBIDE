@@ -12,6 +12,6 @@
 }
 else
 {
-    @comment.SourceEventLog.Sender.FirstName@:'s
+    <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>
 }
-@evt.PrettyName.ToLower()@:.
+@string.Format("{0}.", evt.PrettyName.ToLower())

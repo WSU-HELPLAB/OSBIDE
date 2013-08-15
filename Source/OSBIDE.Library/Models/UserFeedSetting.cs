@@ -20,7 +20,8 @@ namespace OSBIDE.Library.Models
         FeedPostEvent = 8,
         AskForHelpEvent = 16,
         SubmitEvent = 32,
-        LogCommentEvent = 64
+        LogCommentEvent = 64,
+        HelpfulMarkGivenEvent = 128
     };
 
     public class UserFeedSetting
@@ -74,6 +75,9 @@ namespace OSBIDE.Library.Models
                 case FeedSetting.SubmitEvent:
                     evt = new SubmitEvent();
                     break;
+                case FeedSetting.HelpfulMarkGivenEvent:
+                    evt = new HelpfulMarkGivenEvent();
+                    break;
                 case FeedSetting.LogCommentEvent:
                     evt = new LogCommentEvent();
                     break;
@@ -117,6 +121,10 @@ namespace OSBIDE.Library.Models
             {
                 option = FeedSetting.FeedPostEvent;
             }
+            else if (evt.EventName == HelpfulMarkGivenEvent.Name)
+            {
+                option = FeedSetting.HelpfulMarkGivenEvent;
+            }
             else if (evt.EventName == LogCommentEvent.Name)
             {
                 option = FeedSetting.LogCommentEvent;
@@ -146,6 +154,10 @@ namespace OSBIDE.Library.Models
             else if (evt.EventName == FeedPostEvent.Name)
             {
                 option = FeedSetting.FeedPostEvent;
+            }
+            else if (evt.EventName == HelpfulMarkGivenEvent.Name)
+            {
+                option = FeedSetting.HelpfulMarkGivenEvent;
             }
             else if (evt.EventName == LogCommentEvent.Name)
             {

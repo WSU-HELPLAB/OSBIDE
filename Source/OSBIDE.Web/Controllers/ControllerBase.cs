@@ -90,8 +90,8 @@ namespace OSBIDE.Web.Controllers
                                group comment by comment.EventLog.SenderId into commentGroup
                                select new { UserId = commentGroup.Key, CommentCount = commentGroup.Count() };
 
-            var sevenPtQuery = from helpful in Db.HelpfulLogComments
-                               group helpful by helpful.Comment.EventLog.SenderId into helpfulGroup
+            var sevenPtQuery = from helpful in Db.HelpfulMarkGivenEvents
+                               group helpful by helpful.LogCommentEvent.EventLog.SenderId into helpfulGroup
                                select new { UserId = helpfulGroup.Key, HelpfulCount = helpfulGroup.Count() };
 
             Dictionary<int, int> scores = new Dictionary<int, int>();

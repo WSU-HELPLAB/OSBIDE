@@ -100,6 +100,7 @@ namespace OSBIDE.Web.Models.Queries
             events.Add(new FeedPostEvent());
             events.Add(new AskForHelpEvent());
             events.Add(new LogCommentEvent());
+            events.Add(new HelpfulMarkGivenEvent());
             
             //AC: turned off for fall 2013 study
             //events.Add(new SubmitEvent());
@@ -319,12 +320,16 @@ namespace OSBIDE.Web.Models.Queries
                 conn.Close();
             }
 
-            //update comments that will appear in the activity feed (as opposed to being attached to another log)
+            //update comments and helpful marks that will appear in the activity feed (as opposed to being attached to another log)
             foreach (FeedItem item in feedItems)
             {
                 if (item.Event is LogCommentEvent)
                 {
                     item.Event = _db.LogCommentEvents.Find(item.EventId);
+                }
+                else if (item.Event is HelpfulMarkGivenEvent)
+                {
+                    item.Event = _db.HelpfulMarkGivenEvents.Find(item.EventId);
                 }
             }
 
@@ -334,14 +339,17 @@ namespace OSBIDE.Web.Models.Queries
             {
                 itemsDict[item.LogId] = item;
             }
+
             int[] logIds = itemsDict.Keys.ToArray();
             var commentsQuery = from comment in _db.LogCommentEvents
                                 where logIds.Contains(comment.SourceEventLogId)
                                 select comment;
-            foreach (LogCommentEvent comment in commentsQuery)
+            List<LogCommentEvent> comments = commentsQuery.ToList();
+            foreach (LogCommentEvent comment in comments)
             {
                 itemsDict[comment.SourceEventLogId].Comments.Add(comment);
                 itemsDict[comment.SourceEventLogId].Log.Comments.Add(comment);
+                itemsDict[comment.SourceEventLogId].HelpfulComments += comment.HelpfulMarks.Count;
             }
             return feedItems;
         }

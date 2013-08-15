@@ -34,8 +34,8 @@ namespace OSBIDE.Web.Models.Queries
                                 Log = log,
                                 BuildEvent = be,
                                 Comments = logComments,
-                                HelpfulMarks = (from helpful in _db.HelpfulLogComments
-                                                where logComments.Select(l => l.Id).Contains(helpful.CommentId)
+                                HelpfulMarks = (from helpful in _db.HelpfulMarkGivenEvents
+                                                where logComments.Select(l => l.Id).Contains(helpful.LogCommentEventId)
                                                 select helpful).Count()
                             };
 

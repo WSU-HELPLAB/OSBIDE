@@ -287,6 +287,10 @@ namespace OSBIDE.Web.Services
             {
                 Db.FeedPostEvents.Add((FeedPostEvent)evt);
             }
+            else if (log.LogType == HelpfulMarkGivenEvent.Name)
+            {
+                Db.HelpfulMarkGivenEvents.Add((HelpfulMarkGivenEvent)evt);
+            }
             else if (log.LogType == LogCommentEvent.Name)
             {
                 Db.LogCommentEvents.Add((LogCommentEvent)evt);

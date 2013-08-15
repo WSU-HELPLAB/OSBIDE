@@ -30,7 +30,6 @@ namespace OSBIDE.Library.Models
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<EventLogSubscription> EventLogSubscriptions { get; set; }
         public DbSet<UserFeedSetting> UserFeedSettings { get; set; }
-        public DbSet<HelpfulLogComment> HelpfulLogComments { get; set; }
         public DbSet<UserScore> UserScores { get; set; }
         public DbSet<PrivateQuestion> PrivateQuestions { get; set; }
         public DbSet<ServerLog> ServerLogs { get; set; }
@@ -57,6 +56,7 @@ namespace OSBIDE.Library.Models
         public DbSet<SubmitEvent> SubmitEvents { get; set; }
         public DbSet<FeedPostEvent> FeedPostEvents { get; set; }
         public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
+        public DbSet<HelpfulMarkGivenEvent> HelpfulMarkGivenEvents { get; set; }
 
         public OsbideContext()
             : base()

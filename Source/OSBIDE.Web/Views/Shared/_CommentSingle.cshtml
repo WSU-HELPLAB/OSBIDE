@@ -4,7 +4,7 @@
 @{
     LogCommentEvent comment = Model;
     OsbideUser CurrentUser = ViewBag.CurrentUser;
-    HelpfulLogComment helpful = comment.HelpfulMarks.Where(m => m.UserId == CurrentUser.Id).FirstOrDefault();
+    HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
     int helpfulCount = comment.HelpfulMarks.Count();
 }
 <section class="log-comment-single" data-id="@Model.Id" data-logId="@Model.SourceEventLogId">

@@ -23,9 +23,9 @@ namespace OSBIDE.Web.Controllers
         public FeedController()
         {
             _userSettings = (from setting in Db.UserFeedSettings
-                            where setting.UserId == CurrentUser.Id
-                            orderby setting.Id descending
-                            select setting)
+                             where setting.UserId == CurrentUser.Id
+                             orderby setting.Id descending
+                             select setting)
                             .Take(1)
                             .FirstOrDefault();
         }
@@ -357,22 +357,24 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult MarkCommentHelpful(int commentId, string returnUrl)
         {
-            int count = Db.HelpfulLogComments
-                .Where(c => c.UserId == CurrentUser.Id)
-                .Where(c => c.CommentId == commentId)
+            int count = Db.HelpfulMarkGivenEvents
+                .Where(c => c.EventLog.SenderId == CurrentUser.Id)
+                .Where(c => c.LogCommentEventId == commentId)
                 .Count();
             if (count == 0)
             {
                 LogCommentEvent comment = Db.LogCommentEvents.Where(c => c.Id == commentId).FirstOrDefault();
                 if (commentId != 0)
                 {
-                    HelpfulLogComment help = new HelpfulLogComment()
+                    HelpfulMarkGivenEvent help = new HelpfulMarkGivenEvent()
                     {
-                        CommentId = commentId,
-                        UserId = CurrentUser.Id
+                        LogCommentEventId = commentId
                     };
-                    Db.HelpfulLogComments.Add(help);
-                    Db.SaveChanges();
+                    OsbideWebService client = new OsbideWebService();
+                    Authentication auth = new Authentication();
+                    string key = auth.GetAuthenticationKey();
+                    EventLog log = new EventLog(help, CurrentUser);
+                    client.SubmitLog(log, key);
                 }
             }
             Response.Redirect(returnUrl);

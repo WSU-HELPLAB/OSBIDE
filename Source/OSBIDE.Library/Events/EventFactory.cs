@@ -216,6 +216,10 @@ namespace OSBIDE.Library.Events
             {
                 evt = new FeedPostEvent();
             }
+            else if (name == HelpfulMarkGivenEvent.Name)
+            {
+                evt = new HelpfulMarkGivenEvent();
+            }
             else if (name == LogCommentEvent.Name)
             {
                 evt = new LogCommentEvent();
