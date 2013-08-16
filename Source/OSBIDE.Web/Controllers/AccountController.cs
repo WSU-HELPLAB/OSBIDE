@@ -79,10 +79,6 @@ namespace OSBIDE.Web.Controllers
                     vm.User.Email = vm.Email;
                     vm.User.Id = 0;
 
-                    //add generic profile image
-                    IdenticonRenderer renderer = new IdenticonRenderer();
-                    vm.User.SetProfileImage(renderer.Render(vm.User.Email.GetHashCode(), 128));
-
                     Db.Users.Add(vm.User);
                     Db.SaveChanges();
 
