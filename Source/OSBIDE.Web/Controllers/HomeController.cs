@@ -93,6 +93,10 @@ namespace OSBIDE.Web.Controllers
                 //add the current user for activity log tracking, but not for emails
                 OsbideUser creator = new OsbideUser(CurrentUser);
                 creator.ReceiveNotificationEmails = false;  //force no email send on the current user
+                if (masterList.ContainsKey(creator.Id) == true)
+                {
+                    masterList.Remove(creator.Id);
+                }
                 masterList.Add(creator.Id, creator);
 
                 //update social activity
