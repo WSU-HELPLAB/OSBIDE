@@ -208,8 +208,8 @@ namespace OSBIDE.Web.Services
                 if (observers.Count > 0)
                 {
                     string url = StringConstants.GetActivityFeedDetailsUrl(log.Id);
-                    string body = "Greetings,\n{0} asked for help regarding the following item:\n\"{1}\"\nTo view this "
-                    + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
+                    string body = "Greetings,<br />{0} asked for help regarding the following item:<br />\"{1}\"<br />To view this "
+                    + "conversation online, please visit {2} or visit your OSBIDE user profile.<br /><br />Thanks,<br />OSBIDE<br /><br />"
                     + "These automated messages can be turned off by editing your user profile.";
                     body = string.Format(body, user.FirstAndLastName, ask.UserComment, url);
                     List<MailAddress> to = new List<MailAddress>();

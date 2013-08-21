@@ -136,8 +136,8 @@ namespace OSBIDE.Web.Controllers
                 {
                     //send email
                     string url = StringConstants.GetActivityFeedDetailsUrl(id);
-                    string body = "Greetings,\n{0} has commented on a post that you have previously been involved with:\n\"{1}\"\nTo view this "
-                    + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
+                    string body = "Greetings,<br />{0} has commented on a post that you have previously been involved with:<br />\"{1}\"<br />To view this "
+                    + "conversation online, please visit {2} or visit your OSBIDE user profile.<br /><br />Thanks,<br />OSBIDE<br /><br />"
                     + "These automated messages can be turned off by editing your user profile.";
                     body = string.Format(body, logComment.EventLog.Sender.FirstAndLastName, logComment.Content, url);
                     List<MailAddress> to = new List<MailAddress>();
