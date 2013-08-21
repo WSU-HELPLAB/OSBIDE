@@ -80,9 +80,9 @@ namespace OSBIDE.Library
         {
             string url = "";
 #if DEBUG
-            url = "http://localhost:24867/Details/{0}";
+            url = "http://localhost:24867/Feed/Details/{0}";
 #else
-            url = "http://osbide.com/Details/{0}";
+            url = "http://osbide.com/Feed/Details/{0}";
 #endif
             return string.Format(url, logId);
         }
