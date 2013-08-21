@@ -199,7 +199,7 @@ namespace OSBIDE.Web.Services
 
                 observers = (from subscription in Db.UserSubscriptions
                             join dbUser in Db.Users on
-                                              new { InstitutionId = subscription.SubjectInstitutionId, SchoolId = subscription.SubjectSchoolId }
+                                              new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
                                               equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
                             where subscription.SubjectSchoolId == user.SchoolId
                                && subscription.SubjectInstitutionId == user.InstitutionId
@@ -211,7 +211,7 @@ namespace OSBIDE.Web.Services
                     string body = "Greetings,\n{0} asked for help regarding the following item:\n\"{1}\"\nTo view this "
                     + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
                     + "These automated messages can be turned off by editing your user profile.";
-                    body = string.Format(body, log.Sender.FirstAndLastName, ask.UserComment, url);
+                    body = string.Format(body, user.FirstAndLastName, ask.UserComment, url);
                     List<MailAddress> to = new List<MailAddress>();
                     foreach (OsbideUser observer in observers)
                     {

@@ -107,11 +107,11 @@
             </tr>
             <tr>
                 <th>Receive email notifications when someone asks for help:</th>
-                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotificationsForPosts)</td>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailsOnNewAskForHelp)</td>
             </tr>
             <tr>
                 <th>Receive email notifications when someone posts a general feed comment:</th>
-                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotificationsForPosts)</td>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailsOnFeedPost)</td>
             </tr>
         </table>
         <input type="submit" name="changeEmailNotifications" value="Update Settings" />

@@ -428,7 +428,7 @@ namespace OSBIDE.Web.Controllers
 
                 observers = (from subscription in Db.UserSubscriptions
                             join user in Db.Users on
-                                              new { InstitutionId = subscription.SubjectInstitutionId, SchoolId = subscription.SubjectSchoolId }
+                                              new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
                                               equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
                             where subscription.SubjectSchoolId == CurrentUser.SchoolId
                                && subscription.SubjectInstitutionId == CurrentUser.InstitutionId
@@ -440,7 +440,7 @@ namespace OSBIDE.Web.Controllers
                     string body = "Greetings,\n{0} posted a new item to the activity feed:\n\"{1}\"\nTo view this "
                     + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
                     + "These automated messages can be turned off by editing your user profile.";
-                    body = string.Format(body, log.Sender.FirstAndLastName, comment, url);
+                    body = string.Format(body, CurrentUser.FirstAndLastName, comment, url);
                     List<MailAddress> to = new List<MailAddress>();
                     foreach (OsbideUser user in observers)
                     {
