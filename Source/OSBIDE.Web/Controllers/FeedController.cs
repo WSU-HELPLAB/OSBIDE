@@ -1,4 +1,5 @@
 ﻿using DiffMatchPatch;
+using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Objects;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 
@@ -419,7 +421,33 @@ namespace OSBIDE.Web.Controllers
                 FeedPostEvent commentEvent = new FeedPostEvent();
                 commentEvent.Comment = comment;
                 log.Data.BinaryData = EventFactory.ToZippedBinary(commentEvent);
-                client.SubmitLog(log, CurrentUser);
+                log = client.SubmitLog(log, CurrentUser);
+
+                //find all of this user's subscribers and send them an email
+                List<OsbideUser> observers = new List<OsbideUser>();
+
+                observers = (from subscription in Db.UserSubscriptions
+                            join user in Db.Users on
+                                              new { InstitutionId = subscription.SubjectInstitutionId, SchoolId = subscription.SubjectSchoolId }
+                                              equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
+                            where subscription.SubjectSchoolId == CurrentUser.SchoolId
+                               && subscription.SubjectInstitutionId == CurrentUser.InstitutionId
+                               && user.ReceiveEmailOnNewFeedPost == true
+                            select user).ToList();
+                if (observers.Count > 0)
+                {
+                    string url = StringConstants.GetActivityFeedDetailsUrl(log.Id);
+                    string body = "Greetings,\n{0} posted a new item to the activity feed:\n\"{1}\"\nTo view this "
+                    + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
+                    + "These automated messages can be turned off by editing your user profile.";
+                    body = string.Format(body, log.Sender.FirstAndLastName, comment, url);
+                    List<MailAddress> to = new List<MailAddress>();
+                    foreach (OsbideUser user in observers)
+                    {
+                        to.Add(new MailAddress(user.Email));
+                    }
+                    Email.Send("[OSBIDE] New Activity Post", body, to);
+                }
             }
             return RedirectToAction("Index");
         }

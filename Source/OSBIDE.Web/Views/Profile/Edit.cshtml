@@ -102,8 +102,16 @@
         }
         <table class="form-entry">
             <tr>
-                <th>Receive email notifications of activity:</th>
-                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotifications)</td>
+                <th>Receive email notifications from posts that I'm involved with:</th>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotificationsForPosts)</td>
+            </tr>
+            <tr>
+                <th>Receive email notifications when someone asks for help:</th>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotificationsForPosts)</td>
+            </tr>
+            <tr>
+                <th>Receive email notifications when someone posts a general feed comment:</th>
+                <td>@Html.CheckBoxFor(m => m.ReceiveEmailNotificationsForPosts)</td>
             </tr>
         </table>
         <input type="submit" name="changeEmailNotifications" value="Update Settings" />
@@ -117,6 +125,7 @@
     {
         <input type="submit" name="updateSubscriptions" value="Update Subscriptions" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+        <input type="button" id="subscribe-to-all" value="Select All" />
         <table>
             <thead>
             </thead>
@@ -154,7 +163,7 @@
                                 <br />
                                 @if (isRequired == false)
                                 {
-                                    @:<input id="subscription_@user.Id" name="subscription_@user.Id" type="checkbox" @isChecked @isRequired /> 
+                                    @:<input id="subscription_@user.Id" name="subscription_@user.Id" class="subscriptions-checkbox" type="checkbox" @isChecked @isRequired /> 
                                     <label for="subscription_@user.Id">Subscribe</label>
                                 }
                                 else
@@ -181,6 +190,13 @@
 </section>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#subscribe-to-all').click(function () {
+            $('.subscriptions-checkbox').prop('checked', true);
+        });
+    });
+</script>
 }
 
 

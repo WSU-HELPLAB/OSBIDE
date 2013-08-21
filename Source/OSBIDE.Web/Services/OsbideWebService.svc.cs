@@ -12,6 +12,7 @@ using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models;
 using OSBIDE.Library;
 using System.Text.RegularExpressions;
+using System.Net.Mail;
 
 namespace OSBIDE.Web.Services
 {
@@ -190,6 +191,34 @@ namespace OSBIDE.Web.Services
             if (log.LogType == AskForHelpEvent.Name)
             {
                 Db.AskForHelpEvents.Add((AskForHelpEvent)evt);
+                AskForHelpEvent ask = evt as AskForHelpEvent;
+
+                //send email to interested parties
+                //find all of this user's subscribers and send them an email
+                List<OsbideUser> observers = new List<OsbideUser>();
+
+                observers = (from subscription in Db.UserSubscriptions
+                            join dbUser in Db.Users on
+                                              new { InstitutionId = subscription.SubjectInstitutionId, SchoolId = subscription.SubjectSchoolId }
+                                              equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
+                            where subscription.SubjectSchoolId == user.SchoolId
+                               && subscription.SubjectInstitutionId == user.InstitutionId
+                               && dbUser.ReceiveEmailOnNewFeedPost == true
+                            select dbUser).ToList();
+                if (observers.Count > 0)
+                {
+                    string url = StringConstants.GetActivityFeedDetailsUrl(log.Id);
+                    string body = "Greetings,\n{0} asked for help regarding the following item:\n\"{1}\"\nTo view this "
+                    + "conversation online, please visit {2} or visit your OSBIDE user profile.\n\nThanks,\nOSBIDE\n\n"
+                    + "These automated messages can be turned off by editing your user profile.";
+                    body = string.Format(body, log.Sender.FirstAndLastName, ask.UserComment, url);
+                    List<MailAddress> to = new List<MailAddress>();
+                    foreach (OsbideUser observer in observers)
+                    {
+                        to.Add(new MailAddress(observer.Email));
+                    }
+                    Email.Send("[OSBIDE] Someone has asked for help!", body, to);
+                }
             }
             else if (log.LogType == BuildEvent.Name)
             {

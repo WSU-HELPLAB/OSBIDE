@@ -173,7 +173,9 @@ namespace OSBIDE.Web.Controllers
                 vm = oldVm;
             }
             vm.User = CurrentUser;
-
+            vm.ReceiveEmailNotificationsForPosts = CurrentUser.ReceiveNotificationEmails;
+            vm.ReceiveEmailsOnFeedPost = CurrentUser.ReceiveEmailOnNewFeedPost;
+            vm.ReceiveEmailsOnNewAskForHelp = CurrentUser.ReceiveEmailOnNewAskForHelp;
             vm.UsersInCourse = Db.Users.Where(u => u.SchoolId == CurrentUser.SchoolId).ToList();
             StudentSubscriptionsQuery subs = new StudentSubscriptionsQuery(Db, CurrentUser);
             List<OsbideUser> subscriptionsAsUsers = subs.Execute().ToList();
@@ -194,7 +196,9 @@ namespace OSBIDE.Web.Controllers
 
         private void UpdateEmailNotificationSettings(EditProfileViewModel vm)
         {
-            CurrentUser.ReceiveNotificationEmails = vm.ReceiveEmailNotifications;
+            CurrentUser.ReceiveNotificationEmails = vm.ReceiveEmailNotificationsForPosts;
+            CurrentUser.ReceiveEmailOnNewAskForHelp = vm.ReceiveEmailsOnNewAskForHelp;
+            CurrentUser.ReceiveEmailOnNewFeedPost = vm.ReceiveEmailsOnFeedPost;
             vm.UpdateEmailSettingsMessage = "Your email settings have been updated.";
         }
 
@@ -249,7 +253,7 @@ namespace OSBIDE.Web.Controllers
             //Attempt to update email address.
             //Check to make sure email address isn't in use
             OsbideUser user = Db.Users.Where(u => u.Email.CompareTo(vm.NewEmail) == 0).FirstOrDefault();
-            if (user == null)
+            if (user == null && string.IsNullOrEmpty(vm.NewEmail) == false)
             {
                 //update email address
                 CurrentUser.Email = vm.NewEmail;
@@ -271,7 +275,7 @@ namespace OSBIDE.Web.Controllers
         {
             //update the user's password
             UserPassword up = Db.UserPasswords.Where(p => p.UserId == CurrentUser.Id).FirstOrDefault();
-            if (up != null)
+            if (up != null && string.IsNullOrEmpty(vm.NewPassword) == false)
             {
                 up.Password = UserPassword.EncryptPassword(vm.NewPassword, CurrentUser);
                 Db.SaveChanges();

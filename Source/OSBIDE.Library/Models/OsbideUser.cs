@@ -32,6 +32,8 @@ namespace OSBIDE.Library.Models
         private int _schoolId;
         private int _institutionId = -1;
         private bool _receiveNotificationEmails = false;
+        private bool _receiveEmailOnNewAskForHelp = false;
+        private bool _receiveEmailOnNewFeedPost = false;
 
         [NonSerialized]
         private ProfileImage _profileImage;
@@ -251,6 +253,32 @@ namespace OSBIDE.Library.Models
             get
             {
                 return string.Format("{0} {1}", FirstName, LastName);
+            }
+        }
+
+        public bool ReceiveEmailOnNewAskForHelp
+        {
+            get
+            {
+                return _receiveEmailOnNewAskForHelp;
+            }
+            set
+            {
+                _receiveEmailOnNewAskForHelp = value;
+                OnPropertyChanged("ReceiveEmailOnNewAskForHelp");
+            }
+        }
+
+        public bool ReceiveEmailOnNewFeedPost
+        {
+            get
+            {
+                return _receiveEmailOnNewFeedPost;
+            }
+            set
+            {
+                _receiveEmailOnNewFeedPost = value;
+                OnPropertyChanged("ReceiveEmailOnNewFeedPost");
             }
         }
 

@@ -25,21 +25,22 @@ namespace OSBIDE.Web.Models.ViewModels
         public string NewPasswordConfirm { get; set; }
         public string OldPassword { get; set; }
 
-        public bool ReceiveEmailNotifications { get; set; }
+        public bool ReceiveEmailNotificationsForPosts { get; set; }
+        public bool ReceiveEmailsOnNewAskForHelp { get; set; }
+        public bool ReceiveEmailsOnFeedPost { get; set; }
 
         public string UpdateEmailSuccessMessage { get; set; }
         public string UpdatePasswordSuccessMessage { get; set; }
         public string UpdateEmailSettingsMessage { get; set; }
-
-        public bool SendEmailForCommentsOnMyPosts { get; set; }
 
         public List<OsbideUser> UsersInCourse { get; set; }
         public Dictionary<int, UserSubscription> UserSubscriptions { get; set; }
 
         public EditProfileViewModel()
         {
-            ReceiveEmailNotifications = false;
-            SendEmailForCommentsOnMyPosts = false;
+            ReceiveEmailNotificationsForPosts = false;
+            ReceiveEmailsOnNewAskForHelp = false;
+            ReceiveEmailsOnFeedPost = false;
             UsersInCourse = new List<OsbideUser>();
             UserSubscriptions = new Dictionary<int, UserSubscription>();
         }
