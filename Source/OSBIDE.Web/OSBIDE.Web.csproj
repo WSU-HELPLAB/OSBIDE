@@ -313,6 +313,7 @@
     <Content Include="Content\icons\unfollow.pdn" />
     <Content Include="App_Code\Helpers.cshtml" />
     <Content Include="packages.config" />
+    <None Include="Content\OSBIDE.zip" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\osbidetest - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidetest - Web Deploy.pubxml" />

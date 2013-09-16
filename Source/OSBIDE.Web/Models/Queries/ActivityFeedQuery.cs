@@ -32,12 +32,16 @@ namespace OSBIDE.Web.Models.Queries
                                 , osbideUser.InstitutionId
                                 , osbideUser.RoleValue
                                 , osbideUser.LastVsActivity
+                                , buildErrors.NumberOfBuildErrors
                                 ");
         protected StringBuilder _query_additional_select = new StringBuilder();
         protected StringBuilder _query_from_clause = new StringBuilder(@"
                                 FROM EventLogs log
                                 LEFT JOIN UserScores score ON log.SenderId = score.UserId
                                 LEFT JOIN OsbideUsers osbideUser ON log.SenderId = osbideUser.Id
+                                LEFT JOIN (
+								   SELECT COUNT(BuildErrorTypeId) AS [NumberOfBuildErrors], LogId FROM BuildErrors GROUP BY LogId
+								) buildErrors ON log.Id = buildErrors.LogId
                                 ");
         protected StringBuilder _query_joins = new StringBuilder();
         protected StringBuilder _query_where_clause = new StringBuilder("WHERE 1 = 1\n");
@@ -214,15 +218,31 @@ namespace OSBIDE.Web.Models.Queries
             }
 
             //filter by desired events if desired
-            string[] eventNames = eventSelectors.Select(e => e.EventName).ToArray();
+            string[] eventNames = eventSelectors.Where(e => e.EventName != BuildEvent.Name).Select(e => e.EventName).ToArray();
+            bool isLookingForBuildError = false;
+            if (eventSelectors.Where(e => e.EventName == BuildEvent.Name).Count() > 0)
+            {
+                isLookingForBuildError = true;
+            }
             if (eventNames.Length > 0)
             {
                 //sanitize strings for query
                 for (int i = 0; i < eventNames.Length; i++)
                 {
-                    eventNames[i] = string.Format("'{0}'", eventNames[i]);
+                        eventNames[i] = string.Format("'{0}'", eventNames[i]);
                 }
-                _query_where_clause.Append(string.Format(" AND log.LogType IN ({0})\n", string.Join(",", eventNames)));
+                if (isLookingForBuildError == true)
+                {
+                    _query_where_clause.Append(string.Format(@"AND
+                    (
+                        log.LogType IN ({0}) OR (log.LogType = '{1}' AND [NumberOfBuildErrors] > 0)
+                    )", string.Join(",", eventNames), BuildEvent.Name));
+
+                }
+                else
+                {
+                    _query_where_clause.Append(string.Format(" AND log.LogType IN ({0})\n", string.Join(",", eventNames)));
+                }
             }
 
             //get list of subscription ids
@@ -256,6 +276,10 @@ namespace OSBIDE.Web.Models.Queries
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read() == true)
                 {
+                    //TODO: AC: Rework the query to only pull the particular event ID and the event type.  Then, create N queries that group all
+                    //events of that type together in order to reduce the number of queries made.  Combine all queries into a single list and return.
+                    //This will allow the deep-linking needed to provide detailed information on the activity feed.  
+
                     //read values into a dictionary for easier processing
                     Dictionary<string, object> values = new Dictionary<string, object>();
                     for (int i = 0; i < reader.FieldCount; i++)

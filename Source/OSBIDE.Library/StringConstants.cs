@@ -203,6 +203,30 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string UpdateUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/Content/osbide.zip";
+#else
+                return "http://osbide.com/Content/osbide.zip";
+#endif
+            }
+        }
+
+        public static string LocalUpdatePath
+        {
+            get
+            {
+#if DEBUG
+                return Path.Combine(DataRoot, "osbide_debug.vsix");
+#else
+                return Path.Combine(DataRoot, "osbide_release.vsix");
+#endif
+            }
+        }
+
         public static string OsbidePackageUrl
         {
             get

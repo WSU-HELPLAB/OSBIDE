@@ -25,6 +25,7 @@ using OSBIDE.Controls.Views;
 using System.IO;
 using OSBIDE.Controls;
 using Microsoft.VisualStudio.CommandBars;
+using System.Net;
 
 namespace OSBIDE.Plugins.VS2012
 {
@@ -345,7 +346,22 @@ namespace OSBIDE.Plugins.VS2012
             if (StringConstants.LibraryVersion.CompareTo(remoteVersionNumber) != 0)
             {
                 _isOsbideUpToDate = false;
-                UpdateAvailableWindow.ShowModalDialog(StringConstants.OsbidePackageUrl);
+
+                //download updated library version
+                WebClient web = new WebClient();
+                web.DownloadFileCompleted += web_DownloadFileCompleted;
+                web.Headers.Add(HttpRequestHeader.UserAgent, "OSBIDE");
+                if (File.Exists(StringConstants.LocalUpdatePath) == true)
+                {
+                    try
+                    {
+                        File.Delete(StringConstants.LocalUpdatePath);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+                web.DownloadFileAsync(new Uri(StringConstants.UpdateUrl), StringConstants.LocalUpdatePath);
             }
 
             //if we're all up to date and had no startup errors, then we can start sending logs to the server
@@ -353,6 +369,12 @@ namespace OSBIDE.Plugins.VS2012
             {
                 _client.StartSending();
             }
+        }
+
+        void web_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            MessageBox.Show("Your version of OSBIDE is out of date.  Installation of the latest version will now begin.");
+            System.Diagnostics.Process.Start(StringConstants.LocalUpdatePath);
         }
 
         /// <summary>
