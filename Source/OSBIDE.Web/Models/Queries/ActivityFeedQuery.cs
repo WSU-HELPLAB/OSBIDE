@@ -22,23 +22,11 @@ namespace OSBIDE.Web.Models.Queries
                                 , log.LogType
                                 , log.DateReceived
                                 , log.SenderId
-                                , log.AssemblyVersion
-                                , score.*
-                                , osbideUser.Id AS user_Id
-                                , osbideUser.Email
-                                , osbideUser.FirstName
-                                , osbideUser.LastName
-                                , osbideUser.SchoolId
-                                , osbideUser.InstitutionId
-                                , osbideUser.RoleValue
-                                , osbideUser.LastVsActivity
                                 , buildErrors.NumberOfBuildErrors
                                 ");
         protected StringBuilder _query_additional_select = new StringBuilder();
         protected StringBuilder _query_from_clause = new StringBuilder(@"
                                 FROM EventLogs log
-                                LEFT JOIN UserScores score ON log.SenderId = score.UserId
-                                LEFT JOIN OsbideUsers osbideUser ON log.SenderId = osbideUser.Id
                                 LEFT JOIN (
 								   SELECT COUNT(BuildErrorTypeId) AS [NumberOfBuildErrors], LogId FROM BuildErrors GROUP BY LogId
 								) buildErrors ON log.Id = buildErrors.LogId
@@ -105,7 +93,7 @@ namespace OSBIDE.Web.Models.Queries
             events.Add(new AskForHelpEvent());
             events.Add(new LogCommentEvent());
             events.Add(new HelpfulMarkGivenEvent());
-            
+
             //AC: turned off for fall 2013 study
             //events.Add(new SubmitEvent());
             return events;
@@ -131,7 +119,7 @@ namespace OSBIDE.Web.Models.Queries
         {
             if (user != null)
             {
-                subscriptionSubjects.Add(user);   
+                subscriptionSubjects.Add(user);
             }
         }
 
@@ -152,7 +140,7 @@ namespace OSBIDE.Web.Models.Queries
 
         public virtual IList<FeedItem> Execute()
         {
-            List<FeedItem> feedItems = new List<FeedItem>();
+            SortedDictionary<DateTime, FeedItem> feedItems = new SortedDictionary<DateTime, FeedItem>();
             StringBuilder queryString = new StringBuilder();
             Dictionary<string, IOsbideEvent> aliasMap = new Dictionary<string, IOsbideEvent>();
 
@@ -169,26 +157,8 @@ namespace OSBIDE.Web.Models.Queries
                 }
             }
 
-            //make the joins
-            string tablePrefix = "T";
-            int joinCounter = 1;
-            foreach (IOsbideEvent evt in eventSelectors)
-            {
-                string alias = string.Format("{0}{1}", tablePrefix, joinCounter);
-                aliasMap[alias] = evt;
-                string tableName = string.Format("{0}s", evt.EventName);
-                _query_additional_select.Append(string.Format(", {0}.*, {1}.Id AS {2}_Id\n", alias, alias, alias));
-                _query_joins.Append(string.Format(@"
-                        LEFT JOIN {0} {1} ON log.Id = {2}.EventLogId
-                    ", tableName
-                     , alias
-                     , alias
-                     ));
-                joinCounter++;
-            }
-
             //were we supplied with an ending date?
-            if(EndDate < DateTime.MaxValue)
+            if (EndDate < DateTime.MaxValue)
             {
                 _query_where_clause.Append(string.Format(" AND log.DateReceived < '{0}'\n", EndDate.ToString("yyyy-MM-dd HH:mm:ss")));
             }
@@ -223,13 +193,17 @@ namespace OSBIDE.Web.Models.Queries
             if (eventSelectors.Where(e => e.EventName == BuildEvent.Name).Count() > 0)
             {
                 isLookingForBuildError = true;
+                if (eventNames.Length == 0)
+                {
+                    eventNames = new string[] { "NULL" };
+                }
             }
             if (eventNames.Length > 0)
             {
                 //sanitize strings for query
                 for (int i = 0; i < eventNames.Length; i++)
                 {
-                        eventNames[i] = string.Format("'{0}'", eventNames[i]);
+                    eventNames[i] = string.Format("'{0}'", eventNames[i]);
                 }
                 if (isLookingForBuildError == true)
                 {
@@ -256,7 +230,7 @@ namespace OSBIDE.Web.Models.Queries
             if (MaxQuerySize > 0)
             {
                 _query_limit.Clear();
-                _query_limit.Append(string.Format("OFFSET 0 ROWS\n FETCH NEXT {0} ROWS ONLY", MaxQuerySize)); 
+                _query_limit.Append(string.Format("OFFSET 0 ROWS\n FETCH NEXT {0} ROWS ONLY", MaxQuerySize));
             }
 
             //build the query
@@ -268,6 +242,7 @@ namespace OSBIDE.Web.Models.Queries
             queryString.Append(_query_order_by);
             queryString.Append(_query_limit);
 
+            Dictionary<string, List<int>> dbItems = new Dictionary<string, List<int>>();
             SqlConnection conn = new SqlConnection(ControllerBase.DefaultConnectionString);
             try
             {
@@ -276,59 +251,12 @@ namespace OSBIDE.Web.Models.Queries
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read() == true)
                 {
-                    //TODO: AC: Rework the query to only pull the particular event ID and the event type.  Then, create N queries that group all
-                    //events of that type together in order to reduce the number of queries made.  Combine all queries into a single list and return.
-                    //This will allow the deep-linking needed to provide detailed information on the activity feed.  
-
-                    //read values into a dictionary for easier processing
-                    Dictionary<string, object> values = new Dictionary<string, object>();
-                    for (int i = 0; i < reader.FieldCount; i++)
+                    string logType = reader["LogType"].ToString();
+                    if (dbItems.ContainsKey(logType) == false)
                     {
-                        string index = reader.GetName(i);
-                        if (reader[i] != null && string.IsNullOrEmpty(reader[i].ToString()) == false)
-                        {
-                            values[index] = reader[i];
-                        }
+                        dbItems.Add(logType, new List<int>());
                     }
-
-                    //find the event that isn't null
-                    IOsbideEvent nonNullEvent = null;
-                    foreach (KeyValuePair<string, IOsbideEvent> pair in aliasMap)
-                    {
-                        string dbKey = string.Format("{0}_Id", pair.Key);
-                        if (reader[dbKey] != null && string.IsNullOrEmpty(reader[dbKey].ToString()) == false)
-                        {
-                            nonNullEvent = pair.Value.FromDict(values);
-                            break;
-                        }
-                    }
-                    if (nonNullEvent != null)
-                    {
-                        FeedItem item = new FeedItem();
-                        item.Event = nonNullEvent;
-                        item.EventId = nonNullEvent.Id;
-                        item.LogId = (int)reader[0];
-                        item.Log = new EventLog()
-                        {
-                            Id = (int)reader[0],
-                            LogType = reader["LogType"].ToString(),
-                            DateReceived = (DateTime)reader["DateReceived"],
-                            SenderId = (int)reader["SenderId"],
-                            Sender = new OsbideUser()
-                            {
-                                Email = reader["Email"].ToString(),
-                                FirstName = reader["FirstName"].ToString(),
-                                Id = (int)reader["user_Id"],
-                                InstitutionId = (int)reader["institutionId"],
-                                LastName = reader["LastName"].ToString(),
-                                LastVsActivity = (DateTime)reader["LastVsActivity"],
-                                Role = (SystemRole)reader["RoleValue"],
-                                SchoolId = (int)reader["SchoolId"]
-                            },
-                            AssemblyVersion = reader["AssemblyVersion"].ToString()
-                        };
-                        feedItems.Add(item);
-                    }
+                    dbItems[logType].Add((int)reader["log_id"]);
                 }
             }
             catch (Exception ex)
@@ -337,29 +265,86 @@ namespace OSBIDE.Web.Models.Queries
                 log.LogMessage = ex.Message;
                 _db.ServerLogs.Add(log);
                 _db.SaveChanges();
-                return feedItems;
+                return feedItems.Values.ToList();
             }
             finally
             {
                 conn.Close();
             }
 
-            //update comments and helpful marks that will appear in the activity feed (as opposed to being attached to another log)
-            foreach (FeedItem item in feedItems)
+            foreach (string key in dbItems.Keys)
             {
-                if (item.Event is LogCommentEvent)
+                List<IOsbideEvent> events = new List<IOsbideEvent>();
+                int[] dbKeys = dbItems[key].ToArray();
+                if (key.CompareTo(BuildEvent.Name) == 0)
                 {
-                    item.Event = _db.LogCommentEvents.Find(item.EventId);
+                    events = (from evt in _db.BuildEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                                where dbKeys.Contains(evt.EventLogId)
+                                select evt).ToList().Cast<IOsbideEvent>().ToList();
                 }
-                else if (item.Event is HelpfulMarkGivenEvent)
+                else if (key.CompareTo(ExceptionEvent.Name) == 0)
                 {
-                    item.Event = _db.HelpfulMarkGivenEvents.Find(item.EventId);
+                    events = (from evt in _db.ExceptionEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                else if (key.CompareTo(FeedPostEvent.Name) == 0)
+                {
+                    events = (from evt in _db.FeedPostEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                else if (key.CompareTo(AskForHelpEvent.Name) == 0)
+                {
+                    events = (from evt in _db.AskForHelpEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                else if (key.CompareTo(LogCommentEvent.Name) == 0)
+                {
+                    events = (from evt in _db.LogCommentEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                else if (key.CompareTo(HelpfulMarkGivenEvent.Name) == 0)
+                {
+                    events = (from evt in _db.HelpfulMarkGivenEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                foreach (IOsbideEvent evt in events)
+                {
+                    FeedItem item = new FeedItem();
+                    item.Event = evt;
+                    item.EventId = evt.Id;
+                    item.Log = evt.EventLog;
+                    item.LogId = evt.EventLogId;
+                    item.Comments = evt.EventLog.Comments.ToList();
+                    feedItems.Add(item.Log.DateReceived, item);
                 }
             }
 
             //pull comments for all feed items
             Dictionary<int, FeedItem> itemsDict = new Dictionary<int, FeedItem>();
-            foreach(FeedItem item in feedItems)
+            foreach (FeedItem item in feedItems.Values)
             {
                 itemsDict[item.LogId] = item;
             }
@@ -375,7 +360,8 @@ namespace OSBIDE.Web.Models.Queries
                 itemsDict[comment.SourceEventLogId].Log.Comments.Add(comment);
                 itemsDict[comment.SourceEventLogId].HelpfulComments += comment.HelpfulMarks.Count;
             }
-            return feedItems;
+
+            return feedItems.Values.Reverse().ToList();
         }
     }
 }
