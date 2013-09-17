@@ -368,6 +368,7 @@ namespace OSBIDE.Plugins.VS2012
             if (_isOsbideUpToDate == true && _hasStartupErrors == false)
             {
                 _client.StartSending();
+                ShowActivityFeedTool(this, EventArgs.Empty);
             }
         }
 
