@@ -53,6 +53,7 @@ namespace OSBIDE.Plugins.VS2012
     [ProvideToolWindow(typeof(ChatToolWindow), Style = VsDockStyle.MDI)]
     [ProvideToolWindow(typeof(UserProfileToolWindow), Style = VsDockStyle.MDI)]
     [ProvideToolWindow(typeof(CreateAccountToolWindow), Style = VsDockStyle.MDI)]
+    [ProvideToolWindow(typeof(GenericOsbideToolWindow), Style = VsDockStyle.MDI)]
     //[ProvideToolWindow(typeof(AskTheProfessorToolWindow))]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(CommonGuidList.guidOSBIDE_VSPackagePkgString)]
@@ -173,6 +174,11 @@ namespace OSBIDE.Plugins.VS2012
                 MenuCommand webLinkWin = new MenuCommand(OpenOsbideWebLink, webLinkId);
                 mcs.AddCommand(webLinkWin);
 
+                //generic OSBIDE window
+                CommandID genericId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideGenericToolWindow);
+                MenuCommand genericWindow = new MenuCommand(ShowGenericToolWindow, genericId);
+                mcs.AddCommand(genericWindow);
+
                 //submit assignment command
                 //(commented out for Fall 2013 release at instructor request)
                 /*
@@ -219,6 +225,7 @@ namespace OSBIDE.Plugins.VS2012
             _webServiceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
             _webServiceClient.LibraryVersionNumberCompleted += InitStepThree_CheckServiceVersionComplete;
             _webServiceClient.LoginCompleted += InitStepTwo_LoginCompleted;
+            _webServiceClient.GetMostRecentWhatsNewItemCompleted += GetRecentNewsItemDateComplete;
 
             //pull saved user data
             _userName = _cache[StringConstants.UserNameCacheKey] as string;
@@ -361,7 +368,13 @@ namespace OSBIDE.Plugins.VS2012
                     {
                     }
                 }
-                web.DownloadFileAsync(new Uri(StringConstants.UpdateUrl), StringConstants.LocalUpdatePath);
+                try
+                {
+                    web.DownloadFileAsync(new Uri(StringConstants.UpdateUrl), StringConstants.LocalUpdatePath);
+                }
+                catch (Exception)
+                {
+                }
             }
 
             //if we're all up to date and had no startup errors, then we can start sending logs to the server
@@ -369,13 +382,79 @@ namespace OSBIDE.Plugins.VS2012
             {
                 _client.StartSending();
                 ShowActivityFeedTool(this, EventArgs.Empty);
+                _webServiceClient.GetMostRecentWhatsNewItemAsync();
             }
         }
 
+        /// <summary>
+        /// Updates our most recent knowledge of any new news posts.  If a new news post exists, then we'll
+        /// open a window for the user to browse the latest OSBIDE happenings.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void GetRecentNewsItemDateComplete(object sender, GetMostRecentWhatsNewItemCompletedEventArgs e)
+        {
+            string newsKey = "MostRecentNewsDate";
+            DateTime cachedDate;
+            DateTime webDate = DateTime.MinValue;
+
+            //pull local cache value (note I'm being very careful here)
+            if (_cache.Contains(newsKey) == false)
+            {
+                _cache[newsKey] = DateTime.MinValue;
+            }
+            try
+            {
+                cachedDate = (DateTime)_cache[newsKey];
+            }
+            catch (Exception)
+            {
+                cachedDate = DateTime.MinValue;
+                _cache.Remove(newsKey);
+            }
+            
+            //pull latest date from web
+            try
+            {
+                if (e != null)
+                {
+                    if (e.Result != null)
+                    {
+                        webDate = e.Result;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                webDate = DateTime.MinValue;
+            }
+
+            if (webDate > cachedDate)
+            {
+                //store more recent value
+                _cache[newsKey] = webDate;
+
+                //open news page
+                OpenGenericToolWindow(StringConstants.WhatsNewUrl);
+            }
+
+        }
+
+        /// <summary>
+        /// Called when we have a new version of OSBIDE to install
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void web_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             MessageBox.Show("Your version of OSBIDE is out of date.  Installation of the latest version will now begin.");
-            System.Diagnostics.Process.Start(StringConstants.LocalUpdatePath);
+            try
+            {
+                System.Diagnostics.Process.Start(StringConstants.LocalUpdatePath);
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>
@@ -504,6 +583,16 @@ namespace OSBIDE.Plugins.VS2012
         private void OpenDocumentation(object sender, EventArgs e)
         {
             Process.Start(new ProcessStartInfo(StringConstants.DocumentationUrl));
+        }
+
+        private void ShowGenericToolWindow(object sender, EventArgs e)
+        {
+            OpenGenericToolWindow();
+        }
+
+        private void OpenGenericToolWindow(string url = "")
+        {
+            _manager.OpenGenericToolWindow(null, url);
         }
 
         private void OpenOsbideWebLink(object sender, EventArgs e)

@@ -74,6 +74,7 @@
     <Compile Include="ChatToolWindow.cs" />
     <Compile Include="CreateAccountToolWindow.cs" />
     <Compile Include="CommonGuidList.cs" />
+    <Compile Include="GenericOsbideToolWindow.cs" />
     <Compile Include="OsbideToolWindowManager.cs" />
     <Compile Include="CommonPkgCmdID.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

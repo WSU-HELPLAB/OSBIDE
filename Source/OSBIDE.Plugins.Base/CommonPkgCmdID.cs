@@ -21,5 +21,6 @@ namespace OSBIDE.Plugins.Base
         public const uint cmdidOsbideLoginToolWin = 0x10B;
         public const uint cmdidOsbideDocumentationTool = 0x10C;
         public const uint cmdidOsbideWebLinkTool = 0x10D;
+        public const uint cmdidOsbideGenericToolWindow = 0x10E;
     };
 }

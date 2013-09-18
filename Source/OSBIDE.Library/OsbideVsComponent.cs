@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OSBIDE.Library
 {
-    public enum OsbideVsComponent { None, FeedOverview, FeedDetails, Chat, UserProfile, CreateAccount, AskTheProfessor };
+    public enum OsbideVsComponent { None, FeedOverview, FeedDetails, Chat, UserProfile, CreateAccount, AskTheProfessor, GenericComponent };
 
     public static class OsbideVsComponentExtensions
     {

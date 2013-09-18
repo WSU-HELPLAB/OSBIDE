@@ -135,6 +135,18 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string WhatsNewUrl
+        {
+            get
+            {
+#if DEBUG
+                return "http://localhost:24867/WhatsNew";
+#else
+                return "http://osbide.com/WhatsNew";
+#endif
+            }
+        }
+
         public static string DocumentationUrl
         {
             get

@@ -24,6 +24,7 @@ namespace OSBIDE.Plugins.Base
         private BrowserViewModel _activityFeedDetailsVm = new BrowserViewModel();
         private BrowserViewModel _createAccountVm = new BrowserViewModel();
         private BrowserViewModel _askTheProfessorVm = new BrowserViewModel();
+        private BrowserViewModel _genericWindowVm = new BrowserViewModel();
         private static int _detailsToolWindowId = 0;
 
         public OsbideToolWindowManager(FileCache cache, Package vsPackage)
@@ -37,6 +38,7 @@ namespace OSBIDE.Plugins.Base
             _activityFeedDetailsVm.Url = StringConstants.ActivityFeedUrl;
             _createAccountVm.Url = StringConstants.CreateAccountUrl;
             _askTheProfessorVm.Url = StringConstants.AskTheProfessorUrl;
+            _genericWindowVm.Url = StringConstants.ProfileUrl;
         }
 
         public void OpenChatWindow(Package vsPackage = null)
@@ -49,6 +51,16 @@ namespace OSBIDE.Plugins.Base
         {
             _profileVm.AuthKey = _cache[StringConstants.AuthenticationCacheKey] as string;
             OpenToolWindow(new UserProfileToolWindow(), _profileVm, vsPackage);
+        }
+
+        public void OpenGenericToolWindow(Package vsPackage = null, string url = "")
+        {
+            _genericWindowVm.AuthKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+            if (string.IsNullOrEmpty(url) == false)
+            {
+                _genericWindowVm.Url = url;
+            }
+            OpenToolWindow(new GenericOsbideToolWindow(), _genericWindowVm, vsPackage);
         }
 
         public void OpenActivityFeedDetailsWindow(Package vsPackage = null)
@@ -140,6 +152,10 @@ namespace OSBIDE.Plugins.Base
                 case OsbideVsComponent.UserProfile:
                     _profileVm.Url = e.Url;
                     uiShell.PostExecCommand(ref commandSet, CommonPkgCmdIDList.cmdidOsbideUserProfileTool, 0, ref inputParameters);
+                    break;
+                case OsbideVsComponent.GenericComponent:
+                    _genericWindowVm.Url = e.Url;
+                    uiShell.PostExecCommand(ref commandSet, CommonPkgCmdIDList.cmdidOsbideGenericToolWindow, 0, ref inputParameters);
                     break;
             }
         }
