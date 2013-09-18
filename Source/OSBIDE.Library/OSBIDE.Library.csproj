@@ -218,6 +218,7 @@
     <Compile Include="Models\StackFrameVariable.cs" />
     <Compile Include="Models\Triggers\ModelTrigger.cs" />
     <Compile Include="Models\UserPassword.cs" />
+    <Compile Include="Models\WhatsNewItem.cs" />
     <Compile Include="NTree.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
     <Compile Include="OsbideVsComponent.cs" />
@@ -242,12 +243,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
-      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
-      <Name>FileCache.Signed</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

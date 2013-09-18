@@ -116,6 +116,26 @@ namespace OSBIDE.Web.Services
             return isValid;
         }
 
+        /// <summary>
+        /// Will return the date of the most recent whats new item.  
+        /// </summary>
+        /// <returns></returns>
+        [OperationContract]
+        public DateTime GetMostRecentWhatsNewItem()
+        {
+            var query = (from news in Db.WhatsNewItems
+                         orderby news.DatePosted descending
+                         select news)
+                        .Take(1)
+                        .FirstOrDefault();
+            DateTime result = DateTime.MinValue;
+            if (query != null)
+            {
+                result = query.DatePosted;
+            }
+            return result;
+        }
+
         [OperationContract]
         [ApplyDataContractResolver]
         public int SubmitLocalErrorLog(LocalErrorLog errorLog, string authToken)

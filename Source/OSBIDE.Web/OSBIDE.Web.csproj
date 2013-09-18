@@ -163,6 +163,7 @@
     <Compile Include="Controllers\PrivateQuestionController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SetupController.cs" />
+    <Compile Include="Controllers\WhatsNewController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -397,6 +398,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Shared\Feed\_LogCommentEvent.cshtml" />
     <Content Include="Views\Shared\Feed\_HelpfulMarkGivenEvent.cshtml" />
+    <Content Include="Views\WhatsNew\Index.cshtml" />
+    <Content Include="Views\WhatsNew\Add.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
