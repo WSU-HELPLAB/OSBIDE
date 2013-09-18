@@ -136,6 +136,36 @@ namespace OSBIDE.Web.Services
             return result;
         }
 
+        /// <summary>
+        /// Will return the time of the last social event that the user was involved with
+        /// </summary>
+        /// <param name="authToken"></param>
+        /// <returns></returns>
+        [OperationContract]
+        public DateTime GetMostRecentSocialActivity(string authToken)
+        {
+            DateTime lastSocialActivity = DateTime.MinValue;
+
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == true)
+            {
+                OsbideUser authUser = GetActiveUser(authToken);
+                var query = (from social in Db.CommentActivityLogs
+                             where 1 == 1
+                             && (social.TargetUserId == authUser.Id || social.LogCommentEvent.SourceEventLog.SenderId == authUser.Id)
+                             orderby social.LogCommentEvent.EventDate descending
+                             select social)
+                                                  .Take(1)
+                                                  .FirstOrDefault();
+                if (query != null)
+                {
+                    lastSocialActivity = query.LogCommentEvent.EventDate;
+                }
+            }
+
+            return lastSocialActivity;
+        }
+
         [OperationContract]
         [ApplyDataContractResolver]
         public int SubmitLocalErrorLog(LocalErrorLog errorLog, string authToken)
