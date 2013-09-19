@@ -22,6 +22,7 @@ namespace OSBIDE.Library.ServiceClient
 
         #region instance variables
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public event EventHandler ReceivedNewSocialActivity = delegate { };
         private OsbideWebServiceClient _webServiceClient = null;
         private EventHandlerBase _events;
         private List<EventLog> _pendingLogs = new List<EventLog>();
@@ -29,7 +30,7 @@ namespace OSBIDE.Library.ServiceClient
         private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
         private Task _eventLogTask;
         private Task _sendLocalErrorsTask;
-        private Task _checkKeyTask;
+        private Task _checkStatusTask;
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
         private bool _isSendingData = false;
@@ -57,7 +58,7 @@ namespace OSBIDE.Library.ServiceClient
                 OnPropertyChanged("IsSendingData");
             }
         }
-        
+
         public TransmissionStatus SendStatus
         {
             get
@@ -163,12 +164,12 @@ namespace OSBIDE.Library.ServiceClient
                     );
 
                 //register a thread to keep our service key from going stale
-                _checkKeyTask = Task.Factory.StartNew(
+                _checkStatusTask = Task.Factory.StartNew(
                     () =>
                     {
                         try
                         {
-                            CheckKey();
+                            CheckStatus();
                         }
                         catch (Exception ex)
                         {
@@ -183,14 +184,27 @@ namespace OSBIDE.Library.ServiceClient
 
         #region private send methods
 
-        private void CheckKey()
+        /// <summary>
+        /// This function is responsible for continually asking for status updates from OSBIDE
+        /// </summary>
+        private void CheckStatus()
         {
             while (IsSendingData == true)
             {
+                //this block checks to make sure that our authentication key is up to date
+                string webServiceKey = "";
                 lock (_cache)
                 {
-                    string webServiceKey = _cache[StringConstants.AuthenticationCacheKey] as string;
-                    bool result = _webServiceClient.IsValidKey(webServiceKey);
+                    webServiceKey = _cache[StringConstants.AuthenticationCacheKey] as string;
+
+                    bool result = false;
+                    try
+                    {
+                        result = _webServiceClient.IsValidKey(webServiceKey);
+                    }
+                    catch (Exception)
+                    {
+                    }
 
                     //if result is false, our key has gone stale.  Try to login again
                     if (result == false)
@@ -208,6 +222,53 @@ namespace OSBIDE.Library.ServiceClient
                         }
                     }
                 }
+
+                //this block checks for recent user profile activity
+                DateTime lastLocalProfileUpdate = DateTime.MinValue;
+                string lastProfileActivityKey = "LastProfileActivity";
+                
+                //get last cached value
+                lock (_cache)
+                {
+                    if (_cache.Contains(lastProfileActivityKey) == false)
+                    {
+                        _cache[lastProfileActivityKey] = DateTime.MinValue;
+                    }
+                    try
+                    {
+                        lastLocalProfileUpdate = (DateTime)_cache[lastProfileActivityKey];
+                    }
+                    catch (Exception)
+                    {
+                        lastLocalProfileUpdate = DateTime.MinValue;
+                        _cache.Remove(lastProfileActivityKey);
+                    }
+                }
+
+                //get last server value
+                if(IsSendingData == true)
+                {
+                    DateTime lastServerProfileUpdate = DateTime.MinValue;
+                    try
+                    {
+                        lastServerProfileUpdate = _webServiceClient.GetMostRecentSocialActivity(webServiceKey);
+                    }
+                    catch (Exception)
+                    {
+                        lastServerProfileUpdate = DateTime.MinValue;
+                    }
+
+                    if (lastLocalProfileUpdate < lastServerProfileUpdate)
+                    {
+                        //notify client of new social activity
+                        if (ReceivedNewSocialActivity != null)
+                        {
+                            ReceivedNewSocialActivity(this, EventArgs.Empty);
+                        }
+                        _cache[lastProfileActivityKey] = lastServerProfileUpdate;
+                    }
+                }
+
                 Thread.Sleep(new TimeSpan(0, 0, 3, 0, 0));
             }
         }

@@ -238,6 +238,7 @@ namespace OSBIDE.Plugins.VS2012
             _eventHandler = new OsbideEventHandler(this as System.IServiceProvider, EventGenerator.GetInstance());
             _client = ServiceClient.GetInstance(_eventHandler, _errorLogger);
             _client.PropertyChanged += ServiceClientPropertyChanged;
+            _client.ReceivedNewSocialActivity += ServiceClientReceivedSocialUpdate;
             UpdateSendStatus();
 
             //display a user notification if we don't have any user on file
@@ -468,6 +469,32 @@ namespace OSBIDE.Plugins.VS2012
             UpdateSendStatus();
         }
 
+
+        void ServiceClientReceivedSocialUpdate(object sender, EventArgs e)
+        {
+            ToggleProfileImage(true);
+        }
+
+        void ToggleProfileImage(bool hasSocial)
+        {
+            var dte = GetService(typeof(SDTE)) as DTE2;
+            var cbs = ((Microsoft.VisualStudio.CommandBars.CommandBars)dte.CommandBars);
+            Microsoft.VisualStudio.CommandBars.CommandBar cb = cbs["OSBIDE Toolbar"];
+            Microsoft.VisualStudio.CommandBars.CommandBarControl toolsControl = cb.Controls["My OSBIDE Profile"];
+            Microsoft.VisualStudio.CommandBars.CommandBarButton profileButton = toolsControl as Microsoft.VisualStudio.CommandBars.CommandBarButton;
+
+            if (hasSocial == true)
+            {
+                profileButton.Picture = (stdole.StdPicture)IconConverter.GetIPictureDispFromImage(Resources.profile_new_social);
+                profileButton.TooltipText = "New social activity detected";
+            }
+            else
+            {
+                profileButton.Picture = (stdole.StdPicture)IconConverter.GetIPictureDispFromImage(Resources.profile);
+                profileButton.TooltipText = "View your profile";
+            }
+        }
+
         private void osbideCommandBarEvent_Click(object CommandBarControl, ref bool Handled, ref bool CancelDefault)
         {
             ErrorListItem listItem = new ErrorListItem();
@@ -675,6 +702,7 @@ namespace OSBIDE.Plugins.VS2012
                 try
                 {
                     _manager.OpenProfileWindow();
+                    ToggleProfileImage(false);
                 }
                 catch (Exception ex)
                 {

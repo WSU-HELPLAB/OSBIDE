@@ -37,6 +37,12 @@
   <wsdl:message name="OsbideWebService_GetMostRecentWhatsNewItem_OutputMessage">
     <wsdl:part name="parameters" element="GetMostRecentWhatsNewItemResponse" />
   </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetMostRecentSocialActivity_InputMessage">
+    <wsdl:part name="parameters" element="GetMostRecentSocialActivity" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetMostRecentSocialActivity_OutputMessage">
+    <wsdl:part name="parameters" element="GetMostRecentSocialActivityResponse" />
+  </wsdl:message>
   <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_InputMessage">
     <wsdl:part name="parameters" element="SubmitLocalErrorLog" />
   </wsdl:message>
@@ -81,6 +87,10 @@
     <wsdl:operation name="GetMostRecentWhatsNewItem">
       <wsdl:input wsaw:Action="urn:OsbideWebService/GetMostRecentWhatsNewItem" message="OsbideWebService_GetMostRecentWhatsNewItem_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/GetMostRecentWhatsNewItemResponse" message="OsbideWebService_GetMostRecentWhatsNewItem_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMostRecentSocialActivity">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/GetMostRecentSocialActivity" message="OsbideWebService_GetMostRecentSocialActivity_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/GetMostRecentSocialActivityResponse" message="OsbideWebService_GetMostRecentSocialActivity_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SubmitLocalErrorLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLog" message="OsbideWebService_SubmitLocalErrorLog_InputMessage" />

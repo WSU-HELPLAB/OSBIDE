@@ -55,6 +55,14 @@ namespace OSBIDE.Library.ServiceClient.OsbideWebService {
         
         System.DateTime EndGetMostRecentWhatsNewItem(System.IAsyncResult result);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/GetMostRecentSocialActivity", ReplyAction="urn:OsbideWebService/GetMostRecentSocialActivityResponse")]
+        System.DateTime GetMostRecentSocialActivity(string authToken);
+        
+        [System.ServiceModel.OperationContractAttribute(AsyncPattern=true, Action="urn:OsbideWebService/GetMostRecentSocialActivity", ReplyAction="urn:OsbideWebService/GetMostRecentSocialActivityResponse")]
+        System.IAsyncResult BeginGetMostRecentSocialActivity(string authToken, System.AsyncCallback callback, object asyncState);
+        
+        System.DateTime EndGetMostRecentSocialActivity(System.IAsyncResult result);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:OsbideWebService/SubmitLocalErrorLog", ReplyAction="urn:OsbideWebService/SubmitLocalErrorLogResponse")]
         int SubmitLocalErrorLog(OSBIDE.Library.Models.LocalErrorLog errorLog, string authToken);
         
@@ -189,6 +197,25 @@ namespace OSBIDE.Library.ServiceClient.OsbideWebService {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    public partial class GetMostRecentSocialActivityCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        public GetMostRecentSocialActivityCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        public System.DateTime Result {
+            get {
+                base.RaiseExceptionIfNecessary();
+                return ((System.DateTime)(this.results[0]));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class SubmitLocalErrorLogCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
@@ -297,6 +324,12 @@ namespace OSBIDE.Library.ServiceClient.OsbideWebService {
         
         private System.Threading.SendOrPostCallback onGetMostRecentWhatsNewItemCompletedDelegate;
         
+        private BeginOperationDelegate onBeginGetMostRecentSocialActivityDelegate;
+        
+        private EndOperationDelegate onEndGetMostRecentSocialActivityDelegate;
+        
+        private System.Threading.SendOrPostCallback onGetMostRecentSocialActivityCompletedDelegate;
+        
         private BeginOperationDelegate onBeginSubmitLocalErrorLogDelegate;
         
         private EndOperationDelegate onEndSubmitLocalErrorLogDelegate;
@@ -349,6 +382,8 @@ namespace OSBIDE.Library.ServiceClient.OsbideWebService {
         public event System.EventHandler<IsValidKeyCompletedEventArgs> IsValidKeyCompleted;
         
         public event System.EventHandler<GetMostRecentWhatsNewItemCompletedEventArgs> GetMostRecentWhatsNewItemCompleted;
+        
+        public event System.EventHandler<GetMostRecentSocialActivityCompletedEventArgs> GetMostRecentSocialActivityCompleted;
         
         public event System.EventHandler<SubmitLocalErrorLogCompletedEventArgs> SubmitLocalErrorLogCompleted;
         
@@ -606,6 +641,56 @@ namespace OSBIDE.Library.ServiceClient.OsbideWebService {
                 this.onGetMostRecentWhatsNewItemCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnGetMostRecentWhatsNewItemCompleted);
             }
             base.InvokeAsync(this.onBeginGetMostRecentWhatsNewItemDelegate, null, this.onEndGetMostRecentWhatsNewItemDelegate, this.onGetMostRecentWhatsNewItemCompletedDelegate, userState);
+        }
+        
+        public System.DateTime GetMostRecentSocialActivity(string authToken) {
+            return base.Channel.GetMostRecentSocialActivity(authToken);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public System.IAsyncResult BeginGetMostRecentSocialActivity(string authToken, System.AsyncCallback callback, object asyncState) {
+            return base.Channel.BeginGetMostRecentSocialActivity(authToken, callback, asyncState);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        public System.DateTime EndGetMostRecentSocialActivity(System.IAsyncResult result) {
+            return base.Channel.EndGetMostRecentSocialActivity(result);
+        }
+        
+        private System.IAsyncResult OnBeginGetMostRecentSocialActivity(object[] inValues, System.AsyncCallback callback, object asyncState) {
+            string authToken = ((string)(inValues[0]));
+            return this.BeginGetMostRecentSocialActivity(authToken, callback, asyncState);
+        }
+        
+        private object[] OnEndGetMostRecentSocialActivity(System.IAsyncResult result) {
+            System.DateTime retVal = this.EndGetMostRecentSocialActivity(result);
+            return new object[] {
+                    retVal};
+        }
+        
+        private void OnGetMostRecentSocialActivityCompleted(object state) {
+            if ((this.GetMostRecentSocialActivityCompleted != null)) {
+                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
+                this.GetMostRecentSocialActivityCompleted(this, new GetMostRecentSocialActivityCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
+            }
+        }
+        
+        public void GetMostRecentSocialActivityAsync(string authToken) {
+            this.GetMostRecentSocialActivityAsync(authToken, null);
+        }
+        
+        public void GetMostRecentSocialActivityAsync(string authToken, object userState) {
+            if ((this.onBeginGetMostRecentSocialActivityDelegate == null)) {
+                this.onBeginGetMostRecentSocialActivityDelegate = new BeginOperationDelegate(this.OnBeginGetMostRecentSocialActivity);
+            }
+            if ((this.onEndGetMostRecentSocialActivityDelegate == null)) {
+                this.onEndGetMostRecentSocialActivityDelegate = new EndOperationDelegate(this.OnEndGetMostRecentSocialActivity);
+            }
+            if ((this.onGetMostRecentSocialActivityCompletedDelegate == null)) {
+                this.onGetMostRecentSocialActivityCompletedDelegate = new System.Threading.SendOrPostCallback(this.OnGetMostRecentSocialActivityCompleted);
+            }
+            base.InvokeAsync(this.onBeginGetMostRecentSocialActivityDelegate, new object[] {
+                        authToken}, this.onEndGetMostRecentSocialActivityDelegate, this.onGetMostRecentSocialActivityCompletedDelegate, userState);
         }
         
         public int SubmitLocalErrorLog(OSBIDE.Library.Models.LocalErrorLog errorLog, string authToken) {

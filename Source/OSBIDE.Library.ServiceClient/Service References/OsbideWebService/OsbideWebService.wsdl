@@ -49,6 +49,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMostRecentSocialActivity">
+      <soap:operation soapAction="urn:OsbideWebService/GetMostRecentSocialActivity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SubmitLocalErrorLog">
       <soap:operation soapAction="urn:OsbideWebService/SubmitLocalErrorLog" style="document" />
       <wsdl:input>
