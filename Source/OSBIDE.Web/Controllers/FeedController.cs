@@ -512,14 +512,7 @@ namespace OSBIDE.Web.Controllers
             {
                 query = new ActivityFeedQuery(Db);
             }
-
-            //pull down the current user's list of subscriptions
-            List<OsbideUser> subscriptions = new StudentSubscriptionsQuery(Db, CurrentUser).Execute().ToList();
-
-            //and add himself to the list as well (so that his posts show up in the feed)
-            subscriptions.Add(CurrentUser);
-
-            //add the event types that the user wants to see
+                        //add the event types that the user wants to see
             UserFeedSetting feedSettings = _userSettings;
             if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
@@ -536,8 +529,6 @@ namespace OSBIDE.Web.Controllers
                 }
             }
 
-            //add in the list of users that the current person cares about
-            query.AddSubscriptionSubject(subscriptions);
             return query;
         }
 

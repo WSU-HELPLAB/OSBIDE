@@ -83,6 +83,23 @@ namespace OSBIDE.Web.Models.Queries
         /// </summary>
         public int MaxQuerySize { get; set; }
 
+        /// <summary>
+        /// returns a lits of all social events in OSBLE
+        /// </summary>
+        /// <returns></returns>
+        public static List<IOsbideEvent> GetSocialEvents()
+        {
+            List<IOsbideEvent> events = new List<IOsbideEvent>();
+            events.Add(new FeedPostEvent());
+            events.Add(new AskForHelpEvent());
+            events.Add(new LogCommentEvent());
+            events.Add(new HelpfulMarkGivenEvent());
+
+            //AC: turned off for fall 2013 study
+            //events.Add(new SubmitEvent());
+            return events;
+        }
+
         //returns a list of all possible events that a user can subscribe to
         public static List<IOsbideEvent> GetAllEvents()
         {
