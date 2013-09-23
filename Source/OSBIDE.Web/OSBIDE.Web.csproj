@@ -343,7 +343,9 @@
     <Content Include="Scripts\moment-2.0.0.min.js" />
     <Content Include="Services\OsbideWebService.svc" />
     <Content Include="Scripts\Account.Create.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -405,13 +407,14 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\Account\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
       <Name>OSBIDE.Library</Name>
+      <Private>True</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Account\Create.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
