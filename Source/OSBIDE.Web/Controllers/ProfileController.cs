@@ -59,7 +59,6 @@ namespace OSBIDE.Web.Controllers
 
             //add in the list of users that the current person cares about
             query.AddSubscriptionSubject(vm.User);
-            subscriptionsQuery.AddSubscriptionSubject(vm.User);
 
             //build the feed view model
             vm.Feed = new FeedViewModel();

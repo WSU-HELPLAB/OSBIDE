@@ -4,18 +4,19 @@
     ViewBag.Title = "Add News Item";
 }
 <h1>Add News Item</h1>
+<p>Your pos will be rendered in raw HTML</p>
 @using (Html.BeginForm())
 {
     <table>
         <tr>
-            <th>Title:</th>
+            <th style="text-align:left;padding-top:5px;">Title:</th>
             <td>@Html.ValidationMessageFor(m => m.NewsHeader)</td>
         </tr>
         <tr>
             <td colspan="2">@Html.EditorFor(m => m.NewsHeader)</td>
         </tr>
-        <tr>
-            <th>Content:</th>
+        <tr style="padding-top:5px;">
+            <th style="text-align:left;padding-top:5px;">Content:</th>
             <td>@Html.ValidationMessageFor(m => m.Content)</td>
         </tr>
         <tr>

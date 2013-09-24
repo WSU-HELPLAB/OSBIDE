@@ -25,6 +25,7 @@ namespace OSBIDE.Web.Controllers
             return View(new WhatsNewItem());
         }
 
+        [ValidateInput(false)]
         [HttpPost]
         public ActionResult Add(WhatsNewItem model)
         {
