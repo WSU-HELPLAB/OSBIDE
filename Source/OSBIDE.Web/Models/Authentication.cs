@@ -45,7 +45,14 @@ namespace OSBIDE.Web.Models
         /// <returns></returns>
         public bool IsValidKey(string authToken)
         {
-            OsbideUser profile = _cache[authToken] as OsbideUser;
+            OsbideUser profile = null;
+            try
+            {
+                profile = _cache[authToken] as OsbideUser;
+            }
+            catch (Exception)
+            {
+            }
             if (profile == null)
             {
                 return false;
@@ -96,7 +103,14 @@ namespace OSBIDE.Web.Models
         /// <returns></returns>
         public OsbideUser GetActiveUser(string authToken)
         {
-            OsbideUser profile = _cache[authToken] as OsbideUser;
+            OsbideUser profile = null;
+            try
+            {
+                profile = _cache[authToken] as OsbideUser;
+            }
+            catch(Exception)
+            {
+            }
             if (profile == null)
             {
                 return new OsbideUser();

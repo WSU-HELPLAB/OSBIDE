@@ -326,6 +326,8 @@ namespace OSBIDE.Library.Models
             SchoolId = copyUser.SchoolId;
             LastVsActivity = copyUser.LastVsActivity;
             ReceiveNotificationEmails = copyUser.ReceiveNotificationEmails;
+            ReceiveEmailOnNewAskForHelp = copyUser.ReceiveEmailOnNewAskForHelp;
+            ReceiveEmailOnNewFeedPost = copyUser.ReceiveEmailOnNewFeedPost;
         }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)

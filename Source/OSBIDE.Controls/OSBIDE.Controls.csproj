@@ -151,6 +151,9 @@
     <Compile Include="ViewModels\SubmissionEntryViewModel.cs" />
     <Compile Include="ViewModels\SubmitAssignmentViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\AnalyticsSettings.xaml.cs">
+      <DependentUpon>AnalyticsSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AskForHelpForm.xaml.cs">
       <DependentUpon>AskForHelpForm.xaml</DependentUpon>
     </Compile>
@@ -197,6 +200,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="OsbideStatusControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AnalyticsSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -260,6 +267,12 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Themes\generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
