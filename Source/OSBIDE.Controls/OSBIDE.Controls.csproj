@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GifImage.cs" />
+    <Compile Include="Models\ActivityFeedSession.cs" />
     <Compile Include="OsbideResourceInterceptor.cs" />
     <Compile Include="OsbideStatusControl.xaml.cs">
       <DependentUpon>OsbideStatusControl.xaml</DependentUpon>
@@ -144,6 +145,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\ActivityFeedMetricsViewModel.cs" />
     <Compile Include="ViewModels\AskForHelpViewModel.cs" />
     <Compile Include="ViewModels\AssignmentSubmissionsViewModel.cs" />
     <Compile Include="ViewModels\BrowserViewModel.cs" />

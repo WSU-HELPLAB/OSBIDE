@@ -93,6 +93,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
+      <Project>{9ea09e78-0541-4233-b189-ee1dbd56520d}</Project>
+      <Name>OSBIDE.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
+      <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
+      <Name>OSBIDE.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
