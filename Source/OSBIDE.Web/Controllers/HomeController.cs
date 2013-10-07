@@ -77,7 +77,7 @@ namespace OSBIDE.Web.Controllers
                 OsbideUser eventAuthor = Db.EventLogs.Where(l => l.Id == id).Select(l => l.Sender).FirstOrDefault();
 
                 //master list shared between email and social activity log
-                SortedDictionary<int, OsbideUser> masterList = new SortedDictionary<int, OsbideUser>();
+                Dictionary<int, OsbideUser> masterList = new Dictionary<int, OsbideUser>();
                 if (eventAuthor != null)
                 {
                     masterList.Add(eventAuthor.Id, eventAuthor);

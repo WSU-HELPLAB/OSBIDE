@@ -214,8 +214,8 @@ namespace OSBIDE.Web.Controllers
                 }
             }
 
-            SortedDictionary<int, int> mergedIdList = new SortedDictionary<int, int>();
-            SortedDictionary<int, int> originalIds = new SortedDictionary<int, int>();
+            Dictionary<int, int> mergedIdList = new Dictionary<int, int>();
+            Dictionary<int, int> originalIds = new Dictionary<int, int>();
             ChatRoomViewModel updatedModel = null;
 
             //capture all users that were active at the time the HTTP request was made
@@ -234,7 +234,7 @@ namespace OSBIDE.Web.Controllers
                 updatedModel = BuildViewModel(chatRoomId);
 
                 //Capture all users that are currently active
-                SortedDictionary<int, int> updatedIds = new SortedDictionary<int, int>();
+                Dictionary<int, int> updatedIds = new Dictionary<int, int>();
                 foreach (ChatRoomUserViewModel user in updatedModel.Users)
                 {
                     if (user.IsCssVisible == true)
@@ -252,7 +252,7 @@ namespace OSBIDE.Web.Controllers
                 {
 
                     //merge the list of active and inactive users into a single list
-                    mergedIdList = new SortedDictionary<int, int>();
+                    mergedIdList = new Dictionary<int, int>();
                     foreach (int key in originalIds.Keys)
                     {
                         if (mergedIdList.ContainsKey(key) == false)
