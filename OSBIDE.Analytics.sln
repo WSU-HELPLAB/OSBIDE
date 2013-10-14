@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "Source\OS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "Source\OSBIDE.Controls\OSBIDE.Controls.csproj", "{9EA09E78-0541-4233-B189-EE1DBD56520D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics.Terminal", "Source\OSBIDE.Analytics.Terminal\OSBIDE.Analytics.Terminal.csproj", "{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 2
@@ -62,6 +64,15 @@ Global
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9EA09E78-0541-4233-B189-EE1DBD56520D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.OSBIDE Deployment|Any CPU.ActiveCfg = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.OSBIDE Deployment|Any CPU.Build.0 = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.OSBIDE Deployment|x86.ActiveCfg = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

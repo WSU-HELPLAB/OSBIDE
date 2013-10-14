@@ -12,5 +12,6 @@ namespace OSBIDE.Controls.Models
         public OsbideUser User { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public string Source { get; set; }
     }
 }

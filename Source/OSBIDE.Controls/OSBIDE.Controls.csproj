@@ -123,6 +123,7 @@
   <ItemGroup>
     <Compile Include="GifImage.cs" />
     <Compile Include="Models\ActivityFeedSession.cs" />
+    <Compile Include="Models\SessionMetrics.cs" />
     <Compile Include="OsbideResourceInterceptor.cs" />
     <Compile Include="OsbideStatusControl.xaml.cs">
       <DependentUpon>OsbideStatusControl.xaml</DependentUpon>
@@ -271,10 +272,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Themes\generic.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Folder Include="Themes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

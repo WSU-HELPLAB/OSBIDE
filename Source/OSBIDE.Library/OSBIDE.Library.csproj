@@ -154,6 +154,8 @@
     <Compile Include="CSV\CsvParser.cs" />
     <Compile Include="CSV\CsvReader.cs" />
     <Compile Include="CSV\CsvState.cs" />
+    <Compile Include="CSV\CsvWriter.cs" />
+    <Compile Include="CSV\CsvWriterLine.cs" />
     <Compile Include="CSV\DefaultState.cs" />
     <Compile Include="CSV\EndState.cs" />
     <Compile Include="CSV\QuoteState.cs" />
