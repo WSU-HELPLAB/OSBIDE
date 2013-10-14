@@ -193,7 +193,7 @@
         <li class="@previousButtonStyle">
             @if (previousLogId != -1)
             {
-                @Html.ActionLink("Previous Build", "Diff", new { id = previousLogId })
+                @Html.ActionLink("Previous Build", "Diff", new { id = previousLogId, direction = "previous" })
             }
             else
             {
@@ -203,7 +203,7 @@
         <li class="@nextButtonStyle">
             @if (next.EventLogId != -1)
             {
-                @Html.ActionLink("Next Build", "Diff", new { id = next.EventLogId })
+                @Html.ActionLink("Next Build", "Diff", new { id = next.EventLogId, direction = "next" })
             }
             else
             {

@@ -26,10 +26,30 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
-        public ActionResult Diff(int id, int fileToDiff = -1)
+        public ActionResult Diff(int id, int fileToDiff = -1, string direction = "next")
         {
             BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
-            BuildEvent next = GetNextEvent(id);
+            if (direction == "next")
+            {
+                while (original != null && original.CriticalErrorCount == 0)
+                {
+                    original = GetNextEvent(original.EventLogId);
+                }
+            }
+            else
+            {
+                while (original != null && original.CriticalErrorCount == 0)
+                {
+                    int previousId = GetPreviousDiffId(original.EventLogId);
+                    original = Db.BuildEvents.Where(b => b.EventLogId == previousId).FirstOrDefault();
+                }
+            }
+            if (original == null)
+            {
+                original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
+            }
+            BuildEvent next = GetNextEvent(original.EventLogId);
+            
 
             //account for differences that occurred around exceptions
             ExceptionEvent originalEx = null;
@@ -135,10 +155,29 @@ namespace OSBIDE.Web.Controllers
         /// <param name="firstLogId"></param>
         /// <param name="secondLogId"></param>
         /// <returns></returns>
-        public ActionResult GetDiff(int id)
+        public ActionResult GetDiff(int id, string direction = "next")
         {
             BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
-            BuildEvent next = GetNextEvent(id);
+            if (direction == "next")
+            {
+                while (original != null && original.CriticalErrorCount == 0)
+                {
+                    original = GetNextEvent(original.EventLogId);
+                }
+            }
+            else
+            {
+                while (original != null && original.CriticalErrorCount == 0)
+                {
+                    int previousId = GetPreviousDiffId(original.EventLogId);
+                    original = Db.BuildEvents.Where(b => b.EventLogId == previousId).FirstOrDefault();
+                }
+            }
+            if (original == null)
+            {
+                original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
+            }
+            BuildEvent next = GetNextEvent(original.EventLogId);
             ExceptionEvent originalEx = null;
             if (next != null)
             {
