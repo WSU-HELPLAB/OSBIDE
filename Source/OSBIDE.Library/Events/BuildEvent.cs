@@ -166,6 +166,7 @@ namespace OSBIDE.Library.Events
                     string extension = Path.GetExtension(fileName);
                     if (allowedExtensions.Contains(extension) == true)
                     {
+                        //AC Note: This will not save an unopened file.  Is this desired behavior?
                         if (item.Document != null)
                         {
                             files.Add((CodeDocument)DocumentFactory.FromDteDocument(item.Document));

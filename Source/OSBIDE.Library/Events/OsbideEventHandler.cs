@@ -125,12 +125,17 @@ namespace OSBIDE.Library.Events
                         BuildEventErrorListItem beli = new BuildEventErrorListItem();
                         beli.BuildEvent = build;
                         beli.ErrorListItem = ErrorListItem.FromErrorItem(item);
-                        build.ErrorItems.Add(beli);
 
-                        //add the file with the error to our list of items that have errors
-                        if (filesWithErrors.Contains(beli.ErrorListItem.File.ToLower()) == false)
+                        //only worry about critical errors
+                        if (beli.ErrorListItem.CriticalErrorName.Length > 0)
                         {
-                            filesWithErrors.Add(beli.ErrorListItem.File.ToLower());
+                            build.ErrorItems.Add(beli);
+
+                            //add the file with the error to our list of items that have errors
+                            if (filesWithErrors.Contains(beli.ErrorListItem.File.ToLower()) == false)
+                            {
+                                filesWithErrors.Add(beli.ErrorListItem.File.ToLower());
+                            }
                         }
                     }
 

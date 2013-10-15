@@ -50,6 +50,10 @@ namespace OSBIDE.Library.Models
                     {
                         _criticalErrorName = match.Groups[1].Value.ToLower().Trim();
                     }
+                    else
+                    {
+                        _criticalErrorName = "";
+                    }
                 }
                 return _criticalErrorName;
             }
