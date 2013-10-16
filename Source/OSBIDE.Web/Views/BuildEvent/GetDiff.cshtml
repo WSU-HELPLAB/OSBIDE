@@ -3,11 +3,23 @@
 @using OSBIDE.Web.Models
 @using OSBIDE.Library.Models
 @using OSBIDE.Web.Models.ViewModels
+@using System.IO
 @using System.Web
 @{
     Layout = null;
 }
-<h2>Files</h2>
+<h2>Viewing @(Model.OriginalBuild.EventLog.Sender.FirstAndLastName)'s 
+    build of &quot;@Path.GetFileNameWithoutExtension(Model.OriginalBuild.SolutionName)&quot;
+    on 
+    <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(Model.OriginalBuild.EventLog.DateReceived)" 
+                data-original-date="@Helpers.RawDate(Model.OriginalBuild.EventLog.DateReceived)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+        @Model.OriginalBuild.EventLog.DateReceived.ToString("MM/dd @ hh:mmtt") (UTC)
+    </time>
+
+</h2>
 <ul id="diff-files">
     @foreach (BuildDocument doc in Model.OriginalBuild.Documents.OrderBy(d => d.Document.FileName).ToList())
     {

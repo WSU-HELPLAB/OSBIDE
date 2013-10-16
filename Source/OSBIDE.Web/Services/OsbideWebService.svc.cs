@@ -277,6 +277,11 @@ namespace OSBIDE.Web.Services
 
                 string pattern = "error ([^:]+)";
 
+                //strip out non-critical errors
+                List<BuildEventErrorListItem> errorItems = build.ErrorItems.Where(e => e.ErrorListItem.CriticalErrorName.Length > 0).ToList();
+                build.ErrorItems.Clear();
+                build.ErrorItems = errorItems;
+
                 //log all errors in their own DB for faster search
                 List<string> errors = new List<string>();
                 Dictionary<string, ErrorType> errorTypes = new Dictionary<string, ErrorType>();

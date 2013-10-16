@@ -299,8 +299,8 @@ namespace OSBIDE.Web.Models.Queries
                                 .Include("EventLog")
                                 .Include("EventLog.Sender")
                                 .Include("EventLog.Comments")
-                                where dbKeys.Contains(evt.EventLogId)
-                                select evt).ToList().Cast<IOsbideEvent>().ToList();
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
                 }
                 else if (key.CompareTo(ExceptionEvent.Name) == 0)
                 {
@@ -355,6 +355,14 @@ namespace OSBIDE.Web.Models.Queries
                     item.Log = evt.EventLog;
                     item.LogId = evt.EventLogId;
                     item.Comments = evt.EventLog.Comments.ToList();
+
+                    //AC: I was getting a duplicate key error.  This seems to be a rare occurrance as the liklihood
+                    //of two events having the exact same receive date seems unlikely.  When this happens, 
+                    //simply tweak the date until it's no longer an issue.
+                    while (feedItems.ContainsKey(item.Log.DateReceived) == true)
+                    {
+                        item.Log.DateReceived = item.Log.DateReceived.AddMilliseconds(1);
+                    }
                     feedItems.Add(item.Log.DateReceived, item);
                 }
             }

@@ -29,29 +29,51 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Diff(int id, int fileToDiff = -1, string direction = "next")
         {
             BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
+            BuildEvent next = null; //= GetNextEvent(original.EventLogId);
+
+            //Even though we were passed a specific event log id in our parameter list, we really only
+            //want to show "interesting" items.  We consider a build event to be interesting if
+            // a) it has a build exception
+            // b) it happened after a runtime exception
             if (direction == "next")
             {
-                while (original != null && original.CriticalErrorCount == 0)
+                original = (from build in Db.BuildEvents
+                            where build.EventLogId >= id
+                            && build.ErrorItems.Count > 0
+                            && original.EventLog.SenderId == original.EventLog.SenderId
+                            && original.SolutionName.CompareTo(original.SolutionName) == 0
+                            orderby build.Id ascending
+                            select build)
+                           .FirstOrDefault();
+                if (original != null)
                 {
-                    original = GetNextEvent(original.EventLogId);
+                    next = GetNextEvent(original.EventLogId);
                 }
             }
             else
             {
-                while (original != null && original.CriticalErrorCount == 0)
+                original = (from build in Db.BuildEvents
+                            where build.EventLogId <= id
+                            && build.ErrorItems.Count > 0
+                            && original.EventLog.SenderId == original.EventLog.SenderId
+                            && original.SolutionName.CompareTo(original.SolutionName) == 0
+                            orderby build.Id descending
+                            select build)
+                           .FirstOrDefault();
+                if (original != null)
                 {
-                    int previousId = GetPreviousDiffId(original.EventLogId);
-                    original = Db.BuildEvents.Where(b => b.EventLogId == previousId).FirstOrDefault();
+                    next = GetNextEvent(original.EventLogId);
                 }
             }
+            //just in case we messed up in the previous if/else block
             if (original == null)
             {
                 original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
+                next = GetNextEvent(original.EventLogId);
             }
-            BuildEvent next = GetNextEvent(original.EventLogId);
-            
 
-            //account for differences that occurred around exceptions
+
+
             ExceptionEvent originalEx = null;
             if (next != null)
             {
