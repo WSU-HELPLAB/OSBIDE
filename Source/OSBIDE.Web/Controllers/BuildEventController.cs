@@ -34,7 +34,7 @@ namespace OSBIDE.Web.Controllers
             //Even though we were passed a specific event log id in our parameter list, we really only
             //want to show "interesting" items.  We consider a build event to be interesting if
             // a) it has a build exception
-            // b) it happened after a runtime exception
+            // b) it happened after a runtime exception (AC Note: currently ignoring exceptions.  Might need a new action for these?)
             if (direction == "next")
             {
                 original = (from build in Db.BuildEvents
@@ -44,6 +44,7 @@ namespace OSBIDE.Web.Controllers
                             && original.SolutionName.CompareTo(original.SolutionName) == 0
                             orderby build.Id ascending
                             select build)
+                            .Take(1)
                            .FirstOrDefault();
                 if (original != null)
                 {
@@ -59,6 +60,7 @@ namespace OSBIDE.Web.Controllers
                             && original.SolutionName.CompareTo(original.SolutionName) == 0
                             orderby build.Id descending
                             select build)
+                            .Take(1)
                            .FirstOrDefault();
                 if (original != null)
                 {
@@ -72,8 +74,7 @@ namespace OSBIDE.Web.Controllers
                 next = GetNextEvent(original.EventLogId);
             }
 
-
-
+            //also look for exception events if applicable
             ExceptionEvent originalEx = null;
             if (next != null)
             {
@@ -102,27 +103,34 @@ namespace OSBIDE.Web.Controllers
             BuildDiffViewModel vm = BuildViewModel(original, next, originalEx);
 
             //check for a requested file name.  If none exists, set to the first file listed (alphabetically)
-            if (fileToDiff <= 0)
-            {
-                if (original.Documents.Count > 0)
-                {
-                    vm.ActiveFileId = original.Documents.OrderBy(d => d.Document.FileName).FirstOrDefault().DocumentId;
-                }
-                else
-                {
-                    vm.ActiveFileId = -1;
-                }
-            }
-            else
+            if (fileToDiff > 0)
             {
                 BuildDocument activeDoc = original.Documents.Where(d => d.DocumentId == fileToDiff).FirstOrDefault();
-                if (activeDoc == null)
-                {
-                    vm.ActiveFileId = original.Documents.OrderBy(d => d.Document.FileName).FirstOrDefault().DocumentId;
-                }
-                else
+                if (activeDoc != null)
                 {
                     vm.ActiveFileId = fileToDiff;
+                }
+            }
+
+            //no file was specified, try something else
+            if (vm.ActiveFileId == 0)
+            {
+                //start with null document
+                vm.ActiveFileId = -1;
+
+                //and try to find a document that has errors
+                foreach (BuildEventErrorListItem criticalError in original.CriticalErrorItems)
+                {
+                    string errorFileName = Path.GetFileName(criticalError.ErrorListItem.File).ToLower();
+                    foreach (BuildDocument doc in original.Documents)
+                    {
+                        string docFileName = Path.GetFileName(doc.Document.FileName);
+                        if (errorFileName.CompareTo(docFileName) == 0)
+                        {
+                            vm.ActiveFileId = doc.DocumentId;
+                            break;
+                        }
+                    }
                 }
             }
             return View(vm);
