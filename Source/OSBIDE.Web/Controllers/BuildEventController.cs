@@ -29,7 +29,8 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Diff(int id, int fileToDiff = -1, string direction = "next")
         {
             BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
-            BuildEvent next = null; //= GetNextEvent(original.EventLogId);
+            BuildEvent next = null;
+            ExceptionEvent originalEx = null;
 
             //Even though we were passed a specific event log id in our parameter list, we really only
             //want to show "interesting" items.  We consider a build event to be interesting if
@@ -37,6 +38,17 @@ namespace OSBIDE.Web.Controllers
             // b) it happened after a runtime exception (AC Note: currently ignoring exceptions.  Might need a new action for these?)
             if (direction == "next")
             {
+                //check for exception events
+                originalEx = (from ex in Db.ExceptionEvents
+                              where ex.EventLogId >= id
+                              && ex.EventLog.SenderId == original.EventLog.SenderId
+                              && ex.SolutionName.CompareTo(original.SolutionName) == 0
+                              orderby ex.EventLogId ascending
+                              select ex)
+                            .Take(1)
+                            .FirstOrDefault();
+
+                //check for build events
                 original = (from build in Db.BuildEvents
                             where build.EventLogId >= id
                             && build.ErrorItems.Count > 0
@@ -46,6 +58,34 @@ namespace OSBIDE.Web.Controllers
                             select build)
                             .Take(1)
                            .FirstOrDefault();
+
+                //compare event log Ids between build and exception events.  Take whichever is earlier
+                if (originalEx != null)
+                {
+                    if (original != null)
+                    {
+                        //we need to take care of the exception
+                        if (originalEx.EventLogId < original.EventLogId)
+                        {
+                            original = (from build in Db.BuildEvents
+                                        where build.EventLogId >= originalEx.EventLogId
+                                        && build.ErrorItems.Count > 0
+                                        && original.EventLog.SenderId == original.EventLog.SenderId
+                                        && original.SolutionName.CompareTo(original.SolutionName) == 0
+                                        orderby build.Id ascending
+                                        select build)
+                                        .Take(1)
+                                        .FirstOrDefault();
+                        }
+                        else
+                        {
+                            //build event came first
+                            originalEx = null;
+                        }
+                    }
+                }
+
+                //set up next if we can
                 if (original != null)
                 {
                     next = GetNextEvent(original.EventLogId);
@@ -53,6 +93,17 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
+                //check for exception events
+                originalEx = (from ex in Db.ExceptionEvents
+                              where ex.EventLogId <= id
+                              && ex.EventLog.SenderId == original.EventLog.SenderId
+                              && ex.SolutionName.CompareTo(original.SolutionName) == 0
+                              orderby ex.EventLogId descending
+                              select ex)
+                            .Take(1)
+                            .FirstOrDefault();
+
+                //user is wanting to go to the previous build
                 original = (from build in Db.BuildEvents
                             where build.EventLogId <= id
                             && build.ErrorItems.Count > 0
@@ -62,6 +113,33 @@ namespace OSBIDE.Web.Controllers
                             select build)
                             .Take(1)
                            .FirstOrDefault();
+                
+                //compare event log Ids between build and exception events.  Take whichever is earlier
+                if (originalEx != null)
+                {
+                    if (original != null)
+                    {
+                        //we need to take care of the exception
+                        if (originalEx.EventLogId > original.EventLogId)
+                        {
+                            original = (from build in Db.BuildEvents
+                                        where build.EventLogId >= originalEx.EventLogId
+                                        && build.ErrorItems.Count > 0
+                                        && original.EventLog.SenderId == original.EventLog.SenderId
+                                        && original.SolutionName.CompareTo(original.SolutionName) == 0
+                                        orderby build.Id ascending
+                                        select build)
+                                        .Take(1)
+                                        .FirstOrDefault();
+                        }
+                        else
+                        {
+                            //build event came first
+                            originalEx = null;
+                        }
+                    }
+                }
+
                 if (original != null)
                 {
                     next = GetNextEvent(original.EventLogId);
@@ -74,13 +152,7 @@ namespace OSBIDE.Web.Controllers
                 next = GetNextEvent(original.EventLogId);
             }
 
-            //also look for exception events if applicable
-            ExceptionEvent originalEx = null;
-            if (next != null)
-            {
-                originalEx = GetBuildException(original.EventLogId, next.EventLogId);
-            }
-            else
+            if (next == null)
             {
                 next = new BuildEvent();
                 next.EventLogId = -1;
@@ -119,9 +191,14 @@ namespace OSBIDE.Web.Controllers
                 vm.ActiveFileId = -1;
 
                 //and try to find a document that has errors
-                foreach (BuildEventErrorListItem criticalError in original.CriticalErrorItems)
+                List<string> documentErrors = original.CriticalErrorItems.Select(e => e.ErrorListItem.File).ToList();
+                if (originalEx != null)
                 {
-                    string errorFileName = Path.GetFileName(criticalError.ErrorListItem.File).ToLower();
+                    documentErrors.Add(originalEx.DocumentName);
+                }
+                foreach (string error in documentErrors)
+                {
+                    string errorFileName = Path.GetFileName(error).ToLower();
                     foreach (BuildDocument doc in original.Documents)
                     {
                         string docFileName = Path.GetFileName(doc.Document.FileName);
@@ -130,6 +207,14 @@ namespace OSBIDE.Web.Controllers
                             vm.ActiveFileId = doc.DocumentId;
                             break;
                         }
+                    }
+                }
+                
+                if (vm.ActiveFileId == -1)
+                {
+                    if (original.Documents.Count > 0)
+                    {
+                        vm.ActiveFileId = original.Documents.FirstOrDefault().DocumentId;
                     }
                 }
             }
@@ -187,6 +272,8 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult GetDiff(int id, string direction = "next")
         {
+            //TODO: rewrite!
+            /*
             BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
             if (direction == "next")
             {
@@ -229,18 +316,8 @@ namespace OSBIDE.Web.Controllers
             ViewBag.NextLog = next;
             BuildDiffViewModel vm = BuildViewModel(original, next, originalEx);
             return View(vm);
-        }
-
-        /// <summary>
-        /// Will locate any exception that occurred between the two supplied event log ids
-        /// </summary>
-        /// <param name="buildId"></param>
-        /// <param name="nextBuildId"></param>
-        /// <returns></returns>
-        public ExceptionEvent GetBuildException(int logId, int nextLogId)
-        {
-            ExceptionEvent ex = Db.ExceptionEvents.Where(e => e.EventLogId > logId).Where(e => e.EventLogId < nextLogId).FirstOrDefault();
-            return ex;
+             * */
+            return View();
         }
 
         private BuildEvent GetNextEvent(int id)
