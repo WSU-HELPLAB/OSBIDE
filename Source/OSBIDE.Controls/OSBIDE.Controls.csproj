@@ -122,7 +122,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GifImage.cs" />
-    <Compile Include="Models\ActivityFeedSession.cs" />
+    <Compile Include="Models\OsbideActivity.cs" />
+    <Compile Include="Models\OsbideSession.cs" />
     <Compile Include="Models\SessionMetrics.cs" />
     <Compile Include="OsbideResourceInterceptor.cs" />
     <Compile Include="OsbideStatusControl.xaml.cs">

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Controls.Models
 {
-    public class ActivityFeedSession
+    public class OsbideActivity
     {
         public OsbideUser User { get; set; }
         public DateTime StartDate { get; set; }

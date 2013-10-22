@@ -35,7 +35,7 @@ namespace OSBIDE.Web.Controllers
             //Even though we were passed a specific event log id in our parameter list, we really only
             //want to show "interesting" items.  We consider a build event to be interesting if
             // a) it has a build exception
-            // b) it happened after a runtime exception (AC Note: currently ignoring exceptions.  Might need a new action for these?)
+            // b) it happened after a runtime exception
             if (direction == "next")
             {
                 //check for exception events
@@ -152,6 +152,7 @@ namespace OSBIDE.Web.Controllers
                 next = GetNextEvent(original.EventLogId);
             }
 
+            //if next endedu up being NULL
             if (next == null)
             {
                 next = new BuildEvent();
@@ -273,50 +274,6 @@ namespace OSBIDE.Web.Controllers
         public ActionResult GetDiff(int id, string direction = "next")
         {
             //TODO: rewrite!
-            /*
-            BuildEvent original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
-            if (direction == "next")
-            {
-                while (original != null && original.CriticalErrorCount == 0)
-                {
-                    original = GetNextEvent(original.EventLogId);
-                }
-            }
-            else
-            {
-                while (original != null && original.CriticalErrorCount == 0)
-                {
-                    int previousId = GetPreviousDiffId(original.EventLogId);
-                    original = Db.BuildEvents.Where(b => b.EventLogId == previousId).FirstOrDefault();
-                }
-            }
-            if (original == null)
-            {
-                original = Db.BuildEvents.Where(b => b.EventLogId == id).FirstOrDefault();
-            }
-            BuildEvent next = GetNextEvent(original.EventLogId);
-            ExceptionEvent originalEx = null;
-            if (next != null)
-            {
-                GetBuildException(original.EventLogId, next.EventLogId);
-            }
-            else
-            {
-                next = new BuildEvent();
-                next.EventLogId = -1;
-                next.Id = -1;
-                next.EventLog = new EventLog();
-                next.EventLog.DateReceived = original.EventLog.DateReceived;
-            }
-            if (original == null)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-            ViewBag.OriginalLog = original;
-            ViewBag.NextLog = next;
-            BuildDiffViewModel vm = BuildViewModel(original, next, originalEx);
-            return View(vm);
-             * */
             return View();
         }
 

@@ -18,15 +18,15 @@ namespace OSBIDE.Controls.Models
             ActivityFeedSessionTimeout = new TimeSpan(0, 10, 0);
         }
 
-        public Dictionary<int, List<ActivityFeedSession>> GetActivityFeedSessionInfo()
+        public Dictionary<int, List<OsbideActivity>> GetActivityFeedSessionInfo()
         {
             return GetActivityFeedSessionInfo(DateTime.MinValue, DateTime.MaxValue);
         }
 
-        public Dictionary<int, List<ActivityFeedSession>> GetActivityFeedSessionInfo(DateTime startDate, DateTime endDate)
+        public Dictionary<int, List<OsbideActivity>> GetActivityFeedSessionInfo(DateTime startDate, DateTime endDate, int userId = -1)
         {
             //TODO: pull from action request logs to build session report
-            Dictionary<int, List<ActivityFeedSession>> sessions = new Dictionary<int, List<ActivityFeedSession>>();
+            Dictionary<int, List<OsbideActivity>> sessions = new Dictionary<int, List<OsbideActivity>>();
             ActionRequestLog action = new ActionRequestLog();
 
             var logsQuery = _db.ActionRequestLogs
@@ -34,13 +34,20 @@ namespace OSBIDE.Controls.Models
                 .Where(a => a.AccessDate >= startDate)
                 .Where(a => a.AccessDate <= endDate)
                 .OrderBy(a => a.AccessDate);
+
+            //filter by user id if requested
+            if (userId > 0)
+            {
+                logsQuery.Where(a => a.CreatorId == userId);
+            }
+
             foreach(ActionRequestLog log in logsQuery)
             {
                 //add key if it doesn't already exist
                 if (sessions.ContainsKey(log.CreatorId) == false)
                 {
-                    sessions.Add(log.CreatorId, new List<ActivityFeedSession>());
-                    ActivityFeedSession session = new ActivityFeedSession()
+                    sessions.Add(log.CreatorId, new List<OsbideActivity>());
+                    OsbideActivity session = new OsbideActivity()
                     {
                         User = log.Creator,
                         StartDate = log.AccessDate,
@@ -50,7 +57,7 @@ namespace OSBIDE.Controls.Models
                     sessions[log.CreatorId].Add(session);
                 }
 
-                ActivityFeedSession currentSession = sessions[log.CreatorId].Last();
+                OsbideActivity currentSession = sessions[log.CreatorId].Last();
                 
                 //if the delta between the log's date and our timeout does not exceed our current ending date, 
                 //then update the current session's ending date
@@ -61,7 +68,7 @@ namespace OSBIDE.Controls.Models
                 else
                 {
                     //ELSE: the delta was too great.  Create a new session.
-                    ActivityFeedSession session = new ActivityFeedSession()
+                    OsbideActivity session = new OsbideActivity()
                     {
                         User = log.Creator,
                         StartDate = log.AccessDate,
@@ -74,12 +81,12 @@ namespace OSBIDE.Controls.Models
             return sessions;
         }
 
-        public Dictionary<int, List<ActivityFeedSession>> GetIdeSessionInfo()
+        public Dictionary<int, List<OsbideActivity>> GetIdeSessionInfo()
         {
             return GetIdeSessionInfo(DateTime.MinValue, DateTime.MaxValue);
         }
 
-        public Dictionary<int, List<ActivityFeedSession>> GetIdeSessionInfo(DateTime startDate, DateTime endDate)
+        public Dictionary<int, List<OsbideActivity>> GetIdeSessionInfo(DateTime startDate, DateTime endDate)
         {
             //A session is defined as usage that contains no more than "ActivityFeedSessionTimeout" minutes of inactivity
             
@@ -89,7 +96,7 @@ namespace OSBIDE.Controls.Models
             //  the timeout grade period, then start a new session.
 
             //step #1: get all logs within our date range
-            Dictionary<int, List<ActivityFeedSession>> sessions = new Dictionary<int, List<ActivityFeedSession>>();
+            Dictionary<int, List<OsbideActivity>> sessions = new Dictionary<int, List<OsbideActivity>>();
             var logsQuery = _db.EventLogs
                 .Include("Sender")
                 .Where(e => e.DateReceived >= startDate)
@@ -100,8 +107,8 @@ namespace OSBIDE.Controls.Models
                 //add key if it doesn't already exist
                 if (sessions.ContainsKey(log.SenderId) == false)
                 {
-                    sessions.Add(log.SenderId, new List<ActivityFeedSession>());
-                    ActivityFeedSession session = new ActivityFeedSession()
+                    sessions.Add(log.SenderId, new List<OsbideActivity>());
+                    OsbideActivity session = new OsbideActivity()
                     {
                         User = log.Sender,
                         StartDate = log.DateReceived,
@@ -111,7 +118,7 @@ namespace OSBIDE.Controls.Models
                     sessions[log.SenderId].Add(session);
                 }
 
-                ActivityFeedSession currentSession = sessions[log.SenderId].Last();
+                OsbideActivity currentSession = sessions[log.SenderId].Last();
                 
                 //if the delta between the log's date and our timeout does not exceed our current ending date, 
                 //then update the current session's ending date
@@ -122,7 +129,7 @@ namespace OSBIDE.Controls.Models
                 else
                 {
                     //ELSE: the delta was too great.  Create a new session.
-                    ActivityFeedSession session = new ActivityFeedSession()
+                    OsbideActivity session = new OsbideActivity()
                     {
                         User = log.Sender,
                         StartDate = log.DateReceived,
