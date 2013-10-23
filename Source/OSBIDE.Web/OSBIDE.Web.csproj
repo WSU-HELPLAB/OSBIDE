@@ -157,6 +157,7 @@
     <Compile Include="Controllers\BuildEventController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
+    <Compile Include="Controllers\CoursesController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -202,6 +203,7 @@
     <Compile Include="Models\ViewModels\ForgotPasswordViewModel.cs" />
     <Compile Include="Models\ViewModels\GetItemUpdatesViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Models\ViewModels\MyCoursesViewModel.cs" />
     <Compile Include="Models\ViewModels\ProfileViewModel.cs" />
     <Compile Include="Services\OsbideWebService.svc.cs">
       <DependentUpon>OsbideWebService.svc</DependentUpon>
@@ -402,6 +404,7 @@
     <Content Include="Views\Shared\Feed\_HelpfulMarkGivenEvent.cshtml" />
     <Content Include="Views\WhatsNew\Index.cshtml" />
     <Content Include="Views\WhatsNew\Add.cshtml" />
+    <Content Include="Views\Courses\MyCourses.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

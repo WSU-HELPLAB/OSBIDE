@@ -22,7 +22,12 @@ namespace OSBIDE.Library.Models
         public DbSet<LocalErrorLog> LocalErrorLogs { get; set; }
         public DbSet<UserPassword> UserPasswords { get; set; }
         public DbSet<School> Schools { get; set; }
-        
+
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseCoordinator> CourseCoordinators { get; set; }
+        public DbSet<CourseStudent> CourseStudents { get; set; }
+        public DbSet<CourseAssistant> CourseAssistants { get; set; }
+
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
         public DbSet<ErrorListItem> ErrorListItems { get; set; }

@@ -74,6 +74,28 @@ namespace OSBIDE.Web.Controllers
                 Db.SaveChanges();
             }
 
+            if (Db.Courses.Count() == 0)
+            {
+                Db.Courses.Add(new Course()
+                {
+                    Name = "CptS 121"
+                }
+                );
+
+                Db.Courses.Add(new Course()
+                {
+                    Name = "CptS 122"
+                }
+                );
+
+                Db.Courses.Add(new Course()
+                {
+                    Name = "CptS 223"
+                }
+                );
+                Db.SaveChanges();
+            }
+
             return RedirectToAction("Index", "Home");
         }
     }

@@ -17,7 +17,8 @@ namespace OSBIDE.Library.Models
     {
         Student = 1,
         TA = 2,
-        Instructor = 4
+        Instructor = 4,
+        Admin = 8
     }
 
     [Serializable]

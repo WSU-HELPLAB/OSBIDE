@@ -79,6 +79,33 @@ namespace OSBIDE.Library.Models
             up.UserId = adam.Id;
             up.Password = UserPassword.EncryptPassword("123123", adam);
             context.UserPasswords.Add(up);
+            context.SaveChanges();
+
+            //also set up some courses
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 121"
+            }
+                );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 122"
+            }
+            );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 223"
+            }
+            );
+            context.SaveChanges();
+
+            //add students to the courses
+            context.Courses.Find(1).Coordinators.Add(new CourseCoordinator() { CoordinatorId = 3, CourseId = 1});
+            context.Courses.Find(1).Students.Add(new CourseStudent() { StudentId = 1, CourseId = 1 });
+            context.Courses.Find(1).Students.Add(new CourseStudent() { StudentId = 2, CourseId = 1 });
+            context.SaveChanges();
         }
     }
 }
