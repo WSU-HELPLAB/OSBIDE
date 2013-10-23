@@ -26,5 +26,11 @@ namespace OSBIDE.Library.Models
         public int StudentId { get; set; }
         public virtual OsbideUser Student { get; set; }
 
+        public bool IsActive { get; set; }
+
+        public CourseStudent()
+        {
+            IsActive = true;
+        }
     }
 }

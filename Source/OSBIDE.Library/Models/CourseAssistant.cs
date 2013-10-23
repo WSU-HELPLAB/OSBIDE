@@ -25,5 +25,12 @@ namespace OSBIDE.Library.Models
         [Required]
         public int AssistantId { get; set; }
         public virtual OsbideUser Assistant { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public CourseAssistant()
+        {
+            IsActive = true;
+        }
     }
 }

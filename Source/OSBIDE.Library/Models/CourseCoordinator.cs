@@ -25,5 +25,12 @@ namespace OSBIDE.Library.Models
         [Required]
         public int CoordinatorId { get; set; }
         public virtual OsbideUser Coordinator { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public CourseCoordinator()
+        {
+            IsActive = true;
+        }
     }
 }
