@@ -120,11 +120,11 @@ namespace OSBIDE.Library.Models
                 OsbideContext _db;
 #if DEBUG
                 _db = new OsbideContext("OsbideDebugContext");
-                //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
+                Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 
                 //uncomment this line (and comment out the one above) when VS is acting stupid and won't
                 //recreate the database on model change.
-                Database.SetInitializer<OsbideContext>(new OsbideContextAlwaysCreateInitializer());
+                //Database.SetInitializer<OsbideContext>(new OsbideContextAlwaysCreateInitializer());
 #else
             _db = new OsbideContext("OsbideReleaseContext");
 #endif
