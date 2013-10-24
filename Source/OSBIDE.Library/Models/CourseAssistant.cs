@@ -12,7 +12,7 @@ namespace OSBIDE.Library.Models
     /// Course assistants are people who help in running the course, but do not have complete admin access to the
     /// given course.  TAs commonly fit this role.
     /// </summary>
-    public class CourseAssistant
+    public class CourseAssistant : IModelBuilderExtender
     {
         [Key]
         [Column(Order = 0)]
@@ -31,6 +31,19 @@ namespace OSBIDE.Library.Models
         public CourseAssistant()
         {
             IsActive = true;
+        }
+
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CourseAssistant>()
+                .HasRequired(c => c.Course)
+                .WithMany(c => c.Assistants)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<CourseAssistant>()
+                .HasRequired(c => c.Assistant)
+                .WithMany()
+                .WillCascadeOnDelete(false);
         }
     }
 }

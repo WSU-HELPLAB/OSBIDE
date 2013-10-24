@@ -13,7 +13,6 @@ namespace OSBIDE.Library.Models
     /// from class roster files.  By using institution IDs, we can create relationships before a user has been registered in the system.
     /// Then, upon registration, a user will automatically be subscribed to their core user group.
     /// </summary>
-    //TODO: Write custom delete trigger
     [Serializable]
     public class UserSubscription : IModelBuilderExtender
     {

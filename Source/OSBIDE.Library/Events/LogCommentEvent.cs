@@ -136,6 +136,7 @@ namespace OSBIDE.Library.Events
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<LogCommentEvent>()
                 .HasRequired(f => f.EventLog)
                 .WithMany()
@@ -143,7 +144,7 @@ namespace OSBIDE.Library.Events
 
             modelBuilder.Entity<LogCommentEvent>()
                 .HasRequired(f => f.SourceEventLog)
-                .WithMany()
+                .WithMany(f => f.Comments)
                 .WillCascadeOnDelete(false);
 
         }

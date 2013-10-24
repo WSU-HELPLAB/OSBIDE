@@ -295,19 +295,6 @@ namespace OSBIDE.Web.Controllers
                 query.AddEventId(logId);
             }
             List<FeedItem> feedItems = query.Execute().ToList();
-
-            //Add in missing data
-            foreach (FeedItem fi in feedItems)
-            {
-                //TODO: Do this for other events as well
-                if (fi.Event.EventName.CompareTo(BuildEvent.Name) == 0)
-                {
-                    BuildEvent build = fi.Event as BuildEvent;
-                    build.ErrorItems = Db.BuildEventErrorListItems.Where(b => b.BuildEventId == build.Id).ToList();
-                    build.Documents = Db.BuildDocuments.Where(d => d.BuildId == build.Id).ToList();
-                }
-            }
-
             List<AggregateFeedItem> aggregateItems = AggregateFeedItem.FromFeedItems(feedItems);
 
             //build the "you and 5 others got this error"-type messages

@@ -12,7 +12,7 @@ namespace OSBIDE.Library.Models
     /// Course coordinators oversee a given class within OSBIDE.  Instructors would be
     /// considered coordinators.
     /// </summary>
-    public class CourseCoordinator
+    public class CourseCoordinator : IModelBuilderExtender
     {
         [Key]
         [Column(Order = 0)]
@@ -31,6 +31,19 @@ namespace OSBIDE.Library.Models
         public CourseCoordinator()
         {
             IsActive = true;
+        }
+
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CourseCoordinator>()
+                .HasRequired(c => c.Course)
+                .WithMany(c => c.Coordinators)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<CourseCoordinator>()
+                .HasRequired(c => c.Coordinator)
+                .WithMany()
+                .WillCascadeOnDelete(false);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace OSBIDE.Library.Models
         {
             modelBuilder.Entity<BuildEventErrorListItem>()
                 .HasRequired(b => b.BuildEvent)
-                .WithMany()
+                .WithMany(b => b.ErrorItems)
                 .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<BuildEventErrorListItem>()

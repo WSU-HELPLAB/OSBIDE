@@ -78,19 +78,22 @@ namespace OSBIDE.Web.Controllers
             {
                 Db.Courses.Add(new Course()
                 {
-                    Name = "CptS 121"
+                    Name = "CptS 121",
+                    SchoolId = 1
                 }
                 );
 
                 Db.Courses.Add(new Course()
                 {
-                    Name = "CptS 122"
+                    Name = "CptS 122",
+                    SchoolId = 1
                 }
                 );
 
                 Db.Courses.Add(new Course()
                 {
-                    Name = "CptS 223"
+                    Name = "CptS 223",
+                    SchoolId = 1
                 }
                 );
                 Db.SaveChanges();

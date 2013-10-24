@@ -8,11 +8,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
-    public class Course
+    public class Course : IModelBuilderExtender
     {
         [Key]
         [Required]
+        [Column(Order = 0)]
         public int Id { get; set; }
+
+        [Required]
+        [ForeignKey("School")]
+        public int SchoolId { get; set; }
+        public virtual School School { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -34,6 +40,11 @@ namespace OSBIDE.Library.Models
             Coordinators = new List<CourseCoordinator>();
             Students = new List<CourseStudent>();
             Assistants = new List<CourseAssistant>();
+        }
+
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            
         }
     }
 }
