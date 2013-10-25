@@ -206,6 +206,7 @@
     <Compile Include="Models\EventLogData.cs" />
     <Compile Include="Models\EventLogSubscription.cs" />
     <Compile Include="Models\Course.cs" />
+    <Compile Include="Models\ICourseUserRelationship.cs" />
     <Compile Include="Models\PrivateQuestion.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />

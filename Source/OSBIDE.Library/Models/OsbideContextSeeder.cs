@@ -33,7 +33,8 @@ namespace OSBIDE.Library.Models
                     Email = "joe@user.com",
                     InstitutionId = 123,
                     SchoolId = wsu.Id,
-                    Role = SystemRole.Student
+                    Role = SystemRole.Student,
+                    Gender = Gender.Male
                 };
             joe.SetProfileImage(renderer.Render(joe.Email.GetHashCode(), 128));
             context.Users.Add(joe);
@@ -45,7 +46,8 @@ namespace OSBIDE.Library.Models
                 Email = "betty@rogers.com",
                 InstitutionId = 456,
                 SchoolId = wsu.Id,
-                Role = SystemRole.Student
+                Role = SystemRole.Student,
+                Gender = Gender.Female
             };
             betty.SetProfileImage(renderer.Render(betty.Email.GetHashCode(), 128));
             context.Users.Add(betty);
@@ -58,7 +60,8 @@ namespace OSBIDE.Library.Models
                 Email = "cartera@wsu.edu",
                 InstitutionId = 789,
                 SchoolId = wsu.Id,
-                Role = SystemRole.Instructor
+                Role = SystemRole.Instructor,
+                Gender = Gender.Male
             };
             adam.SetProfileImage(renderer.Render(adam.Email.GetHashCode(), 128));
             context.Users.Add(adam);
@@ -105,9 +108,9 @@ namespace OSBIDE.Library.Models
             context.SaveChanges();
 
             //add students to the courses
-            context.Courses.Find(1).Coordinators.Add(new CourseCoordinator() { CoordinatorId = 3, CourseId = 1});
-            context.Courses.Find(1).Students.Add(new CourseStudent() { StudentId = 1, CourseId = 1 });
-            context.Courses.Find(1).Students.Add(new CourseStudent() { StudentId = 2, CourseId = 1 });
+            context.Courses.Find(1).Coordinators.Add(new CourseCoordinator() { UserId = 3, CourseId = 1});
+            context.Courses.Find(1).Students.Add(new CourseStudent() { UserId = 1, CourseId = 1 });
+            context.Courses.Find(1).Students.Add(new CourseStudent() { UserId = 2, CourseId = 1 });
             context.SaveChanges();
         }
     }

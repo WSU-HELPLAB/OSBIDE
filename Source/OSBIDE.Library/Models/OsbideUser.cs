@@ -21,6 +21,13 @@ namespace OSBIDE.Library.Models
         Admin = 8
     }
 
+    public enum Gender : int
+    { 
+        Unknown = 1,
+        Male,
+        Female
+    }
+
     [Serializable]
     [DataContract]
     public class OsbideUser : INotifyPropertyChanged, IModelBuilderExtender
@@ -35,6 +42,7 @@ namespace OSBIDE.Library.Models
         private bool _receiveNotificationEmails = false;
         private bool _receiveEmailOnNewAskForHelp = false;
         private bool _receiveEmailOnNewFeedPost = false;
+        private DateTime _lastVsActivity;
 
         [NonSerialized]
         private ProfileImage _profileImage;
@@ -209,7 +217,31 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        private DateTime _lastVsActivity;
+        /// <summary>
+        /// The numeric representation of the user's gender within OSBIDE.  
+        /// Use <see cref="Gender"/> instead.
+        /// </summary>
+        [DataMember]
+        [Required]
+        [Display(Name = "Gender")]
+        public int GenderValue { get; protected set; }
+
+        /// <summary>
+        /// The user's gender within the OSBIDE system
+        /// </summary>
+        [NotMapped]
+        public Gender Gender
+        {
+            get
+            {
+                return (Gender)GenderValue;
+            }
+            set
+            {
+                GenderValue = (int)value;
+                OnPropertyChanged("Gender");
+            }
+        }
 
         /// <summary>
         /// Tracks when the user's Visual Studio client was last active.
@@ -313,6 +345,7 @@ namespace OSBIDE.Library.Models
             Role = SystemRole.Student;
             LastVsActivity = DateTime.UtcNow;
             ReceiveNotificationEmails = false;
+            Gender = Gender.Unknown;
         }
 
         public OsbideUser(OsbideUser copyUser)
@@ -329,6 +362,7 @@ namespace OSBIDE.Library.Models
             ReceiveNotificationEmails = copyUser.ReceiveNotificationEmails;
             ReceiveEmailOnNewAskForHelp = copyUser.ReceiveEmailOnNewAskForHelp;
             ReceiveEmailOnNewFeedPost = copyUser.ReceiveEmailOnNewFeedPost;
+            Gender = copyUser.Gender;
         }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)

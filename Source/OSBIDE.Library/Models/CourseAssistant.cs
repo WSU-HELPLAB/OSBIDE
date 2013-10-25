@@ -12,7 +12,7 @@ namespace OSBIDE.Library.Models
     /// Course assistants are people who help in running the course, but do not have complete admin access to the
     /// given course.  TAs commonly fit this role.
     /// </summary>
-    public class CourseAssistant : IModelBuilderExtender
+    public class CourseAssistant : IModelBuilderExtender, ICourseUserRelationship
     {
         [Key]
         [Column(Order = 0)]
@@ -23,8 +23,8 @@ namespace OSBIDE.Library.Models
         [Key]
         [Column(Order = 1)]
         [Required]
-        public int AssistantId { get; set; }
-        public virtual OsbideUser Assistant { get; set; }
+        public int UserId { get; set; }
+        public virtual OsbideUser User { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -41,7 +41,7 @@ namespace OSBIDE.Library.Models
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<CourseAssistant>()
-                .HasRequired(c => c.Assistant)
+                .HasRequired(c => c.User)
                 .WithMany()
                 .WillCascadeOnDelete(false);
         }

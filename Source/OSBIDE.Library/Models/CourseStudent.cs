@@ -12,7 +12,7 @@ namespace OSBIDE.Library.Models
     /// Represents a link between a course and a given user.  This type of link is most
     /// common for students in a course.
     /// </summary>
-    public class CourseStudent : IModelBuilderExtender
+    public class CourseStudent : IModelBuilderExtender, ICourseUserRelationship
     {
         [Key]
         [Column(Order = 2)]
@@ -23,8 +23,8 @@ namespace OSBIDE.Library.Models
         [Key]
         [Column(Order = 1)]
         [Required]
-        public int StudentId { get; set; }
-        public virtual OsbideUser Student { get; set; }
+        public int UserId { get; set; }
+        public virtual OsbideUser User { get; set; }
 
         public bool IsActive { get; set; }
 
@@ -41,7 +41,7 @@ namespace OSBIDE.Library.Models
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<CourseStudent>()
-                .HasRequired(c => c.Student)
+                .HasRequired(c => c.User)
                 .WithMany()
                 .WillCascadeOnDelete(false);
         }

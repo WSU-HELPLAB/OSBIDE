@@ -30,6 +30,12 @@ namespace OSBIDE.Web.Models.ViewModels
         /// </summary>
         public List<Course> AllCourses { get; set; }
 
+        /// <summary>
+        /// Used in sub-views as a shortcut to the currently active relationship
+        /// when building HTML.
+        /// </summary>
+        public ICourseUserRelationship ActiveRelationship { get; set; }
+
         public MyCoursesViewModel()
         {
             CoordinatingCourses = new List<CourseCoordinator>();
@@ -37,6 +43,7 @@ namespace OSBIDE.Web.Models.ViewModels
             StudentCourses = new List<CourseStudent>();
             AllCourses = new List<Course>();
             CurrentUser = new OsbideUser();
+            ActiveRelationship = new CourseStudent();
         }
     }
 }

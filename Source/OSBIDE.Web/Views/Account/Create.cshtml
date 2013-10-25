@@ -1,5 +1,5 @@
-﻿@model OSBIDE.Web.Models.ViewModels.CreateAccountViewModel
-
+﻿@using OSBIDE.Library.Models
+@model OSBIDE.Web.Models.ViewModels.CreateAccountViewModel
 @{
     ViewBag.Title = "Create Account";
     bool userExistsError = (ViewBag.UserExistsError != null) ? ViewBag.UserExistsError : false;
@@ -59,11 +59,39 @@
             <td>@Html.TextBoxFor(m => m.User.InstitutionId)</td>
             <td>@Html.ValidationMessageFor(m => m.User.InstitutionId)</td>
         </tr>
+        <tr>
+        </tr>
+        <tr>
+            <th style="vertical-align:top">@Html.LabelFor(m => m.User.GenderValue): (optional)
+                <img id="gender-tooltip" height="16" width="16" src="~/Content/icons/tooltip.png" alt="more information about gender" title="gender is optional" />
+            </th>
+            <td>
+                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Unknown, new { @checked = "checked", id = "gender-other" }) 
+                <label for="gender-other">Other / Unknown / Not specified</label>
+                <br />
+                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Male, new { id = "gender-male" }) 
+                <label for="gender-male">Male</label>
+                <br />
+                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Female, new { id = "gender-female" }) 
+                <label for="gender-female">Female</label>
+            </td>
+            <td>
+                
+            </td>
+        </tr>
     </table>
     <input type="submit" value="Create Account" />
     <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
 }
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/Scripts/Account.Create.js")
+<style type="text/css">
+    div.ui-tooltip {
+    max-width: 400px;
+    text-align:justify;
+    padding:6px;
+}
+</style>
 }

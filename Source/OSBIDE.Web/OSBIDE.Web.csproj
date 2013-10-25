@@ -216,6 +216,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Content Include="Content\icons\loading.gif" />
     <Content Include="Content\icons\follow.png" />
+    <Content Include="Content\icons\tooltip.png" />
     <Content Include="Content\icons\unfollow.png" />
     <Content Include="Content\icons\users_16.png" />
     <Content Include="Content\icons\users_24.png" />
@@ -405,6 +406,7 @@
     <Content Include="Views\WhatsNew\Index.cshtml" />
     <Content Include="Views\WhatsNew\Add.cshtml" />
     <Content Include="Views\Courses\MyCourses.cshtml" />
+    <Content Include="Views\Courses\_CourseListing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

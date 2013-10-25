@@ -5,7 +5,6 @@
     ViewBag.Title = "My Courses";
     
     /* 
-     * TODO: 
      *  1. Display courses based on role and ony when appicable (i.e. don't display coordinator section if user role is student)
      *  2. If user role is instructor, give the option to create a new course
      *  3. For all users, allow user to enroll in new course
@@ -18,4 +17,15 @@
     
 }
 <h2>My Courses</h2>
-
+@if (Model.CurrentUser.Role >= SystemRole.Instructor)
+{
+    //display coordinator heading
+}
+@if (Model.CurrentUser.Role >= SystemRole.TA)
+{
+    //display TA heading
+}
+@if (Model.CurrentUser.Role >= SystemRole.Student)
+{
+    //display Student heading
+}
