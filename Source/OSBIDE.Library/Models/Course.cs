@@ -23,7 +23,20 @@ namespace OSBIDE.Library.Models
         [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Description { get; set; }
+
+        [Required]
+        public int Year { get; set; }
+
+        [Required]
+        public string Season { get; set; }
+
+        [Required]
+        public bool RequiresApprovalBeforeAdmission { get; set; }
+
+        [Required]
+        public bool IsDeleted { get; set; }
 
         [Required]
         public virtual IList<CourseCoordinator> Coordinators { get; set; }
@@ -40,6 +53,8 @@ namespace OSBIDE.Library.Models
             Coordinators = new List<CourseCoordinator>();
             Students = new List<CourseStudent>();
             Assistants = new List<CourseAssistant>();
+            RequiresApprovalBeforeAdmission = false;
+            IsDeleted = false;
         }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)

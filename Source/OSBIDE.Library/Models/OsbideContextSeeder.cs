@@ -19,10 +19,11 @@ namespace OSBIDE.Library.Models
             context.ChatRooms.Add(new ChatRoom() { Name = "Class Chat", SchoolId = wsu.Id, IsDefaultRoom = true });
             context.ChatRooms.Add(new ChatRoom() { Name = "Section 1 Chat", SchoolId = wsu.Id });
 
+            //[obsolete]
             //add in some default subscriptions
-            context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 123, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 456 });
-            context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 123, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
-            context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 456, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
+            //context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 123, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 456 });
+            //context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 123, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
+            //context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 456, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
 
             //add some test users
             IdenticonRenderer renderer = new IdenticonRenderer();

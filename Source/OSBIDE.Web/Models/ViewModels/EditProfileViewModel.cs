@@ -32,6 +32,9 @@ namespace OSBIDE.Web.Models.ViewModels
         public string UpdateEmailSuccessMessage { get; set; }
         public string UpdatePasswordSuccessMessage { get; set; }
         public string UpdateEmailSettingsMessage { get; set; }
+        public string UpdateBasicSettingsMessage { get; set; }
+
+        public int LastActivePane { get; set; }
 
         public List<OsbideUser> UsersInCourse { get; set; }
         public Dictionary<int, UserSubscription> UserSubscriptions { get; set; }

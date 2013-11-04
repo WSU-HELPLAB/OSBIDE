@@ -99,13 +99,13 @@ namespace OSBIDE.Web.Controllers
                                                   .Include("LogCommentEvent")
                                                   .Include("LogCommentEvent.EventLog")
                                                   .Include("LogCommentEvent.EventLog.Sender")
-                                                  where 1 == 1
-                                                  && social.LogCommentEvent.EventDate >= maxLookback
-                                                  && (social.TargetUserId == vm.User.Id || social.LogCommentEvent.SourceEventLog.SenderId == vm.User.Id)
-                                                  orderby social.LogCommentEvent.EventDate descending
-                                                  select social
+                                                   where 1 == 1
+                                                   && social.LogCommentEvent.EventDate >= maxLookback
+                                                   && (social.TargetUserId == vm.User.Id || social.LogCommentEvent.SourceEventLog.SenderId == vm.User.Id)
+                                                   orderby social.LogCommentEvent.EventDate descending
+                                                   select social
                                                 ).ToList();
-            
+
             foreach (CommentActivityLog commentLog in socialLogs)
             {
                 vm.SocialActivity.AddLog(commentLog);
@@ -142,7 +142,11 @@ namespace OSBIDE.Web.Controllers
             if (ModelState.IsValid)
             {
                 // We can determine which is desired by checking which button was pressed
-                if (Request.Form["updateEmail"] != null)
+                if (Request.Form["updateBasic"] != null)
+                {
+                    UpdateBasicSettings(vm);
+                }
+                else if (Request.Form["updateEmail"] != null)
                 {
                     UpdateEmail(vm);
                 }
@@ -158,6 +162,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     UpdateEmailNotificationSettings(vm);
                 }
+
             }
             return View(BuildEditViewModel(vm));
         }
@@ -190,7 +195,35 @@ namespace OSBIDE.Web.Controllers
                     vm.UserSubscriptions[user.Id] = us;
                 }
             }
+
+            //set up school choices
+            List<School> schools = Db.Schools.ToList();
+            ViewBag.Schools = schools;
+
             return vm;
+        }
+
+        private void UpdateBasicSettings(EditProfileViewModel vm)
+        {
+            //make sure that the specified school ID / institution ID isn't already daken
+            OsbideUser dbUser = Db.Users
+                                  .Where(u => u.SchoolId == vm.User.SchoolId)
+                                  .Where(u => u.InstitutionId == vm.User.InstitutionId)
+                                  .FirstOrDefault();
+            if (dbUser != null)
+            {
+                if (dbUser.Id != CurrentUser.Id)
+                {
+                    vm.UpdateBasicSettingsMessage = "The specified school / institution ID is already taken";
+                    return;
+                }
+            }
+            CurrentUser.FirstName = vm.User.FirstName;
+            CurrentUser.LastName = vm.User.LastName;
+            CurrentUser.SchoolId = vm.User.SchoolId;
+            CurrentUser.InstitutionId = vm.User.InstitutionId;
+            CurrentUser.Gender = vm.User.Gender;
+            vm.UpdateBasicSettingsMessage = "Your settings have been updated.";
         }
 
         private void UpdateEmailNotificationSettings(EditProfileViewModel vm)

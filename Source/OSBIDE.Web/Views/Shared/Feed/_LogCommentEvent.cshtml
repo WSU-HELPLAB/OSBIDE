@@ -8,7 +8,20 @@
 @Model.Creator.FirstName commented on
 @if (Model.Creator.Id == comment.SourceEventLog.SenderId)
 {
-    @:their own
+    switch(Model.Creator.Gender)
+    {
+        case OSBIDE.Library.Models.Gender.Female:
+            @:her own
+            break;
+            
+        case OSBIDE.Library.Models.Gender.Male:
+            @:his own
+            break;
+            
+        case OSBIDE.Library.Models.Gender.Unknown:
+            @:their own
+            break;
+    }
 }
 else
 {

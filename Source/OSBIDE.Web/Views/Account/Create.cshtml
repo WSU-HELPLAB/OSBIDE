@@ -66,13 +66,13 @@
                 <img id="gender-tooltip" height="16" width="16" src="~/Content/icons/tooltip.png" alt="more information about gender" title="gender is optional" />
             </th>
             <td>
-                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Unknown, new { @checked = "checked", id = "gender-other" }) 
+                @Html.RadioButtonFor(m => m.User.Gender, Gender.Unknown, new { @checked = "checked", id = "gender-other" }) 
                 <label for="gender-other">Other / Unknown / Not specified</label>
                 <br />
-                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Male, new { id = "gender-male" }) 
+                @Html.RadioButtonFor(m => m.User.Gender, Gender.Male, new { id = "gender-male" }) 
                 <label for="gender-male">Male</label>
                 <br />
-                @Html.RadioButtonFor(m => m.User.GenderValue, (int)Gender.Female, new { id = "gender-female" }) 
+                @Html.RadioButtonFor(m => m.User.Gender, Gender.Female, new { id = "gender-female" }) 
                 <label for="gender-female">Female</label>
             </td>
             <td>
