@@ -406,7 +406,6 @@
     <Content Include="Views\WhatsNew\Index.cshtml" />
     <Content Include="Views\WhatsNew\Add.cshtml" />
     <Content Include="Views\Courses\MyCourses.cshtml" />
-    <Content Include="Views\Courses\_CourseListing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

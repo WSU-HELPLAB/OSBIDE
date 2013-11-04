@@ -16,8 +16,10 @@ namespace OSBIDE.Library.Models
             context.SaveChanges();
 
             //add in default chat rooms
-            context.ChatRooms.Add(new ChatRoom() { Name = "Class Chat", SchoolId = wsu.Id, IsDefaultRoom = true });
-            context.ChatRooms.Add(new ChatRoom() { Name = "Section 1 Chat", SchoolId = wsu.Id });
+            context.ChatRooms.Add(new ChatRoom() { Name = "General Chat", SchoolId = wsu.Id, IsDefaultRoom = true });
+            context.ChatRooms.Add(new ChatRoom() { Name = "CptS 121 Chat", SchoolId = wsu.Id, IsDefaultRoom = false });
+            context.ChatRooms.Add(new ChatRoom() { Name = "CptS 122 Chat", SchoolId = wsu.Id, IsDefaultRoom = false });
+            context.ChatRooms.Add(new ChatRoom() { Name = "CptS 223 Chat", SchoolId = wsu.Id, IsDefaultRoom = false });
 
             //[obsolete]
             //add in some default subscriptions
@@ -89,6 +91,8 @@ namespace OSBIDE.Library.Models
             context.Courses.Add(new Course()
             {
                 Name = "CptS 121",
+                Year = 2013,
+                Season = "Spring",
                 SchoolId = 1
             }
                 );
@@ -96,6 +100,8 @@ namespace OSBIDE.Library.Models
             context.Courses.Add(new Course()
             {
                 Name = "CptS 122",
+                Year = 2013,
+                Season = "Spring",
                 SchoolId = 1
             }
             );
@@ -103,6 +109,8 @@ namespace OSBIDE.Library.Models
             context.Courses.Add(new Course()
             {
                 Name = "CptS 223",
+                Year = 2013,
+                Season = "Spring",
                 SchoolId = 1
             }
             );

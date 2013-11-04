@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Library.Models
 {
-    public interface ICourseUserRelationship
+    public enum CourseRelationship { Student, Assistant, Coordinator }
+
+    public interface ICourseUserRelationship : IComparable<ICourseUserRelationship>, IComparer<ICourseUserRelationship>
     {
         int CourseId { get; set; }
         Course Course { get; set; }
@@ -15,5 +17,11 @@ namespace OSBIDE.Library.Models
         OsbideUser User { get; set; }
 
         bool IsActive { get; set; }
+
+        CourseRelationship Relationship { get; }
+
+        int CompareTo(ICourseUserRelationship other);
+
+        int Compare(ICourseUserRelationship x, ICourseUserRelationship y);
     }
 }

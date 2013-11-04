@@ -86,7 +86,10 @@
     <section>
         You are currently enrolled in the following courses:
         <ul>
-            
+            @foreach (ICourseUserRelationship course in Model.User.Courses)
+            {
+                <li>@course.Course.Name @course.Course.Season - @course.Course.Year @course.Relationship.ToString()</li>   
+            }
         </ul>
     </section>
 

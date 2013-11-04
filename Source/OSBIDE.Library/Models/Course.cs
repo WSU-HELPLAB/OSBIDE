@@ -8,7 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OSBIDE.Library.Models
 {
-    public class Course : IModelBuilderExtender
+    [Serializable]
+    public class Course : IModelBuilderExtender, IComparer<Course>, IComparable<Course>
     {
         [Key]
         [Required]
@@ -23,7 +24,7 @@ namespace OSBIDE.Library.Models
         [Required]
         public string Name { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings=true)]
         public string Description { get; set; }
 
         [Required]
@@ -60,6 +61,16 @@ namespace OSBIDE.Library.Models
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
         {
             
+        }
+
+        public int Compare(Course x, Course y)
+        {
+            return x.Id.CompareTo(y.Id);
+        }
+
+        public int CompareTo(Course other)
+        {
+            return this.Id.CompareTo(other.Id);
         }
     }
 }
