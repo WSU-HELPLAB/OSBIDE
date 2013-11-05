@@ -214,6 +214,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Content\icons\add_up.png" />
+    <Content Include="Content\icons\delete_up.png" />
+    <Content Include="Content\icons\edit_up.png" />
+    <Content Include="Content\icons\help.png" />
     <Content Include="Content\icons\loading.gif" />
     <Content Include="Content\icons\follow.png" />
     <Content Include="Content\icons\tooltip.png" />

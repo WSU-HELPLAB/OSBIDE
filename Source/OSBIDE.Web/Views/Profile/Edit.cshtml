@@ -61,7 +61,7 @@
                 </tr>
                 <tr>
                     <th style="vertical-align: top">@Html.LabelFor(m => m.User.GenderValue): (optional)
-                <img id="gender-tooltip" height="16" width="16" src="~/Content/icons/tooltip.png" alt="more information about gender" title="gender is optional" />
+                <img id="gender-tooltip" src="~/Content/icons/help.png" alt="more information about gender" title="gender is optional" />
                     </th>
                     <td>
                         @Html.RadioButtonFor(m => m.User.Gender, Gender.Unknown, new { @checked = "checked", id = "gender-other" })
@@ -84,13 +84,46 @@
 
     <h3>My Courses</h3>
     <section>
-        You are currently enrolled in the following courses:
+        @{
+            List<ICourseUserRelationship> courses = Model.User.Courses;
+        }
+        @if (courses.Count > 0)
+        {
+            @:You are currently enrolled in the following courses:
+            <table style="margin: 7px;">
+                @foreach (ICourseUserRelationship course in Model.User.Courses)
+                {
+                    <tr>
+                        <td style="padding-right: 7px;">
+                            <a data-course="@course.Course.Name" data-id="@course.CourseId" href="~/Profile/LeaveCourse/@course.CourseId" class="leave-course-link"><img src="~/Content/icons/delete_up.png" alt="leave course" title="leave this course" /></a>
+                        </td>
+                        <td>
+                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId }, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Relationship.ToString())
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            @:You are not enrolled in any courses.
+        }
         <ul>
-            @foreach (ICourseUserRelationship course in Model.User.Courses)
+            <li>@Html.ActionLink("Find additional courses", "Search", "Course")</li>
+            @if (Model.User.Role == SystemRole.Instructor)
             {
-                <li>@course.Course.Name @course.Course.Season - @course.Course.Year @course.Relationship.ToString()</li>   
+                <li>@Html.ActionLink("Create a new course", "Create", "Course")</li>
             }
         </ul>
+        @using (Html.BeginForm())
+        {
+            <input type="hidden" name="CourseId" id="CourseId" value="-1" />
+        }
+        <div id="leave-confirm" title="Leave ???" style="display:none;">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
+                Are you sure that you want to leave <span id="leave-confirm-course-name"> the course</span>?
+            </p>
+        </div>
     </section>
 
     <h3>Email Address</h3>
@@ -207,9 +240,43 @@
             $("#accordion-options").accordion({
                 heightStyle: "content",
                 active: @Model.LastActivePane
+                });
+
+            $('.leave-course-link').click(function(event)
+            {
+                var course = $(this).attr('data-course');
+                var courseId = $(this).attr('data-id');
+                $('#leave-confirm').attr('title', 'Leave ' + course);
+                $('#leave-confirm-course-name').html(course);
+
+
+                event.preventDefault();
+                $('#leave-confirm').dialog({
+                    resizable: false,
+                    height:200,
+                    modal:true,
+                    show: {
+                        effect: "fade",
+                        duration: 300
+                    },
+                    hide: {
+                        effect: "fade",
+                        duration: 300
+                    },
+                    buttons:{
+                        "Yes": function() {
+                            $('#CourseId').val(courseId);
+
+                            //TODO: Submit form.
+
+                        },
+                        Cancel: function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                });
             });
         });
-
 
     </script>
     <style type="text/css">

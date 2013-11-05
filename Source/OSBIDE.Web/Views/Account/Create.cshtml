@@ -63,7 +63,7 @@
         </tr>
         <tr>
             <th style="vertical-align:top">@Html.LabelFor(m => m.User.GenderValue): (optional)
-                <img id="gender-tooltip" height="16" width="16" src="~/Content/icons/tooltip.png" alt="more information about gender" title="gender is optional" />
+                <img id="gender-tooltip" src="~/Content/icons/help.png" alt="more information about gender" title="gender is optional" />
             </th>
             <td>
                 @Html.RadioButtonFor(m => m.User.Gender, Gender.Unknown, new { @checked = "checked", id = "gender-other" }) 

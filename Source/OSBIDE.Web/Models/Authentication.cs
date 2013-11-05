@@ -45,15 +45,15 @@ namespace OSBIDE.Web.Models
         /// <returns></returns>
         public bool IsValidKey(string authToken)
         {
-            OsbideUser profile = null;
+            int id = -1;
             try
             {
-                profile = _cache[authToken] as OsbideUser;
+                id = (int)_cache[authToken];
             }
             catch (Exception)
             {
             }
-            if (profile == null)
+            if (id < 0)
             {
                 return false;
             }
@@ -103,10 +103,12 @@ namespace OSBIDE.Web.Models
         /// <returns></returns>
         public OsbideUser GetActiveUser(string authToken)
         {
+            int id = -1;
             OsbideUser profile = null;
             try
             {
-                profile = _cache[authToken] as OsbideUser;
+                id = (int)_cache[authToken];
+                profile = _db.Users.Find(id);
             }
             catch(Exception)
             {
@@ -116,6 +118,19 @@ namespace OSBIDE.Web.Models
                 return new OsbideUser();
             }
             return new OsbideUser(profile);
+        }
+
+        public int GetActiveUserId(string authToken)
+        {
+            int id = -1;
+            try
+            {
+                id = (int)_cache[authToken];
+            }
+            catch (Exception)
+            {
+            }
+            return id;
         }
 
         /// <summary>
@@ -131,7 +146,7 @@ namespace OSBIDE.Web.Models
             string hash = ComputeHash(profile.Email);
 
             //store profile in the authentication hash
-            _cache[hash] = profile;
+            _cache[hash] = profile.Id;
 
             //store the key to the hash inside a cookie for the user
             cookie.Values[userNameKey] = hash;

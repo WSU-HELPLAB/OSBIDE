@@ -43,10 +43,19 @@ namespace OSBIDE.Web.Controllers
             //set up current user
             Authentication auth = new Authentication();
             string authKey = auth.GetAuthenticationKey();
-            CurrentUser = auth.GetActiveUser(authKey);
-            Db.Users.Attach(CurrentUser);
-            CurrentUser.PropertyChanged += CurrentUser_PropertyChanged;
-
+            int id = auth.GetActiveUserId(authKey);
+            
+            //make sure that we got back a good key
+            if (id > 0)
+            {
+                CurrentUser = Db.Users.Find(id);
+                CurrentUser.PropertyChanged += CurrentUser_PropertyChanged;
+            }
+            else
+            {
+                CurrentUser = new OsbideUser();
+            }
+            
             //set up caches
             GlobalCache = FileCacheHelper.GetGlobalCacheInstance();
             UserCache = FileCacheHelper.GetCacheInstance(CurrentUser);

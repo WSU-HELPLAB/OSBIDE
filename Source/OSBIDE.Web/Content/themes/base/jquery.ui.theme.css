@@ -34,7 +34,7 @@
 	color: #222222/*{fcContent}*/;
 }
 .ui-widget-content a {
-	color: #222222/*{fcContent}*/;
+	/*color: #222222{fcContent}*/;
 }
 .ui-widget-header {
 	border: 1px solid #aaaaaa/*{borderColorHeader}*/;
