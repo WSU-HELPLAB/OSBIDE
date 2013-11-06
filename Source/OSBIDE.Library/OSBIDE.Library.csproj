@@ -174,9 +174,7 @@
     <Compile Include="Models\BuildDocument.cs" />
     <Compile Include="Models\BuildError.cs" />
     <Compile Include="Models\ChatRoomUser.cs" />
-    <Compile Include="Models\CourseAssistant.cs" />
-    <Compile Include="Models\CourseCoordinator.cs" />
-    <Compile Include="Models\CourseStudent.cs" />
+    <Compile Include="Models\CourseUserRelationship.cs" />
     <Compile Include="Models\ErrorType.cs" />
     <Compile Include="Models\BuildEventBreakPoint.cs" />
     <Compile Include="Models\BuildEventErrorListItem.cs" />
@@ -206,7 +204,6 @@
     <Compile Include="Models\EventLogData.cs" />
     <Compile Include="Models\EventLogSubscription.cs" />
     <Compile Include="Models\Course.cs" />
-    <Compile Include="Models\ICourseUserRelationship.cs" />
     <Compile Include="Models\PrivateQuestion.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />

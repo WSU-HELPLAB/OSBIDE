@@ -117,9 +117,9 @@ namespace OSBIDE.Library.Models
             context.SaveChanges();
 
             //add students to the courses
-            context.Courses.Find(1).Coordinators.Add(new CourseCoordinator() { UserId = 3, CourseId = 1});
-            context.Courses.Find(1).Students.Add(new CourseStudent() { UserId = 1, CourseId = 1 });
-            context.Courses.Find(1).Students.Add(new CourseStudent() { UserId = 2, CourseId = 1 });
+            context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 3, CourseId = 1, Role = CourseRole.Coordinator});
+            context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 1, CourseId = 1, Role = CourseRole.Student });
+            context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 2, CourseId = 1, Role = CourseRole.Assistant });
             context.SaveChanges();
         }
     }

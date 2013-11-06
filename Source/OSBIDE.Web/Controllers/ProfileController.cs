@@ -162,9 +162,23 @@ namespace OSBIDE.Web.Controllers
                 {
                     UpdateEmailNotificationSettings(vm);
                 }
+                else if (Request.Form["CourseToRemove"] != null)
+                {
+                    int courseId = -1;
+                    Int32.TryParse(Request.Form["CourseToRemove"].ToString(), out courseId);
+                    RemoveUserFromCourse(courseId, vm);
+                }
 
             }
-            return View(BuildEditViewModel(vm));
+            return View("Edit", BuildEditViewModel(vm));
+        }
+
+        [OsbideAuthorize]
+        public ActionResult RemoveCourse(int courseId)
+        {
+            EditProfileViewModel vm = BuildEditViewModel();
+            RemoveUserFromCourse(courseId, vm);
+            return RedirectToAction("Edit");
         }
 
         #region Edit helper methods
@@ -201,6 +215,11 @@ namespace OSBIDE.Web.Controllers
             ViewBag.Schools = schools;
 
             return vm;
+        }
+
+        private void RemoveUserFromCourse(int courseId, EditProfileViewModel vm)
+        {
+            vm.LastActivePane = 2;
         }
 
         private void UpdateBasicSettings(EditProfileViewModel vm)

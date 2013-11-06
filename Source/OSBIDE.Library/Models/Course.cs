@@ -39,21 +39,12 @@ namespace OSBIDE.Library.Models
         [Required]
         public bool IsDeleted { get; set; }
 
-        [Required]
-        public virtual IList<CourseCoordinator> Coordinators { get; set; }
-
-        [Required]
-        public virtual IList<CourseStudent> Students { get; set; }
-
-        [Required]
-        public virtual IList<CourseAssistant> Assistants { get; set; }
+        public virtual IList<CourseUserRelationship> CourseUserRelationships { get; set; }
 
         public Course()
         {
             Description = "";
-            Coordinators = new List<CourseCoordinator>();
-            Students = new List<CourseStudent>();
-            Assistants = new List<CourseAssistant>();
+            CourseUserRelationships = new List<CourseUserRelationship>();
             RequiresApprovalBeforeAdmission = false;
             IsDeleted = false;
         }

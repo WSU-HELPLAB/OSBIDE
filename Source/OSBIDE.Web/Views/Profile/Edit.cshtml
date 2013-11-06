@@ -84,21 +84,18 @@
 
     <h3>My Courses</h3>
     <section>
-        @{
-            List<ICourseUserRelationship> courses = Model.User.Courses;
-        }
-        @if (courses.Count > 0)
+        @if (Model.User.CourseUserRelationships.Count > 0)
         {
             @:You are currently enrolled in the following courses:
             <table style="margin: 7px;">
-                @foreach (ICourseUserRelationship course in Model.User.Courses)
+                @foreach (CourseUserRelationship course in Model.User.CourseUserRelationships)
                 {
                     <tr>
                         <td style="padding-right: 7px;">
-                            <a data-course="@course.Course.Name" data-id="@course.CourseId" href="~/Profile/LeaveCourse/@course.CourseId" class="leave-course-link"><img src="~/Content/icons/delete_up.png" alt="leave course" title="leave this course" /></a>
+                            <a data-course="@course.Course.Name" data-id="@course.CourseId" href="~/Profile/RemoveCourse?courseId=@course.CourseId" class="leave-course-link"><img src="~/Content/icons/delete_up.png" alt="leave course" title="leave this course" /></a>
                         </td>
                         <td>
-                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId }, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Relationship.ToString())
+                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId }, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Role.ToString())
                         </td>
                     </tr>
                 }
@@ -115,9 +112,9 @@
                 <li>@Html.ActionLink("Create a new course", "Create", "Course")</li>
             }
         </ul>
-        @using (Html.BeginForm())
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id ="RemoveCourseForm" }))
         {
-            <input type="hidden" name="CourseId" id="CourseId" value="-1" />
+            <input type="hidden" name="CourseToRemove" id="CourseId" value="-1" />
         }
         <div id="leave-confirm" title="Leave ???" style="display:none;">
             <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>
@@ -161,7 +158,7 @@
                     <td>@Html.ValidationMessageFor(m => m.OldPassword)</td>
                 </tr>
             </table>
-            <input type="hidden" name="LastActivePane" value="2" />
+            <input type="hidden" name="LastActivePane" value="3" />
             <input type="submit" name="updateEmail" value="Update Email" />
             <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         }
@@ -191,7 +188,7 @@
                     <td>@Html.CheckBoxFor(m => m.ReceiveEmailsOnFeedPost)</td>
                 </tr>
             </table>
-            <input type="hidden" name="LastActivePane" value="3" />
+            <input type="hidden" name="LastActivePane" value="4" />
             <input type="submit" name="changeEmailNotifications" value="Update Settings" />
             <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         }
@@ -224,7 +221,7 @@
                     <td>@Html.ValidationMessageFor(m => m.NewPasswordConfirm)</td>
                 </tr>
             </table>
-            <input type="hidden" name="LastActivePane" value="4" />
+            <input type="hidden" name="LastActivePane" value="5" />
             <input type="submit" name="updatePassword" value="Update Password" />
             <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         }
@@ -266,9 +263,7 @@
                     buttons:{
                         "Yes": function() {
                             $('#CourseId').val(courseId);
-
-                            //TODO: Submit form.
-
+                            $('#RemoveCourseForm').submit();
                         },
                         Cancel: function() {
                             $( this ).dialog( "close" );

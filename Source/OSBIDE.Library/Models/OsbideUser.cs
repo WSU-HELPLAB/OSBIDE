@@ -320,37 +320,7 @@ namespace OSBIDE.Library.Models
         public virtual IList<EventLogSubscription> LogSubscriptions { get; set; }
 
         [IgnoreDataMember]
-        public virtual IList<CourseAssistant> AssistantCourses { get; set; }
-
-        [IgnoreDataMember]
-        public virtual IList<CourseStudent> StudentCourses { get; set; }
-
-        [IgnoreDataMember]
-        public virtual IList<CourseCoordinator> CoordinatorCourses { get; set; }
-
-        [IgnoreDataMember]
-        [NotMapped]
-        public virtual List<ICourseUserRelationship> Courses
-        {
-            get
-            {
-                List<ICourseUserRelationship> courses = new List<ICourseUserRelationship>();
-                foreach (CourseAssistant assistant in AssistantCourses)
-                {
-                    courses.Add(assistant);
-                }
-                foreach (CourseStudent student in StudentCourses)
-                {
-                    courses.Add(student);
-                }
-                foreach (CourseCoordinator coordinator in CoordinatorCourses)
-                {
-                    courses.Add(coordinator);
-                }
-                courses.Sort();
-                return courses;
-            }
-        }
+        public virtual IList<CourseUserRelationship> CourseUserRelationships { get; set; }
 
         public virtual UserScore Score { get; set; }
 
@@ -376,9 +346,7 @@ namespace OSBIDE.Library.Models
         public OsbideUser()
         {
             LogSubscriptions = new List<EventLogSubscription>();
-            AssistantCourses = new List<CourseAssistant>();
-            StudentCourses = new List<CourseStudent>();
-            CoordinatorCourses = new List<CourseCoordinator>();
+            CourseUserRelationships = new List<CourseUserRelationship>();
 
             Role = SystemRole.Student;
             LastVsActivity = DateTime.UtcNow;
@@ -409,21 +377,6 @@ namespace OSBIDE.Library.Models
                 .HasRequired(u => u.SchoolObj)
                 .WithMany()
                 .WillCascadeOnDelete(true);
-            
-            modelBuilder.Entity<OsbideUser>()
-                .HasMany(u => u.AssistantCourses)
-                .WithRequired(c => c.User)
-                .WillCascadeOnDelete(false);
-            
-            modelBuilder.Entity<OsbideUser>()
-                .HasMany(u => u.CoordinatorCourses)
-                .WithRequired(c => c.User)
-                .WillCascadeOnDelete(false);
-            
-            modelBuilder.Entity<OsbideUser>()
-                .HasMany(u => u.StudentCourses)
-                .WithRequired(c => c.User)
-                .WillCascadeOnDelete(false);
         }
     }
 }

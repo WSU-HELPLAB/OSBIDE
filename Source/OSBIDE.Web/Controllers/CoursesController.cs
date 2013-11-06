@@ -19,13 +19,7 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult MyCourses()
         {
-            MyCoursesViewModel vm = new MyCoursesViewModel();
-            vm.CurrentUser = CurrentUser;
-            vm.AllCourses = Db.Courses.ToList();
-            vm.AssistingCourses = Db.CourseAssistants.Where(c => c.UserId == CurrentUser.Id).ToList();
-            vm.CoordinatingCourses = Db.CourseCoordinators.Where(c => c.UserId == CurrentUser.Id).ToList();
-            vm.StudentCourses = Db.CourseStudents.Where(c => c.UserId == CurrentUser.Id).ToList();
-            return View(vm);   
+            return View();
         }
 
     }

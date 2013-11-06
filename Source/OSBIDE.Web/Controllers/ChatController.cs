@@ -15,6 +15,9 @@ namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
     [RequiresVisualStudioConnectionForStudents]
+
+    //Chat controller turned off for now
+    [DenyAccess]
     public class ChatController : ControllerBase
     {
         private TimeSpan CHAT_TIMEOUT = new TimeSpan(0, 0, 7);

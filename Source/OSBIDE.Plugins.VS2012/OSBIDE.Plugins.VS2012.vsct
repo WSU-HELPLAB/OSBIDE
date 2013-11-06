@@ -123,17 +123,17 @@
         </Strings>
       </Button>
       
-
+      <!-- Turned off for Spring 2014 study
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideChatTool" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
-        <!--<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>-->
         <Icon guid="guidImages" id="chat" />
         <Strings>
           <CommandName>cmdidOsbideChatTool</CommandName>
           <ButtonText>OSBIDE Chat</ButtonText>
         </Strings>
       </Button>
-
+      -->
+        
       <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideUserProfileTool" priority="0x0100" type="Button">
         <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
         <!--<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>-->
