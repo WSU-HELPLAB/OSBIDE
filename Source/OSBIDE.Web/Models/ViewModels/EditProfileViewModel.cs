@@ -33,6 +33,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public string UpdatePasswordSuccessMessage { get; set; }
         public string UpdateEmailSettingsMessage { get; set; }
         public string UpdateBasicSettingsMessage { get; set; }
+        public string RemoveCourseMessage { get; set; }
 
         public int LastActivePane { get; set; }
 

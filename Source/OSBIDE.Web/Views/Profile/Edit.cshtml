@@ -84,6 +84,12 @@
 
     <h3>My Courses</h3>
     <section>
+        @if (@Model.RemoveCourseMessage != null)
+            {
+            <div class="notice">
+                <h3>@Model.RemoveCourseMessage</h3>
+            </div>
+            }
         @if (Model.User.CourseUserRelationships.Count > 0)
         {
             @:You are currently enrolled in the following courses:

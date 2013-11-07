@@ -217,8 +217,27 @@ namespace OSBIDE.Web.Controllers
             return vm;
         }
 
+        /// <summary>
+        /// Removes a student from a course
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="vm"></param>
         private void RemoveUserFromCourse(int courseId, EditProfileViewModel vm)
         {
+            CourseUserRelationship toRemove = Db.CourseUserRelationships
+                .Where(c => c.CourseId == courseId)
+                .Where(c => c.UserId == CurrentUser.Id)
+                .FirstOrDefault();
+            if (toRemove != null)
+            {
+                vm.RemoveCourseMessage = string.Format("You have been removed from {0}.", toRemove.Course.Name);
+                Db.Entry(toRemove).State = System.Data.EntityState.Deleted;
+                Db.SaveChanges();
+            }
+            else
+            {
+                vm.RemoveCourseMessage = "An error occurred when I attempted to remove you from the course.  Please try again.  If the problem persists, please contact support at \"support@osbide.com\".";
+            }
             vm.LastActivePane = 2;
         }
 
@@ -334,7 +353,7 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "An error occurred while updating your password.  Please try again.  If the problem persists, please contact support at \"support@osble.org\".");
+                ModelState.AddModelError("", "An error occurred while updating your password.  Please try again.  If the problem persists, please contact support at \"support@osbide.com\".");
             }
         }
         #endregion

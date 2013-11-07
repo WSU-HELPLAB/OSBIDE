@@ -5,7 +5,7 @@ function documentReady() {
     parseDates();
 
     //set up loading icons on form submit
-    $("form").submit(function () {
+    $("form.spinner").submit(function () {
         $(".submit-loading").each(function () {
             $(this).css("visibility", "visible");
         });
