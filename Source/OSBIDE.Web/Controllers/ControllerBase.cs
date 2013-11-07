@@ -165,7 +165,7 @@ namespace OSBIDE.Web.Controllers
         /// <param name="e"></param>
         private void CurrentUser_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Db.Entry(CurrentUser).State = System.Data.EntityState.Modified;
+            Db.Entry(CurrentUser).State = EntityState.Modified;
             try
             {
                 Db.SaveChanges();

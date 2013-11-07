@@ -9,7 +9,6 @@ using OSBIDE.Web.Models.ViewModels;
 using OSBIDE.Web.Services;
 using System;
 using System.Collections.Generic;
-using System.Data.Objects;
 using System.Linq;
 using System.Net.Mail;
 using System.Web;
@@ -381,7 +380,7 @@ namespace OSBIDE.Web.Controllers
             EventLogSubscription subscription = Db.EventLogSubscriptions.Where(s => s.UserId == CurrentUser.Id).Where(s => s.LogId == id).FirstOrDefault();
             if (subscription != null)
             {
-                Db.Entry(subscription).State = System.Data.EntityState.Deleted;
+                Db.Entry(subscription).State = System.Data.Entity.EntityState.Deleted;
                 Db.SaveChanges();
             }
             Response.Redirect(returnUrl);

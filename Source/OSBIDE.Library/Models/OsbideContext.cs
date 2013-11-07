@@ -5,12 +5,12 @@ using System.Text;
 using System.Data.Entity;
 using System.Data.Common;
 using System.Data.Entity.Infrastructure;
-using System.Data.Objects;
 using System.Data.SqlServerCe;
 using System.Diagnostics.CodeAnalysis;
 using OSBIDE.Library.Events;
 using System.IO;
 using System.Reflection;
+using System.Data.Entity.Core.Objects;
 
 namespace OSBIDE.Library.Models
 {

@@ -231,7 +231,7 @@ namespace OSBIDE.Web.Controllers
             if (toRemove != null)
             {
                 vm.RemoveCourseMessage = string.Format("You have been removed from {0}.", toRemove.Course.Name);
-                Db.Entry(toRemove).State = System.Data.EntityState.Deleted;
+                Db.Entry(toRemove).State = System.Data.Entity.EntityState.Deleted;
                 Db.SaveChanges();
             }
             else
