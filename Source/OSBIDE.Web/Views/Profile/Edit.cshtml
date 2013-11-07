@@ -101,7 +101,7 @@
                             <a data-course="@course.Course.Name" data-id="@course.CourseId" href="~/Profile/RemoveCourse?courseId=@course.CourseId" class="leave-course-link"><img src="~/Content/icons/delete_up.png" alt="leave course" title="leave this course" /></a>
                         </td>
                         <td>
-                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId }, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Role.ToString())
+                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId,  component = OsbideVsComponent.GenericComponent}, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Role.ToString())
                         </td>
                     </tr>
                 }
@@ -112,10 +112,10 @@
             @:You are not enrolled in any courses.
         }
         <ul>
-            <li>@Html.ActionLink("Find additional courses", "Search", "Course")</li>
+            <li>@Html.ActionLink("Find additional courses", "Search", "Course", new { }, new { component = OsbideVsComponent.GenericComponent })</li>
             @if (Model.User.Role == SystemRole.Instructor)
             {
-                <li>@Html.ActionLink("Create a new course", "Create", "Course")</li>
+                <li>@Html.ActionLink("Create a new course", "Create", "Course", new { }, new { component = OsbideVsComponent.GenericComponent })</li>
             }
         </ul>
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id ="RemoveCourseForm" }))

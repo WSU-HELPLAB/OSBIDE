@@ -21,8 +21,30 @@ namespace OSBIDE.Library.Models
         public int SchoolId { get; set; }
         public virtual School School { get; set; }
 
+        [NotMapped]
+        public string Name
+        {
+            get
+            {
+                return string.Format("{0} {1}", Prefix, CourseNumber);
+            }
+            set
+            {
+                string[] pieces = value.Split(' ');
+                if (pieces.Length != 2)
+                {
+                    throw new Exception("Unexpected input.  Expected name in the format \"<prefix> <course number>\".");
+                }
+                Prefix = pieces[0];
+                CourseNumber = pieces[1];
+            }
+        }
+
         [Required]
-        public string Name { get; set; }
+        public string Prefix { get; set; }
+
+        [Required]
+        public string CourseNumber { get; set; }
 
         [Required(AllowEmptyStrings=true)]
         public string Description { get; set; }
