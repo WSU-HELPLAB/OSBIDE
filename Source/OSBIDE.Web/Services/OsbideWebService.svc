@@ -1,1 +1,0 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="OSBIDE.Web.Services.OsbideWebService" CodeBehind="OsbideWebService.svc.cs" %>
