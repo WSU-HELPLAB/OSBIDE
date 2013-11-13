@@ -1,0 +1,72 @@
+﻿@using OSBIDE.Library.Models
+@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models
+@using OSBIDE.Web.Models.ViewModels
+@using System.Collections.Generic
+@model FeedViewModel
+@{
+    ViewBag.Title = "Activity Feed";
+}
+@using (Html.BeginForm("PostFeedComment", "Feed"))
+{
+    <section id="add-feed-comment">
+        <h1>Post a comment:</h1>
+        <div>
+            <textarea style="width: 100%; height: 50px" name="comment"></textarea>
+        </div>
+        <input type="submit" name="submit" value="Post Comment" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+        <input id="filter-options-button" type="button" value="Filter Options" />
+    </section>
+}
+@using (Html.BeginForm("ApplyFeedFilter", "Feed"))
+{
+    <section id="filter-options" style="display: none;">
+        <h2>Filter by Activity Type:</h2>
+        <div>
+            <ul>
+                @foreach (IOsbideEvent evt in Model.EventFilterOptions)
+                {
+                    string checkbox = "";
+                    if (Model.UserEventFilterOptions.Where(o => o.EventName == evt.EventName).Count() > 0)
+                    {
+                        checkbox = @"checked=""checked""";
+                    }
+                    <li>
+                        <input @Html.Raw(checkbox) type="checkbox" id="event_@evt.EventName" name="event_@evt.EventName" />
+                        <label for="event_@evt.EventName">@evt.PrettyName</label>
+                    </li>
+                }
+            </ul>
+        </div>
+        <h2>Filter by Error Type:</h2>
+        <div>
+            <select name="error-type">
+                <option value="-1">No Filter</option>
+                @foreach (ErrorType error in Model.ErrorTypes)
+                {
+                    string selectedText = "";
+                    if (error.Name.CompareTo(Model.SelectedErrorType.Name) == 0)
+                    {
+                        selectedText = @"selected=""selected""";
+                    }
+                    <option @Html.Raw(selectedText) value="@error.Id">@error.Name</option>
+                }
+            </select>
+        </div>
+        <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    </section>
+}
+@Html.Partial("Feed/_Feed", Model)
+<script type="text/javascript">
+    $("#filter-options-button").click(function (e) {
+        if ($("#filter-options").css('display') == 'none') {
+            $("#filter-options").slideDown();
+        }
+        else {
+            $("#filter-options").slideUp();
+        }
+
+    });
+</script>

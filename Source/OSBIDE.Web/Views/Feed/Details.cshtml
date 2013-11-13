@@ -1,0 +1,54 @@
+﻿@using OSBIDE.Library.Models
+@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models
+@using OSBIDE.Library
+@model OSBIDE.Web.Models.ViewModels.FeedDetailsViewModel
+@{
+    string detailsIds = Model.Ids;
+    int firstLogId = Model.FeedItem.Items.Select(m => m.LogId).Min();
+    ViewBag.Title = string.Format("Details - {0}", firstLogId);
+}
+@if (Model == null)
+{
+    <text><h2>Post not found.</h2></text>
+    return;
+}
+<section>
+    <div class="feed-item-single-left">
+        <img src="@Url.Action("Picture", "Profile", new { id = Model.FeedItem.Creator.Id, size = 64 })" title="profile image" alt="profile image" />
+    </div>
+    <div class="feed-item-single-right">
+        <h1><a href="@Url.Action("Index", "Profile", new { id = Model.FeedItem.Creator.Id, component = OsbideVsComponent.UserProfile })">@Model.FeedItem.Creator.FirstAndLastName</a></h1>
+        <div class="feed-item-date">
+            <time 
+                class="utc-time"
+                datetime="@Helpers.DateAsUnixTime(Model.FeedItem.MostRecentOccurance)" 
+                data-original-date="@Helpers.RawDate(Model.FeedItem.MostRecentOccurance)" 
+                data-date-format="MM/DD/YYYY hh:mm A">
+                @Model.FeedItem.MostRecentOccurance.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>
+            </div>
+        @{string partialName = string.Format("Feed/_{0}", Model.FeedItem.FeedItemType); }
+        <div>@Html.Partial(partialName, Model.FeedItem)</div>
+        <div>
+            @if (Model.IsSubscribed == true)
+            {
+                @:You are following this post.  @Html.ActionLink("Unfollow.", "UnfollowPost", new { id = firstLogId, returnUrl = Request.Url.AbsoluteUri })
+        }
+            else
+            {
+                @Html.ActionLink("Follow this post.", "FollowPost", new { id = firstLogId, returnUrl = Request.Url.AbsoluteUri })
+            }
+        </div>
+    </div>
+</section>
+<section style="clear: both; padding-top:15px;">
+    @{partialName = string.Format("Details/_{0}", Model.FeedItem.FeedItemType); }
+    @Html.Partial(partialName, Model.FeedItem)
+</section>
+@Html.Partial("_Comments", Model.FeedItem.Items.Where(m => m.LogId == firstLogId).FirstOrDefault().Log)
+@section Scripts {
+    @Scripts.Render("~/bundles/highlight")
+    @Styles.Render("~/Content/css/highlight")
+}
+<script>hljs.initHighlightingOnLoad();</script>
