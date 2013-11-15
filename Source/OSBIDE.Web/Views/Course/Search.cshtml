@@ -1,6 +1,7 @@
 ﻿@using OSBIDE.Web.Models.ViewModels
 @using OSBIDE.Web.Models
 @using OSBIDE.Library.Models
+@using System.Text
 @model CoursesViewModel
 @{
     ViewBag.Title = "Course Search";
@@ -9,27 +10,79 @@
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/bundles/knockout")
 
-    var model = 
-    {
-        
-    };
+    <script type="text/javascript">
 
-    function SearchViewModel
-    {
-        
-    }
+        var rawCourses = {};
+        @{
+                //build list of all courses based on prefix
+                StringBuilder builder = new StringBuilder();
+                foreach (KeyValuePair<string, SortedDictionary<string, Course>> kvp in Model.CoursesByPrefix)
+                {
+                    builder.AppendFormat("rawCourses['{0}'] = {1};\n", kvp.Key, "{}");
+                    foreach (var course in kvp.Value)
+                    {
+                        builder.AppendFormat("rawCourses['{0}']['{1}'] = {2};\n", kvp.Key, course.Value.CourseNumber, "{}");
+                        builder.AppendFormat("rawCourses['{0}']['{1}']['prefix'] = '{2}';\n", kvp.Key, course.Value.CourseNumber, course.Value.Prefix);
+                        builder.AppendFormat("rawCourses['{0}']['{1}']['courseNumber'] = '{2}';\n", kvp.Key, course.Value.CourseNumber, course.Value.CourseNumber);
+                        builder.AppendFormat("rawCourses['{0}']['{1}']['description'] = '{2}';\n", kvp.Key, course.Value.CourseNumber, course.Value.Description.Replace("\n", ""));
+                    }
+                }
+            }
+
+        var CoursesViewModel = ko.mapping.fromJS(rawCourses);
+
+        function SearchViewModel() {
+            var self = this;
+            this.prefixes = ko.observableArray();
+            @{
+                //build the list of prefixes
+                builder = new StringBuilder();
+                foreach (KeyValuePair<string, SortedDictionary<string, Course>> kvp in Model.CoursesByPrefix)
+                {
+                    builder.Append("self.prefixes.push({ ");
+                    builder.AppendFormat("prefix: '{0}' {1});\n", kvp.Key, "}");
+                }
+            }
+            @Html.Raw(builder.ToString())
+
+            
+            @Html.Raw(builder.ToString())
+            self.courses = ko.mapping.fromJS(self.rawCourses);
+            self.selectedPrefix = ko.observable();
+            self.selectedPrefixData = ko.observable();
+
+            self.goToCourse = function (prefix) {
+                self.selectedPrefix(prefix);
+                self.selectedPrefixData(self.courses[prefix]);
+            };
+
+            self.goToCourse('CptS');
+        }
+
+        $(document).ready(function () {
+            ko.applyBindings(CoursesViewModel);
+        });
+    </script>
 }
 <h2>Courses Available At @Model.CurrentUser.SchoolObj.Name</h2>
 <div>
     <h3>Course Prefix</h3>
-    <select data-bind="options: coursePrefixes"></select>
+    <div>
+        <ul data-bind="foreach: prefixes">
+            <li data-bind="text: prefix, click: goToCourse"></li>
+        </ul>
+    </div>
 </div>
 <div>
     <h3>Course Name</h3>
-    <select data-bind="options: courseNames"></select>
+    <div>
+        <ul data-bind="foreach: courses">
+            <li>test</li>
+        </ul>
+    </div>
 </div>
 <div>
     <h3>Course Description</h3>
-    <p data-bind="text: courseDescription">
+    <p>
     </p>
 </div>
