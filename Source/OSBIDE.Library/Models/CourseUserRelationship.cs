@@ -42,6 +42,8 @@ namespace OSBIDE.Library.Models
             }
         }
 
+        public bool IsPending { get; set; }
+
         public bool IsActive { get; set; }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)

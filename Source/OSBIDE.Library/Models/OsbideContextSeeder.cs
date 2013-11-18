@@ -93,7 +93,8 @@ namespace OSBIDE.Library.Models
                 Name = "CptS 121",
                 Year = 2013,
                 Season = "Spring",
-                SchoolId = 1
+                SchoolId = 1,
+                Description = "Formulation of problems and top-down design of programs in a modern structured language for their solution on a digital computer."
             }
                 );
 
@@ -102,7 +103,8 @@ namespace OSBIDE.Library.Models
                 Name = "CptS 122",
                 Year = 2013,
                 Season = "Spring",
-                SchoolId = 1
+                SchoolId = 1,
+                Description = "This course is about advanced programming techniques, data structures, recursion, sorting, searching, and basic algorithm analysis."
             }
             );
 
@@ -111,7 +113,8 @@ namespace OSBIDE.Library.Models
                 Name = "CptS 223",
                 Year = 2013,
                 Season = "Spring",
-                SchoolId = 1
+                SchoolId = 1,
+                Description = "Advanced data structures, object oriented programming concepts, concurrency, and program design principles."
             }
             );
             context.SaveChanges();
