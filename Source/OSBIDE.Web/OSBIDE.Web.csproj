@@ -162,6 +162,16 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Controllers\WhatsNewController.cs" />
+    <Compile Include="FileSystem\AssignmentFilePath.cs" />
+    <Compile Include="FileSystem\CourseFilePath.cs" />
+    <Compile Include="FileSystem\EmptyFilePathDecorator.cs" />
+    <Compile Include="FileSystem\FileCollection.cs" />
+    <Compile Include="FileSystem\FileSystem.cs" />
+    <Compile Include="FileSystem\FileSystemBase.cs" />
+    <Compile Include="FileSystem\GradebookFilePath.cs" />
+    <Compile Include="FileSystem\IFileSystem.cs" />
+    <Compile Include="FileSystem\SubmissionFilePath.cs" />
+    <Compile Include="FileSystem\UserFilePath.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
