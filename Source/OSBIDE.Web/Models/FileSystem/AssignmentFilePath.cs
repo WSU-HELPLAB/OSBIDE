@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using OSBIDE.Library.Models;
 
-namespace OSBIDE.Web.FileSystem
+namespace OSBIDE.Web.Models.FileSystem
 {
     public class AssignmentFilePath : FileSystemBase
     {

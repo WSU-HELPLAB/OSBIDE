@@ -6,7 +6,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using System.IO;
 
-namespace OSBIDE.Web.FileSystem
+namespace OSBIDE.Web.Models.FileSystem
 {
     public interface IFileSystem
     {

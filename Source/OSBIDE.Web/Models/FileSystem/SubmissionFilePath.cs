@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace OSBIDE.Web.FileSystem
+namespace OSBIDE.Web.Models.FileSystem
 {
     public class SubmissionFilePath : FileSystemBase
     {

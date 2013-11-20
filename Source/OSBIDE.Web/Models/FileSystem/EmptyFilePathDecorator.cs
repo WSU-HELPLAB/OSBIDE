@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OSBIDE.Web.FileSystem
+namespace OSBIDE.Web.Models.FileSystem
 {
     class EmptyFilePathDecorator : IFileSystem
     {

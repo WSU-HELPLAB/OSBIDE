@@ -6,7 +6,7 @@ using System.Collections;
 using Ionic.Zip;
 using System.IO;
 
-namespace OSBIDE.Web.FileSystem
+namespace OSBIDE.Web.Models.FileSystem
 {
     public class FileCollection : IEnumerable<string>, ICollection<string>
     {
