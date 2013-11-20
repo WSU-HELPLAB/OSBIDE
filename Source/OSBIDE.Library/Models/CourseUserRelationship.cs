@@ -42,9 +42,15 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        public bool IsPending { get; set; }
+        public bool IsApproved { get; set; }
 
         public bool IsActive { get; set; }
+
+        public CourseUserRelationship()
+        {
+            IsApproved = true;
+            IsActive = true;
+        }
 
         public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
         {

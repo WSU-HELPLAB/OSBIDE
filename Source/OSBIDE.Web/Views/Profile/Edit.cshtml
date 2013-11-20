@@ -101,7 +101,7 @@
                             <a data-course="@course.Course.Name" data-id="@course.CourseId" href="~/Profile/RemoveCourse?courseId=@course.CourseId" class="leave-course-link"><img src="~/Content/icons/delete_up.png" alt="leave course" title="leave this course" /></a>
                         </td>
                         <td>
-                            @Html.ActionLink(course.Course.Name, "View", "Course", new { id = course.CourseId,  component = OsbideVsComponent.GenericComponent}, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Role.ToString())
+                            @Html.ActionLink(course.Course.Name, "Details", "Course", new { id = course.CourseId,  component = OsbideVsComponent.GenericComponent}, new { }) &mdash; @course.Course.Season @course.Course.Year (@course.Role.ToString())
                         </td>
                     </tr>
                 }

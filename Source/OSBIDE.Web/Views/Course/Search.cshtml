@@ -46,6 +46,12 @@
 }
 <h2>Courses Available At @Model.CurrentUser.SchoolObj.Name</h2>
 Select a course for more information and to sign up.
+@if(Model.ServerMessage.Length > 0)
+{
+ <div class="notice">
+    @Model.ServerMessage
+</div>   
+}
 <div>
     <ul>
         @{
@@ -74,7 +80,7 @@ Select a course for more information and to sign up.
 <div id="course-signup" style="visibility:collapse;">
     @using (Html.BeginForm())
 {
-            <input type="hidden" id="selected-course" name="selected-course" value="" />
+        @Html.HiddenFor(m => m.SelectedCourse, new { id = "selected-course" })
             <input type="submit" name="submit" value="Sign up" />
 }
 </div>
