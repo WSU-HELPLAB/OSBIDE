@@ -315,6 +315,8 @@ namespace OSBIDE.Library.Models
             }
         }
 
+        public int DefaultCourseId { get; set; }
+        public virtual Course DefaultCourse { get; set; }
 
         [IgnoreDataMember]
         public virtual IList<EventLogSubscription> LogSubscriptions { get; set; }

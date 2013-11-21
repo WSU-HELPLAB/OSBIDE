@@ -27,6 +27,48 @@ namespace OSBIDE.Library.Models
             //context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 123, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
             //context.UserSubscriptions.Add(new UserSubscription() { ObserverInstitutionId = 456, ObserverSchoolId = 1, SubjectSchoolId = 1, SubjectInstitutionId = 789, IsRequiredSubscription = true });
 
+            //also set up some courses
+            context.Courses.Add(new Course()
+            {
+                Name = "OSBIDE 101",
+                Year = 2014,
+                Season = "Spring",
+                SchoolId = 1,
+                Description = "Everything you ever wanted to know about OSBIDE."
+            }
+                );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 121",
+                Year = 2014,
+                Season = "Spring",
+                SchoolId = 1,
+                Description = "Formulation of problems and top-down design of programs in a modern structured language for their solution on a digital computer."
+            }
+                );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 122",
+                Year = 2014,
+                Season = "Spring",
+                SchoolId = 1,
+                Description = "This course is about advanced programming techniques, data structures, recursion, sorting, searching, and basic algorithm analysis."
+            }
+            );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 223",
+                Year = 2014,
+                Season = "Spring",
+                SchoolId = 1,
+                Description = "Advanced data structures, object oriented programming concepts, concurrency, and program design principles."
+            }
+            );
+            context.SaveChanges();
+
             //add some test users
             IdenticonRenderer renderer = new IdenticonRenderer();
             OsbideUser joe = new OsbideUser()
@@ -37,7 +79,8 @@ namespace OSBIDE.Library.Models
                     InstitutionId = 123,
                     SchoolId = wsu.Id,
                     Role = SystemRole.Student,
-                    Gender = Gender.Male
+                    Gender = Gender.Male,
+                    DefaultCourseId = 1
                 };
             joe.SetProfileImage(renderer.Render(joe.Email.GetHashCode(), 128));
             context.Users.Add(joe);
@@ -50,7 +93,8 @@ namespace OSBIDE.Library.Models
                 InstitutionId = 456,
                 SchoolId = wsu.Id,
                 Role = SystemRole.Student,
-                Gender = Gender.Female
+                Gender = Gender.Female,
+                DefaultCourseId = 1
             };
             betty.SetProfileImage(renderer.Render(betty.Email.GetHashCode(), 128));
             context.Users.Add(betty);
@@ -64,7 +108,8 @@ namespace OSBIDE.Library.Models
                 InstitutionId = 789,
                 SchoolId = wsu.Id,
                 Role = SystemRole.Instructor,
-                Gender = Gender.Male
+                Gender = Gender.Male,
+                DefaultCourseId = 1
             };
             adam.SetProfileImage(renderer.Render(adam.Email.GetHashCode(), 128));
             context.Users.Add(adam);
@@ -87,42 +132,14 @@ namespace OSBIDE.Library.Models
             context.UserPasswords.Add(up);
             context.SaveChanges();
 
-            //also set up some courses
-            context.Courses.Add(new Course()
-            {
-                Name = "CptS 121",
-                Year = 2013,
-                Season = "Spring",
-                SchoolId = 1,
-                Description = "Formulation of problems and top-down design of programs in a modern structured language for their solution on a digital computer."
-            }
-                );
-
-            context.Courses.Add(new Course()
-            {
-                Name = "CptS 122",
-                Year = 2013,
-                Season = "Spring",
-                SchoolId = 1,
-                Description = "This course is about advanced programming techniques, data structures, recursion, sorting, searching, and basic algorithm analysis."
-            }
-            );
-
-            context.Courses.Add(new Course()
-            {
-                Name = "CptS 223",
-                Year = 2013,
-                Season = "Spring",
-                SchoolId = 1,
-                Description = "Advanced data structures, object oriented programming concepts, concurrency, and program design principles."
-            }
-            );
-            context.SaveChanges();
-
             //add students to the courses
-            context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 3, CourseId = 1, Role = CourseRole.Coordinator});
+            context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 3, CourseId = 1, Role = CourseRole.Coordinator });
             context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 1, CourseId = 1, Role = CourseRole.Student });
             context.Courses.Find(1).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 2, CourseId = 1, Role = CourseRole.Assistant });
+
+            context.Courses.Find(2).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 3, CourseId = 2, Role = CourseRole.Coordinator});
+            context.Courses.Find(2).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 1, CourseId = 2, Role = CourseRole.Student });
+            context.Courses.Find(2).CourseUserRelationships.Add(new CourseUserRelationship() { UserId = 2, CourseId = 2, Role = CourseRole.Assistant });
             context.SaveChanges();
         }
     }

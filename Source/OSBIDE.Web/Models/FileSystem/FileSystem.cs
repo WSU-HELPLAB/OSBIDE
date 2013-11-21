@@ -27,7 +27,7 @@ using System.Web;
  *               [AssignmentId]
  *               /     |        
  *              /      |         
- *      Submissions  Files   
+ *      Submissions  Attachments   
  *         |           |  
  *         |           |
  *         |           |

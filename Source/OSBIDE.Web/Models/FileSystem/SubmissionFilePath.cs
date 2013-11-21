@@ -8,18 +8,18 @@ namespace OSBIDE.Web.Models.FileSystem
 {
     public class SubmissionFilePath : FileSystemBase
     {
-        private int _teamID;
+        private int _userId;
         private string _submissionPrefix = "Submissions";
 
-        public SubmissionFilePath(IFileSystem pathBuilder, int teamID)
+        public SubmissionFilePath(IFileSystem pathBuilder, int userId)
             : base(pathBuilder)
         {
-            _teamID = teamID;
+            _userId = userId;
         }
 
         public override string GetPath()
         {
-            string returnPath = Path.Combine(PathBuilder.GetPath(), _submissionPrefix, _teamID.ToString());
+            string returnPath = Path.Combine(PathBuilder.GetPath(), _submissionPrefix, _userId.ToString());
             return returnPath;
         }
     }

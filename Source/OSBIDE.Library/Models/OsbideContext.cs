@@ -25,6 +25,7 @@ namespace OSBIDE.Library.Models
 
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseUserRelationship> CourseUserRelationships { get; set; }
+        public DbSet<Assignment> Assignments { get; set; }
 
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }

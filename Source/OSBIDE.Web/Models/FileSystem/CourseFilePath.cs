@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Web.Models.FileSystem
 {
@@ -23,13 +24,16 @@ namespace OSBIDE.Web.Models.FileSystem
             return afp;
         }
 
-        /* TODO: Add Assignment class to OSBIDE
         public AssignmentFilePath Assignment(Assignment assignment)
         {
-            AssignmentFilePath afp = new AssignmentFilePath(this, assignment.ID);
+            AssignmentFilePath afp = new AssignmentFilePath(this, assignment.Id);
             return afp;
         }
-         * */
+
+        public IFileSystem CourseDocs()
+        {
+            return Directory("CourseDocs");
+        }
 
         public GradebookFilePath Gradebook()
         {

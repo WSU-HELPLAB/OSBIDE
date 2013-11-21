@@ -99,46 +99,10 @@ namespace OSBIDE.Web.Controllers
                     Db.UserFeedSettings.Add(feedSetting);
                     Db.SaveChanges();
 
-                    //subscribe them to Adam
-                    OsbideUser adam = Db.Users.Where(u => u.Id == 1).FirstOrDefault();
-                    if (adam != null)
-                    {
-                        UserSubscription dbSub = Db.UserSubscriptions
-                        .Where(s => s.ObserverInstitutionId == vm.User.InstitutionId)
-                        .Where(s => s.SubjectInstitutionId == adam.InstitutionId).FirstOrDefault();
-                        if (dbSub == null)
-                        {
-                            dbSub = new UserSubscription()
-                            {
-                                ObserverInstitutionId = vm.User.InstitutionId,
-                                SubjectInstitutionId = adam.InstitutionId,
-
-                                //assume that the subject and observer attend the same institution as the 
-                                //person uploading the CSV file
-                                ObserverSchoolId = vm.User.SchoolId,
-                                SubjectSchoolId = adam.SchoolId,
-                                IsRequiredSubscription = true
-                            };
-                            try
-                            {
-                                Db.UserSubscriptions.Add(dbSub);
-                            }
-                            catch (Exception)
-                            {
-                            }
-                        }
-                        else
-                        {
-                            dbSub.IsRequiredSubscription = true;
-                        }
-                        try
-                        {
-                            Db.SaveChanges();
-                        }
-                        catch (Exception)
-                        {
-                        }
-                    }
+                    //enroll them in OSBIDE 101
+                    Db.CourseUserRelationships.Add(new CourseUserRelationship() { UserId = vm.User.Id, CourseId = 1, Role = CourseRole.Student });
+                    vm.User.DefaultCourseId = 1;
+                    Db.SaveChanges();
 
                     //log user in
                     Authentication auth = new Authentication();

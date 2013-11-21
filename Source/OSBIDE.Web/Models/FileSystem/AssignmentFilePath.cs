@@ -29,6 +29,11 @@ namespace OSBIDE.Web.Models.FileSystem
             return Submission(user.Id);
         }
         
+        public IFileSystem Attachments()
+        {
+            return Directory("Attachments");
+        }
+
         public override string GetPath()
         {
             string returnPath = Path.Combine(PathBuilder.GetPath(), _assignmentPathPrefix, _assignmentId.ToString());

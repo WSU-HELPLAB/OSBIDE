@@ -100,7 +100,6 @@ namespace OSBIDE.Web.Models.FileSystem
             return new GenericFilePath(this, name);
         }
 
-
         private class GenericFilePath : FileSystemBase
         {
             public string _localPath = "";
