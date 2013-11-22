@@ -25,6 +25,5 @@ namespace OSBIDE.Library.Models
 
         [Required]
         public DateTime DueDate { get; set; }
-
     }
 }

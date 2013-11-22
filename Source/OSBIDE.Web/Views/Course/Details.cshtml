@@ -1,0 +1,76 @@
+﻿@using OSBIDE.Web.Models.ViewModels
+@using OSBIDE.Web.Models
+@using OSBIDE.Library.Models
+@using System.Text
+@model CourseDetailsViewModel
+@{
+    ViewBag.Title = Model.CurrentCourse.Name;
+}
+<h2>@Model.CurrentCourse.Name</h2>
+<section>
+    <h1>
+        @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
+        {
+            <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" />
+        }
+    Assignments
+</h1>
+@if (Model.Assignments.Count < 1)
+{
+    @:There are no assignments for this course.
+    }
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Release Date</th>
+                <th>Due Date</th>
+                <th>Files</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Assignment assignment in Model.Assignments)
+            {
+                <tr>
+                    <td>@assignment.Name</td>
+                    <td>@assignment.ReleaseDate</td>
+                    <td>@assignment.DueDate</td>
+                    <td>
+                        <img src="~/Content/icons/add_up.png" alt="add file" title="add file" />
+                        <ul>
+                            @foreach (string file in Model.AssignmentFiles[assignment.Id])
+                            {
+                                <li>@file</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+</section>
+<section>
+    <h1>
+        @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
+        {
+            <img src="~/Content/icons/add_up.png" alt="add file" title="add file" />
+        }
+        Course Documents
+    </h1>
+    @if (Model.CourseDocuments.Count < 1)
+    {
+        @:This course has no attached documents.
+    }
+    else
+    {
+        <ul>
+            @foreach (string file in @Model.CourseDocuments)
+            {
+                <li>@file</li>
+            }
+        </ul>
+    }
+</section>

@@ -142,7 +142,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\icons\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -221,6 +220,20 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\icons\add_up.png" />
+    <Content Include="Content\icons\delete_up.png" />
+    <Content Include="Content\icons\edit_up.png" />
+    <Content Include="Content\icons\follow.png" />
+    <Content Include="Content\icons\help.png" />
+    <Content Include="Content\icons\loading.gif" />
+    <Content Include="Content\icons\tooltip.png" />
+    <Content Include="Content\icons\unfollow.png" />
+    <Content Include="Content\icons\users_16.png" />
+    <Content Include="Content\icons\users_24.png" />
+    <Content Include="Content\tablesorter\asc.gif" />
+    <Content Include="Content\tablesorter\bg.gif" />
+    <Content Include="Content\tablesorter\desc.gif" />
+    <Content Include="Content\tablesorter\style.css" />
     <Content Include="Content\themes\base\highlight\arta.css" />
     <Content Include="Content\themes\base\highlight\ascetic.css" />
     <Content Include="Content\themes\base\highlight\brown_paper.css" />
@@ -319,6 +332,7 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="App_Code\Helpers.cshtml" />
+    <Content Include="Content\icons\unfollow.pdn" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
@@ -326,6 +340,9 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
+    <Content Include="Scripts\jquery.metadata.js" />
+    <Content Include="Scripts\jquery.tablesorter.js" />
+    <Content Include="Scripts\jquery.tablesorter.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\knockout-3.0.0.debug.js" />

@@ -63,17 +63,15 @@ namespace OSBIDE.Library.Models
 
         public virtual IList<CourseUserRelationship> CourseUserRelationships { get; set; }
 
+        public virtual IList<Assignment> Assignments { get; set; }
+
         public Course()
         {
             Description = "";
             CourseUserRelationships = new List<CourseUserRelationship>();
+            Assignments = new List<Assignment>();
             RequiresApprovalBeforeAdmission = false;
             IsDeleted = false;
-        }
-
-        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
-        {
-            
         }
 
         public int Compare(Course x, Course y)
@@ -84,6 +82,14 @@ namespace OSBIDE.Library.Models
         public int CompareTo(Course other)
         {
             return this.Id.CompareTo(other.Id);
+        }
+
+        void IModelBuilderExtender.BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Course>()
+                .HasRequired(c => c.School)
+                .WithMany()
+                .WillCascadeOnDelete(false);
         }
     }
 }

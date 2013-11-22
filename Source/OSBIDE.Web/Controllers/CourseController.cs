@@ -1,5 +1,6 @@
 ﻿using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
+using OSBIDE.Web.Models.FileSystem;
 using OSBIDE.Web.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,42 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult Details(int id = -1)
         {
-            return View();
+            Course currentCourse = (from course in Db.Courses
+                                   .Include("Assignments")
+                                   .Include("CourseUserRelationships")
+                                   .Include("CourseUserRelationships.User")
+                                    where course.Id == id
+                                    select course).FirstOrDefault();
+
+            //bad ID or invalid course, redirect
+            if(id == -1 || currentCourse == null)
+            {
+                return RedirectToAction("Index", "Feed");
+            }
+
+            //build VM
+            CourseDetailsViewModel vm = new CourseDetailsViewModel();
+            vm.CurrentCourse = currentCourse;
+            vm.Assignments = currentCourse.Assignments;
+            vm.CurrentUser = CurrentUser;
+            vm.Coordinators = currentCourse.CourseUserRelationships.Where(c => c.Role == CourseRole.Coordinator).Select(u => u.User).ToList();
+
+            //figure out what files are attached to various assignments
+            FileSystem fs = new FileSystem();
+            foreach(Assignment assignment in currentCourse.Assignments)
+            {
+                vm.AssignmentFiles.Add(assignment.Id, new List<string>());
+                FileCollection files = fs.Course(currentCourse).Assignment(assignment).AllFiles();
+                foreach(string file in files)
+                {
+                    vm.AssignmentFiles[assignment.Id].Add(file);
+                }
+            }
+
+            //find all course documents
+            vm.CourseDocuments = fs.Course(currentCourse).CourseDocs().AllFiles().ToList();
+
+            return View(vm);
         }
 
         public JsonResult GetAllCourses()
