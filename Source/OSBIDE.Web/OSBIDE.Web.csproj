@@ -294,6 +294,7 @@
     <Content Include="Content\themes\base\jquery.ui.spinner.css" />
     <Content Include="Content\themes\base\jquery.ui.tabs.css" />
     <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\jquery.ui.timepicker.css" />
     <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
     <Content Include="Content\themes\base\minified\images\animated-overlay.gif" />
     <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -343,6 +344,7 @@
     <Content Include="Scripts\jquery.metadata.js" />
     <Content Include="Scripts\jquery.tablesorter.js" />
     <Content Include="Scripts\jquery.tablesorter.min.js" />
+    <Content Include="Scripts\jquery.ui.timepicker.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\knockout-3.0.0.debug.js" />
@@ -428,6 +430,7 @@
     <Content Include="Views\Shared\Feed\_SubmitEvent.cshtml" />
     <Content Include="Views\WhatsNew\Add.cshtml" />
     <Content Include="Views\Course\Details.cshtml" />
+    <Content Include="Views\Course\CreateAssignment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">

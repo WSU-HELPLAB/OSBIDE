@@ -6,12 +6,48 @@
 @{
     ViewBag.Title = Model.CurrentCourse.Name;
 }
+@section Scripts
+{
+    <script type="text/javascript">
+
+        //hide manual create button
+        $("#create-assignment-button").css("display", "none");
+
+        //register the create assignment dialog
+        $(document).ready(function () {
+            $('#create-assignment').dialog({
+                autoOpen: false,
+                height: 300,
+                width: 500,
+                modal: true,
+                buttons: {
+                    "Create Assignment" : function()
+                    {
+                        $("#create-assignment-form").submit();
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function()
+                {
+                    allFields.val("").removeClass("ui-state-error");
+                }
+            });
+
+            //register the icon click
+            $("#create-assignment-button").click(function () {
+                $('#create-assignment').dialog("open");
+            });
+        });
+    </script>
+}
 <h2>@Model.CurrentCourse.Name</h2>
 <section>
     <h1>
         @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
         {
-            <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" />
+            <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" id="create-assignment-button" />
         }
     Assignments
 </h1>
@@ -74,3 +110,4 @@ else
         </ul>
     }
 </section>
+@Html.Partial("CreateAssignment", new Assignment() { CourseId = Model.CurrentCourse.Id })

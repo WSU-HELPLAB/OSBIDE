@@ -12,3 +12,4 @@
 /// <reference path="knockout.mapping-2.4.0.js" />
 /// <reference path="jquery.metadata.js" />
 /// <reference path="jquery.tablesorter.js" />
+/// <reference path="jquery.ui.timepicker.js" />
