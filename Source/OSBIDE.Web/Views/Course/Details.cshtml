@@ -10,11 +10,9 @@
 {
     <script type="text/javascript">
 
-        //hide manual create button
-        $("#create-assignment-button").css("display", "none");
-
-        //register the create assignment dialog
         $(document).ready(function () {
+
+            //create assignment dialog
             $('#create-assignment').dialog({
                 autoOpen: false,
                 height: 300,
@@ -36,18 +34,56 @@
             });
 
             //register the icon click
-            $("#create-assignment-button").click(function () {
+            $("#create-assignment-link").click(function () {
                 $('#create-assignment').dialog("open");
+            });
+
+            //delete assignment dialog
+            $("#assignment-delete-dialog-confirm").dialog({
+                resizable: false,
+                autoOpen: false,
+                height: 180,
+                modal: true,
+                buttons: {
+                    "Delete Assignment": function () {
+
+                        //redirect
+                        var assignmentId = $("#assignment-delete-dialog-confirm").attr("data-id");
+                        var url = "@Url.Action("DeleteAssignment")";
+                        url += "/" + assignmentId;
+                        window.location.href = url;
+                    },
+
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            //listener for delete assignment
+            $(".delete-assignment-link").click(function (event) {
+                event.preventDefault();
+                $("#assignment-delete-dialog-confirm").attr("data-id", $(this).attr("data-id"));
+                $("#assignment-delete-dialog-confirm").dialog("option", "title", "Delete " + $(this).attr("data-name") + "?");
+                $("#assignment-delete-dialog-confirm").dialog("open");
             });
         });
     </script>
+
+    <style type="text/css">
+
+        #create-assignment-button
+        {
+            display:none;
+        }
+    </style>
 }
 <h2>@Model.CurrentCourse.Name</h2>
 <section>
     <h1>
         @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
         {
-            <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" id="create-assignment-button" />
+            <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" id="create-assignment-link" />
         }
     Assignments
 </h1>
@@ -60,6 +96,7 @@ else
     <table>
         <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Release Date</th>
                 <th>Due Date</th>
@@ -70,9 +107,13 @@ else
             @foreach (Assignment assignment in Model.Assignments)
             {
                 <tr>
+                    <td>
+                        <a class="delete-assignment-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("DeleteAssignment", new { id = assignment.Id })"><img src="~/Content/icons/delete_up.png" title="delete assignment" alt="delete assignment" /></a>
+                    </td>
                     <td>@assignment.Name</td>
                     <td>@assignment.ReleaseDate</td>
                     <td>@assignment.DueDate</td>
+                    <td></td>
                     <td>
                         <img src="~/Content/icons/add_up.png" alt="add file" title="add file" />
                         <ul>
@@ -110,4 +151,7 @@ else
         </ul>
     }
 </section>
+<div id="assignment-delete-dialog-confirm" title="Delete this assignment?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This assignment will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
 @Html.Partial("CreateAssignment", new Assignment() { CourseId = Model.CurrentCourse.Id })

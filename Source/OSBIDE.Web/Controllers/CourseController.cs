@@ -26,6 +26,56 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
+        [HttpPost]
+        public ActionResult CreateAssignment(Assignment vm)
+        {
+            //make sure that assignment creation is allowed
+            CourseUserRelationship relationship = Db.CourseUserRelationships
+                                                    .Where(cr => cr.CourseId == vm.CourseId)
+                                                    .Where(cr => cr.UserId == CurrentUser.Id)
+                                                    .FirstOrDefault();
+            if (relationship != null)
+            {
+                if (relationship.Role == CourseRole.Coordinator)
+                {
+                    vm.IsDeleted = false;
+
+                    //AC note: I'm not using ModelState.IsValid because it's flagging the non-mapped ReleaseTime/DueTime as invalid. 
+                    //As such, there's potential for the db insert to go bad.  Thus, the try/catch.
+                    try
+                    {
+                        Db.Assignments.Add(vm);
+                        Db.SaveChanges();
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+            return RedirectToAction("Details", new { id = vm.CourseId });
+        }
+
+        public ActionResult DeleteAssignment(int id)
+        {
+            Assignment some_assignment = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
+            if (some_assignment != null)
+            {
+                //make sure the current user is a course coordinator
+                CourseUserRelationship relationship = some_assignment.Course.CourseUserRelationships.Where(c => c.UserId == CurrentUser.Id).FirstOrDefault();
+                if (relationship != null)
+                {
+                    if (relationship.Role == CourseRole.Coordinator)
+                    {
+                        some_assignment.IsDeleted = true;
+                        Db.SaveChanges();
+                        return RedirectToAction("Details", new { id = some_assignment.CourseId });
+                    }
+                }
+            }
+            return RedirectToAction("MyCourses");
+        }
+
         public ActionResult Details(int id = -1)
         {
             Course currentCourse = (from course in Db.Courses
@@ -36,7 +86,7 @@ namespace OSBIDE.Web.Controllers
                                     select course).FirstOrDefault();
 
             //bad ID or invalid course, redirect
-            if(id == -1 || currentCourse == null)
+            if (id == -1 || currentCourse == null)
             {
                 return RedirectToAction("Index", "Feed");
             }
@@ -44,17 +94,17 @@ namespace OSBIDE.Web.Controllers
             //build VM
             CourseDetailsViewModel vm = new CourseDetailsViewModel();
             vm.CurrentCourse = currentCourse;
-            vm.Assignments = currentCourse.Assignments;
+            vm.Assignments = currentCourse.Assignments.Where(a => a.IsDeleted == false).ToList();
             vm.CurrentUser = CurrentUser;
             vm.Coordinators = currentCourse.CourseUserRelationships.Where(c => c.Role == CourseRole.Coordinator).Select(u => u.User).ToList();
 
             //figure out what files are attached to various assignments
             FileSystem fs = new FileSystem();
-            foreach(Assignment assignment in currentCourse.Assignments)
+            foreach (Assignment assignment in currentCourse.Assignments)
             {
                 vm.AssignmentFiles.Add(assignment.Id, new List<string>());
                 FileCollection files = fs.Course(currentCourse).Assignment(assignment).AllFiles();
-                foreach(string file in files)
+                foreach (string file in files)
                 {
                     vm.AssignmentFiles[assignment.Id].Add(file);
                 }
@@ -86,7 +136,7 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult Search()
         {
-            CoursesViewModel vm = BuildViewModel();            
+            CoursesViewModel vm = BuildViewModel();
             return View(vm);
         }
 
@@ -94,7 +144,7 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Search(CoursesViewModel vm)
         {
             vm = BuildViewModel(vm);
-            if(vm.SelectedCourse > 0)
+            if (vm.SelectedCourse > 0)
             {
                 Course toJoin = Db.Courses.Where(c => c.Id == vm.SelectedCourse).FirstOrDefault();
                 if (toJoin != null)
@@ -129,7 +179,7 @@ namespace OSBIDE.Web.Controllers
 
         private CoursesViewModel BuildViewModel(CoursesViewModel vm = null)
         {
-            if(vm == null)
+            if (vm == null)
             {
                 vm = new CoursesViewModel();
             }
