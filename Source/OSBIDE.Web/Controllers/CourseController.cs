@@ -41,6 +41,10 @@ namespace OSBIDE.Web.Controllers
                 {
                     vm.IsDeleted = false;
 
+                    //Adjust to UTC
+                    vm.DueDate = vm.DueDate.AddMinutes(vm.UtcOffsetMinutes);
+                    vm.ReleaseDate = vm.ReleaseDate.AddMinutes(vm.UtcOffsetMinutes);
+
                     //AC note: I'm not using ModelState.IsValid because it's flagging the non-mapped ReleaseTime/DueTime as invalid. 
                     //As such, there's potential for the db insert to go bad.  Thus, the try/catch.
                     try

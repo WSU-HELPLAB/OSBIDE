@@ -15,6 +15,13 @@ function documentReady() {
     $(".datepicker").each(function () {
         $(this).datepicker();
     });
+
+    //update all of our UTC offset information that gets sent to the server
+    var localDate = new Date();
+    var localOffset = localDate.getTimezoneOffset();
+    $('input.utc-offset').each(function () {
+        $(this).val(localOffset);
+    });
 }
 
 //converts UTC times to local (browser) times

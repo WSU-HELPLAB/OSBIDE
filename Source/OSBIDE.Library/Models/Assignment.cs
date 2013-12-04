@@ -29,6 +29,9 @@ namespace OSBIDE.Library.Models
         [DataType(DataType.Date)]
         public DateTime ReleaseDate { get; set; }
 
+        [Required]
+        public int UtcOffsetMinutes { get; set; }
+
         [NotMapped]
         [Display(Name = "Release Time")]
         [DataType(DataType.Time)]
@@ -63,17 +66,18 @@ namespace OSBIDE.Library.Models
             }
             set
             {
-                //first, zero out the release date's time component
-                ReleaseDate = DateTime.Parse(ReleaseDate.ToShortDateString());
-                ReleaseDate = ReleaseDate.AddHours(value.Hour);
-                ReleaseDate = ReleaseDate.AddMinutes(value.Minute);
+                //first, zero out the due date's time component
+                DueDate = DateTime.Parse(DueDate.ToShortDateString());
+                DueDate = DueDate.AddHours(value.Hour);
+                DueDate = DueDate.AddMinutes(value.Minute);
             }
         }
 
         public Assignment()
         {
-            ReleaseDate = DateTime.Now;
-            DueDate = DateTime.Now;
+            ReleaseDate = DateTime.UtcNow;
+            DueDate = DateTime.UtcNow;
+            UtcOffsetMinutes = 0;
         }
     }
 }
