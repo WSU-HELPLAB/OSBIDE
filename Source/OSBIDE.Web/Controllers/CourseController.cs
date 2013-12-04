@@ -4,6 +4,7 @@ using OSBIDE.Web.Models.FileSystem;
 using OSBIDE.Web.Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -74,6 +75,30 @@ namespace OSBIDE.Web.Controllers
                 }
             }
             return RedirectToAction("MyCourses");
+        }
+
+        [HttpPost]
+        public ActionResult UploadAssignmentFile()
+        {
+            //make sure that we have both a course id and assignment id
+            int assignmentId = 0;
+            int courseId = 0;
+            Int32.TryParse(Request.Form["AssignmentId"], out assignmentId);
+            Int32.TryParse(Request.Form["CourseId"], out courseId);
+            if (courseId < 1 || assignmentId < 1)
+            {
+                return RedirectToAction("MyCourses");
+            }
+            FileSystem fs = new FileSystem();
+
+            //save files to assignment
+            for (int i = 0; i < Request.Files.Count; i++)
+            {
+                HttpPostedFileBase file = Request.Files[i];
+                string fileName = Path.GetFileName(file.FileName);
+                fs.Course(courseId).Assignment(assignmentId).Attachments().AddFile(fileName, file.InputStream);
+            }
+            return RedirectToAction("Details", new { id = courseId });
         }
 
         public ActionResult Details(int id = -1)

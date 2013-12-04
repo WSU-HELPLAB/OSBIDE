@@ -352,10 +352,13 @@
     <Content Include="Scripts\knockout.mapping-2.4.0.debug.js" />
     <Content Include="Scripts\knockout.mapping-2.4.0.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment-2.0.0.js" />
+    <Content Include="Scripts\moment-2.0.0.min.js" />
     <Content Include="Scripts\moment-with-langs.js" />
     <Content Include="Scripts\moment-with-langs.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\Osbide.Default.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -431,6 +434,7 @@
     <Content Include="Views\WhatsNew\Add.cshtml" />
     <Content Include="Views\Course\Details.cshtml" />
     <Content Include="Views\Course\CreateAssignment.cshtml" />
+    <Content Include="Views\Course\UploadAssignmentFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">

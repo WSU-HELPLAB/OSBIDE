@@ -13,3 +13,5 @@
 /// <reference path="jquery.metadata.js" />
 /// <reference path="jquery.tablesorter.js" />
 /// <reference path="jquery.ui.timepicker.js" />
+/// <reference path="moment-2.0.0.js" />
+/// <reference path="osbide.default.js" />

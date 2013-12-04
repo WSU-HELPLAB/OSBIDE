@@ -5,6 +5,8 @@
 @model CourseDetailsViewModel
 @{
     ViewBag.Title = Model.CurrentCourse.Name;
+    bool isCoordinator = Model.Coordinators.Contains(Model.CurrentUser);
+    
 }
 @section Scripts
 {
@@ -67,6 +69,35 @@
                 $("#assignment-delete-dialog-confirm").dialog("option", "title", "Delete " + $(this).attr("data-name") + "?");
                 $("#assignment-delete-dialog-confirm").dialog("open");
             });
+
+            //upload assignment file dialog
+            $('#upload-assignment-files').dialog({
+                autoOpen: false,
+                height: 300,
+                width: 500,
+                modal: true,
+                buttons: {
+                    "Upload Files": function () {
+                        $("#upload-assignment-files-form").submit();
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                },
+                close: function () {
+                    allFields.val("").removeClass("ui-state-error");
+                }
+            });
+
+            //register the icon click
+            $(".upload-assignment-file-link").click(function () {
+                event.preventDefault();
+                var assignmentId = $(this).attr('data-id');
+                var assignmentName = $(this).attr('data-name');
+                $('#upload-assignment-files-id').val(assignmentId);
+                $('#upload-assignment-files-name').text(assignmentName);
+                $("#upload-assignment-files").dialog("open");
+            });
         });
     </script>
 
@@ -76,12 +107,17 @@
         {
             display:none;
         }
+
+        #upload-assignment-files-submit
+        {
+            display:none;
+        }
     </style>
 }
 <h2>@Model.CurrentCourse.Name</h2>
 <section>
     <h1>
-        @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
+        @if (isCoordinator == true)
         {
             <img src="~/Content/icons/add_up.png" alt="create assignment" title="create assignment" id="create-assignment-link" />
         }
@@ -108,18 +144,43 @@ else
             {
                 <tr>
                     <td>
-                        <a class="delete-assignment-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("DeleteAssignment", new { id = assignment.Id })"><img src="~/Content/icons/delete_up.png" title="delete assignment" alt="delete assignment" /></a>
+                        @if(isCoordinator == true)
+                        { 
+                            <a class="delete-assignment-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("DeleteAssignment", new { id = assignment.Id })"><img src="~/Content/icons/delete_up.png" title="delete assignment" alt="delete assignment" /></a>
+                        }
                     </td>
                     <td>@assignment.Name</td>
-                    <td>@assignment.ReleaseDate</td>
-                    <td>@assignment.DueDate</td>
+                    <td>
+                        <time class="utc-time"
+                              datetime="@Helpers.DateAsUnixTime(assignment.ReleaseDate)"
+                              data-original-date="@Helpers.RawDate(assignment.ReleaseDate)"
+                              data-date-format="MM/DD/YYYY hh:mm A">
+                            @assignment.ReleaseDate.ToString("MM/dd @ hh:mmtt") (UTC)
+                        </time>
+                    </td>
+                    <td>
+                        <time class="utc-time"
+                              datetime="@Helpers.DateAsUnixTime(assignment.DueTime)"
+                              data-original-date="@Helpers.RawDate(assignment.DueTime)"
+                              data-date-format="MM/DD/YYYY hh:mm A">
+                            @assignment.DueTime.ToString("MM/dd @ hh:mmtt") (UTC)
+                        </time>
+                    </td>
                     <td></td>
                     <td>
-                        <img src="~/Content/icons/add_up.png" alt="add file" title="add file" />
+                        @if(isCoordinator == true)
+                        { 
+                            <a class="upload-assignment-file-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("UploadAssignmentFile")"><img src="~/Content/icons/add_up.png" alt="add files" title="add files" /></a>
+                        }
                         <ul>
                             @foreach (string file in Model.AssignmentFiles[assignment.Id])
                             {
-                                <li>@file</li>
+                                <li>
+                                    @if(isCoordinator == true)
+                                    {
+                                        <a href=""><img src="~/Content/icons/delete_up.png" title="Delete file" alt="Delete file" /></a>
+                                    }
+                                    @file</li>
                             }
                         </ul>
                     </td>
@@ -155,3 +216,4 @@ else
     <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This assignment will be permanently deleted and cannot be recovered. Are you sure?</p>
 </div>
 @Html.Partial("CreateAssignment", new Assignment() { CourseId = Model.CurrentCourse.Id })
+@Html.Partial("UploadAssignmentFile", new Assignment() { CourseId = Model.CurrentCourse.Id })
