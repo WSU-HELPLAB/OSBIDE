@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\File\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Controllers\CourseController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PrivateQuestionController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -435,6 +437,7 @@
     <Content Include="Views\Course\Details.cshtml" />
     <Content Include="Views\Course\CreateAssignment.cshtml" />
     <Content Include="Views\Course\UploadAssignmentFile.cshtml" />
+    <Content Include="Views\Course\UploadCourseFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">

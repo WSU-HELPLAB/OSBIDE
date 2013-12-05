@@ -81,6 +81,40 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("MyCourses");
         }
 
+        public ActionResult UploadCourseFile(int id)
+        {
+            Course vm = Db.Courses.Where(a => a.Id == id).FirstOrDefault();
+            return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult UploadCourseFile()
+        {
+            //make sure that we have a course id
+            int courseId = 0;
+            Int32.TryParse(Request.Form["CourseId"], out courseId);
+            if (courseId < 1)
+            {
+                return RedirectToAction("MyCourses");
+            }
+            FileSystem fs = new FileSystem();
+
+            //save files to assignment
+            for (int i = 0; i < Request.Files.Count; i++)
+            {
+                HttpPostedFileBase file = Request.Files[i];
+                string fileName = Path.GetFileName(file.FileName);
+                fs.Course(courseId).CourseDocs().AddFile(fileName, file.InputStream);
+            }
+            return RedirectToAction("Details", new { id = courseId });
+        }
+
+        public ActionResult UploadAssignmentFile(int id)
+        {
+            Assignment vm = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
+            return View(vm);
+        }
+
         [HttpPost]
         public ActionResult UploadAssignmentFile()
         {
@@ -131,16 +165,25 @@ namespace OSBIDE.Web.Controllers
             FileSystem fs = new FileSystem();
             foreach (Assignment assignment in currentCourse.Assignments)
             {
+                //ignore "deleted" assignments
+                if(assignment.IsDeleted == true)
+                {
+                    continue;
+                }
                 vm.AssignmentFiles.Add(assignment.Id, new List<string>());
-                FileCollection files = fs.Course(currentCourse).Assignment(assignment).AllFiles();
+                FileCollection files = fs.Course(currentCourse).Assignment(assignment).Attachments().AllFiles();
                 foreach (string file in files)
                 {
-                    vm.AssignmentFiles[assignment.Id].Add(file);
+                    vm.AssignmentFiles[assignment.Id].Add(Path.GetFileName(file));
                 }
             }
 
             //find all course documents
-            vm.CourseDocuments = fs.Course(currentCourse).CourseDocs().AllFiles().ToList();
+            List<string> courseFiles = fs.Course(currentCourse).CourseDocs().AllFiles().ToList();
+            foreach (string file in courseFiles)
+            {
+                vm.CourseDocuments.Add(Path.GetFileName(file));
+            }
 
             return View(vm);
         }
