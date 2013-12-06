@@ -23,20 +23,6 @@ namespace OSBIDE.Controls.ViewModels
             ContinueCommand = new DelegateCommand(Continue, CanIssueCommand);
             CancelCommand = new DelegateCommand(Cancel, CanIssueCommand);
             Assignments = new ObservableCollection<string>();
-            SetUpAssignments();
-        }
-
-        private void SetUpAssignments()
-        {
-            Assignments.Add("Assignment #1");
-            Assignments.Add("Assignment #2");
-            Assignments.Add("Assignment #3");
-            Assignments.Add("Assignment #4");
-            Assignments.Add("Assignment #5");
-            Assignments.Add("Assignment #6");
-            Assignments.Add("Assignment #7");
-            Assignments.Add("Assignment #8");
-            Assignments.Add("Assignment #9");
         }
 
         #region properties
@@ -44,11 +30,12 @@ namespace OSBIDE.Controls.ViewModels
         public event EventHandler RequestClose = delegate { };
 
         public ObservableCollection<string> Assignments { get; set; }
+        public ObservableCollection<string> Courses { get; set; }
         public MessageBoxResult Result { get; private set; }
         public ICommand ContinueCommand { get; set; }
         public ICommand CancelCommand { get; set; }
 
-        public string _selectedAssignment = "";
+        private string _selectedAssignment = "";
         public string SelectedAssignment
         {
             get
@@ -59,10 +46,42 @@ namespace OSBIDE.Controls.ViewModels
             {
                 _selectedAssignment = value;
                 OnPropertyChanged("SelectedAssignment");
+                OnPropertyChanged("HasAssignmentSelected");
             }
         }
 
-        public IOsbideEvent _submitEvent;
+        public bool HasAssignmentSelected
+        {
+            get
+            {
+                return _selectedAssignment.Trim().Length > 0;
+            }
+        }
+
+        private string _selectedCourse = "";
+        public string SelectedCourse
+        {
+            get
+            {
+                return _selectedCourse;
+            }
+            set
+            {
+                _selectedCourse = value;
+                OnPropertyChanged("SelectedCourse");
+                OnPropertyChanged("HasCourseSelected");
+            }
+        }
+
+        public bool HasCourseSelected
+        {
+            get
+            {
+                return _selectedCourse.Trim().Length > 0;
+            }
+        }
+
+        private IOsbideEvent _submitEvent;
         public IOsbideEvent LastSubmit
         {
             get
@@ -84,7 +103,7 @@ namespace OSBIDE.Controls.ViewModels
             get;
         }
 
-        public string _lastSubmitted = "";
+        private string _lastSubmitted = "";
         public string LastSubmitted
         {
             get
@@ -98,7 +117,7 @@ namespace OSBIDE.Controls.ViewModels
             }
         }
 
-        public string _solutionName = "";
+        private string _solutionName = "";
         public string SolutionName
         {
             get

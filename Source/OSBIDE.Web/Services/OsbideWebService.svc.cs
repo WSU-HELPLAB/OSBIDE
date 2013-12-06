@@ -165,6 +165,65 @@ namespace OSBIDE.Web.Services
             return lastSocialActivity;
         }
 
+        /// <summary>
+        /// Will return a list of courses in which the user is presently enrolled
+        /// </summary>
+        /// <param name="authToken"></param>
+        /// <returns></returns>
+        [OperationContract]
+        public List<Course> GetCoursesForUser(string authToken)
+        {
+            List<Course> courses = new List<Course>();
+
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == true)
+            {
+                OsbideUser authUser = GetActiveUser(authToken);
+                courses = Db.CourseUserRelationships.Where(c => c.UserId == authUser.Id).Select(c => c.Course).ToList();
+            }
+            return courses;
+        }
+
+        /// <summary>
+        /// Will return a list of assignments attached to a given course
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
+        [OperationContract]
+        public List<Assignment> GetAssignmentsForCourse(int courseId)
+        {
+            List<Assignment> assignments = new List<Assignment>();
+            assignments = Db.Assignments.Where(a => a.CourseId == courseId).ToList();
+            return assignments;
+        }
+
+        /// <summary>
+        /// Will submit an assignment for a given student
+        /// </summary>
+        /// <param name="assignmentId"></param>
+        /// <param name="zipData"></param>
+        /// <param name="authToken"></param>
+        /// <returns></returns>
+        [OperationContract]
+        public int SubmitAssignment(int assignmentId, EventLog submitLog, string authToken)
+        {
+            int result = -1;
+            return result;
+        }
+
+        /// <summary>
+        /// Will return the date of the last submit for a given user
+        /// </summary>
+        /// <param name="assignmentId"></param>
+        /// <param name="authToken"></param>
+        /// <returns></returns>
+        [OperationContract]
+        public DateTime GetLastAssignmentSubmit(int assignmentId, string authToken)
+        {
+            DateTime lastSubmit = DateTime.MinValue;
+            return lastSubmit;
+        }
+
         [OperationContract]
         [ApplyDataContractResolver]
         public int SubmitLocalErrorLog(LocalErrorLog errorLog, string authToken)

@@ -22,11 +22,20 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("MyCourses");
         }
 
+        /// <summary>
+        /// MyCourses will be the landing point for all course-related stuff in OSBIDE
+        /// </summary>
+        /// <returns></returns>
         public ActionResult MyCourses()
         {
             return View();
         }
 
+        /// <summary>
+        /// Will create a new assignment for a given course.  When complete, will redirect to the assignment's course page
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult CreateAssignment(Assignment vm)
         {
@@ -61,6 +70,11 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = vm.CourseId });
         }
 
+        /// <summary>
+        /// Deletes a given assignment from the system
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult DeleteAssignment(int id)
         {
             Assignment some_assignment = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
@@ -81,12 +95,21 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("MyCourses");
         }
 
+        /// <summary>
+        /// Attaches a document to the "CourseDocs" section of a course
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult UploadCourseFile(int id)
         {
             Course vm = Db.Courses.Where(a => a.Id == id).FirstOrDefault();
             return View(vm);
         }
 
+        /// <summary>
+        /// Attaches a document to the "CourseDocs" section of a course
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult UploadCourseFile()
         {
@@ -109,6 +132,12 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = courseId });
         }
 
+        /// <summary>
+        /// Deletes the supplied file from a course's "CourseDocs" section.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public ActionResult DeleteCourseFile(int id, string file)
         {
             Course course = Db.Courses.Where(a => a.Id == id).FirstOrDefault();
@@ -133,12 +162,21 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = course.Id });
         }
 
+        /// <summary>
+        /// Attaches one or more files to the specified assignment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult UploadAssignmentFile(int id)
         {
             Assignment vm = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
             return View(vm);
         }
 
+        /// <summary>
+        /// Attaches one or more files to the specified assignment
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult UploadAssignmentFile()
         {
@@ -163,6 +201,12 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = courseId });
         }
 
+        /// <summary>
+        /// Deletes the specified from from the specified assignment
+        /// </summary>
+        /// <param name="id">The ID of the assignment that the file is attached to</param>
+        /// <param name="file"></param>
+        /// <returns></returns>
         public ActionResult DeleteAssignmentFile(int id, string file)
         {
             Assignment assignment = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
@@ -187,6 +231,11 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = assignment.CourseId });
         }
 
+        /// <summary>
+        /// Loads the details view of a course.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public ActionResult Details(int id = -1)
         {
             Course currentCourse = (from course in Db.Courses
@@ -238,7 +287,7 @@ namespace OSBIDE.Web.Controllers
 
         public JsonResult GetAllCourses()
         {
-            CoursesViewModel vm = BuildViewModel();
+            CoursesViewModel vm = BuildCoursesViewModel();
             var simpleCourse = vm.CoursesByPrefix.Select(c => new
             {
                 Prefix = c.Key,
@@ -254,16 +303,25 @@ namespace OSBIDE.Web.Controllers
             return this.Json(simpleCourse, JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Provides an interface for finding new courses in OSBIDE
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Search()
         {
-            CoursesViewModel vm = BuildViewModel();
+            CoursesViewModel vm = BuildCoursesViewModel();
             return View(vm);
         }
 
+        /// <summary>
+        /// Provides an interface for finding new courses in OSBIDE
+        /// </summary>
+        /// <param name="vm"></param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult Search(CoursesViewModel vm)
         {
-            vm = BuildViewModel(vm);
+            vm = BuildCoursesViewModel(vm);
             if (vm.SelectedCourse > 0)
             {
                 Course toJoin = Db.Courses.Where(c => c.Id == vm.SelectedCourse).FirstOrDefault();
@@ -297,7 +355,7 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
-        private CoursesViewModel BuildViewModel(CoursesViewModel vm = null)
+        private CoursesViewModel BuildCoursesViewModel(CoursesViewModel vm = null)
         {
             if (vm == null)
             {
