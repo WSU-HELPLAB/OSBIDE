@@ -68,6 +68,35 @@
                 $("#assignment-delete-dialog-confirm").dialog("open");
             });
 
+            //delete file dialog
+            $("#file-delete-dialog-confirm").dialog({
+                resizable: false,
+                autoOpen: false,
+                height: 200,
+                modal: true,
+                buttons: {
+                    "Delete File": function () {
+
+                        //redirect
+                        var url = $("#file-to-delete").attr("data-url");
+                        window.location.href = url;
+                    },
+
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+
+            //listener for delete file
+            $(".delete-file-link").click(function (event) {
+                event.preventDefault();
+                $("#file-to-delete").attr("data-url", $(this).attr("href"));
+                $("#file-to-delete").text($(this).attr("data-name"));
+                //$("#file-delete-dialog-confirm").dialog("option", "title", "Delete " + $(this).attr("data-name") + "?");
+                $("#file-delete-dialog-confirm").dialog("open");
+            });
+
             //upload assignment file dialog
             $('#upload-assignment-files').dialog({
                 autoOpen: false,
@@ -202,9 +231,9 @@
                                     <li>
                                         @if (isCoordinator == true)
                                         {
-                                            <a href=""><img src="~/Content/icons/delete_up.png" title="Delete file" alt="Delete file" /></a>
+    <a class="delete-file-link" href="@Url.Action("DeleteAssignmentFile", "Course", new { id = assignment.Id, file = file })" data-name="@file"><img src="~/Content/icons/delete_up.png" title="Delete file" alt="Delete file" /></a>
                                         }
-                                        @file
+                                        @Html.ActionLink(file, "GetAssignmentAttachment", "File", new { assignmentId = assignment.Id, file = file }, new { })
                                     </li>
                                 }
                             </ul>
@@ -235,9 +264,9 @@
                 <li>
                     @if (isCoordinator == true)
                     {
-                        <a href=""><img src="~/Content/icons/delete_up.png" title="Delete file" alt="Delete file" /></a>
+                        <a class="delete-file-link" href="@Url.Action("DeleteCourseFile", "Course", new { id = Model.CurrentCourse.Id, file = file })" data-name="@file"><img src="~/Content/icons/delete_up.png" title="Delete file" alt="Delete file" /></a>
                     }
-                    @file
+                    @Html.ActionLink(file, "GetCourseDocument", "File", new { courseId = Model.CurrentCourse.Id, file = file }, new { })
                 </li>
             }
         </ul>
@@ -245,6 +274,9 @@
 </section>
 <div id="assignment-delete-dialog-confirm" title="Delete this assignment?">
     <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>This assignment will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+<div id="file-delete-dialog-confirm" title="Delete this file?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>The file &quot;<span id="file-to-delete">some file</span>&quot; will be permanently deleted and cannot be recovered. Are you sure?</p>
 </div>
 @Html.Partial("CreateAssignment", new Assignment() { CourseId = Model.CurrentCourse.Id })
 @Html.Partial("UploadAssignmentFile", new Assignment() { CourseId = Model.CurrentCourse.Id })

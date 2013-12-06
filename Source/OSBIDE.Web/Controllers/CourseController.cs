@@ -109,6 +109,30 @@ namespace OSBIDE.Web.Controllers
             return RedirectToAction("Details", new { id = courseId });
         }
 
+        public ActionResult DeleteCourseFile(int id, string file)
+        {
+            Course course = Db.Courses.Where(a => a.Id == id).FirstOrDefault();
+            if (course == null)
+            {
+                //course not found
+                return RedirectToAction("MyCourses");
+            }
+
+            //can the user delete files?
+            CourseUserRelationship relationship = course.CourseUserRelationships.Where(cu => cu.UserId == CurrentUser.Id).FirstOrDefault();
+            if (relationship != null)
+            {
+                if (relationship.Role == CourseRole.Coordinator)
+                {
+                    //it's okay to delete files
+                    FileSystem fs = new FileSystem();
+                    FileCollection collection = fs.Course(course).CourseDocs().File(file);
+                    collection.Delete();
+                }
+            }
+            return RedirectToAction("Details", new { id = course.Id });
+        }
+
         public ActionResult UploadAssignmentFile(int id)
         {
             Assignment vm = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
@@ -137,6 +161,30 @@ namespace OSBIDE.Web.Controllers
                 fs.Course(courseId).Assignment(assignmentId).Attachments().AddFile(fileName, file.InputStream);
             }
             return RedirectToAction("Details", new { id = courseId });
+        }
+
+        public ActionResult DeleteAssignmentFile(int id, string file)
+        {
+            Assignment assignment = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
+            if(assignment == null)
+            {
+                //assignment not found
+                return RedirectToAction("MyCourses");
+            }
+
+            //can the user delete files?
+            CourseUserRelationship relationship = assignment.Course.CourseUserRelationships.Where(cu => cu.UserId == CurrentUser.Id).FirstOrDefault();
+            if (relationship != null)
+            {
+                if(relationship.Role == CourseRole.Coordinator)
+                {
+                    //it's okay to delete files
+                    FileSystem fs = new FileSystem();
+                    FileCollection collection = fs.Course(assignment.CourseId).Assignment(assignment).Attachments().File(file);
+                    collection.Delete();
+                }
+            }
+            return RedirectToAction("Details", new { id = assignment.CourseId });
         }
 
         public ActionResult Details(int id = -1)
