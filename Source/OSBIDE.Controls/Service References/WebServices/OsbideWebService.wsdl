@@ -49,6 +49,51 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMostRecentSocialActivity">
+      <soap:operation soapAction="urn:OsbideWebService/GetMostRecentSocialActivity" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetCoursesForUser">
+      <soap:operation soapAction="urn:OsbideWebService/GetCoursesForUser" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAssignmentsForCourse">
+      <soap:operation soapAction="urn:OsbideWebService/GetAssignmentsForCourse" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SubmitAssignment">
+      <soap:operation soapAction="urn:OsbideWebService/SubmitAssignment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLastAssignmentSubmitDate">
+      <soap:operation soapAction="urn:OsbideWebService/GetLastAssignmentSubmitDate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="SubmitLocalErrorLog">
       <soap:operation soapAction="urn:OsbideWebService/SubmitLocalErrorLog" style="document" />
       <wsdl:input>

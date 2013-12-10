@@ -146,7 +146,7 @@ namespace OSBIDE.Library.Events
         }
 
         //AC Note: since we're currently using C/C++, just keep those files
-        private string[] allowedExtensions = { ".c", ".cpp", ".h" };
+        private string[] allowedExtensions = { ".c", ".cpp", ".h", ".cs" };
         private List<CodeDocument> GetProjectItemFiles(ProjectItems items)
         {
             List<CodeDocument> files = new List<CodeDocument>();

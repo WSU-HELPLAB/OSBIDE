@@ -10,33 +10,102 @@ using System.Windows.Input;
 using OSBIDE.Library.Commands;
 using System.Runtime.Caching;
 using OSBIDE.Library;
+using OSBIDE.Controls.WebServices;
+using OSBIDE.Library.ServiceClient;
 
 namespace OSBIDE.Controls.ViewModels
 {
     public class SubmitAssignmentViewModel : ViewModelBase
     {
-        private ObjectCache _cache = new FileCache(StringConstants.LocalCacheDirectory, new LibraryBinder());
-        public SubmitAssignmentViewModel(string userName, IOsbideEvent lastSubmit)
+        private OsbideWebServiceClient _client = null;
+        private string _authToken = "";
+
+        public SubmitAssignmentViewModel(string userName, string solutionName, string authToken)
         {
             UserName = userName;
-            LastSubmit = lastSubmit;
+            _authToken = authToken;
+            SolutionName = solutionName;
+            _client = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
             ContinueCommand = new DelegateCommand(Continue, CanIssueCommand);
             CancelCommand = new DelegateCommand(Cancel, CanIssueCommand);
-            Assignments = new ObservableCollection<string>();
+            Assignments = new ObservableCollection<Assignment>();
+            Courses = new ObservableCollection<Course>();
+
+            //set up event listeners
+            _client.GetCoursesForUserCompleted += _client_GetCoursesForUserCompleted;
+            _client.GetAssignmentsForCourseCompleted += _client_GetAssignmentsForCourseCompleted;
+            _client.SubmitAssignmentCompleted += _client_SubmitAssignmentCompleted;
+
+            //load courses
+            IsLoading = true;
+            _client.GetCoursesForUserAsync(authToken);
+        }
+
+        void _client_SubmitAssignmentCompleted(object sender, SubmitAssignmentCompletedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        //will populate the assignment dropdown
+        void _client_GetAssignmentsForCourseCompleted(object sender, GetAssignmentsForCourseCompletedEventArgs e)
+        {
+            IsLoading = false;
+            Assignments.Clear();
+            try
+            {
+                foreach (Assignment a in e.Result)
+                {
+                    Assignments.Add(a);
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+        
+        //will populate the courses dropdown based on the current user's settings
+        void _client_GetCoursesForUserCompleted(object sender, GetCoursesForUserCompletedEventArgs e)
+        {
+            IsLoading = false;
+            Courses.Clear();
+            try
+            {
+                foreach (Course c in e.Result)
+                {
+                    Courses.Add(c);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         #region properties
 
         public event EventHandler RequestClose = delegate { };
 
-        public ObservableCollection<string> Assignments { get; set; }
-        public ObservableCollection<string> Courses { get; set; }
+        public ObservableCollection<Assignment> Assignments { get; set; }
+        public ObservableCollection<Course> Courses { get; set; }
         public MessageBoxResult Result { get; private set; }
         public ICommand ContinueCommand { get; set; }
         public ICommand CancelCommand { get; set; }
 
-        private string _selectedAssignment = "";
-        public string SelectedAssignment
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get
+            {
+                return _isLoading;
+            }
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged("IsLoading");
+            }
+        }
+
+        private int _selectedAssignment = -1;
+        public int SelectedAssignment
         {
             get
             {
@@ -54,12 +123,12 @@ namespace OSBIDE.Controls.ViewModels
         {
             get
             {
-                return _selectedAssignment.Trim().Length > 0;
+                return _selectedAssignment > 0;
             }
         }
 
-        private string _selectedCourse = "";
-        public string SelectedCourse
+        private int _selectedCourse = -1;
+        public int SelectedCourse
         {
             get
             {
@@ -68,6 +137,11 @@ namespace OSBIDE.Controls.ViewModels
             set
             {
                 _selectedCourse = value;
+
+                //load assignments
+                IsLoading = true;
+                _client.GetAssignmentsForCourseAsync(_selectedCourse, _authToken);
+
                 OnPropertyChanged("SelectedCourse");
                 OnPropertyChanged("HasCourseSelected");
             }
@@ -77,23 +151,7 @@ namespace OSBIDE.Controls.ViewModels
         {
             get
             {
-                return _selectedCourse.Trim().Length > 0;
-            }
-        }
-
-        private IOsbideEvent _submitEvent;
-        public IOsbideEvent LastSubmit
-        {
-            get
-            {
-                return _submitEvent;
-            }
-            set
-            {
-                _submitEvent = value;
-                LastSubmitted = LastSubmit.EventDate.ToLongDateString();
-                SolutionName = LastSubmit.SolutionName;
-                OnPropertyChanged("LastSubmit");
+                return _selectedCourse > 0;
             }
         }
 

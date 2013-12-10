@@ -180,12 +180,9 @@ namespace OSBIDE.Plugins.VS2012
                 mcs.AddCommand(genericWindow);
 
                 //submit assignment command
-                //(commented out for Fall 2013 release at instructor request)
-                /*
-                CommandID submitCommand = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
+                CommandID submitCommand = new CommandID(CommonGuidList.guidOSBIDE_OsbideToolsMenuCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
                 MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
                 mcs.AddCommand(submitMenuItem);
-                */
 
                 //ask the professor window 
                 //(commented out for Fall 2013 release at instructor request)
@@ -801,17 +798,20 @@ namespace OSBIDE.Plugins.VS2012
             DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
             if (dte != null)
             {
-                TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
-                if (selection != null)
+                if (dte.ActiveDocument != null)
                 {
-                    string text = selection.Text;
-                    if (string.IsNullOrEmpty(text) == true)
+                    TextSelection selection = dte.ActiveDocument.Selection as TextSelection;
+                    if (selection != null)
                     {
-                        cmd.Enabled = false;
-                    }
-                    else
-                    {
-                        cmd.Enabled = true;
+                        string text = selection.Text;
+                        if (string.IsNullOrEmpty(text) == true)
+                        {
+                            cmd.Enabled = false;
+                        }
+                        else
+                        {
+                            cmd.Enabled = true;
+                        }
                     }
                 }
             }
@@ -896,18 +896,26 @@ namespace OSBIDE.Plugins.VS2012
                 MessageBox.Show("No solution is currently open.");
                 return;
             }
-
-            evt.SolutionName = dte.Solution.FullName;
-
-            SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(_cache[StringConstants.UserNameCacheKey] as string, evt);
-            MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
-
-            //assume that data was changed and needs to be saved
-            if (result == MessageBoxResult.OK)
+            object cacheItem = _cache[StringConstants.AuthenticationCacheKey];
+            if (cacheItem != null && string.IsNullOrEmpty(cacheItem.ToString()) == false)
             {
-                EventGenerator generator = EventGenerator.GetInstance();
-                generator.RequestSolutionSubmit(vm.SelectedAssignment);
+                evt.SolutionName = dte.Solution.FullName;
 
+                SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(
+                    _cache[StringConstants.UserNameCacheKey] as string,
+                    evt.SolutionName,
+                    _cache[StringConstants.AuthenticationCacheKey] as string);
+                MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
+
+                //assume that data was changed and needs to be saved
+                if (result == MessageBoxResult.OK)
+                {
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("You must be logged into OSBIDE in order to submit an assignment.");
             }
         }
         #endregion

@@ -70,7 +70,7 @@ namespace OSBIDE.Library.Events
             base.OsbideSolutionSubmitted(sender, e);
 
             SubmitEvent submit = new SubmitEvent(dte);
-            submit.AssignmentName = e.AssignmentName;
+            submit.AssignmentId = e.AssignmentId;
             submit.CreateSolutionBinary();
 
             //let others know that we have a new event
@@ -82,7 +82,7 @@ namespace OSBIDE.Library.Events
             base.OsbideSolutionDownloaded(sender, e);
             SolutionDownloadEvent download = new SolutionDownloadEvent()
             {
-                AssignmentName = e.DownloadedSubmission.AssignmentName,
+                AssignmentId = e.DownloadedSubmission.AssignmentId,
                 AuthorId = e.DownloadedSubmission.EventLog.SenderId,
                 DownloadingUserId = e.DownloadingUser.Id,
                 SolutionName = e.DownloadedSubmission.SolutionName

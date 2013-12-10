@@ -179,7 +179,28 @@ namespace OSBIDE.Web.Services
             if (auth.IsValidKey(authToken) == true)
             {
                 OsbideUser authUser = GetActiveUser(authToken);
-                courses = Db.CourseUserRelationships.Where(c => c.UserId == authUser.Id).Select(c => c.Course).ToList();
+
+                //log the last activity date
+                LogUserTransaction(authUser);
+
+                //AC: I'm getting an exception when I try sorting by name USING EF/LINQ, so I guess I'll do it the hard way
+                SortedDictionary<string, Course> sorted = new SortedDictionary<string, Course>();
+                var query = (from cur in Db.CourseUserRelationships
+                             where cur.UserId == authUser.Id
+                             && cur.Course.IsDeleted == false
+                             select cur.Course)
+                             .ToList();
+                foreach (Course c in query)
+                {
+                    if (sorted.ContainsKey(c.Name) == false)
+                    {
+                        sorted.Add(c.Name, c);
+                    }
+                }
+                foreach(KeyValuePair<string, Course> kvp in sorted)
+                {
+                    courses.Add(new Course(kvp.Value));
+                }
             }
             return courses;
         }
@@ -190,10 +211,19 @@ namespace OSBIDE.Web.Services
         /// <param name="courseId"></param>
         /// <returns></returns>
         [OperationContract]
-        public List<Assignment> GetAssignmentsForCourse(int courseId)
+        public List<Assignment> GetAssignmentsForCourse(int courseId, string authToken)
         {
             List<Assignment> assignments = new List<Assignment>();
-            assignments = Db.Assignments.Where(a => a.CourseId == courseId).ToList();
+
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == true)
+            {
+                List<Assignment> efAssignments = Db.Assignments.Where(a => a.CourseId == courseId).OrderBy(a => a.Name).ToList();
+                foreach(Assignment assignment in efAssignments)
+                {
+                    assignments.Add(new Assignment(assignment));
+                }
+            }
             return assignments;
         }
 
@@ -205,9 +235,25 @@ namespace OSBIDE.Web.Services
         /// <param name="authToken"></param>
         /// <returns></returns>
         [OperationContract]
-        public int SubmitAssignment(int assignmentId, EventLog submitLog, string authToken)
+        public int SubmitAssignment(int assignmentId, EventLog assignmentLog, string authToken)
         {
             int result = -1;
+
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == true)
+            {
+                //replace sender information with what is contained in the auth key
+                OsbideUser authUser = GetActiveUser(authToken);
+
+                //log the last activity date
+                LogUserTransaction(authUser);
+
+                EventLog submittedLog = SubmitLog(assignmentLog, authUser);
+                if (submittedLog != null)
+                {
+                    result = submittedLog.Id;
+                }
+            }
             return result;
         }
 
@@ -218,9 +264,28 @@ namespace OSBIDE.Web.Services
         /// <param name="authToken"></param>
         /// <returns></returns>
         [OperationContract]
-        public DateTime GetLastAssignmentSubmit(int assignmentId, string authToken)
+        public DateTime GetLastAssignmentSubmitDate(int assignmentId, string authToken)
         {
             DateTime lastSubmit = DateTime.MinValue;
+            Authentication auth = new Authentication();
+            if (auth.IsValidKey(authToken) == true)
+            {
+                OsbideUser authUser = GetActiveUser(authToken);
+
+                //log the last activity date
+                LogUserTransaction(authUser);
+
+                //find the time of the last submit
+                var query = (from log in Db.SubmitEvents
+                             where log.AssignmentId == assignmentId
+                             && log.EventLog.SenderId == authUser.Id
+                             orderby log.EventLog.DateReceived descending
+                             select log).FirstOrDefault();
+                if (query != null)
+                {
+                    lastSubmit = query.EventLog.DateReceived;
+                }
+            }
             return lastSubmit;
         }
 
@@ -306,13 +371,13 @@ namespace OSBIDE.Web.Services
                 List<OsbideUser> observers = new List<OsbideUser>();
 
                 observers = (from subscription in Db.UserSubscriptions
-                            join dbUser in Db.Users on
-                                              new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
-                                              equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
-                            where subscription.SubjectSchoolId == user.SchoolId
-                               && subscription.SubjectInstitutionId == user.InstitutionId
-                               && dbUser.ReceiveEmailOnNewFeedPost == true
-                            select dbUser).ToList();
+                             join dbUser in Db.Users on
+                                               new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
+                                               equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
+                             where subscription.SubjectSchoolId == user.SchoolId
+                                && subscription.SubjectInstitutionId == user.InstitutionId
+                                && dbUser.ReceiveEmailOnNewFeedPost == true
+                             select dbUser).ToList();
                 if (observers.Count > 0)
                 {
                     string url = StringConstants.GetActivityFeedDetailsUrl(log.Id);

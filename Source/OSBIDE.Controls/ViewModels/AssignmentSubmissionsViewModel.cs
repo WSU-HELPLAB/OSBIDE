@@ -79,6 +79,7 @@ namespace OSBIDE.Controls.ViewModels
 
         private void UpdateAssignmentListing()
         {
+            /*
             var names = (from submit in _db.SubmitEvents
                          select submit.AssignmentName).Distinct().ToList();
             foreach (string name in names)
@@ -88,6 +89,7 @@ namespace OSBIDE.Controls.ViewModels
                     AvailableAssignments.Add(name);
                 }
             }
+             * */
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -97,6 +99,7 @@ namespace OSBIDE.Controls.ViewModels
 
         private void GetSubmissionEntries()
         {
+            /*
             var entries = from submit in _db.SubmitEvents
                           where submit.AssignmentName == SelectedAssignment
                           //&& submit.EventLog.SenderId == OsbideUser.CurrentUser.Id
@@ -107,6 +110,7 @@ namespace OSBIDE.Controls.ViewModels
             {
                 events[evt.EventLog.Sender.FullName] = evt;
             }
+             * 
 
             SubmissionEntries.Clear();
             foreach (string key in events.Keys.OrderBy(k => k.ToString()))
@@ -116,6 +120,7 @@ namespace OSBIDE.Controls.ViewModels
                 vm.Submission = evt;
                 SubmissionEntries.Add(vm);
             }
+             * */
         }
 
         private void RefreshAssignmentList(object param)

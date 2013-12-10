@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace OSBIDE.Library.Events
 {
     [Serializable]
-    public class SubmitEvent : IOsbideEvent
+    public class SubmitEvent : IOsbideEvent, IModelBuilderExtender
     {
         [Key]
         [Required]
@@ -51,7 +51,10 @@ namespace OSBIDE.Library.Events
         public string PrettyName { get { return "Submit Solution"; } }
 
         [Required]
-        public string AssignmentName { get; set; }
+        public int AssignmentId { get; set; }
+
+        [ForeignKey("AssignmentId")]
+        public virtual Assignment Assignment { get; set; }
 
         [Required]
         [Column(TypeName = "image")]
@@ -99,7 +102,7 @@ namespace OSBIDE.Library.Events
             }
             if (values.ContainsKey("AssignmentName"))
             {
-                evt.AssignmentName = values["AssignmentName"].ToString();
+                evt.AssignmentId = (int)values["AssignmentId"];
             }
             if (values.ContainsKey("SolutionData"))
             {
@@ -138,7 +141,7 @@ namespace OSBIDE.Library.Events
         private string[] GetSolutionFileList(string path)
         {
             string[] noDirectorySearchList = { "bin", "obj", "debug", "release", "ipch" };
-            string[] noFileExtension = { ".sdf", ".ipch" };
+            string[] noFileExtension = { ".sdf", ".ipch", ".dll" };
             List<string> filesToAdd = new List<string>(10);
 
             foreach (string file in Directory.GetFiles(path))
@@ -165,6 +168,14 @@ namespace OSBIDE.Library.Events
                 filesToAdd = filesToAdd.Union(GetSolutionFileList(directory)).ToList();
             }
             return filesToAdd.ToArray();
+        }
+
+        public void BuildRelationship(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SubmitEvent>()
+                .HasRequired(s => s.EventLog)
+                .WithMany()
+                .WillCascadeOnDelete(false);
         }
     }
 }

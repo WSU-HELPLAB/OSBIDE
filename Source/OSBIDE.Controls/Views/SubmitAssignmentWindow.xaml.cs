@@ -30,10 +30,18 @@ namespace OSBIDE.Controls.Views
                 if (ViewModel != null)
                 {
                     ViewModel.RequestClose -= new EventHandler(ViewModel_RequestClose);
+                    ViewModel.PropertyChanged -= ViewModel_PropertyChanged;
                 }
                 this.DataContext = value;
                 ViewModel.RequestClose += new EventHandler(ViewModel_RequestClose);
+                ViewModel.PropertyChanged += ViewModel_PropertyChanged;
             }
+        }
+
+        void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            //update loading icon status
+            LoadingIcon.Visible = ViewModel.IsLoading;
         }
 
         void ViewModel_RequestClose(object sender, EventArgs e)
@@ -44,6 +52,20 @@ namespace OSBIDE.Controls.Views
         public SubmitAssignmentWindow()
         {
             InitializeComponent();
+
+            LoadingIcon.Image = OSBIDE.Controls.Properties.Resources.ajax_loader;
+            LoadingIcon.VisibleChanged += LoadingIcon_VisibleChanged;
+            LoadingIcon.Visible = false;
+        }
+
+        void LoadingIcon_VisibleChanged(object sender, EventArgs e)
+        {
+            //a little heavy-handed, but the loading icon keeps getting set to "on" when it should be off.
+            //This should correct any problem.
+            if (ViewModel != null)
+            {
+                LoadingIcon.Visible = ViewModel.IsLoading;
+            }
         }
 
         public static MessageBoxResult ShowModalDialog(SubmitAssignmentViewModel vm)

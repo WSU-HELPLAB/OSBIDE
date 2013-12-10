@@ -79,5 +79,16 @@ namespace OSBIDE.Library.Models
             DueDate = DateTime.UtcNow;
             UtcOffsetMinutes = 0;
         }
+
+        public Assignment(Assignment other)
+            : this()
+        {
+            Id = other.Id;
+            CourseId = other.CourseId;
+            DueDate = other.DueDate;
+            ReleaseDate = other.ReleaseDate;
+            UtcOffsetMinutes = other.UtcOffsetMinutes;
+            Name = other.Name;
+        }
     }
 }

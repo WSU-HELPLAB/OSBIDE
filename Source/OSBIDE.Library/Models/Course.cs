@@ -46,7 +46,7 @@ namespace OSBIDE.Library.Models
         [Required]
         public string CourseNumber { get; set; }
 
-        [Required(AllowEmptyStrings=true)]
+        [Required(AllowEmptyStrings = true)]
         public string Description { get; set; }
 
         [Required]
@@ -72,6 +72,20 @@ namespace OSBIDE.Library.Models
             Assignments = new List<Assignment>();
             RequiresApprovalBeforeAdmission = false;
             IsDeleted = false;
+        }
+
+        public Course(Course other)
+            : this()
+        {
+            CourseNumber = other.CourseNumber;
+            Description = other.Description;
+            Id = other.Id;
+            IsDeleted = other.IsDeleted;
+            Name = other.Name;
+            Prefix = other.Prefix;
+            SchoolId = other.SchoolId;
+            Season = other.Season;
+            Year = other.Year;
         }
 
         public int Compare(Course x, Course y)

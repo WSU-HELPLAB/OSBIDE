@@ -35,9 +35,9 @@ namespace OSBIDE.Library.Events
         /// <summary>
         /// Triggers a request for the system to save the active solution
         /// </summary>
-        public void RequestSolutionSubmit(string assignmentName)
+        public void RequestSolutionSubmit(int assignmentId)
         {
-            SolutionSubmitRequest(this, new SubmitAssignmentArgs(assignmentName));
+            SolutionSubmitRequest(this, new SubmitAssignmentArgs(assignmentId));
         }
 
         public void NotifySolutionDownloaded(OsbideUser downloadingUser, SubmitEvent downloadedSubmission)
@@ -57,10 +57,10 @@ namespace OSBIDE.Library.Events
 
     public class SubmitAssignmentArgs : EventArgs
     {
-        public string AssignmentName { get; private set; }
-        public SubmitAssignmentArgs(string assignmentName)
+        public int AssignmentId { get; private set; }
+        public SubmitAssignmentArgs(int assignmentId)
         {
-            AssignmentName = assignmentName;
+            AssignmentId = assignmentId;
         }
     }
 

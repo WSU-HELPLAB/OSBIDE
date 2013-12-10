@@ -37,6 +37,36 @@
   <wsdl:message name="OsbideWebService_GetMostRecentWhatsNewItem_OutputMessage">
     <wsdl:part name="parameters" element="GetMostRecentWhatsNewItemResponse" />
   </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetMostRecentSocialActivity_InputMessage">
+    <wsdl:part name="parameters" element="GetMostRecentSocialActivity" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetMostRecentSocialActivity_OutputMessage">
+    <wsdl:part name="parameters" element="GetMostRecentSocialActivityResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetCoursesForUser_InputMessage">
+    <wsdl:part name="parameters" element="GetCoursesForUser" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetCoursesForUser_OutputMessage">
+    <wsdl:part name="parameters" element="GetCoursesForUserResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetAssignmentsForCourse_InputMessage">
+    <wsdl:part name="parameters" element="GetAssignmentsForCourse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetAssignmentsForCourse_OutputMessage">
+    <wsdl:part name="parameters" element="GetAssignmentsForCourseResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitAssignment_InputMessage">
+    <wsdl:part name="parameters" element="SubmitAssignment" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_SubmitAssignment_OutputMessage">
+    <wsdl:part name="parameters" element="SubmitAssignmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetLastAssignmentSubmitDate_InputMessage">
+    <wsdl:part name="parameters" element="GetLastAssignmentSubmitDate" />
+  </wsdl:message>
+  <wsdl:message name="OsbideWebService_GetLastAssignmentSubmitDate_OutputMessage">
+    <wsdl:part name="parameters" element="GetLastAssignmentSubmitDateResponse" />
+  </wsdl:message>
   <wsdl:message name="OsbideWebService_SubmitLocalErrorLog_InputMessage">
     <wsdl:part name="parameters" element="SubmitLocalErrorLog" />
   </wsdl:message>
@@ -81,6 +111,26 @@
     <wsdl:operation name="GetMostRecentWhatsNewItem">
       <wsdl:input wsaw:Action="urn:OsbideWebService/GetMostRecentWhatsNewItem" message="OsbideWebService_GetMostRecentWhatsNewItem_InputMessage" />
       <wsdl:output wsaw:Action="urn:OsbideWebService/GetMostRecentWhatsNewItemResponse" message="OsbideWebService_GetMostRecentWhatsNewItem_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMostRecentSocialActivity">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/GetMostRecentSocialActivity" message="OsbideWebService_GetMostRecentSocialActivity_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/GetMostRecentSocialActivityResponse" message="OsbideWebService_GetMostRecentSocialActivity_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCoursesForUser">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/GetCoursesForUser" message="OsbideWebService_GetCoursesForUser_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/GetCoursesForUserResponse" message="OsbideWebService_GetCoursesForUser_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAssignmentsForCourse">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/GetAssignmentsForCourse" message="OsbideWebService_GetAssignmentsForCourse_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/GetAssignmentsForCourseResponse" message="OsbideWebService_GetAssignmentsForCourse_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SubmitAssignment">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitAssignment" message="OsbideWebService_SubmitAssignment_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/SubmitAssignmentResponse" message="OsbideWebService_SubmitAssignment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastAssignmentSubmitDate">
+      <wsdl:input wsaw:Action="urn:OsbideWebService/GetLastAssignmentSubmitDate" message="OsbideWebService_GetLastAssignmentSubmitDate_InputMessage" />
+      <wsdl:output wsaw:Action="urn:OsbideWebService/GetLastAssignmentSubmitDateResponse" message="OsbideWebService_GetLastAssignmentSubmitDate_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="SubmitLocalErrorLog">
       <wsdl:input wsaw:Action="urn:OsbideWebService/SubmitLocalErrorLog" message="OsbideWebService_SubmitLocalErrorLog_InputMessage" />

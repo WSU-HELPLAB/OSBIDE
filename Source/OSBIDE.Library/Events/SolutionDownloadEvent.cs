@@ -28,7 +28,10 @@ namespace OSBIDE.Library.Events
         public string SolutionName { get; set; }
 
         [Required]
-        public string AssignmentName { get; set; }
+        public int AssignmentId { get; set; }
+
+        [ForeignKey("AssignmentId")]
+        public virtual Assignment Assignment { get; set; }
 
         [Required]
         public int DownloadingUserId { get; set; }
@@ -75,7 +78,7 @@ namespace OSBIDE.Library.Events
             }
             if (values.ContainsKey("AssignmentName"))
             {
-                evt.AssignmentName = values["AssignmentName"].ToString();
+                evt.AssignmentId = (int)values["AssignmentId"];
             }
             if (values.ContainsKey("DownloadingUserId"))
             {

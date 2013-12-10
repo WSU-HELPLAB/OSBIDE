@@ -20,7 +20,7 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult Index(string assignmentName = "")
         {
-            List<string> assignments = Db.SubmitEvents.Select(s => s.AssignmentName).Distinct().ToList();
+            List<string> assignments = Db.SubmitEvents.Select(s => s.Assignment.Name).Distinct().ToList();
             assignments.Sort();
 
             if (string.IsNullOrEmpty(assignmentName) == true)
@@ -93,7 +93,7 @@ namespace OSBIDE.Web.Controllers
             {
                 stream.Write(submit.SolutionData, 0, submit.SolutionData.Length);
                 stream.Position = 0;
-                fileName = string.Format("{0} - {1}", submit.AssignmentName, submit.EventLog.Sender.FullName);
+                fileName = string.Format("{0} - {1}", submit.Assignment.Name, submit.EventLog.Sender.FullName);
             }
             return new FileStreamResult(stream, "application/zip") { FileDownloadName = fileName };
         }
@@ -101,7 +101,7 @@ namespace OSBIDE.Web.Controllers
         private List<SubmitEvent> GetMostRecentSubmissions(string assignmentName)
         {
             //the DB query will get all student submits.  We only want their last submission...
-            List<SubmitEvent> submits = Db.SubmitEvents.Include("EventLog").Include("EventLog.Sender").Where(s => s.AssignmentName == assignmentName).OrderBy(s => s.EventDate).ToList();
+            List<SubmitEvent> submits = Db.SubmitEvents.Include("EventLog").Include("EventLog.Sender").Where(s => s.Assignment.Name == assignmentName).OrderBy(s => s.EventDate).ToList();
 
             //...which we will store into this dictionary
             Dictionary<int, SubmitEvent> lastSubmits = new Dictionary<int, SubmitEvent>();

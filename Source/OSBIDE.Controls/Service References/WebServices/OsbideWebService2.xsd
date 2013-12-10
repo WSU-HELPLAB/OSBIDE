@@ -70,10 +70,84 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetMostRecentSocialActivity">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMostRecentSocialActivityResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMostRecentSocialActivityResult" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCoursesForUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCoursesForUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetCoursesForUserResult" nillable="true" type="q2:ArrayOfCourse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAssignmentsForCourse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="courseId" type="xs:int" />
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAssignmentsForCourseResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="GetAssignmentsForCourseResult" nillable="true" type="q3:ArrayOfAssignment" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitAssignment">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="assignmentId" type="xs:int" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="assignmentLog" nillable="true" type="q4:EventLog" />
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SubmitAssignmentResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SubmitAssignmentResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastAssignmentSubmitDate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="assignmentId" type="xs:int" />
+        <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastAssignmentSubmitDateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetLastAssignmentSubmitDateResult" type="xs:dateTime" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="SubmitLocalErrorLog">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="errorLog" nillable="true" type="q2:LocalErrorLog" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="errorLog" nillable="true" type="q5:LocalErrorLog" />
         <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
@@ -88,7 +162,7 @@
   <xs:element name="SubmitLog">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q3:EventLog" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/OSBIDE.Library.Models" minOccurs="0" name="log" nillable="true" type="q6:EventLog" />
         <xs:element minOccurs="0" name="authToken" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
