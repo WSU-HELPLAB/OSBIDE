@@ -11,6 +11,8 @@
             <RowDefinition Height="20" />
             <RowDefinition Height="3" />
             <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="20" />
             <RowDefinition />
             <RowDefinition Height="28" />
         </Grid.RowDefinitions>
@@ -49,14 +51,27 @@
         <TextBlock Grid.Row="5" Grid.Column="0" FontWeight="Bold">Solution:</TextBlock>
         <TextBlock Grid.Row="5" Grid.Column="1" x:Name="SolutionNameTextBlock" Text="{Binding Path=SolutionName, Mode=OneWay}" TextWrapping="Wrap" />
 
-        <!-- 6th row 
-        <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold">Last Submitted On:</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="1" x:Name="LastSubmittedTextBlock" Text="{Binding Path=LastSubmitted, Mode=OneWay}" />
--->
-
         <!-- 7th row -->
+        <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold">Last Submitted:</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="1" x:Name="LastSubmittedTextBlock" Text="{Binding Path=LastSubmitted, Mode=OneWay}" />
+
+
+        <!-- 8th row -->
+        <TextBlock 
+            Grid.Row="7" 
+            Grid.ColumnSpan="2" 
+            x:Name="ServerMessage" 
+            VerticalAlignment="Bottom" 
+            HorizontalAlignment="Right"
+            FontSize="14"
+            Foreground="Red"
+            TextWrapping="Wrap"
+            Text="{Binding Path=ServerMessage}" 
+            />
+        
+        <!-- 9th row -->
         <StackPanel 
-            Grid.Row="6" 
+            Grid.Row="8" 
             Grid.Column="1" 
             Grid.ColumnSpan="2"
             Orientation="Horizontal" 
@@ -79,7 +94,7 @@
                 Width="50"
                 Command="{Binding CancelCommand}"
                 CommandParameter="false"
-                >Cancel</Button>
+                >Close</Button>
         </StackPanel>
 
     </Grid>

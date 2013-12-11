@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Library.Models
 {
+    [Serializable]
     public class Assignment
     {
         [Key]

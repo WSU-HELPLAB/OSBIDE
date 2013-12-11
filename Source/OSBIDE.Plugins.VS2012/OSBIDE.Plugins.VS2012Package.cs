@@ -903,8 +903,9 @@ namespace OSBIDE.Plugins.VS2012
 
                 SubmitAssignmentViewModel vm = new SubmitAssignmentViewModel(
                     _cache[StringConstants.UserNameCacheKey] as string,
-                    evt.SolutionName,
-                    _cache[StringConstants.AuthenticationCacheKey] as string);
+                    _cache[StringConstants.AuthenticationCacheKey] as string,
+                    evt
+                    );
                 MessageBoxResult result = SubmitAssignmentWindow.ShowModalDialog(vm);
 
                 //assume that data was changed and needs to be saved
