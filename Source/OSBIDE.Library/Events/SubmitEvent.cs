@@ -48,7 +48,7 @@ namespace OSBIDE.Library.Events
         public static string Name { get { return "SubmitEvent"; } }
 
         [NotMapped]
-        public string PrettyName { get { return "Submit Solution"; } }
+        public string PrettyName { get { return "Submit Assignment"; } }
 
         [Required]
         public int AssignmentId { get; set; }

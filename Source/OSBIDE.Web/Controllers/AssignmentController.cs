@@ -28,8 +28,6 @@ namespace OSBIDE.Web.Controllers
                 assignmentName = assignments.FirstOrDefault();
             }
 
-
-
             //build the view model and return
             AssignmentsViewModel vm = new AssignmentsViewModel();
             vm.AssignmentNames = assignments;

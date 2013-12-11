@@ -80,7 +80,7 @@ namespace OSBIDE.Web.Models.Queries
 
         /// <summary>
         /// Used to limit the number of query results.  Default of -1 means to return all results.
-        /// </summary>
+        /// </summary>B
         public int MaxQuerySize { get; set; }
 
         /// <summary>
@@ -94,9 +94,7 @@ namespace OSBIDE.Web.Models.Queries
             events.Add(new AskForHelpEvent());
             events.Add(new LogCommentEvent());
             events.Add(new HelpfulMarkGivenEvent());
-
-            //AC: turned off for fall 2013 study
-            //events.Add(new SubmitEvent());
+            events.Add(new SubmitEvent());
             return events;
         }
 
@@ -110,9 +108,7 @@ namespace OSBIDE.Web.Models.Queries
             events.Add(new AskForHelpEvent());
             events.Add(new LogCommentEvent());
             events.Add(new HelpfulMarkGivenEvent());
-
-            //AC: turned off for fall 2013 study
-            //events.Add(new SubmitEvent());
+            events.Add(new SubmitEvent());
             return events;
         }
 
@@ -341,6 +337,15 @@ namespace OSBIDE.Web.Models.Queries
                 else if (key.CompareTo(HelpfulMarkGivenEvent.Name) == 0)
                 {
                     events = (from evt in _db.HelpfulMarkGivenEvents
+                                .Include("EventLog")
+                                .Include("EventLog.Sender")
+                                .Include("EventLog.Comments")
+                              where dbKeys.Contains(evt.EventLogId)
+                              select evt).ToList().Cast<IOsbideEvent>().ToList();
+                }
+                else if (key.CompareTo(SubmitEvent.Name) == 0)
+                {
+                    events = (from evt in _db.SubmitEvents
                                 .Include("EventLog")
                                 .Include("EventLog.Sender")
                                 .Include("EventLog.Comments")
