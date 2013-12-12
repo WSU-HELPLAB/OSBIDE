@@ -14,7 +14,10 @@
 
         $(document).ready(function () {
 
-            //create assignment dialog
+            @if(isCoordinator == true)
+            {
+            <text>
+                //create assignment dialog
             $('#create-assignment').dialog({
                 autoOpen: false,
                 height: 300,
@@ -149,7 +152,10 @@
             $("#upload-course-file-link").click(function () {
                 event.preventDefault();
                 $("#upload-course-files").dialog("open");
-            });
+            });   
+
+            </text>
+            }
         });
     </script>
 
@@ -202,7 +208,16 @@
                                 <a class="delete-assignment-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("DeleteAssignment", new { id = assignment.Id })"><img src="~/Content/icons/delete_up.png" title="delete assignment" alt="delete assignment" /></a>
                             }
                         </td>
-                        <td>@assignment.Name</td>
+                        <td>
+                            @if(isCoordinator == true)
+                            {
+                                 @Html.ActionLink(assignment.Name, "Index", "Assignment", new { assignmentId = assignment.Id }, new { })
+                            }
+                            else
+                            {
+                                @assignment.Name
+                            }
+                        </td>
                         <td>
                             <time class="utc-time"
                                   datetime="@Helpers.DateAsUnixTime(assignment.ReleaseDate)"

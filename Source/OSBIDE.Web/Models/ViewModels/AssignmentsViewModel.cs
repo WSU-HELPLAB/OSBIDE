@@ -1,4 +1,5 @@
 ﻿using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,8 @@ namespace OSBIDE.Web.Models.ViewModels
 {
     public class AssignmentsViewModel
     {
-        public List<string> AssignmentNames { get; set; }
-        public string CurrentAssignmentName { get; set; }
-        public List<SubmitEvent> Assignments { get; set; }
+        public List<Assignment> Assignments { get; set; }
+        public Assignment CurrentAssignment { get; set; }
+        public List<SubmitEvent> Submissions { get; set; }
     }
 }

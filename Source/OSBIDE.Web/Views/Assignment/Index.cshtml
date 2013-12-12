@@ -6,18 +6,18 @@
 @{
     ViewBag.Title = "Assignment List";
 }
-<h1>Submissions for @Model.CurrentAssignmentName</h1>
+<h1>Submissions for @Model.CurrentAssignment.Name</h1>
 @using (Html.BeginForm("Index", "Assignment", FormMethod.Get))
 {
-    <select name="assignmentName">
-        @foreach (string option in Model.AssignmentNames)
+    <select name="assignmentId">
+        @foreach (Assignment option in Model.Assignments)
         {
             string selected = "";
-            if (option == Model.CurrentAssignmentName)
+            if (option.Id == Model.CurrentAssignment.Id)
             {
                 selected = "selected = \"selected\"";
             }
-            <option @Html.Raw(selected) value="@option">@option</option>
+            <option @Html.Raw(selected) value="@option.Id">@option.Name</option>
         }
     </select>
     <input type="submit" value="View Submissions" />
@@ -32,7 +32,7 @@
             <th>&nbsp;</th>
         </tr>
     </thead>
-    @foreach (SubmitEvent submit in Model.Assignments)
+    @foreach (SubmitEvent submit in Model.Submissions)
     {
         <tr>
             <td>@submit.EventLog.Sender.FullName</td>
@@ -42,7 +42,7 @@
                 datetime="@Helpers.DateAsUnixTime(submit.EventLog.DateReceived)" 
                 data-original-date="@Helpers.RawDate(submit.EventLog.DateReceived)" 
                 data-date-format="MM/DD/YYYY hh:mm A">
-                @submit.EventLog.DateReceived.ToString("MM/dd @ hh:mmtt") (UTC)
+                @submit.EventLog.DateReceived.ToString("MM/dd @ hh:mm tt") (UTC)
             </time>
                 </td>
             <td>@Html.ActionLink("Download", "DownloadSingle", new { id = submit.EventLogId }, new { })</td>
@@ -50,7 +50,7 @@
     }
     <tr>
         <td colspan="3">
-            @Html.ActionLink("Download All", "Download", new { assignmentName =  Model.CurrentAssignmentName}, new { })
+            @Html.ActionLink("Download All", "Download", new { id = Model.CurrentAssignment.Id }, new { })
         </td>
     </tr>
 </table>

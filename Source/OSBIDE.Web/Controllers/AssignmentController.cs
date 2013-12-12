@@ -1,5 +1,6 @@
 ﻿using Ionic.Zip;
 using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models.ViewModels;
 using System;
@@ -18,28 +19,27 @@ namespace OSBIDE.Web.Controllers
         //
         // GET: /Assignment/
 
-        public ActionResult Index(string assignmentName = "")
+        public ActionResult Index(int assignmentId = -1)
         {
-            List<string> assignments = Db.SubmitEvents.Select(s => s.Assignment.Name).Distinct().ToList();
-            assignments.Sort();
-
-            if (string.IsNullOrEmpty(assignmentName) == true)
+            Assignment currentAssignment = Db.Assignments.Where(a => a.Id == assignmentId).FirstOrDefault();
+            if(currentAssignment == null)
             {
-                assignmentName = assignments.FirstOrDefault();
+                return RedirectToAction("Index", "Feed");
             }
-
+            List<Assignment> allAssignments = Db.Assignments.Where(a => a.CourseId == currentAssignment.CourseId).ToList();
+            
             //build the view model and return
             AssignmentsViewModel vm = new AssignmentsViewModel();
-            vm.AssignmentNames = assignments;
-            vm.CurrentAssignmentName = assignmentName;
-            vm.Assignments = GetMostRecentSubmissions(assignmentName);
+            vm.Assignments = allAssignments;
+            vm.CurrentAssignment = currentAssignment;
+            vm.Submissions = GetMostRecentSubmissions(assignmentId);
 
             return View(vm);
         }
 
-        public FileStreamResult Download(string assignmentName)
+        public FileStreamResult Download(int id)
         {
-            List<SubmitEvent> submits = GetMostRecentSubmissions(assignmentName);
+            List<SubmitEvent> submits = GetMostRecentSubmissions(id);
 
             //AC: for some reason, I can't use a USING statement for automatic closure.  Is this 
             //    a potential memory leak?
@@ -79,6 +79,12 @@ namespace OSBIDE.Web.Controllers
                 finalZipFile.Save(finalZipStream);
                 finalZipStream.Position = 0;
             }
+
+            string assignmentName = "Unknown";
+            if(submits.Count > 0)
+            {
+                assignmentName = submits.FirstOrDefault().Assignment.Name;
+            }
             return new FileStreamResult(finalZipStream, "application/zip") { FileDownloadName = assignmentName };
         }
 
@@ -96,10 +102,15 @@ namespace OSBIDE.Web.Controllers
             return new FileStreamResult(stream, "application/zip") { FileDownloadName = fileName };
         }
 
-        private List<SubmitEvent> GetMostRecentSubmissions(string assignmentName)
+        private List<SubmitEvent> GetMostRecentSubmissions(int assignmentId)
         {
             //the DB query will get all student submits.  We only want their last submission...
-            List<SubmitEvent> submits = Db.SubmitEvents.Include("EventLog").Include("EventLog.Sender").Where(s => s.Assignment.Name == assignmentName).OrderBy(s => s.EventDate).ToList();
+            List<SubmitEvent> submits = Db.SubmitEvents
+                .Include("EventLog")
+                .Include("EventLog.Sender")
+                .Where(s => s.AssignmentId == assignmentId)
+                .OrderBy(s => s.EventDate)
+                .ToList();
 
             //...which we will store into this dictionary
             Dictionary<int, SubmitEvent> lastSubmits = new Dictionary<int, SubmitEvent>();
