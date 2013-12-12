@@ -156,6 +156,11 @@
 
             </text>
             }
+            
+            //register course select dropdown
+            $('#select-course-dropdown').change(function () {
+                $('#select-course-form').submit();
+            });
         });
     </script>
 
@@ -173,7 +178,39 @@
         }
     </style>
 }
-<h2>@Model.CurrentCourse.Name</h2>
+<h1>My Courses</h1>
+<div>
+@using (Html.BeginForm("Details", "Course", FormMethod.Post, new { id = "select-course-form" }))
+{
+    <table>
+        <tr>
+            <td>
+                select a different course:
+            </td>
+            <td>
+                <select id="select-course-dropdown" name="id">
+                    @foreach (CourseUserRelationship relationship in Model.CurrentUser.CourseUserRelationships.OrderBy(c => c.Course.Name))
+                    {
+                        string selected = "";
+                        if (relationship.CourseId == Model.CurrentCourse.Id)
+                        {
+                            selected = " selected=\"selected\" ";
+                        }
+                        <option value="@relationship.CourseId" @selected>@relationship.Course.Name</option>
+                    }
+                </select>
+            </td>
+        </tr>
+    </table>   
+    }
+</div>
+<br />
+<h2>Details for @Model.CurrentCourse.Name
+    @if(Model.CurrentCourse.Id != Model.CurrentUser.DefaultCourseId)
+    {
+        @Html.ActionLink("(set as default)", "MakeDefault", new { id = Model.CurrentCourse.Id })
+    }
+    </h2>
 <section>
     <h1>
         @if (isCoordinator == true)

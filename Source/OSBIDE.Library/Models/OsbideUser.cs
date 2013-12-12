@@ -42,6 +42,7 @@ namespace OSBIDE.Library.Models
         private bool _receiveNotificationEmails = false;
         private bool _receiveEmailOnNewAskForHelp = false;
         private bool _receiveEmailOnNewFeedPost = false;
+        private int _defaultCourseId;
         private DateTime _lastVsActivity;
 
         [NonSerialized]
@@ -315,7 +316,18 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        public int DefaultCourseId { get; set; }
+        public int DefaultCourseId
+        {
+            get
+            {
+                return _defaultCourseId;
+            }
+            set
+            {
+                _defaultCourseId = value;
+                OnPropertyChanged("DefaultCourseId");
+            }
+        }
         public virtual Course DefaultCourse { get; set; }
 
         [IgnoreDataMember]

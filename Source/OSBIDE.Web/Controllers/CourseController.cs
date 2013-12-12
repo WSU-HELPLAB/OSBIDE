@@ -19,16 +19,44 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult Index()
         {
-            return RedirectToAction("MyCourses");
+            //try to find default course
+            int courseId = CurrentUser.DefaultCourseId;
+            if (courseId <= 0)
+            {
+                CourseUserRelationship cur = CurrentUser.CourseUserRelationships.FirstOrDefault();
+                if(cur != null)
+                {
+                    courseId = cur.CourseId;
+                    return RedirectToAction("Details", new { id = courseId });
+                }
+            }
+            else
+            {
+                return RedirectToAction("Details", new { id = courseId });
+            }
+
+            //no course found, redirect
+            return RedirectToAction("NoCourses");
+        }
+
+        public ActionResult NoCourses()
+        {
+            return View();
         }
 
         /// <summary>
-        /// MyCourses will be the landing point for all course-related stuff in OSBIDE
+        /// Will set the supplied course ID as the default course for the student
         /// </summary>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult MyCourses()
+        public ActionResult MakeDefault(int id)
         {
-            return View();
+            Course defaultCourse = Db.Courses.Where(c => c.Id == id).FirstOrDefault();
+            if(defaultCourse != null)
+            {
+                CurrentUser.DefaultCourseId = defaultCourse.Id;
+            }
+            return RedirectToAction("Details", new { id = id });
         }
 
         /// <summary>
