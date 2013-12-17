@@ -328,6 +328,7 @@ namespace OSBIDE.Library.ServiceClient
             }
             SendStatus.IsActive = true;
 
+
             //cast generic data to what we actually need
             EventLog newLog = data as EventLog;
 

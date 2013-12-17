@@ -535,6 +535,16 @@ namespace OSBIDE.Web.Services
             //log the last activity date
             LogUserTransaction(authUser);
 
+            //students: send all events.
+            //other: send only "ask for help" events
+            if (authUser.Role != SystemRole.Student)
+            {
+                if(log.LogType != AskForHelpEvent.Name)
+                {
+                    return localId;
+                }
+            }
+
             EventLog submittedLog = SubmitLog(log, authUser);
             if (submittedLog == null)
             {
