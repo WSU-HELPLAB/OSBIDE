@@ -372,7 +372,6 @@ namespace OSBIDE.Web.Models.Queries
                 }
             }
 
-            //pull comments for all feed items
             Dictionary<int, FeedItem> itemsDict = new Dictionary<int, FeedItem>();
             return feedItems.Values.Reverse().ToList();
         }

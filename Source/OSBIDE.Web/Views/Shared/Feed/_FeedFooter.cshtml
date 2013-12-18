@@ -123,7 +123,6 @@
         var dataIds = Array();
         var i = 0;
         $(".feed-item-single").each(function (item) {
-            //var lastPollTick = lastUpdateCheck;//$(this).find('.feed-item-comments').first().attr('data-lastPoleDate');
             dataIds[i] = { LogId: $(this).attr('data-id'), LastPollTick: lastUpdateCheck };
             i++;
         });
@@ -168,7 +167,7 @@
                         //update comment count text
                         var commentCountIdString = '#expand-comments-count-' + $(this).attr('data-logId');
                         if ($(commentCountIdString).length > 0) {
-                            var commentStr = $(commentsIdString).find('.log-comment-single').length + ' Comment(s)';
+                            var commentStr = $(commentsIdString).find('.log-comment-single').length;
                             $(commentCountIdString).text(commentStr);
                         }
                     }

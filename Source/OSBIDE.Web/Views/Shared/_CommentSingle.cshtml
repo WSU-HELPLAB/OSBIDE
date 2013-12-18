@@ -26,7 +26,7 @@
             <pre class="normal-font">@comment.Content</pre>
         </p>
     </div>
-    @if (helpful == null)//&& comment.AuthorId != CurrentUser.Id)
+    @if (helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
     {
         <div>@Html.ActionLink("mark as helpful", "MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Request.Url.AbsoluteUri }, new { })</div>
     }

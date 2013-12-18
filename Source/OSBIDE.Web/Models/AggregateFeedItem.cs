@@ -104,6 +104,14 @@ namespace OSBIDE.Web.Models
             if (feedItems.Count > 0)
             {
                 currentAggregate = new AggregateFeedItem(feedItems[0]);
+
+                //AC: LogCommentEvents work a little differenty.  Their comments come from the event to which they point
+                //    and not themselves.
+                if (feedItems[0].Event.EventName == LogCommentEvent.Name)
+                {
+                    currentAggregate.Comments = currentAggregate.Comments.Union((feedItems[0].Event as LogCommentEvent).SourceEventLog.Comments).ToList();
+                }
+
                 aggregateItems.Add(currentAggregate);
                 previousItem = feedItems[0];
             }
@@ -124,6 +132,13 @@ namespace OSBIDE.Web.Models
                 else
                 {
                     currentAggregate = new AggregateFeedItem(item);
+                    
+                    //AC: LogCommentEvents work a little differenty.  Their comments come from the event to which they point
+                    //    and not themselves.
+                    if (item.Event.EventName == LogCommentEvent.Name)
+                    {
+                        currentAggregate.Comments = currentAggregate.Comments.Union((item.Event as LogCommentEvent).SourceEventLog.Comments).ToList();
+                    }
                     aggregateItems.Add(currentAggregate);
                 }
                 previousItem = item;

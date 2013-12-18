@@ -112,6 +112,15 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
+        /// <summary>
+        /// Version 2 of the activity feed (in development)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Index2()
+        {
+            return View();
+        }
+
         private void BuildEventRelations(FeedViewModel vm, List<FeedItem> feedItems)
         {
             //build the "you and 5 others got this error"-type messages
@@ -215,7 +224,8 @@ namespace OSBIDE.Web.Controllers
                 List<int> logIds = items.Select(i => i.LogId).ToList();
                 DateTime lastPollDate = new DateTime(items.First().LastPollTick);
                 var query = from comment in Db.LogCommentEvents.Include("HelpfulMarks").Include("EventLog").Include("EventLog.Sender").AsNoTracking()
-                            where logIds.Contains(comment.SourceEventLogId)
+                            where 
+                            ( logIds.Contains(comment.SourceEventLogId) || logIds.Contains(comment.EventLogId) )
                             && comment.EventDate > lastPollDate
                             select comment;
                 List<LogCommentEvent> comments = query.ToList();
