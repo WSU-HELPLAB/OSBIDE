@@ -63,7 +63,12 @@
             </div>
             <div class="feed-item-footer">
                 <ul>
-                    <li><a id="expand-comments-@lastLogId" class="anchor-pointer" onclick="expandComments('feed-item-comments-@lastLogId')">@item.Comments.Count Comment(s)</a></li>
+                    <li><a 
+                           id="expand-comments-@lastLogId" 
+                           class="anchor-pointer" 
+                           onclick="expandComments('@lastLogId')"
+                           >
+                        <span id="expand-comments-text-@lastLogId">View</span> Conversation(<span id="expand-comments-count-@lastLogId">@item.Comments.Count</span>)</a></li>
                     @{
                     int[] ids = item.Items.Select(i => i.LogId).ToArray();
                     string idString = string.Join(",", ids);   
@@ -82,7 +87,15 @@
                 {
                     @Html.Partial("_CommentSingle", comment)
                 }
-
+            </div>
+            <div class="feed-item-respond" id="feed-item-respond-@lastLogId">
+                <h3>Respond:</h3>
+                @using (Html.BeginForm())
+                { 
+                    <textarea name="response" style="width:250px; height:50px;"></textarea>
+                    <br />
+                    <input name="response-submit" type="submit" value="Send" />
+                }
             </div>
         </div>
         <div style="clear: both;">

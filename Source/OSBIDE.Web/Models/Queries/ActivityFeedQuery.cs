@@ -374,23 +374,6 @@ namespace OSBIDE.Web.Models.Queries
 
             //pull comments for all feed items
             Dictionary<int, FeedItem> itemsDict = new Dictionary<int, FeedItem>();
-            foreach (FeedItem item in feedItems.Values)
-            {
-                itemsDict[item.LogId] = item;
-            }
-
-            int[] logIds = itemsDict.Keys.ToArray();
-            var commentsQuery = from comment in _db.LogCommentEvents
-                                where logIds.Contains(comment.SourceEventLogId)
-                                select comment;
-            List<LogCommentEvent> comments = commentsQuery.ToList();
-            foreach (LogCommentEvent comment in comments)
-            {
-                itemsDict[comment.SourceEventLogId].Comments.Add(comment);
-                itemsDict[comment.SourceEventLogId].Log.Comments.Add(comment);
-                itemsDict[comment.SourceEventLogId].HelpfulComments += comment.HelpfulMarks.Count;
-            }
-
             return feedItems.Values.Reverse().ToList();
         }
     }

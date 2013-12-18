@@ -27,4 +27,6 @@ else
 {
     <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>
 }
-@string.Format("{0}.", evt.PrettyName.ToLower())
+@string.Format("{0}:", evt.PrettyName.ToLower())
+<br />
+@comment.Content
