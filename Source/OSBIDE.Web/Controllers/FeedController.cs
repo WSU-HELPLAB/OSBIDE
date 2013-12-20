@@ -112,15 +112,6 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
-        /// <summary>
-        /// Version 2 of the activity feed (in development)
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Index2()
-        {
-            return View();
-        }
-
         private void BuildEventRelations(FeedViewModel vm, List<FeedItem> feedItems)
         {
             //build the "you and 5 others got this error"-type messages
@@ -214,6 +205,70 @@ namespace OSBIDE.Web.Controllers
             ViewBag.ErrorTypes = vm.ErrorTypes;
 
             return View("AjaxFeed", aggregateFeed);
+        }
+
+        public JsonResult GetComments(int logId)
+        {
+            List<CommentsViewModel> vm = new List<CommentsViewModel>();
+            EventLog log = Db.EventLogs.Where(l => l.Id == logId).FirstOrDefault();
+            int actualLogId = logId;
+            if(log != null)
+            {
+                IList<LogCommentEvent> comments = new List<LogCommentEvent>();
+
+                //log comment events and mark helpful events need to pull their comments from the log to which they're attached.  All others
+                //pull from themselves.
+                if(log.LogType == LogCommentEvent.Name)
+                {
+                    LogCommentEvent evt = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
+                    if(evt != null)
+                    {
+                        actualLogId = evt.SourceEventLogId;
+                        comments = evt.SourceEventLog.Comments;
+                    }
+                }
+                else if (log.LogType == HelpfulMarkGivenEvent.Name)
+                {
+                    HelpfulMarkGivenEvent evt = Db.HelpfulMarkGivenEvents.Where(h => h.EventLogId == log.Id).FirstOrDefault();
+                    if(evt != null)
+                    {
+                        actualLogId = evt.LogCommentEvent.SourceEventLogId;
+                        comments = evt.LogCommentEvent.SourceEventLog.Comments;
+                    }
+                }
+                else
+                {
+                    comments = log.Comments;
+                }
+
+                //sort comments
+                comments = comments.OrderBy(c => c.EventDate).ToList();
+
+                //convert LogCommentEvents into JSON
+                foreach(LogCommentEvent comment in comments)
+                {
+                    CommentsViewModel c = new CommentsViewModel()
+                    {
+                        Content = comment.Content,
+                        FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
+                        ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
+                        UtcEventDate = comment.EventDate,
+                        MarkHelpfulCount = comment.HelpfulMarks.Count(),
+                        MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Request.Url.AbsoluteUri })
+                    };
+
+                    //check to see if the current user is allowed to mark the comment as helpful
+                    HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
+                    if(helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
+                    {
+                        c.DisplayHelpfulMarkLink = true;
+                    }
+
+                    //add to VM
+                    vm.Add(c);
+                }
+            }
+            return this.Json(new { Comments = vm, ActualLogId = actualLogId, OriginalLogId = logId }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

@@ -24,16 +24,21 @@ function documentReady() {
     });
 }
 
+function parseTimeElement(htmlElementId) {
+    var element = $(htmlElementId);
+    var milliseconds = element.attr('datetime');
+    var formatString = element.attr('data-date-format');
+    var currentDate = moment.utc(milliseconds, 'X');
+    var localDate = new Date();
+    var localOffset = localDate.getTimezoneOffset();
+    currentDate = currentDate.subtract('minutes', localOffset);
+    return currentDate.format(formatString);
+}
+
 //converts UTC times to local (browser) times
 function parseDates() {
     $('time.utc-time').each(function (index) {
-        var milliseconds = $(this).attr('datetime');
-        var formatString = $(this).attr('data-date-format');
-        var currentDate = moment.utc(milliseconds, 'X');
-        var localDate = new Date();
-        var localOffset = localDate.getTimezoneOffset();
-        currentDate = currentDate.subtract('minutes', localOffset);
-        $(this).html(currentDate.format(formatString));
+        $(this).html(parseTimeElement(this));
 
         $(this).removeClass('utc-time');
         $(this).addClass('local-time');
