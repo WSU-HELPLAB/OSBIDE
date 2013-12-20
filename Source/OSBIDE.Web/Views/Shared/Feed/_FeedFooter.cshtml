@@ -207,6 +207,26 @@
         setTimeout(getCommentUpdates, 5000)
     }
 
+    //called when the user clicks the "Send" button
+    function sendResponse(elementId) {
+        var textAreaId = '#feed-item-respond-' + elementId;
+        var textArea = $(textAreaId);
+
+        //get and clear user response
+        var userResponse = textArea.val();
+        textArea.val("");
+
+        //submit response using AJAX
+        $.ajax(
+                        {
+                            url: "@Url.Action("PostComment", "Home")",
+                            data: { logId: elementId, comment: userResponse},
+                            dataType: "html",
+                            type: "POST",
+                            //TODO: display comments and pull down most recent model for comments
+                        });
+    }
+
     function showLastHidden() {
         var initialScrollHeight = $(document).scrollTop();
         var item = $(".feed-item-ajax:hidden").last();

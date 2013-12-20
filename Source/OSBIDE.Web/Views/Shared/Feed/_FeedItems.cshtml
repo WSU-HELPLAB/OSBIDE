@@ -46,49 +46,48 @@
             }
         </div>
         <div class="feed-item-single-right">
-            <h1><a href="@Url.Action("Index", "Profile", new { id = item.Creator.Id, component = OsbideVsComponent.UserProfile })">@item.Creator.FirstAndLastName</a> 
-                <time 
-                class="utc-time feed-item-date"
-                datetime="@Helpers.DateAsUnixTime(item.MostRecentOccurance)" 
-                data-original-date="@Helpers.RawDate(item.MostRecentOccurance)" 
-                data-date-format="MM/DD/YYYY hh:mm A">
-                @item.MostRecentOccurance.ToString("MM/dd @ hh:mmtt") (UTC)
-            </time>
+            <h1>
+                <a href="@Url.Action("Index", "Profile", new { id = item.Creator.Id, component = OsbideVsComponent.UserProfile })">@item.Creator.FirstAndLastName</a>
+                <time class="utc-time feed-item-date"
+                      datetime="@Helpers.DateAsUnixTime(item.MostRecentOccurance)"
+                      data-original-date="@Helpers.RawDate(item.MostRecentOccurance)"
+                      data-date-format="MM/DD/YYYY hh:mm A">
+                    @item.MostRecentOccurance.ToString("MM/dd @ hh:mmtt") (UTC)
+                </time>
             </h1>
             <div>
                 @{
-                    string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName);
-                    }
+    string partialName = string.Format("Feed/_{0}", item.Items.First().Event.EventName);
+                }
                 @Html.Partial(partialName, item)
             </div>
             <div class="feed-item-footer">
                 <ul>
-                    <li><a 
-                           id="expand-comments-@lastLogId" 
-                           class="anchor-pointer" 
-                           onclick="expandComments('@lastLogId')"
-                           >
-                        <span id="expand-comments-text-@lastLogId">View</span> Conversation(<span data-bind="text: NumberOfComments" >@item.Comments.Count</span>)</a></li>
+                    <li>
+                        <a id="expand-comments-@lastLogId"
+                           class="anchor-pointer"
+                           onclick="expandComments('@lastLogId')">
+                            <span id="expand-comments-text-@lastLogId">View</span> Conversation(<span data-bind="text: NumberOfComments">@item.Comments.Count</span>)
+                        </a>
+                    </li>
                     @{
-                    int[] ids = item.Items.Select(i => i.LogId).ToArray();
-                    string idString = string.Join(",", ids);   
+    int[] ids = item.Items.Select(i => i.LogId).ToArray();
+    string idString = string.Join(",", ids);
                     }
                     <li><a href="@Url.Action("Details", "Feed", new { id = idString, component = OsbideVsComponent.FeedDetails })">Details</a></li>
                 </ul>
             </div>
             @{long lastCommentPost = 0;
-              if (item.Comments.LastOrDefault() != null)
-              {
-                  lastCommentPost = item.Comments.LastOrDefault().EventDate.Ticks;
-              }
-              }
-            <div 
-                 class="feed-item-comments" 
-                 id="feed-item-comments-@lastLogId" 
-                 style="display:none;" 
-                 data-lastPoleDate="@lastCommentPost"
-                 data-bind="foreach: Comments"
-                 >
+            if (item.Comments.LastOrDefault() != null)
+            {
+                lastCommentPost = item.Comments.LastOrDefault().EventDate.Ticks;
+            }
+            }
+            <div class="feed-item-comments"
+                 id="feed-item-comments-@lastLogId"
+                 style="display:none;"
+                 data-lastpoledate="@lastCommentPost"
+                 data-bind="foreach: Comments">
                 <section class="log-comment-single">
                     <div class="log-comment-profile-picture">
                         <img src="@Url.Action("Picture", "Profile", new { id = -1, size = 48 })" title="profile image" alt="profile image" style="float:left;" data-bind="attr { src: ProfileUrl }">
@@ -113,14 +112,10 @@
                     </div>
                 </section>
             </div>
-            <div class="feed-item-respond" id="feed-item-respond-@lastLogId">
-                <h3>Respond:</h3>
-                @using (Html.BeginForm())
-                { 
-                    <textarea name="response" style="width:250px; height:50px;"></textarea>
-                    <br />
-                    <input name="response-submit" type="submit" value="Send" />
-                }
+            <div class="feed-item-respond">
+                <textarea name="response" id="feed-item-respond-@lastLogId" placeholder="Say something..." style="width:250px;"></textarea>
+                <br />
+                <input name="response-submit" type="button" value="Send" onclick="sendResponse(@lastLogId)" />
             </div>
         </div>
         <div style="clear: both;">

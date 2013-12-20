@@ -28,11 +28,32 @@ namespace OSBIDE.Web.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public int PostComment(string logId, string comment, string returnUrl)
+        public int PostComment(string logId, string comment, string returnUrl = "")
         {
+            //default return to activity feed
+            if(string.IsNullOrEmpty(returnUrl) == true)
+            {
+                returnUrl = Url.Action("Index", "Feed");
+            }
+
             int id = -1;
             if (Int32.TryParse(logId, out id) == true)
             {
+                //comments made on comments or mark helpful events need to be routed back to the original source
+                IOsbideEvent checkEvent = Db.LogCommentEvents.Where(l => l.EventLogId == id).FirstOrDefault();
+                if (checkEvent != null)
+                {
+                    id = (checkEvent as LogCommentEvent).SourceEventLogId;
+                }
+                else
+                {
+                    checkEvent = Db.HelpfulMarkGivenEvents.Where(l => l.EventLogId == id).FirstOrDefault();
+                    if(checkEvent != null)
+                    {
+                        id = (checkEvent as HelpfulMarkGivenEvent).LogCommentEvent.SourceEventLogId;
+                    }
+                }
+
                 LogCommentEvent logComment = new LogCommentEvent()
                 {
                     Content = comment,
