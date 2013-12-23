@@ -122,6 +122,16 @@
             LastUpdated: ko.observable(new Date())
         };
 
+        //model mapping
+        var mapping =
+            {
+                'Comments': {
+                    key: function (item) {
+                        return ko.utils.unwrapObservable(item.CommentId);
+                    }
+                }
+            };
+
         //compute local time
         $(model.Comments).each(function (index) {
 
@@ -138,11 +148,12 @@
 
         //view model doesn't exist, create one
         if (!AllComments[result.ActualLogId]) {
-            AllComments[result.ActualLogId] = ko.observable({});
+
+            AllComments[result.ActualLogId] = ko.mapping.fromJS(model, mapping);
         }
 
         //update view model with server data
-        AllComments[result.ActualLogId](ko.mapping.fromJS(model));
+        ko.mapping.fromJS(model, AllComments[result.ActualLogId]);
 
         //apply binding if one doesn't already exist
         if (!ko.dataFor(document.getElementById(toBind))) {
@@ -219,11 +230,15 @@
         //submit response using AJAX
         $.ajax(
                         {
-                            url: "@Url.Action("PostComment", "Home")",
-                            data: { logId: elementId, comment: userResponse},
-                            dataType: "html",
+                            url: "@Url.Action("PostCommentAsync", "Feed")",
+                            data: { logId: elementId, comment: userResponse },
+                            dataType: "json",
                             type: "POST",
-                            //TODO: display comments and pull down most recent model for comments
+                            success: function (data) { 
+                                if (!$.isEmptyObject(data)) {
+                                    expandCommentsSuccess(data);
+                                }
+                            }
                         });
     }
 

@@ -207,6 +207,19 @@ namespace OSBIDE.Web.Controllers
             return View("AjaxFeed", aggregateFeed);
         }
 
+        [HttpPost]
+        [ValidateInput(false)]
+        public JsonResult PostCommentAsync(string logId, string comment)
+        {
+            int id = -1;
+            if(Int32.TryParse(logId, out id))
+            {
+                bool result = base.PostComment(logId, comment);
+                return GetComments(id);
+            }
+            return this.Json(new { });
+        }
+
         public JsonResult GetComments(int logId)
         {
             List<CommentsViewModel> vm = new List<CommentsViewModel>();
@@ -249,6 +262,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     CommentsViewModel c = new CommentsViewModel()
                     {
+                        CommentId = comment.Id,
                         Content = comment.Content,
                         FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
                         ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
