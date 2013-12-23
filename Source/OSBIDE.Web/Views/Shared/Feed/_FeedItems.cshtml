@@ -78,16 +78,9 @@
                     <li><a href="@Url.Action("Details", "Feed", new { id = idString, component = OsbideVsComponent.FeedDetails })">Details</a></li>
                 </ul>
             </div>
-            @{long lastCommentPost = 0;
-            if (item.Comments.LastOrDefault() != null)
-            {
-                lastCommentPost = item.Comments.LastOrDefault().EventDate.Ticks;
-            }
-            }
             <div class="feed-item-comments"
                  id="feed-item-comments-@lastLogId"
                  style="display:none;"
-                 data-lastpoledate="@lastCommentPost"
                  data-bind="foreach: Comments">
                 <section class="log-comment-single">
                     <div class="log-comment-profile-picture">

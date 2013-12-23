@@ -236,6 +236,8 @@
                             type: "POST",
                             success: function (data) { 
                                 if (!$.isEmptyObject(data)) {
+                                    var commentsTextSpan = "#expand-comments-text-" + data.OriginalLogId;
+                                    $(commentsTextSpan).text("Hide");
                                     expandCommentsSuccess(data);
                                 }
                             }
@@ -260,6 +262,7 @@
                         }
                     }
                 });
+        parseDates();
         setTimeout(showLastHidden, 4000);
     }
 
