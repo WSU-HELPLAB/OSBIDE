@@ -182,8 +182,8 @@
                     var now = new Date().getTime();
                     var then = koModel.LastUpdated().getTime();
 
-                    //has more than 50 seconds gone by?  If so, request update
-                    if (now - then > 50000) {
+                    //has more than 40 seconds gone by?  If so, request update
+                    if (now - then > 40000) {
                         needsUpdate = true;
                     }
 
@@ -214,8 +214,8 @@
             }
         });
 
-        //call ourselves again in 5 seconds
-        setTimeout(getCommentUpdates, 5000)
+        //call ourselves again in 1.5 seconds
+        setTimeout(getCommentUpdates, 1500)
     }
 
     //called when the user clicks the "Send" button
@@ -290,7 +290,7 @@
                 dataType: "html",
                 type: "GET",
                 success: getRecentFeedItemsSuccess,
-                complete: function () { setTimeout(getRecentFeedItems, 40000); }
+                complete: function () { setTimeout(getRecentFeedItems, 30000); }
             }
             );
     }
