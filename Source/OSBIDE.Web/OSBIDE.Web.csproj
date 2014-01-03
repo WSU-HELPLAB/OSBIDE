@@ -234,6 +234,7 @@
     <Content Include="Content\icons\unfollow.png" />
     <Content Include="Content\icons\users_16.png" />
     <Content Include="Content\icons\users_24.png" />
+    <Content Include="Content\Reset.css" />
     <Content Include="Content\tablesorter\asc.gif" />
     <Content Include="Content\tablesorter\bg.gif" />
     <Content Include="Content\tablesorter\desc.gif" />
@@ -339,6 +340,7 @@
     <Content Include="App_Code\Helpers.cshtml" />
     <Content Include="Content\icons\unfollow.pdn" />
     <None Include="Properties\PublishProfiles\filesystem.pubxml" />
+    <None Include="Properties\PublishProfiles\osbide.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />

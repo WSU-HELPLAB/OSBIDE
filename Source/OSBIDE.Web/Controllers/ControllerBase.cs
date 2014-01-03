@@ -51,7 +51,14 @@ namespace OSBIDE.Web.Controllers
             if (id > 0)
             {
                 CurrentUser = Db.Users.Find(id);
-                CurrentUser.PropertyChanged += CurrentUser_PropertyChanged;
+                if (CurrentUser != null)
+                {
+                    CurrentUser.PropertyChanged += CurrentUser_PropertyChanged;
+                }
+                else
+                {
+                    CurrentUser = new OsbideUser();
+                }
             }
             else
             {
