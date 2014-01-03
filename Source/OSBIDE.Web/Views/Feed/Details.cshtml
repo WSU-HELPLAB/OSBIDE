@@ -7,6 +7,13 @@
     string detailsIds = Model.Ids;
     int firstLogId = Model.FeedItem.Items.Select(m => m.LogId).Min();
     ViewBag.Title = string.Format("Details - {0}", firstLogId);
+    OsbideUser currentUser = ViewBag.CurrentUser;
+    if(Model.FeedItem.IsAnonymous == true && currentUser.Id != Model.FeedItem.Creator.Id)
+    {
+        Model.FeedItem.Creator.FirstName = "A Student";
+        Model.FeedItem.Creator.LastName = "";
+        Model.FeedItem.Creator.Id = -1;
+    }
 }
 @if (Model == null)
 {

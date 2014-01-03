@@ -3,6 +3,7 @@
 @using OSBIDE.Web.Models.ViewModels
 @using OSBIDE.Library.Events
 @using OSBIDE.Web.Models
+@using OSBIDE.Web.Models.Queries
 @using OSBIDE.Library.Events
 @using System.Collections.Generic
 @model List<AggregateFeedItem>
@@ -32,6 +33,15 @@
             break;
         }
     }
+    
+    //do we need to anonymize?
+    if(item.IsAnonymous == true && currentUser.Id != item.Creator.Id)
+    {
+        item.Creator.FirstName = "A student";
+        item.Creator.LastName = "";
+        item.Creator.Id = -1;
+    }
+    
     <section id="feed-item-@lastLogId" data-id="@lastLogId" class="feed-item-single @additionalStyle">
 
         <div class="feed-item-single-left">
@@ -99,7 +109,7 @@
                         </p>
                     </div>
                     <div data-bind="if: DisplayHelpfulMarkLink">
-                        <a href="" data-bind="attr { url: MarkHelpfulUrl }">mark as helpful</a>
+                        <a data-bind="attr { href: MarkHelpfulUrl }">mark as helpful</a>
                     </div>
                     <div class="helpful-marks" style="clear: both;" data-bind="if: MarkHelpfulCount > 0">
                         <span data-bind="text: HelpfulMarkCount"></span>

@@ -98,6 +98,18 @@ namespace OSBIDE.Web.Models.Queries
             return events;
         }
 
+        /// <summary>
+        /// returns a list of IDE-based events in OSBLE
+        /// </summary>
+        /// <returns></returns>
+        public static List<IOsbideEvent> GetIdeEvents()
+        {
+            List<IOsbideEvent> events = new List<IOsbideEvent>();
+            events.Add(new BuildEvent());
+            events.Add(new ExceptionEvent());
+            return events;
+        }
+
         //returns a list of all possible events that a user can subscribe to
         public static List<IOsbideEvent> GetAllEvents()
         {

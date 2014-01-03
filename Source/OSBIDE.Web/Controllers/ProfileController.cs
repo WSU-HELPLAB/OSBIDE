@@ -49,9 +49,8 @@ namespace OSBIDE.Web.Controllers
 
             }
 
-            //add the event types that the user wants to see
-            //TODO: make this dynamic based on user selection
-            foreach (IOsbideEvent evt in ActivityFeedQuery.GetAllEvents())
+            //Only show social events
+            foreach (IOsbideEvent evt in ActivityFeedQuery.GetSocialEvents())
             {
                 query.AddEventType(evt);
                 subscriptionsQuery.AddEventType(evt);
@@ -358,6 +357,18 @@ namespace OSBIDE.Web.Controllers
         }
         #endregion
 
+        public FileStreamResult DefaultPicture(int size = 128)
+        {
+            string defaultImageLocation = Server.MapPath("/Content/icons/anonymous.png");
+            MemoryStream defaultStream = new MemoryStream();
+            using(Image defaultImage = Image.FromFile(defaultImageLocation))
+            {
+                defaultImage.Save(defaultStream, System.Drawing.Imaging.ImageFormat.Png);
+            }
+            defaultStream.Position = 0;
+            return new FileStreamResult(defaultStream, "image/png");
+        }
+
         /// <summary>
         /// Returns the profile picture for the supplied user id
         /// </summary>
@@ -365,6 +376,13 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public FileStreamResult Picture(int id, int size = 128)
         {
+
+            //invalid user ID?
+            if(id < 1)
+            {
+                return DefaultPicture(size);
+            }
+
             ProfileImage image = Db.ProfileImages.Where(p => p.UserID == id).FirstOrDefault();
             IdenticonRenderer renderer = new IdenticonRenderer();
             System.Drawing.Bitmap userBitmap;

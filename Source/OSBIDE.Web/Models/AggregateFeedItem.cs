@@ -1,5 +1,6 @@
 ﻿using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
+using OSBIDE.Web.Models.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace OSBIDE.Web.Models
         public DateTime MostRecentOccurance { get; set; }
         public string PrettyName { get; set; }
         public int HelpfulMarks { get; set; }
+        public bool IsAnonymous { get; private set; }
 
         public static string[] AcceptableAggregates
         {
@@ -45,6 +47,16 @@ namespace OSBIDE.Web.Models
             Creator = item.Log.Sender;
             MostRecentOccurance = item.Event.EventDate;
             HelpfulMarks = item.HelpfulComments;
+
+            //IDE events are anonymized
+            List<IOsbideEvent> ideEvents = ActivityFeedQuery.GetIdeEvents();
+            bool isIde = (from evt in ideEvents
+                          where evt.EventName == item.Event.EventName
+                          select evt).FirstOrDefault() != null;
+            if (isIde)
+            {
+                IsAnonymous = true;
+            }
         }
 
         public static List<AggregateFeedItem> FromFeedItems(IList<FeedItem> feedItems)

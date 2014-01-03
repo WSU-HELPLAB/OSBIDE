@@ -116,19 +116,39 @@
                     List<CommentActivityLog> socialLogs = Model.SocialActivity.GetLogs(date, logId);
                     DateTime maxDate = socialLogs.Select(s => s.LogCommentEvent.EventDate).Max();
                     string content = "";
+                    
+                    //is the user commenting on an anymous event?
+                    List<IOsbideEvent> ideEvents = OSBIDE.Web.Models.Queries.ActivityFeedQuery.GetIdeEvents();
+                    EventLog sourceEvent = socialLogs[0].LogCommentEvent.SourceEventLog;
+                    if (ideEvents.Where(e => e.EventName == sourceEvent.LogType).FirstOrDefault() != null)
+                    {
+                        //Is the user the target of an IDE event?  For example, did someone comment on this user's build event?
+                        //If so, we don't want to show this as it would ruin the anonymity
+                        if(sourceEvent.SenderId == Model.User.Id)
+                        {
+                            //skip this record
+                            continue;
+                        }
+                        
+                        //otherwise, anonymize the source
+                        sourceEvent.Sender.FirstName = "A student";
+                        sourceEvent.Sender.LastName = "";
+                    }
+                    
+                    
                     switch (socialLogs.Count)
                     {
                         case 1:
                             content = string.Format("{0} commented on a post by {1}",
                             socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
-                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            Html.ActionLink(sourceEvent.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
                             break;
 
                         case 2:
                             content = string.Format("{0} and {1} commented on a post by {2}",
                             socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
                             socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
-                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            Html.ActionLink(sourceEvent.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
                             break;
 
                         case 3:
@@ -136,7 +156,7 @@
                             socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
                             socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
                             socialLogs[2].LogCommentEvent.EventLog.Sender.FirstAndLastName,
-                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            Html.ActionLink(sourceEvent.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
                             break;
 
                         default:
@@ -144,7 +164,7 @@
                             socialLogs[0].LogCommentEvent.EventLog.Sender.FirstAndLastName,
                             socialLogs[1].LogCommentEvent.EventLog.Sender.FirstAndLastName,
                             socialLogs.Count - 2,
-                            Html.ActionLink(socialLogs[0].LogCommentEvent.SourceEventLog.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
+                            Html.ActionLink(sourceEvent.Sender.FirstAndLastName, "Details", "Feed", new { id = logId }, new { }));
                             break;
                     }
                 

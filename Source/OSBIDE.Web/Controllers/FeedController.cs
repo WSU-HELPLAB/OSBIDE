@@ -212,7 +212,7 @@ namespace OSBIDE.Web.Controllers
         public JsonResult PostCommentAsync(string logId, string comment)
         {
             int id = -1;
-            if(Int32.TryParse(logId, out id))
+            if (Int32.TryParse(logId, out id))
             {
                 bool result = base.PostComment(logId, comment);
                 return GetComments(id);
@@ -225,16 +225,16 @@ namespace OSBIDE.Web.Controllers
             List<CommentsViewModel> vm = new List<CommentsViewModel>();
             EventLog log = Db.EventLogs.Where(l => l.Id == logId).FirstOrDefault();
             int actualLogId = logId;
-            if(log != null)
+            if (log != null)
             {
                 IList<LogCommentEvent> comments = new List<LogCommentEvent>();
 
                 //log comment events and mark helpful events need to pull their comments from the log to which they're attached.  All others
                 //pull from themselves.
-                if(log.LogType == LogCommentEvent.Name)
+                if (log.LogType == LogCommentEvent.Name)
                 {
                     LogCommentEvent evt = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
-                    if(evt != null)
+                    if (evt != null)
                     {
                         actualLogId = evt.SourceEventLogId;
                         comments = evt.SourceEventLog.Comments;
@@ -243,7 +243,7 @@ namespace OSBIDE.Web.Controllers
                 else if (log.LogType == HelpfulMarkGivenEvent.Name)
                 {
                     HelpfulMarkGivenEvent evt = Db.HelpfulMarkGivenEvents.Where(h => h.EventLogId == log.Id).FirstOrDefault();
-                    if(evt != null)
+                    if (evt != null)
                     {
                         actualLogId = evt.LogCommentEvent.SourceEventLogId;
                         comments = evt.LogCommentEvent.SourceEventLog.Comments;
@@ -258,7 +258,7 @@ namespace OSBIDE.Web.Controllers
                 comments = comments.OrderBy(c => c.EventDate).ToList();
 
                 //convert LogCommentEvents into JSON
-                foreach(LogCommentEvent comment in comments)
+                foreach (LogCommentEvent comment in comments)
                 {
                     CommentsViewModel c = new CommentsViewModel()
                     {
@@ -269,12 +269,12 @@ namespace OSBIDE.Web.Controllers
                         ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
                         UtcEventDate = comment.EventDate,
                         MarkHelpfulCount = comment.HelpfulMarks.Count(),
-                        MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Request.Url.AbsoluteUri })
+                        MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Url.Action("Index", "Feed") })
                     };
 
                     //check to see if the current user is allowed to mark the comment as helpful
                     HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
-                    if(helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
+                    if (helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
                     {
                         c.DisplayHelpfulMarkLink = true;
                     }
@@ -294,8 +294,8 @@ namespace OSBIDE.Web.Controllers
                 List<int> logIds = items.Select(i => i.LogId).ToList();
                 DateTime lastPollDate = new DateTime(items.First().LastPollTick);
                 var query = from comment in Db.LogCommentEvents.Include("HelpfulMarks").Include("EventLog").Include("EventLog.Sender").AsNoTracking()
-                            where 
-                            ( logIds.Contains(comment.SourceEventLogId) || logIds.Contains(comment.EventLogId) )
+                            where
+                            (logIds.Contains(comment.SourceEventLogId) || logIds.Contains(comment.EventLogId))
                             && comment.EventDate > lastPollDate
                             select comment;
                 List<LogCommentEvent> comments = query.ToList();
@@ -364,6 +364,27 @@ namespace OSBIDE.Web.Controllers
             if (string.IsNullOrEmpty(id))
             {
                 return RedirectToAction("Index");
+            }
+
+            //check to receive if we've gotten a single ID back
+            int idAsInt = -1;
+            if (Int32.TryParse(id, out idAsInt) == true)
+            {
+                //if we've received a log comment event or a helpful mark event, we have to reroute to the original event
+                EventLog log = Db.EventLogs.Where(e => e.Id == idAsInt).FirstOrDefault();
+                if (log != null)
+                {
+                    if (log.LogType == LogCommentEvent.Name)
+                    {
+                        LogCommentEvent commentEvent = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
+                        return RedirectToAction("Details", "Feed", new { id = commentEvent.SourceEventLogId });
+                    }
+                    else if(log.LogType == HelpfulMarkGivenEvent.Name)
+                    {
+                        HelpfulMarkGivenEvent helpfulEvent = Db.HelpfulMarkGivenEvents.Where(e => e.EventLogId == log.Id).FirstOrDefault();
+                        return RedirectToAction("Details", "Feed", new { id = helpfulEvent.LogCommentEvent.SourceEventLogId });
+                    }
+                }
             }
 
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
@@ -493,13 +514,13 @@ namespace OSBIDE.Web.Controllers
                 List<OsbideUser> observers = new List<OsbideUser>();
 
                 observers = (from subscription in Db.UserSubscriptions
-                            join user in Db.Users on
-                                              new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
-                                              equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
-                            where subscription.SubjectSchoolId == CurrentUser.SchoolId
-                               && subscription.SubjectInstitutionId == CurrentUser.InstitutionId
-                               && user.ReceiveEmailOnNewFeedPost == true
-                            select user).ToList();
+                             join user in Db.Users on
+                                               new { InstitutionId = subscription.ObserverInstitutionId, SchoolId = subscription.ObserverSchoolId }
+                                               equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
+                             where subscription.SubjectSchoolId == CurrentUser.SchoolId
+                                && subscription.SubjectInstitutionId == CurrentUser.InstitutionId
+                                && user.ReceiveEmailOnNewFeedPost == true
+                             select user).ToList();
                 if (observers.Count > 0)
                 {
                     string url = StringConstants.GetActivityFeedDetailsUrl(log.Id);
@@ -578,7 +599,8 @@ namespace OSBIDE.Web.Controllers
             {
                 query = new ActivityFeedQuery(Db);
             }
-                        //add the event types that the user wants to see
+
+            //add the event types that the user wants to see
             UserFeedSetting feedSettings = _userSettings;
             if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
