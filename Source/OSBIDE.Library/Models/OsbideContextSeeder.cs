@@ -67,6 +67,17 @@ namespace OSBIDE.Library.Models
                 Description = "Advanced data structures, object oriented programming concepts, concurrency, and program design principles."
             }
             );
+
+            context.Courses.Add(new Course()
+            {
+                Name = "CptS 483",
+                Year = 2014,
+                Season = "Spring",
+                SchoolId = 1,
+                Description = "Web development"
+            }
+            );
+
             context.SaveChanges();
 
             //add some test users

@@ -76,27 +76,58 @@ namespace OSBIDE.Web.Controllers
 
             if (Db.Courses.Count() == 0)
             {
-                Db.Courses.Add(new Course()
+                OsbideContext context = Db;
+                context.Courses.Add(new Course()
+                {
+                    Name = "OSBIDE 101",
+                    Year = 2014,
+                    Season = "Spring",
+                    SchoolId = 1,
+                    Description = "Everything you ever wanted to know about OSBIDE."
+                }
+                );
+
+                context.Courses.Add(new Course()
                 {
                     Name = "CptS 121",
-                    SchoolId = 1
+                    Year = 2014,
+                    Season = "Spring",
+                    SchoolId = 1,
+                    Description = "Formulation of problems and top-down design of programs in a modern structured language for their solution on a digital computer."
                 }
-                );
+                    );
 
-                Db.Courses.Add(new Course()
+                context.Courses.Add(new Course()
                 {
                     Name = "CptS 122",
-                    SchoolId = 1
+                    Year = 2014,
+                    Season = "Spring",
+                    SchoolId = 1,
+                    Description = "This course is about advanced programming techniques, data structures, recursion, sorting, searching, and basic algorithm analysis."
                 }
                 );
 
-                Db.Courses.Add(new Course()
+                context.Courses.Add(new Course()
                 {
                     Name = "CptS 223",
-                    SchoolId = 1
+                    Year = 2014,
+                    Season = "Spring",
+                    SchoolId = 1,
+                    Description = "Advanced data structures, object oriented programming concepts, concurrency, and program design principles."
                 }
                 );
-                Db.SaveChanges();
+
+                context.Courses.Add(new Course()
+                {
+                    Name = "CptS 483",
+                    Year = 2014,
+                    Season = "Spring",
+                    SchoolId = 1,
+                    Description = "Web development"
+                }
+                );
+
+                context.SaveChanges();
             }
 
             return RedirectToAction("Index", "Home");

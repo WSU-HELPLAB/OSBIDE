@@ -78,6 +78,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     vm.User.Email = vm.Email;
                     vm.User.Id = 0;
+                    vm.User.DefaultCourseId = 1;
 
                     Db.Users.Add(vm.User);
                     Db.SaveChanges();
@@ -109,7 +110,7 @@ namespace OSBIDE.Web.Controllers
                     auth.LogIn(vm.User);
 
                     //redirect to profile page
-                    return RedirectToAction("CreateComplete", "Account");
+                    return RedirectToAction("Index", "Feed");
                 }
             }
 
