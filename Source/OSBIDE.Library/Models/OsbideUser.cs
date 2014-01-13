@@ -345,6 +345,7 @@ namespace OSBIDE.Library.Models
                 ProfileImage = new ProfileImage();
             }
             ProfileImage.SetProfileImage(bmp);
+            OnPropertyChanged("ProfileImage");
         }
 
         public static OsbideUser GenericUser()
