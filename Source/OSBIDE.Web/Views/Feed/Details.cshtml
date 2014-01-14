@@ -78,7 +78,21 @@
             </div>
         </section>
     </div>
+
+    <h2>Post a Comment</h2>
+    @using (Html.BeginForm("PostComment", "Home"))
+    {
+
+        <div>
+            <textarea style="width: 100%; height: 200px" name="comment"></textarea>
+        </div>
+    <input type="hidden" name="logId" value="@Model.FeedItem.Items.Where(m => m.LogId == firstLogId).FirstOrDefault().Log.Id" />
+        <input type="hidden" name="returnUrl" value="@Request.Url.AbsoluteUri" />
+        <input type="submit" name="submit" value="Post" />
+        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+    }
 </section>
+
 @section Scripts {
     @Scripts.Render("~/bundles/highlight")
     @Styles.Render("~/Content/css/highlight")

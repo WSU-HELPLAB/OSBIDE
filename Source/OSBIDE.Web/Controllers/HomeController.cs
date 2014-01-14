@@ -35,7 +35,7 @@ namespace OSBIDE.Web.Controllers
             {
                 returnUrl = Url.Action("Index", "Feed");
             }
-            PostComment(logId, comment);
+            base.PostComment(logId, comment);
             Response.Redirect(returnUrl);
             return 0;
         }
