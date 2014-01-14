@@ -13,12 +13,11 @@ using System.Web.Mvc;
 namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
-    [NotForStudents]
     public class AssignmentController : ControllerBase
     {
         //
         // GET: /Assignment/
-
+        [NotForStudents]
         public ActionResult Index(int assignmentId = -1)
         {
             Assignment currentAssignment = Db.Assignments.Where(a => a.Id == assignmentId).FirstOrDefault();
@@ -37,6 +36,7 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
+        [NotForStudents]
         public FileStreamResult Download(int id)
         {
             List<SubmitEvent> submits = GetMostRecentSubmissions(id);
@@ -88,6 +88,21 @@ namespace OSBIDE.Web.Controllers
             return new FileStreamResult(finalZipStream, "application/zip") { FileDownloadName = assignmentName };
         }
 
+        public FileStreamResult DownloadStudentAssignment(int id)
+        {
+            //students can only download their own work
+            SubmitEvent submit = Db.SubmitEvents.Where(s => s.EventLogId == id).FirstOrDefault();
+            if(submit != null && submit.EventLog.SenderId == CurrentUser.Id)
+            {
+                return DownloadSingle(id);
+            }
+            else
+            {
+                return new FileStreamResult(new MemoryStream(), "application/zip") { FileDownloadName = "bad file" };
+            }
+        }
+
+        [NotForStudents]
         public FileStreamResult DownloadSingle(int id)
         {
             MemoryStream stream = new MemoryStream();
