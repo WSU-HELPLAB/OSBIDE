@@ -2,6 +2,10 @@
 @using OSBIDE.Web.Models
 @using OSBIDE.Library.Models
 @using System.Text
+@using OSBIDE.Library.Models
+@using OSBIDE.Library.Events
+@using OSBIDE.Library
+
 @model CourseDetailsViewModel
 @{
     ViewBag.Title = Model.CurrentCourse.Name;
@@ -165,6 +169,12 @@
     </script>
 
     <style type="text/css">
+
+        article
+        {
+            padding-bottom:15px;
+        }
+
         .assignments-table {
         }
 
@@ -240,7 +250,7 @@
         @Html.ActionLink("(set as default)", "MakeDefault", new { id = Model.CurrentCourse.Id })
     }
 </h2>
-<section>
+<article>
     <h1>
         @if (isCoordinator == true)
         {
@@ -329,8 +339,8 @@
             </tbody>
         </table>
     }
-</section>
-<section>
+</article>
+<article>
     <h1>
         @if (Model.Coordinators.Contains(Model.CurrentUser) == true)
         {
@@ -357,7 +367,28 @@
             }
         </ul>
     }
-</section>
+</article>
+<article>
+    <h1>Registered Users</h1>
+    @if (Model.CurrentCourse.CourseUserRelationships.Count != 0)
+    {
+        <ul>
+            @foreach (CourseUserRelationship cur in Model.CurrentCourse.CourseUserRelationships)
+            {
+                <li style="clear:both; padding: 5px;">
+                    <img src="@Url.Action("Picture", "Profile", new { id = cur.UserId, size = 32 })" title="profile image" alt="profile image" style="float:left;" />
+                    <div style="padding-left:40px;">
+                         @Html.ActionLink(cur.User.FirstAndLastName, "Index", "Profile", new { id = cur.UserId, component = OsbideVsComponent.UserProfile }, new { })
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        @:There aren't any users in this course.
+    }
+</article>
 @if (isCoordinator == true)
 {
     <div id="assignment-delete-dialog-confirm" title="Delete this assignment?">
