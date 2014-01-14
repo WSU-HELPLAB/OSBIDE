@@ -369,11 +369,11 @@
     }
 </article>
 <article>
-    <h1>Registered Users</h1>
+    <h1>Registered Users (@Model.CurrentCourse.CourseUserRelationships.Count)</h1>
     @if (Model.CurrentCourse.CourseUserRelationships.Count != 0)
     {
         <ul>
-            @foreach (CourseUserRelationship cur in Model.CurrentCourse.CourseUserRelationships)
+            @foreach (CourseUserRelationship cur in Model.CurrentCourse.CourseUserRelationships.OrderBy(cur => cur.User.LastName).ToList())
             {
                 <li style="clear:both; padding: 5px;">
                     <img src="@Url.Action("Picture", "Profile", new { id = cur.UserId, size = 32 })" title="profile image" alt="profile image" style="float:left;" />
