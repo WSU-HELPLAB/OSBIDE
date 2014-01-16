@@ -1,4 +1,5 @@
 ﻿using OSBIDE.Library.Models;
+using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models.FileSystem;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ using System.Web.Mvc;
 
 namespace OSBIDE.Web.Controllers
 {
+    [OsbideAuthorize]
+    [RequiresVisualStudioConnectionForStudents]
     public class FileController : ControllerBase
     {
         //
