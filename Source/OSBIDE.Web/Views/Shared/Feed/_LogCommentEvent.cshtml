@@ -1,4 +1,5 @@
 ﻿@using OSBIDE.Library.Events
+@using OSBIDE.Web.Models.Queries
 @model OSBIDE.Web.Models.AggregateFeedItem  
 @{
     LogCommentEvent comment = Model.Items.First().Event as LogCommentEvent;
@@ -25,7 +26,16 @@
 }
 else
 {
-    <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>
+    //anonymize IDE events
+    bool isIdeEvent = ActivityFeedQuery.GetIdeEvents().Where(e => e.EventName.CompareTo(comment.SourceEventLog.LogType) == 0).Count() > 0;
+    if(isIdeEvent)
+    {
+        <text>a student's</text>
+    }
+    else
+    {
+        <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>   
+    }
 }
 @string.Format("{0}:", evt.PrettyName.ToLower())
 <br />

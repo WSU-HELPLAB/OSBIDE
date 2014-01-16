@@ -263,7 +263,7 @@ namespace OSBIDE.Web.Controllers
                     CommentsViewModel c = new CommentsViewModel()
                     {
                         CommentId = comment.Id,
-                        CourseName = comment.SourceEventLog.Sender.DefaultCourse.Name,
+                        CourseName = comment.EventLog.Sender.DefaultCourse.Name,
                         Content = comment.Content,
                         FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
                         ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
