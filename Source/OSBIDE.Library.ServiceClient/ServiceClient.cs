@@ -34,11 +34,31 @@ namespace OSBIDE.Library.ServiceClient
         private string _cacheRegion = "ServiceClient";
         private string _cacheKey = "logs";
         private bool _isSendingData = false;
+        private bool _isCollectingDate = true;
         private TransmissionStatus _sendStatus = new TransmissionStatus();
 
         #endregion
 
         #region properties
+
+        public bool IsCollectingData
+        {
+            get
+            {
+                lock (this)
+                {
+                    return _isCollectingDate;
+                }
+            }
+            set
+            {
+                lock (this)
+                {
+                    _isCollectingDate = value;
+                }
+                OnPropertyChanged("IsCollectingData");
+            }
+        }
 
         public bool IsSendingData
         {
@@ -320,14 +340,12 @@ namespace OSBIDE.Library.ServiceClient
 
         private void SendLogToServer(object data)
         {
-
             //only accept eventlog data
             if (!(data is EventLog))
             {
                 return;
             }
             SendStatus.IsActive = true;
-
 
             //cast generic data to what we actually need
             EventLog newLog = data as EventLog;
@@ -446,6 +464,12 @@ namespace OSBIDE.Library.ServiceClient
             }
             else
             {
+                //only continue if we're okay to collect data
+                if (IsCollectingData == false)
+                {
+                    return;
+                }
+
                 SendStatus.IsActive = false;
                 lock (_cache)
                 {

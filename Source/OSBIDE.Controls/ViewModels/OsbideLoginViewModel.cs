@@ -20,6 +20,7 @@ namespace OSBIDE.Controls.ViewModels
         private bool _buttonsEnabled;
         private string _authenticationHash = "";
         private string _errorText = "";
+        private bool _isLoggedIn = false;
         
         public event EventHandler RequestClose = delegate { };
         public event EventHandler RequestCreateAccount = delegate { };
@@ -28,6 +29,7 @@ namespace OSBIDE.Controls.ViewModels
         {
             _serviceClient = new OsbideWebServiceClient(ServiceBindings.OsbideServiceBinding, ServiceBindings.OsbideServiceEndpoint);
             LoginCommand = new DelegateCommand(Login, CanIssueCommand);
+            LogoutCommand = new DelegateCommand(Logout, CanIssueCommand);
             CancelCommand = new DelegateCommand(Cancel, CanIssueCommand);
             CreateAccountCommand = new DelegateCommand(CreateAccount, CanIssueCommand);
             _serviceClient.LoginCompleted += LoginCompleted;
@@ -37,9 +39,23 @@ namespace OSBIDE.Controls.ViewModels
 
         #region properties
         public ICommand LoginCommand { get; set; }
+        public ICommand LogoutCommand { get; set; }
         public ICommand CancelCommand { get; set; }
         public ICommand CreateAccountCommand { get; set; }
         public MessageBoxResult Result { get; private set; }
+
+        public bool IsLoggedIn
+        {
+            get
+            {
+                return _isLoggedIn;
+            }
+            set
+            {
+                _isLoggedIn = value;
+                OnPropertyChanged("IsLoggedIn");
+            }
+        }
 
         public string ErrorText
         {
@@ -143,6 +159,12 @@ namespace OSBIDE.Controls.ViewModels
             {
                 ErrorText = "Error processing request (http).";
             }
+        }
+
+        private void Logout(object param)
+        {
+            Result = MessageBoxResult.No;
+            RequestClose(this, EventArgs.Empty);
         }
 
         private void Login(object param)

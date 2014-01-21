@@ -829,6 +829,7 @@ namespace OSBIDE.Plugins.VS2012
             //attempt to store previously cached values if possible
             vm.Password = _userPassword;
             vm.Email = _userName;
+            vm.IsLoggedIn = _client.IsSendingData;
 
             MessageBoxResult result = OsbideLoginControl.ShowModalDialog(vm);
 
@@ -864,6 +865,7 @@ namespace OSBIDE.Plugins.VS2012
                     //turn on client sending
                     if (_client != null)
                     {
+                        _client.IsCollectingData = true;
                         _client.StartSending();
                     }
                     MessageBox.Show("Welcome to OSBIDE!");
@@ -876,6 +878,15 @@ namespace OSBIDE.Plugins.VS2012
                         _client.StopSending();
                     }
                 }
+            }
+            else if (result == MessageBoxResult.No)
+            {
+                //In this case, I'm using MessageBoxResult.No to represent a log out request.  We can
+                //fake that by just turning off client collection and sending.
+                _client.IsCollectingData = false;
+                _client.StopSending();
+                _cache[StringConstants.AuthenticationCacheKey] = "";
+                MessageBox.Show("You have been logged out of OSBIDE.");
             }
         }
 

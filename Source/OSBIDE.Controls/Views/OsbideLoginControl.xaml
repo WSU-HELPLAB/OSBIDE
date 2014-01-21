@@ -61,8 +61,9 @@
                 </winForms:PictureBox>
             </wfi:WindowsFormsHost>
             <!--<controls:GifImage x:Name="LoadingIcon" Stretch="None" GifSource="../Images/ajax-loader.gif" Visibility="{Binding Path=LoadingIconVisible}" AutoStart="True" />-->
-            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=LoginCommand}" TabIndex="3">Log in</Button>
-            <Button x:Name="CancelButton" Width="50" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=CancelCommand}" TabIndex="4">Cancel</Button>
+            <Button x:Name="LogOutButton" Width="50" Margin="0,0,7,0" Visibility="{Binding Path=IsLoggedIn}" Command="{Binding Path=LogoutCommand}" TabIndex="3">Log out</Button>
+            <Button x:Name="OkayButton" Width="50" Margin="0,0,7,0" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=LoginCommand}" TabIndex="4">Log in</Button>
+            <Button x:Name="CancelButton" Width="50" IsEnabled="{Binding Path=ButtonsEnabled}" Command="{Binding Path=CancelCommand}" TabIndex="5">Cancel</Button>
         </StackPanel>
 
         <!-- 5,1 -->
