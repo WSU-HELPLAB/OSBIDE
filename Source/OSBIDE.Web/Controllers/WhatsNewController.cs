@@ -18,7 +18,7 @@ namespace OSBIDE.Web.Controllers
             return View(Db.WhatsNewItems.Take(25).ToList());
         }
 
-        [AllowAccess(SystemRole.Instructor)]
+        [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
         [HttpGet]
         public ActionResult Add()
         {

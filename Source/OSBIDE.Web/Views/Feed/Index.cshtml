@@ -7,14 +7,14 @@
 @{
     ViewBag.Title = "Activity Feed";
 }
-@using (Html.BeginForm("PostFeedComment", "Feed"))
+@using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class="spinner" }))
 {
     <section id="add-feed-comment">
         <h1>Post a comment:</h1>
         <div>
             <textarea style="width: 100%; height: 50px" name="comment"></textarea>
         </div>
-        <input type="submit" name="submit" value="Post Comment" />
+        <input type="submit" name="submit" id="post-comment-button" value="Post Comment" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         <input id="filter-options-button" type="button" value="Filter Options" />
     </section>
@@ -60,13 +60,25 @@
 }
 @Html.Partial("Feed/_Feed", Model)
 <script type="text/javascript">
-    $("#filter-options-button").click(function (e) {
-        if ($("#filter-options").css('display') == 'none') {
-            $("#filter-options").slideDown();
-        }
-        else {
-            $("#filter-options").slideUp();
-        }
 
+    $(document).ready(function () {
+
+        //listen for comment posts
+        $("#post-comment-form").submit(function (event) {
+
+            //disable button for 7 seconds to prevent duplicate clicks
+            $("#post-comment-button").prop("disabled", true);
+            setTimeout(function () { $("#post-comment-button").prop("disabled", false); }, 7000);
+        });
+
+        //set up animation for drop down
+        $("#filter-options-button").click(function (e) {
+            if ($("#filter-options").css('display') == 'none') {
+                $("#filter-options").slideDown();
+            }
+            else {
+                $("#filter-options").slideUp();
+            }
+        });
     });
 </script>

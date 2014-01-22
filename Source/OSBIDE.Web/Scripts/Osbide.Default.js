@@ -8,6 +8,9 @@ function documentReady() {
     $("form.spinner").submit(function () {
         $(".submit-loading").each(function () {
             $(this).css("visibility", "visible");
+
+            //turn off after 7 seconds
+            setTimeout(function () { $(".submit-loading").css("visibility", "hidden"); }, 7000)
         });
     });
 
