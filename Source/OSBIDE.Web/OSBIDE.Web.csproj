@@ -445,6 +445,7 @@
     <Content Include="Views\Course\UploadAssignmentFile.cshtml" />
     <Content Include="Views\Course\UploadCourseFile.cshtml" />
     <Content Include="Views\Course\NoCourses.cshtml" />
+    <Content Include="Views\Error\VsWarning.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
