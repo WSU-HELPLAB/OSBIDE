@@ -220,70 +220,101 @@ namespace OSBIDE.Web.Controllers
             return this.Json(new { });
         }
 
-        public JsonResult GetComments(int logId)
+        public JsonResult GetComments(int? singleLogId)
         {
-            List<CommentsViewModel> vm = new List<CommentsViewModel>();
-            EventLog log = Db.EventLogs.Where(l => l.Id == logId).FirstOrDefault();
-            int actualLogId = logId;
-            if (log != null)
+            List<int> logIds = new List<int>();
+            try
             {
-                IList<LogCommentEvent> comments = new List<LogCommentEvent>();
+                logIds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(Request.Form["logIds"]);
+            }
+            catch (Exception)
+            {
+                logIds = new List<int>();
+            }
 
-                //log comment events and mark helpful events need to pull their comments from the log to which they're attached.  All others
-                //pull from themselves.
-                if (log.LogType == LogCommentEvent.Name)
+            //legacy code will send a single log Id.  In that case, add it to the list of log ids
+            if (singleLogId != null)
+            {
+                logIds.Add((int)singleLogId);
+            }
+
+            //for each log Id, build the appropriate comments view model
+            Dictionary<int, List<CommentsViewModel>> viewModels = new Dictionary<int, List<CommentsViewModel>>();
+            List<object> jsonVm = new List<object>();
+            foreach (int logId in logIds)
+            {
+                EventLog log = Db.EventLogs.Where(l => l.Id == logId).FirstOrDefault();
+                int actualLogId = logId;
+                if (log != null)
                 {
-                    LogCommentEvent evt = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
-                    if (evt != null)
+                    IList<LogCommentEvent> comments = new List<LogCommentEvent>();
+
+                    //log comment events and mark helpful events need to pull their comments from the log to which they're attached.  All others
+                    //pull from themselves.
+                    if (log.LogType == LogCommentEvent.Name)
                     {
-                        actualLogId = evt.SourceEventLogId;
-                        comments = evt.SourceEventLog.Comments;
+                        LogCommentEvent evt = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
+                        if (evt != null)
+                        {
+                            actualLogId = evt.SourceEventLogId;
+                            comments = evt.SourceEventLog.Comments;
+                        }
                     }
-                }
-                else if (log.LogType == HelpfulMarkGivenEvent.Name)
-                {
-                    HelpfulMarkGivenEvent evt = Db.HelpfulMarkGivenEvents.Where(h => h.EventLogId == log.Id).FirstOrDefault();
-                    if (evt != null)
+                    else if (log.LogType == HelpfulMarkGivenEvent.Name)
                     {
-                        actualLogId = evt.LogCommentEvent.SourceEventLogId;
-                        comments = evt.LogCommentEvent.SourceEventLog.Comments;
+                        HelpfulMarkGivenEvent evt = Db.HelpfulMarkGivenEvents.Where(h => h.EventLogId == log.Id).FirstOrDefault();
+                        if (evt != null)
+                        {
+                            actualLogId = evt.LogCommentEvent.SourceEventLogId;
+                            comments = evt.LogCommentEvent.SourceEventLog.Comments;
+                        }
                     }
-                }
-                else
-                {
-                    comments = log.Comments;
-                }
-
-                //sort comments
-                comments = comments.OrderBy(c => c.EventDate).ToList();
-
-                //convert LogCommentEvents into JSON
-                foreach (LogCommentEvent comment in comments)
-                {
-                    CommentsViewModel c = new CommentsViewModel()
+                    else
                     {
-                        CommentId = comment.Id,
-                        CourseName = comment.EventLog.Sender.DefaultCourse.Name,
-                        Content = comment.Content,
-                        FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
-                        ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
-                        UtcEventDate = comment.EventDate,
-                        MarkHelpfulCount = comment.HelpfulMarks.Count(),
-                        MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Url.Action("Index", "Feed") })
-                    };
-
-                    //check to see if the current user is allowed to mark the comment as helpful
-                    HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
-                    if (helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
-                    {
-                        c.DisplayHelpfulMarkLink = true;
+                        comments = log.Comments;
                     }
 
-                    //add to VM
-                    vm.Add(c);
+                    //ignore duplicate log Ids
+                    if(viewModels.ContainsKey(actualLogId) == true)
+                    {
+                        continue;
+                    }
+                    viewModels.Add(actualLogId, new List<CommentsViewModel>());
+
+                    //sort comments
+                    comments = comments.OrderBy(c => c.EventDate).ToList();
+
+                    //convert LogCommentEvents into JSON
+                    foreach (LogCommentEvent comment in comments)
+                    {
+                        CommentsViewModel c = new CommentsViewModel()
+                        {
+                            CommentId = comment.Id,
+                            CourseName = comment.EventLog.Sender.DefaultCourse.Name,
+                            Content = comment.Content,
+                            FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
+                            ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
+                            UtcEventDate = comment.EventDate,
+                            MarkHelpfulCount = comment.HelpfulMarks.Count(),
+                            MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Url.Action("Index", "Feed") })
+                        };
+
+                        //check to see if the current user is allowed to mark the comment as helpful
+                        HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
+                        if (helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
+                        {
+                            c.DisplayHelpfulMarkLink = true;
+                        }
+
+                        //add to VM
+                        viewModels[actualLogId].Add(c);
+                    }
+
+                    //convert to json view model
+                    jsonVm.Add(new { Comments = viewModels[actualLogId], ActualLogId = actualLogId, OriginalLogId = logId });
                 }
             }
-            return this.Json(new { Comments = vm, ActualLogId = actualLogId, OriginalLogId = logId }, JsonRequestBehavior.AllowGet);
+            return this.Json(new { Data = jsonVm }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -379,7 +410,7 @@ namespace OSBIDE.Web.Controllers
                         LogCommentEvent commentEvent = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
                         return RedirectToAction("Details", "Feed", new { id = commentEvent.SourceEventLogId });
                     }
-                    else if(log.LogType == HelpfulMarkGivenEvent.Name)
+                    else if (log.LogType == HelpfulMarkGivenEvent.Name)
                     {
                         HelpfulMarkGivenEvent helpfulEvent = Db.HelpfulMarkGivenEvents.Where(e => e.EventLogId == log.Id).FirstOrDefault();
                         return RedirectToAction("Details", "Feed", new { id = helpfulEvent.LogCommentEvent.SourceEventLogId });

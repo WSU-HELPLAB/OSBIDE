@@ -88,7 +88,7 @@
                 $.ajax(
                     {
                         url: "@Url.Action("GetComments", "Feed")",
-                        data: { logId: element },
+                        data: { singleLogId: element },
                         dataType: "json",
                         type: "GET",
                         success: expandCommentsSuccess
@@ -105,117 +105,86 @@
         updateFeedItemViewModel(result);
 
         //display comments
-        var commentsDiv = "#feed-item-comments-" + result.OriginalLogId;
+        var commentsDiv = "#feed-item-comments-" + result.Data[0].OriginalLogId;
         $(commentsDiv).css('display', 'block');
     }
 
     //Updates a KO view model using the supplied JS object
     function updateFeedItemViewModel(jsObject) {
 
-        //AC: copy object into result because that's what the code was originally expecting.
-        var result = jsObject;
+        $.each(jsObject.Data, function (index, value) {
 
-        //bind to new view model
-        var model = {
-            Comments: result.Comments,
-            NumberOfComments: ko.observable(result.Comments.length),
-            LastUpdated: ko.observable(new Date())
-        };
-
-        //model mapping
-        var mapping =
-            {
-                'Comments': {
-                    key: function (item) {
-                        return ko.utils.unwrapObservable(item.CommentId);
-                    }
-                }
+            //bind to new view model
+            var model = {
+                Comments: value.Comments,
+                NumberOfComments: ko.observable(value.Comments.length),
+                LastUpdated: ko.observable(new Date())
             };
 
-        //compute local time
-        $(model.Comments).each(function (index) {
+            //model mapping
+            var mapping =
+                {
+                    'Comments': {
+                        key: function (item) {
+                            return ko.utils.unwrapObservable(item.CommentId);
+                        }
+                    }
+                };
 
-            var milliseconds = model.Comments[index].UtcUnixDate + "";
-            var formatString = "MM/DD/YYYY hh:mm A";
-            var currentDate = moment.utc(milliseconds, 'X');
-            var localDate = new Date();
-            var localOffset = localDate.getTimezoneOffset();
-            currentDate = currentDate.subtract('minutes', localOffset);
-            model.Comments[index]['LocalDate'] = currentDate.format(formatString);
+            //compute local time
+            $(model.Comments).each(function (index) {
+
+                var milliseconds = model.Comments[index].UtcUnixDate + "";
+                var formatString = "MM/DD/YYYY hh:mm A";
+                var currentDate = moment.utc(milliseconds, 'X');
+                var localDate = new Date();
+                var localOffset = localDate.getTimezoneOffset();
+                currentDate = currentDate.subtract('minutes', localOffset);
+                model.Comments[index]['LocalDate'] = currentDate.format(formatString);
+            });
+
+            var toBind = "feed-item-" + value.OriginalLogId;
+
+            //view model doesn't exist, create one
+            if (!AllComments[value.ActualLogId]) {
+
+                AllComments[value.ActualLogId] = ko.mapping.fromJS(model, mapping);
+            }
+
+            //update view model with server data
+            ko.mapping.fromJS(model, AllComments[value.ActualLogId]);
+
+            //apply binding if one doesn't already exist
+            if (!ko.dataFor(document.getElementById(toBind))) {
+                ko.applyBindings(AllComments[value.ActualLogId], document.getElementById(toBind));
+            }
         });
-
-        var toBind = "feed-item-" + result.OriginalLogId;
-
-        //view model doesn't exist, create one
-        if (!AllComments[result.ActualLogId]) {
-
-            AllComments[result.ActualLogId] = ko.mapping.fromJS(model, mapping);
-        }
-
-        //update view model with server data
-        ko.mapping.fromJS(model, AllComments[result.ActualLogId]);
-
-        //apply binding if one doesn't already exist
-        if (!ko.dataFor(document.getElementById(toBind))) {
-            ko.applyBindings(AllComments[result.ActualLogId], document.getElementById(toBind));
-        }
     }
 
     //Periodically updates view models for feed items.  Useful for displaying an updated count
     //of comments for a given feed item.
     function getCommentUpdates() {
 
-        var hasCalledUpdate = false;
+        var ModelIds = Array();
 
         //request comment updates for all feed items
         $(".feed-item-single").each(function (index) {
-
-            if (hasCalledUpdate == false) {
-                var log_id = $(this).attr("data-id");
-                var needsUpdate = false;
-
-                //do we have a KO binding?
-                var koModel = ko.dataFor(this);
-                if (koModel) {
-
-                    //When was the binding last updated?
-                    var now = new Date().getTime();
-                    var then = koModel.LastUpdated().getTime();
-
-                    //has more than 40 seconds gone by?  If so, request update
-                    if (now - then > 40000) {
-                        needsUpdate = true;
-                    }
-
-                }
-                else {
-
-                    //we don't have a binding for this feed item.  Send away.
-                    needsUpdate = true;
-                }
-
-                //send AJAX request if we need an update
-                if (needsUpdate == true) {
-
-                    //after one update, return and call ourselves again.  This prevents multiple update
-                    //requests to the same underlying model
-                    hasCalledUpdate = true;
-
-                    //make the ajax call
-                    $.ajax(
-                        {
-                            url: "@Url.Action("GetComments", "Feed")",
-                            data: { logId: log_id },
-                            dataType: "json",
-                            type: "GET",
-                            success: updateFeedItemViewModel
-                        });
-                }
-            }
+            var log_id = $(this).attr("data-id");
+            ModelIds.push(log_id);
         });
 
-        //call ourselves again in 1.5 seconds
-        setTimeout(getCommentUpdates, 1500)
+        //make the ajax call
+        $.ajax(
+            {
+                url: "@Url.Action("GetComments", "Feed")",
+                data: { logIds: JSON.stringify(ModelIds) },
+                dataType: "json",
+                type: "POST",
+                success: updateFeedItemViewModel
+            });
+
+        //call ourselves again in 20 seconds
+        setTimeout(getCommentUpdates, 20000)
     }
 
     //called when the user clicks the "Send" button
@@ -234,7 +203,7 @@
                             data: { logId: elementId, comment: userResponse },
                             dataType: "json",
                             type: "POST",
-                            success: function (data) { 
+                            success: function (data) {
                                 if (!$.isEmptyObject(data)) {
                                     var commentsTextSpan = "#expand-comments-text-" + data.OriginalLogId;
                                     $(commentsTextSpan).text("Hide");
