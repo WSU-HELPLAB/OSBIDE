@@ -30,6 +30,8 @@ namespace OSBIDE.Web.Models.Queries
                                 LEFT JOIN (
 								   SELECT COUNT(BuildErrorTypeId) AS [NumberOfBuildErrors], LogId FROM BuildErrors GROUP BY LogId
 								) buildErrors ON log.Id = buildErrors.LogId
+                                INNER JOIN CourseUserRelationships cur ON log.SenderId = cur.UserId
+                                INNER JOIN OsbideUsers ou ON log.SenderId = ou.Id
                                 ");
         protected StringBuilder _query_joins = new StringBuilder();
         protected StringBuilder _query_where_clause = new StringBuilder("WHERE 1 = 1\n");
@@ -52,6 +54,8 @@ namespace OSBIDE.Web.Models.Queries
             MinLogId = -1;
             MaxLogId = -1;
             MaxQuerySize = -1;
+            CourseRoleFilter = CourseRole.Student;
+            CourseFilter = new Course() { Id = -1 };
         }
 
         /// <summary>
@@ -82,6 +86,19 @@ namespace OSBIDE.Web.Models.Queries
         /// Used to limit the number of query results.  Default of -1 means to return all results.
         /// </summary>B
         public int MaxQuerySize { get; set; }
+
+        /// <summary>
+        /// Used to select posts made by only certain users.  This works by restricting posts below 
+        /// the supplied threshold.  E.g. CourseRole.Student will select everyone whereas 
+        /// CourseRole.Coordinator will only select course coordinators.
+        /// </summary>
+        public CourseRole CourseRoleFilter { get; set; }
+
+        /// <summary>
+        /// Used to select only posts made by students in a given course.  Default value is all
+        /// courses.
+        /// </summary>
+        public Course CourseFilter { get; set; }
 
         /// <summary>
         /// returns a lits of all social events in OSBLE
@@ -211,6 +228,15 @@ namespace OSBIDE.Web.Models.Queries
             {
                 _query_where_clause.Append(string.Format(" AND log.Id IN ({0})\n", string.Join(",", eventIds)));
             }
+
+            //filter by course
+            if(CourseFilter != null && CourseFilter.Id > 0)
+            {
+                _query_where_clause.AppendFormat(" AND ou.DefaultCourseId = {0}\n", CourseFilter.Id);
+            }
+
+            //filter by course user type
+            _query_where_clause.AppendFormat(" AND cur.RoleType >= {0}\n", (int)CourseRoleFilter);
 
             //filter by desired events if desired
             string[] eventNames = eventSelectors.Where(e => e.EventName != BuildEvent.Name).Select(e => e.EventName).ToArray();

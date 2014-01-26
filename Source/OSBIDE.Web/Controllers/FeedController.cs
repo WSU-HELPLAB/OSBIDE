@@ -106,6 +106,17 @@ namespace OSBIDE.Web.Controllers
                 }
             }
 
+            //build possible courses and user types
+            vm.Courses = Db.Courses.ToList();
+            vm.CourseRoles.Add(CourseRole.Student);
+            vm.CourseRoles.Add(CourseRole.Assistant);
+            vm.CourseRoles.Add(CourseRole.Coordinator);
+            if (_userSettings != null)
+            {
+                vm.SelectedCourseId = _userSettings.CourseFilter;
+                vm.SelectedCourseRole = _userSettings.CourseRole;
+            }
+
             //build the "you and 5 others got this error"-type messages
             BuildEventRelations(vm, feedItems);
 
@@ -594,7 +605,7 @@ namespace OSBIDE.Web.Controllers
             Db.UserFeedSettings.Add(feedSetting);
 
             //clear out existing settings
-            feedSetting.Settings = 0;
+            feedSetting.EventFilterSettings = 0;
 
             //load in new settings
             foreach (string key in Request.Form.Keys)
@@ -611,6 +622,22 @@ namespace OSBIDE.Web.Controllers
                         }
                     }
                 }
+            }
+
+            //check for course filter
+            if (Request.Form.AllKeys.Contains("course-filter"))
+            {
+                int courseId = -1;
+                Int32.TryParse(Request.Form["course-filter"], out courseId);
+                feedSetting.CourseFilter = courseId;
+            }
+
+            //check for user filter
+            if (Request.Form.AllKeys.Contains("user-type-filter"))
+            {
+                int userRoleId = (int)CourseRole.Student;
+                Int32.TryParse(Request.Form["user-type-filter"], out userRoleId);
+                feedSetting.CourseRoleFilter = userRoleId;
             }
 
             //save changes
@@ -642,10 +669,15 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                foreach (FeedSetting setting in feedSettings.ActiveSettings)
+                //load in event filter settings
+                foreach (EventFilterSetting setting in feedSettings.ActiveSettings)
                 {
                     query.AddEventType(UserFeedSetting.FeedOptionToOsbideEvent(setting));
                 }
+
+                //load in course and user type filtering
+                query.CourseRoleFilter = (CourseRole)feedSettings.CourseRoleFilter;
+                query.CourseFilter = new Course() { Id = feedSettings.CourseFilter };
             }
 
             return query;

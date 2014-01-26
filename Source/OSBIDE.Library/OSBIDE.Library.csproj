@@ -180,6 +180,7 @@
     <Compile Include="Models\BuildDocument.cs" />
     <Compile Include="Models\BuildError.cs" />
     <Compile Include="Models\ChatRoomUser.cs" />
+    <Compile Include="Models\CourseRole.cs" />
     <Compile Include="Models\CourseUserRelationship.cs" />
     <Compile Include="Models\ErrorType.cs" />
     <Compile Include="Models\BuildEventBreakPoint.cs" />

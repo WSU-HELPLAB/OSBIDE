@@ -9,10 +9,10 @@ using System.Text;
 namespace OSBIDE.Library.Models
 {
     /// <summary>
-    /// FeedOption.NULL is used for internal bookkeeping.  It cannot be set by the user.
+    /// EventFilterSetting.NULL is used for internal bookkeeping.  It cannot be set by the user.
     /// </summary>
     [Flags]
-    public enum FeedSetting : int
+    public enum EventFilterSetting : int
     {
         NULL = 1,
         BuildEvent = 2,
@@ -33,9 +33,22 @@ namespace OSBIDE.Library.Models
         public int UserId { get; set; }
         public virtual OsbideUser User { get; set; }
         public DateTime SettingsDate { get; set; }
+        public int CourseFilter { get; set; }
+        public int CourseRoleFilter { get; set; }
+        public int EventFilterSettings { get; set; }
 
-        public int Settings { get; set; }
-
+        [NotMapped]
+        public CourseRole CourseRole
+        {
+            get
+            {
+                return (CourseRole)CourseRoleFilter;
+            }
+            set
+            {
+                CourseRoleFilter = (int)value;
+            }
+        }
         public UserFeedSetting()
         {
             SettingsDate = DateTime.UtcNow;
@@ -44,54 +57,56 @@ namespace OSBIDE.Library.Models
         public UserFeedSetting(UserFeedSetting other) : this()
         {
             this.Id = other.Id;
-            this.Settings = other.Settings;
+            this.EventFilterSettings = other.EventFilterSettings;
             this.UserId = other.UserId;
             this.SettingsDate = other.SettingsDate;
+            this.CourseFilter = -1;
+            this.CourseRole = CourseRole.Student;
         }
 
-        public bool HasSetting(FeedSetting setting)
+        public bool HasSetting(EventFilterSetting setting)
         {
-            int result = Settings & (int)setting;
+            int result = EventFilterSettings & (int)setting;
             return result == (int)setting;
         }
 
-        public static IOsbideEvent FeedOptionToOsbideEvent(FeedSetting option)
+        public static IOsbideEvent FeedOptionToOsbideEvent(EventFilterSetting option)
         {
             IOsbideEvent evt = null;
             switch (option)
             {
-                case FeedSetting.AskForHelpEvent:
+                case EventFilterSetting.AskForHelpEvent:
                     evt = new AskForHelpEvent();
                     break;
-                case FeedSetting.BuildEvent:
+                case EventFilterSetting.BuildEvent:
                     evt = new BuildEvent();
                     break;
-                case FeedSetting.ExceptionEvent:
+                case EventFilterSetting.ExceptionEvent:
                     evt = new ExceptionEvent();
                     break;
-                case FeedSetting.FeedPostEvent:
+                case EventFilterSetting.FeedPostEvent:
                     evt = new FeedPostEvent();
                     break;
-                case FeedSetting.SubmitEvent:
+                case EventFilterSetting.SubmitEvent:
                     evt = new SubmitEvent();
                     break;
-                case FeedSetting.HelpfulMarkGivenEvent:
+                case EventFilterSetting.HelpfulMarkGivenEvent:
                     evt = new HelpfulMarkGivenEvent();
                     break;
-                case FeedSetting.LogCommentEvent:
+                case EventFilterSetting.LogCommentEvent:
                     evt = new LogCommentEvent();
                     break;
             }
             return evt;
         }
 
-        public List<FeedSetting> ActiveSettings
+        public List<EventFilterSetting> ActiveSettings
         {
             get
             {
-                List<FeedSetting> allSettings = Enum.GetValues(typeof(FeedSetting)).Cast<FeedSetting>().ToList();
-                List<FeedSetting> userSettings = new List<FeedSetting>();
-                foreach (FeedSetting setting in allSettings)
+                List<EventFilterSetting> allSettings = Enum.GetValues(typeof(EventFilterSetting)).Cast<EventFilterSetting>().ToList();
+                List<EventFilterSetting> userSettings = new List<EventFilterSetting>();
+                foreach (EventFilterSetting setting in allSettings)
                 {
                     if (HasSetting(setting) == true)
                     {
@@ -104,76 +119,76 @@ namespace OSBIDE.Library.Models
 
         public bool HasSetting(IOsbideEvent evt)
         {
-            FeedSetting option = FeedSetting.NULL;
+            EventFilterSetting option = EventFilterSetting.NULL;
             if (evt.EventName == AskForHelpEvent.Name)
             {
-                option = FeedSetting.AskForHelpEvent;
+                option = EventFilterSetting.AskForHelpEvent;
             }
             else if (evt.EventName == BuildEvent.Name)
             {
-                option = FeedSetting.BuildEvent;
+                option = EventFilterSetting.BuildEvent;
             }
             else if (evt.EventName == ExceptionEvent.Name)
             {
-                option = FeedSetting.ExceptionEvent;
+                option = EventFilterSetting.ExceptionEvent;
             }
             else if (evt.EventName == FeedPostEvent.Name)
             {
-                option = FeedSetting.FeedPostEvent;
+                option = EventFilterSetting.FeedPostEvent;
             }
             else if (evt.EventName == HelpfulMarkGivenEvent.Name)
             {
-                option = FeedSetting.HelpfulMarkGivenEvent;
+                option = EventFilterSetting.HelpfulMarkGivenEvent;
             }
             else if (evt.EventName == LogCommentEvent.Name)
             {
-                option = FeedSetting.LogCommentEvent;
+                option = EventFilterSetting.LogCommentEvent;
             }
             else if (evt.EventName == SubmitEvent.Name)
             {
-                option = FeedSetting.SubmitEvent;
+                option = EventFilterSetting.SubmitEvent;
             }
             return HasSetting(option);
         }
 
         public void SetSetting(IOsbideEvent evt, bool value)
         {
-            FeedSetting option = FeedSetting.NULL;
+            EventFilterSetting option = EventFilterSetting.NULL;
             if (evt.EventName == AskForHelpEvent.Name)
             {
-                option = FeedSetting.AskForHelpEvent;
+                option = EventFilterSetting.AskForHelpEvent;
             }
             else if (evt.EventName == BuildEvent.Name)
             {
-                option = FeedSetting.BuildEvent;
+                option = EventFilterSetting.BuildEvent;
             }
             else if (evt.EventName == ExceptionEvent.Name)
             {
-                option = FeedSetting.ExceptionEvent;
+                option = EventFilterSetting.ExceptionEvent;
             }
             else if (evt.EventName == FeedPostEvent.Name)
             {
-                option = FeedSetting.FeedPostEvent;
+                option = EventFilterSetting.FeedPostEvent;
             }
             else if (evt.EventName == HelpfulMarkGivenEvent.Name)
             {
-                option = FeedSetting.HelpfulMarkGivenEvent;
+                option = EventFilterSetting.HelpfulMarkGivenEvent;
             }
             else if (evt.EventName == LogCommentEvent.Name)
             {
-                option = FeedSetting.LogCommentEvent;
+                option = EventFilterSetting.LogCommentEvent;
             }
             else if (evt.EventName == SubmitEvent.Name)
             {
-                option = FeedSetting.SubmitEvent;
+                option = EventFilterSetting.SubmitEvent;
             }
-            if (option != FeedSetting.NULL)
+            if (option != EventFilterSetting.NULL)
             {
                 SetSetting(option, value);
             }
         }
 
-        public void SetSetting(FeedSetting setting, bool value)
+        public void SetSetting(EventFilterSetting setting, bool value)
         {
             switch (value)
             {
@@ -186,16 +201,16 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        protected void AddSetting(FeedSetting setting)
+        protected void AddSetting(EventFilterSetting setting)
         {
-            Settings = (byte)(Settings | (byte)setting);
+            EventFilterSettings = (byte)(EventFilterSettings | (byte)setting);
         }
 
-        protected void RemoveSetting(FeedSetting setting)
+        protected void RemoveSetting(EventFilterSetting setting)
         {
             //~ is a bitwise not in c#
             //Doing a bitwise AND on a NOTed level should result in the level being removed
-            Settings = (byte)(Settings & (~(byte)setting));
+            EventFilterSettings = (byte)(EventFilterSettings & (~(byte)setting));
         }
 
     }

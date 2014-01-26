@@ -16,7 +16,11 @@ namespace OSBIDE.Web.Models.ViewModels
         public List<IOsbideEvent> EventFilterOptions { get; set; }
         public List<IOsbideEvent> UserEventFilterOptions { get; set; }
         public List<ErrorType> ErrorTypes { get; set; }
+        public List<Course> Courses { get; set; }
+        public List<CourseRole> CourseRoles { get; set; }
         public ErrorType SelectedErrorType { get; set; }
+        public CourseRole SelectedCourseRole { get; set; }
+        public int SelectedCourseId { get; set; }
         public List<string> RecentUserErrors { get; set; }
         public List<UserBuildErrorsByType> RecentClassErrors { get; set; }
 
@@ -31,6 +35,8 @@ namespace OSBIDE.Web.Models.ViewModels
             SelectedErrorType = new ErrorType();
             RecentUserErrors = new List<string>();
             RecentClassErrors = new List<UserBuildErrorsByType>();
+            CourseRoles = new List<CourseRole>();
+            Courses = new List<Course>();
         }
     }
 }

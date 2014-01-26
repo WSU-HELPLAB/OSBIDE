@@ -7,7 +7,7 @@
 @{
     ViewBag.Title = "Activity Feed";
 }
-@using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class="spinner" }))
+@using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class = "spinner" }))
 {
     <section id="add-feed-comment">
         <h1>Post a comment:</h1>
@@ -22,8 +22,8 @@
 @using (Html.BeginForm("ApplyFeedFilter", "Feed"))
 {
     <section id="filter-options" style="display: none;">
-        <h2>Filter by Activity Type:</h2>
-        <div>
+        <article>
+            <h2>Filter by Activity Type:</h2>
             <ul>
                 @foreach (IOsbideEvent evt in Model.EventFilterOptions)
                 {
@@ -38,9 +38,9 @@
                     </li>
                 }
             </ul>
-        </div>
-        <h2>Filter by Error Type:</h2>
-        <div>
+        </article>
+        <article>
+            <h2>Filter by Error Type:</h2>
             <select name="error-type">
                 <option value="-1">No Filter</option>
                 @foreach (ErrorType error in Model.ErrorTypes)
@@ -53,7 +53,39 @@
                     <option @Html.Raw(selectedText) value="@error.Id">@error.Name</option>
                 }
             </select>
-        </div>
+        </article>
+        <article>
+            <h2>Filter by Course</h2>
+            <select name="course-filter">
+                <option value="-1">No Filter</option>
+                @foreach(Course course in Model.Courses)
+                {
+                    string selectedText = "";
+                    if(course.Id.CompareTo(Model.SelectedCourseId) == 0)
+                    {
+                        selectedText = @"selected=""selected""";
+                    }
+                    <option @Html.Raw(selectedText) value="@course.Id">@course.Name</option>
+                }
+            </select>
+        </article>
+        <article>
+            <h2>Filter by User Type</h2>
+            <select name="user-type-filter">
+                <option value="-1">No Filter</option>
+                @foreach (CourseRole role in Model.CourseRoles)
+                {
+                    string selectedText = "";
+                    int roleValue = (int)role;
+                    string roleName = Enum.GetName(typeof(CourseRole), role);
+                    if (role == Model.SelectedCourseRole)
+                    {
+                        selectedText = @"selected=""selected""";
+                    }
+                    <option @Html.Raw(selectedText) value="@roleValue">@roleName</option>
+                }
+            </select>
+        </article>
         <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
     </section>

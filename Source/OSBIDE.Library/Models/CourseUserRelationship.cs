@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Library.Models
 {
-    public enum CourseRole { Student, Assistant, Coordinator }
 
     [Serializable]
     public class CourseUserRelationship : IModelBuilderExtender
