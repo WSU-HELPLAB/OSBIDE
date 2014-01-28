@@ -223,21 +223,42 @@ namespace OSBIDE.Web.Controllers
         /// <param name="vm"></param>
         private void RemoveUserFromCourse(int courseId, EditProfileViewModel vm)
         {
+            //set last active pane
+            vm.LastActivePane = 2;
+
             CourseUserRelationship toRemove = Db.CourseUserRelationships
                 .Where(c => c.CourseId == courseId)
                 .Where(c => c.UserId == CurrentUser.Id)
                 .FirstOrDefault();
-            if (toRemove != null)
+            List<CourseUserRelationship> allRelationships = Db.CourseUserRelationships.Where(cur => cur.UserId == CurrentUser.Id).ToList();
+
+            //does the current user only have one course?
+            if (allRelationships.Count() <= 1)
             {
-                vm.RemoveCourseMessage = string.Format("You have been removed from {0}.", toRemove.Course.Name);
-                Db.Entry(toRemove).State = System.Data.Entity.EntityState.Deleted;
-                Db.SaveChanges();
+                vm.RemoveCourseMessage = "You must always be enrolled in at least one course.  To remove this course, please first add an additional course.";
             }
             else
-            {
-                vm.RemoveCourseMessage = "An error occurred when I attempted to remove you from the course.  Please try again.  If the problem persists, please contact support at \"support@osbide.com\".";
+            { //ELSE: user has at least two courses
+                if (toRemove != null)
+                {
+                    //is the course being removed the current default course?
+                    if (CurrentUser.DefaultCourseId == toRemove.CourseId)
+                    {
+                        //switch default course to another course
+                        CourseUserRelationship other = allRelationships.Where(cur => cur.CourseId != toRemove.CourseId).FirstOrDefault();
+                        CurrentUser.DefaultCourseId = other.CourseId;
+                    }
+
+                    vm.RemoveCourseMessage = string.Format("You have been removed from {0}.", toRemove.Course.Name);
+                    Db.Entry(toRemove).State = System.Data.Entity.EntityState.Deleted;
+                    Db.SaveChanges();
+                }
+                else
+                {
+                    vm.RemoveCourseMessage = "An error occurred when I attempted to remove you from the course.  Please try again.  If the problem persists, please contact support at \"support@osbide.com\".";
+                }
             }
-            vm.LastActivePane = 2;
+            
         }
 
         private void UpdateBasicSettings(EditProfileViewModel vm)
