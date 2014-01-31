@@ -26,6 +26,8 @@ namespace OSBIDE.Library.Models
 
         public string ControllerName { get; set; }
 
+        public string IpAddress { get; set; }
+
         public DateTime AccessDate { get; set; }
 
         public ActionRequestLog()

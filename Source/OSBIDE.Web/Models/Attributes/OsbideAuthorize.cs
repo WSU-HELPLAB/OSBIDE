@@ -53,6 +53,14 @@ namespace OSBIDE.Web.Models.Attributes
                 log.ActionName = filterContext.ActionDescriptor.ActionName;
                 log.ControllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
                 log.CreatorId = auth.GetActiveUser(key).Id;
+                try
+                {
+                    log.IpAddress = filterContext.RequestContext.HttpContext.Request.ServerVariables["REMOTE_ADDR"];
+                }
+                catch(Exception)
+                {
+                    log.IpAddress = "Unknown";
+                }
                 StringBuilder parameters = new StringBuilder();
                 foreach (string parameterKey in filterContext.ActionParameters.Keys)
                 {
