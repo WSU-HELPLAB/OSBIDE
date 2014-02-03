@@ -298,6 +298,8 @@ namespace OSBIDE.Web.Models.Queries
             try
             {
                 conn.Open();
+
+                //TODO: Figure out why the query is producing duplicate records
                 SqlCommand cmd = new SqlCommand(queryString.ToString(), conn);
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read() == true)
