@@ -68,7 +68,7 @@ namespace OSBIDE.Web.Controllers
             else
             {
                 query.StartDate = DateTime.MinValue;
-                query.MaxQuerySize = 50;
+                query.MaxQuerySize = 40;
             }
 
             //and finally, retrieve our list of feed items

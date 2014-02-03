@@ -34,7 +34,7 @@
             $.ajax(
             {
                 url: "@Url.Action("OldFeedItems", "Feed")",
-                data: { id: feedId, count: 50, userId: "@Model.SingleUserId", errorType: "@Model.SelectedErrorType.Id" },
+                data: { id: feedId, count: 30, userId: "@Model.SingleUserId", errorType: "@Model.SelectedErrorType.Id" },
                 dataType: "html",
                 type: "GET",
                 success: getOldPostsSuccess,

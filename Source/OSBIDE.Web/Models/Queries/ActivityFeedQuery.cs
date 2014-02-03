@@ -34,7 +34,9 @@ namespace OSBIDE.Web.Models.Queries
                                 INNER JOIN OsbideUsers ou ON log.SenderId = ou.Id
                                 ");
         protected StringBuilder _query_joins = new StringBuilder();
-        protected StringBuilder _query_where_clause = new StringBuilder("WHERE 1 = 1\n");
+        protected StringBuilder _query_where_clause = new StringBuilder(@"WHERE 1 = 1
+                                AND cur.CourseId = ou.DefaultCourseId
+");
         protected StringBuilder _query_order_by = new StringBuilder(@"
                                 ORDER BY
                                     log.DateReceived DESC
