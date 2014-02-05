@@ -52,6 +52,11 @@ input[type="checkbox"] {
     vertical-align:middle;
 }
 
+#add-feed-comment
+{
+    max-width:600px;
+}
+
 .anchor-pointer {
     cursor:pointer;
 }
@@ -129,6 +134,7 @@ input[type="checkbox"] {
 }
 
 .feed-item-single {
+    max-width:600px;
     border-bottom:1px solid #D0D1D7;
     padding-bottom:7px;
     padding-top:7px;
