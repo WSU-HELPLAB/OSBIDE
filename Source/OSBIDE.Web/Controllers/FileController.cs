@@ -44,7 +44,7 @@ namespace OSBIDE.Web.Controllers
                 return RedirectToAction("Details", "Course", new { id = assignment.CourseId });
             }
             FileStream stream = System.IO.File.OpenRead(collection.FirstOrDefault());
-            return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = collection.FirstOrDefault() };
+            return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = Path.GetFileName(collection.FirstOrDefault()) };
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace OSBIDE.Web.Controllers
                 return RedirectToAction("Details", "Course", new { id = course.Id });
             }
             FileStream stream = System.IO.File.OpenRead(collection.FirstOrDefault());
-            return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = collection.FirstOrDefault() };
+            return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = Path.GetFileName(collection.FirstOrDefault()) };
         }
 	}
 }
