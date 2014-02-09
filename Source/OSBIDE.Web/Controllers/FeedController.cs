@@ -20,6 +20,7 @@ namespace OSBIDE.Web.Controllers
     [RequiresVisualStudioConnectionForStudents]
     public class FeedController : ControllerBase
     {
+        
         private UserFeedSetting _userSettings = new UserFeedSetting();
         public FeedController()
         {
@@ -38,6 +39,9 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "")
         {
+            //turned off for now.
+            //return RedirectToAction("FeedDown", "Error");
+
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
 
             //Two ways that we can receive an error type: by name (errorTypeStr) or by ID (errorType).
@@ -188,6 +192,8 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1)
         {
+            //return View("AjaxFeed", new List<AggregateFeedItem>()); 
+
             ActivityFeedQuery query = new ActivityFeedQuery(Db);
             if (errorType > 0)
             {
@@ -233,6 +239,9 @@ namespace OSBIDE.Web.Controllers
 
         public JsonResult GetComments(int? singleLogId)
         {
+            //turned off for now
+            //return this.Json(new { Data = new{} }, JsonRequestBehavior.AllowGet);
+
             List<int> logIds = new List<int>();
             try
             {

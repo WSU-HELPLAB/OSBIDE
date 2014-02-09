@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace OSBIDE.Web.Controllers
 {
-    public class ErrorController : Controller
+    public class ErrorController : ControllerBase
     {
         //
         // GET: /Error/
@@ -21,5 +21,9 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
+        public ActionResult FeedDown()
+        {
+            return View();
+        }
     }
 }

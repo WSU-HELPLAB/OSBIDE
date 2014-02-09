@@ -218,7 +218,10 @@ namespace OSBIDE.Web.Services
             Authentication auth = new Authentication();
             if (auth.IsValidKey(authToken) == true)
             {
-                List<Assignment> efAssignments = Db.Assignments.Where(a => a.CourseId == courseId).OrderBy(a => a.Name).ToList();
+                List<Assignment> efAssignments = Db.Assignments
+                    .Where(a => a.CourseId == courseId)
+                    .Where(a => a.IsDeleted == false)
+                    .OrderBy(a => a.Name).ToList();
                 foreach(Assignment assignment in efAssignments)
                 {
                     assignments.Add(new Assignment(assignment));

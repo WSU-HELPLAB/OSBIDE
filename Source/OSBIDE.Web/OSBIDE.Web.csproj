@@ -158,6 +158,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\GradebookController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PrivateQuestionController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -446,6 +447,9 @@
     <Content Include="Views\Course\UploadCourseFile.cshtml" />
     <Content Include="Views\Course\NoCourses.cshtml" />
     <Content Include="Views\Error\VsWarning.cshtml" />
+    <Content Include="Views\Error\FeedDown.cshtml" />
+    <Content Include="Views\Gradebook\GradebookHelp.cshtml" />
+    <Content Include="Views\Gradebook\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
