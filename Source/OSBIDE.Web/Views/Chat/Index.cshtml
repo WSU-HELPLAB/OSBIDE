@@ -18,15 +18,16 @@
         #chat-window pre {
             font: 13px Helmet, Freesans, sans-serif;
         }
-        
+
     #create-message {
         float: left;
-        clear:both;
+        clear: both;
         margin-top: 15px;
         width: 800px;
     }
 
     .room-users {
+        padding-top: 7px;
         padding-left: 7px;
         padding-bottom: 7px;
     }
@@ -38,7 +39,7 @@
     #room-list {
         position: relative;
         margin-left: 810px;
-        width: 200px;
+        width: 300px;
     }
 
     .room-name {
@@ -64,11 +65,10 @@
             <div class="log-comment-content">
                 <h1>@message.Author.FirstAndLastName</h1>
                 <h2>
-                    <time 
-                class="utc-time"
-                datetime="@Helpers.DateAsUnixTime(message.MessageDate)" 
-                data-original-date="@Helpers.RawDate(message.MessageDate)" 
-                data-date-format="MM/DD/YYYY hh:mm A">
+                    <time class="utc-time"
+                          datetime="@Helpers.DateAsUnixTime(message.MessageDate)"
+                          data-original-date="@Helpers.RawDate(message.MessageDate)"
+                          data-date-format="MM/DD/YYYY hh:mm A">
                         @message.MessageDate.ToString("MM/dd @ hh:mmtt") (UTC)
                     </time>
                 </h2>
@@ -108,39 +108,42 @@
 </section>
 <section id="room-list">
     <h1>Available Rooms</h1>
+    <a class="button" href="@Url.Action("Index", "Chat", new { })">Create Room</a>
     <ul id="rooms">
         @foreach (ChatRoom room in Model.Rooms)
         {
             <li class="room-li" style="padding-top:10px;">
                 @{string roomActive = "room-inactive";
-                  if (room.Id == Model.ActiveRoom.Id)
-                  {
-                      roomActive = "room-active";
-                  }
+                if (room.Id == Model.ActiveRoom.Id)
+                {
+                    roomActive = "room-active";
                 }
-                <h2 class="room-name @roomActive">@room.Name<span class="room-user-count"></span></h2>
+                }
+
+                <a class="button" href="@Url.Action("Index", "Chat", new { id = room.Id })">Remove</a>
                 @if (room.Id != Model.ActiveRoom.Id)
                 {
                     <a class="button" href="@Url.Action("Index", "Chat", new { id = room.Id })">Join</a>
                 }
-                else
+                <h2 class="room-name @roomActive">@room.Name<span class="room-user-count"></span></h2>
+                @if(room.Id == Model.ActiveRoom.Id)
                 {
-                <ul class="room-users">
-                    @foreach (ChatRoomUserViewModel user in Model.Users)
-                    {
-                        <li data-userId="@user.Id" data-roomId="@room.Id" class="@user.CssClasses" data-bind="attr: { 'class': $root.Users[@string.Format("'user_{0}'", user.Id)].CssClasses() }">
-                            <table>
-                                <tr>
-                                    <td style="padding-right: 6px;">
-                                        <img src="@Url.Action("Picture", "Profile", new { id = user.Id })" 
-                                            title="profile image" alt="profile image" style="" width="24" height="24" />
-                                    </td>
-                                    <td>@user.FirstAndLastName</td>
-                                </tr>
-                            </table>
-                        </li>
-                    }
-                </ul>
+                    <ul class="room-users">
+                        @foreach (ChatRoomUserViewModel user in Model.Users)
+                        {
+                            <li data-userid="@user.Id" data-roomid="@room.Id" class="@user.CssClasses" data-bind="attr: { 'class': $root.Users[@string.Format("'user_{0}'", user.Id)].CssClasses() }">
+                                <table>
+                                    <tr>
+                                        <td style="padding-right: 6px;">
+                                            <img src="@Url.Action("Picture", "Profile", new { id = user.Id })"
+                                                 title="profile image" alt="profile image" style="" width="24" height="24" />
+                                        </td>
+                                        <td>@user.FirstAndLastName</td>
+                                    </tr>
+                                </table>
+                            </li>
+                        }
+                    </ul>
                 }
             </li>
         }
@@ -170,7 +173,7 @@
         @foreach (var item in simpleModel.Users)
         {
             @:rawViewModel["Users"]["user_@item.Id"] = @Html.Raw(Json.Encode(item));
-        }
+                        }
         var ChatRoomUsersViewModel = ko.mapping.fromJS(rawViewModel);
 
         var scrollbarLocked = true;
@@ -264,7 +267,7 @@
         }
 
         function getRoomUsersSuccess(jsonData) {
-            
+
             var prettyData = {'Users': {} };
 
             $.each(jsonData, function(key, value){
@@ -287,48 +290,48 @@
             $.ajax(
                 {
                     url: "@Url.Action("RecentMessages")",
-                data: { chatRoomId: roomId, lastMessageTick: lastTimestamp },
-                dataType: "html",
-                type: "GET",
-                success: getRecentMessagesSuccess,
-                complete: getRecentMessages
-            }
+                    data: { chatRoomId: roomId, lastMessageTick: lastTimestamp },
+                    dataType: "html",
+                    type: "GET",
+                    success: getRecentMessagesSuccess,
+                    complete: getRecentMessages
+                }
             );
-    }
-
-    //sends new chat messages asynchronously
-    function sendMessage(event) {
-        event.preventDefault();
-        $("#submit-message").attr("disabled", "disabled");
-        var roomId = "@Model.ActiveRoom.Id";
-        var chatMessage = $("#chat-box").val();
-        $("#chat-box").val("");
-        $.ajax(
-            {
-                url: "@Url.Action("PostMessageAsync")",
-                data: { chatRoomId: roomId, message: chatMessage },
-                dataType: "json",
-                type: "POST",
-                complete: function (event) { $("#submit-message").removeAttr("disabled"); }
-            }
-            );
-    }
-
-    function getRecentMessagesSuccess(html) {
-        $("#chat-window").append(html);
-        if (scrollbarLocked == true) {
-            $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
         }
-        parseDates();
-    }
 
-    function chatBoxKeyDown(event) {
-        if ($("#enter-as-send").is(":checked")) {
-            if (event.which == 13) {
-                event.preventDefault();
-                $("#submit-message").click();
+        //sends new chat messages asynchronously
+        function sendMessage(event) {
+            event.preventDefault();
+            $("#submit-message").attr("disabled", "disabled");
+            var roomId = "@Model.ActiveRoom.Id";
+            var chatMessage = $("#chat-box").val();
+            $("#chat-box").val("");
+            $.ajax(
+                {
+                    url: "@Url.Action("PostMessageAsync")",
+                    data: { chatRoomId: roomId, message: chatMessage },
+                    dataType: "json",
+                    type: "POST",
+                    complete: function (event) { $("#submit-message").removeAttr("disabled"); }
+                }
+                );
+        }
+
+        function getRecentMessagesSuccess(html) {
+            $("#chat-window").append(html);
+            if (scrollbarLocked == true) {
+                $("#chat-window").scrollTop($('#chat-window').get(0).scrollHeight);
+            }
+            parseDates();
+        }
+
+        function chatBoxKeyDown(event) {
+            if ($("#enter-as-send").is(":checked")) {
+                if (event.which == 13) {
+                    event.preventDefault();
+                    $("#submit-message").click();
+                }
             }
         }
-    }
     </script>
 }

@@ -1,4 +1,5 @@
-﻿@using OSBIDE.Library.Models
+﻿@using OSBIDE.Library
+@using OSBIDE.Library.Models
 @using OSBIDE.Library.Events
 @using OSBIDE.Web.Models
 @using OSBIDE.Web.Models.ViewModels
@@ -7,9 +8,16 @@
 @{
     ViewBag.Title = "Activity Feed";
 }
+<!--
+<article style="max-width:500px;">
+    <h1>Notice</h1>
+    <p>In preparation for a higher than normal server load, automatic loading of new feed posts has been temporarily disabled.  
+    In order to view the most recent feed items, you will need to manually @Html.ActionLink("refresh", "Index", new { component = OsbideVsComponent.FeedOverview }, new {}) this page.</p>
+</article>
+    -->
 @using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class = "spinner" }))
 {
-    <section id="add-feed-comment">
+    <article id="add-feed-comment">
         <h1>Post a comment:</h1>
         <div>
             <textarea style="width: 100%; height: 50px" name="comment"></textarea>
@@ -17,11 +25,11 @@
         <input type="submit" name="submit" id="post-comment-button" value="Post Comment" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         <input id="filter-options-button" type="button" value="Filter Options" />
-    </section>
+    </article>
 }
 @using (Html.BeginForm("ApplyFeedFilter", "Feed"))
 {
-    <section id="filter-options" style="display: none;">
+    <article id="filter-options" style="display: none;">
         <article>
             <h2>Filter by Activity Type:</h2>
             <ul>
@@ -88,7 +96,7 @@
         </article>
         <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
         <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
-    </section>
+    </article>
 }
 @Html.Partial("Feed/_Feed", Model)
 <script type="text/javascript">

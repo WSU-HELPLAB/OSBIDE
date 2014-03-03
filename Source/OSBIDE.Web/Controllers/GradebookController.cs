@@ -125,6 +125,9 @@ namespace OSBIDE.Web.Controllers
 
             }
 
+            ViewBag.CurrentCourseId = courseId;
+            ViewBag.EnrolledCourses = Db.CourseUserRelationships.Where(cur => cur.UserId == CurrentUser.Id).Select(cur => cur.Course).ToList();
+
             return View();
         }
 
@@ -169,7 +172,7 @@ namespace OSBIDE.Web.Controllers
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAccess(SystemRole.Instructor)]
+        [DenyAccess(SystemRole.Student)]
         public ActionResult UploadGradebook(HttpPostedFileBase file, int courseId = -1)
         {
             //default to user's default course

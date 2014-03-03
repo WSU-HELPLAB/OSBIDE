@@ -30,6 +30,7 @@
             <ul>
                 <li>@Html.ActionLink("Activity Feed", "Index", "Feed", new { component = OsbideVsComponent.FeedOverview }, new { })</li>
                 <li>@Html.ActionLink("Courses", "Index", "Course", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
+                <li>@Html.ActionLink("Grades", "Index", "Gradebook", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
                 <li>@Html.ActionLink("Profile", "Index", "Profile", new { component = OsbideVsComponent.UserProfile, id = ViewBag.CurrentUser.Id }, new { })</li>
             </ul>
             <!--

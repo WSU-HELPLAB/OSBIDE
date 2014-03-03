@@ -43,7 +43,26 @@
     }
     
     
-    <h2>@ViewBag.Title </h2>
+    <h1>@ViewBag.Title </h1>
+
+    <article>
+        <h2>Select Course</h2>
+        @using(Html.BeginForm())
+        {
+            <select name="courseId">
+                @foreach (OSBIDE.Library.Models.Course c in ViewBag.EnrolledCourses)
+                {
+                    string selected = "";
+                    if (c.Id == ViewBag.CurrentCourseId)
+                    {
+                        selected = "selected=\"selected\"";
+                    }
+                    <option @Html.Raw(selected) value="@c.Id">@c.Name</option>
+                }
+            </select>
+            <input type="submit" value="View Grades" />
+        }
+    </article>
 
     @if (GradeBookExists == false)
     {
@@ -51,6 +70,7 @@
     }
     else
     {
+        <h2>Grading Categories</h2>
         <ul id="GradebookNav">
             @foreach (string tabName in TabNames)
             {
