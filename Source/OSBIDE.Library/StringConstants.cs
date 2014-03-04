@@ -23,6 +23,22 @@ namespace OSBIDE.Library
             }
         }
 
+        public static string AesKeyCacheKey
+        {
+            get
+            {
+                return "AesKey";
+            }
+        }
+
+        public static string AesVectorCacheKey
+        {
+            get
+            {
+                return "AesVector";
+            }
+        }
+
         public static string UserNameCacheKey
         {
             get

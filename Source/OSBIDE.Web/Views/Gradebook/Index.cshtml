@@ -47,7 +47,7 @@
 
     <article>
         <h2>Select Course</h2>
-        @using(Html.BeginForm())
+        @using(Html.BeginForm("Index", "Gradebook", FormMethod.Get))
         {
             <select name="courseId">
                 @foreach (OSBIDE.Library.Models.Course c in ViewBag.EnrolledCourses)
@@ -82,7 +82,7 @@
                 }
                 else
                 {
-                    string actionLink = Url.Action("Index", "Gradebook", new { area = "", gradebookName = tabName });
+                    string actionLink = Url.Action("Index", "Gradebook", new { area = "", gradebookName = tabName, courseId = ViewBag.CurrentCourseId });
                     liClasses += " GradebookNavNotActive";
                     <li class="@liClasses"><a href="@actionLink">@tabName</a></li>
                 }

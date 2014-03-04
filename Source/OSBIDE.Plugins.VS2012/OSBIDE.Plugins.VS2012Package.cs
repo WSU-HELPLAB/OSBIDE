@@ -26,6 +26,7 @@ using System.IO;
 using OSBIDE.Controls;
 using Microsoft.VisualStudio.CommandBars;
 using System.Net;
+using System.Security.Cryptography;
 
 namespace OSBIDE.Plugins.VS2012
 {
@@ -69,6 +70,7 @@ namespace OSBIDE.Plugins.VS2012
         private OsbideToolWindowManager _manager = null;
         private uint _EventSinkCookie;
         private EnvDTE.CommandBarEvents _osbideErrorListEvent;
+        private RijndaelManaged _encoder = new RijndaelManaged();
 
         //If OSBIDE isn't up to date, don't allow logging as it means that we've potentially 
         //changed the way the web service operates
@@ -208,7 +210,7 @@ namespace OSBIDE.Plugins.VS2012
             {
                 CommandBars cmdBars = (CommandBars)dte.CommandBars;
                 CommandBar errorListBar = cmdBars[10];
-                
+
                 CommandBarControl osbideControl = errorListBar.Controls.Add(MsoControlType.msoControlButton,
                                                                       System.Reflection.Missing.Value,
                                                                       System.Reflection.Missing.Value, 1, true);
@@ -224,9 +226,31 @@ namespace OSBIDE.Plugins.VS2012
             _webServiceClient.LoginCompleted += InitStepTwo_LoginCompleted;
             _webServiceClient.GetMostRecentWhatsNewItemCompleted += GetRecentNewsItemDateComplete;
 
-            //pull saved user data
+            //set up local encryption
+            if (_cache.Contains(StringConstants.AesKeyCacheKey) == false)
+            {
+                _encoder.GenerateKey();
+                _encoder.GenerateIV();
+                _cache[StringConstants.AesKeyCacheKey] = _encoder.Key;
+                _cache[StringConstants.AesVectorCacheKey] = _encoder.IV;
+            }
+            else
+            {
+                _encoder.Key = _cache[StringConstants.AesKeyCacheKey] as byte[];
+                _encoder.IV = _cache[StringConstants.AesVectorCacheKey] as byte[];
+            }
+
+            //set up user name and password
             _userName = _cache[StringConstants.UserNameCacheKey] as string;
-            _userPassword = _cache[StringConstants.PasswordCacheKey] as string;
+            byte[] passwordBytes = _cache[StringConstants.PasswordCacheKey] as byte[];
+            try
+            {
+                _userPassword = AesEncryption.DecryptStringFromBytes_Aes(passwordBytes, _encoder.Key, _encoder.IV);
+            }
+            catch (Exception)
+            {
+            }
+            
 
             //set up tool window manager
             _manager = new OsbideToolWindowManager(_cache as FileCache, this);
@@ -410,7 +434,7 @@ namespace OSBIDE.Plugins.VS2012
                 cachedDate = DateTime.MinValue;
                 _cache.Remove(newsKey);
             }
-            
+
             //pull latest date from web
             try
             {
@@ -838,12 +862,11 @@ namespace OSBIDE.Plugins.VS2012
             {
                 try
                 {
+
                     _cache[StringConstants.UserNameCacheKey] = vm.Email;
                     _userName = vm.Email;
-
-                    _cache[StringConstants.PasswordCacheKey] = vm.Password;
                     _userPassword = vm.Password;
-
+                    _cache[StringConstants.PasswordCacheKey] = AesEncryption.EncryptStringToBytes_Aes(vm.Password, _encoder.Key, _encoder.IV);
                     _cache[StringConstants.AuthenticationCacheKey] = vm.AuthenticationHash;
 
                 }
@@ -935,6 +958,7 @@ namespace OSBIDE.Plugins.VS2012
         public void Dispose()
         {
             _webServiceClient.Close();
+            _encoder.Dispose();
         }
     }
 }

@@ -230,7 +230,17 @@ namespace OSBIDE.Library.ServiceClient
                     if (result == false)
                     {
                         string userName = _cache[StringConstants.UserNameCacheKey] as string;
-                        string password = _cache[StringConstants.PasswordCacheKey] as string;
+                        byte[] passwordBytes = _cache[StringConstants.PasswordCacheKey] as byte[];
+                        byte[] encoderKey = _cache[StringConstants.AesKeyCacheKey] as byte[];
+                        byte[] encoderVector = _cache[StringConstants.AesVectorCacheKey] as byte[];
+                        string password = "";
+                        try
+                        {
+                            password = AesEncryption.DecryptStringFromBytes_Aes(passwordBytes, encoderKey, encoderVector);
+                        }
+                        catch (Exception)
+                        {
+                        }
                         if (userName != null && password != null)
                         {
                             webServiceKey = _webServiceClient.Login(userName, UserPassword.EncryptPassword(password, userName));

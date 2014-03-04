@@ -140,7 +140,7 @@ namespace OSBIDE.Library.Events
         /// <returns></returns>
         private string[] GetSolutionFileList(string path)
         {
-            string[] noDirectorySearchList = { "bin", "obj", "debug", "release", "ipch" };
+            string[] noDirectorySearchList = { "bin", "obj", "debug", "release", "ipch", "packages" };
             string[] noFileExtension = { ".sdf", ".ipch", ".dll" };
             List<string> filesToAdd = new List<string>(10);
 

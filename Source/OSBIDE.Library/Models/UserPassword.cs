@@ -88,6 +88,7 @@ namespace OSBIDE.Library.Models
 
         private static byte[] GenerateSaltedHash(byte[] plainText, byte[] salt)
         {
+            //TODO: Upgrade to SHA512 in next version release
             HashAlgorithm algorithm = new SHA256Managed();
 
             byte[] plainTextWithSaltBytes =
