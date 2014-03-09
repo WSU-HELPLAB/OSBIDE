@@ -1,9 +1,0 @@
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\OSBIDE.Library.dll
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\OSBIDE.Library.pdb
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\EntityFramework.dll
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\Ionic.Zip.dll
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\EntityFramework.xml
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\bin\OSBIDE Deployment\Ionic.Zip.xml
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\obj\OSBIDE Deployment\ResolveAssemblyReference.cache
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\obj\OSBIDE Deployment\OSBIDE.Library.dll
-D:\dropbox\code\osbide\December-2011\OSBIDE\OSBIDE.Library\obj\OSBIDE Deployment\OSBIDE.Library.pdb
