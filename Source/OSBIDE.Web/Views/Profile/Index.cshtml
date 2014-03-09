@@ -118,7 +118,7 @@
                     string content = "";
                     
                     //is the user commenting on an anymous event?
-                    List<IOsbideEvent> ideEvents = OSBIDE.Web.Models.Queries.ActivityFeedQuery.GetIdeEvents();
+                    var ideEvents = OSBIDE.Web.Models.Queries.ActivityFeedQuery.GetIdeEvents();
                     EventLog sourceEvent = socialLogs[0].LogCommentEvent.SourceEventLog;
                     if (ideEvents.Where(e => e.EventName == sourceEvent.LogType).FirstOrDefault() != null)
                     {

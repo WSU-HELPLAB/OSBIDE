@@ -7,17 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "Source\OS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Web", "Source\OSBIDE.Web\OSBIDE.Web.csproj", "{27322208-551E-4950-A959-7AAA72BA0C8A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Data", "Source\OSBIDE.Data\OSBIDE.Data.csproj", "{7EEA481B-1995-402E-956D-6757672F1693}"
+EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 1
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
-		SccProjectUniqueName0 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
-		SccProjectName0 = Source/OSBIDE.Library
-		SccAuxPath0 = https://tfs.codeplex.com/tfs/tfs25
-		SccLocalPath0 = Source\\OSBIDE.Library
-		SccProvider0 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -39,6 +31,12 @@ Global
 		{27322208-551E-4950-A959-7AAA72BA0C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27322208-551E-4950-A959-7AAA72BA0C8A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{27322208-551E-4950-A959-7AAA72BA0C8A}.Release|x86.ActiveCfg = Release|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EEA481B-1995-402E-956D-6757672F1693}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

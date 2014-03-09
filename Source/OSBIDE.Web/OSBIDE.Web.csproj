@@ -192,7 +192,6 @@
     <Compile Include="Models\DocumentError.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\ExceptionEventHelpers.cs" />
-    <Compile Include="Models\FeedItem.cs" />
     <Compile Include="Models\FileCacheHelper.cs" />
     <Compile Include="Models\ObjectBinder.cs" />
     <Compile Include="Models\Queries\ActivityFeedQuery.cs" />
@@ -373,7 +372,9 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Services\OsbideWebService.svc" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -453,6 +454,10 @@
     <Content Include="Views\Gradebook\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">
+      <Project>{7eea481b-1995-402e-956d-6757672f1693}</Project>
+      <Name>OSBIDE.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
       <Name>OSBIDE.Library</Name>

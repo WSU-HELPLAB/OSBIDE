@@ -25,8 +25,8 @@ namespace OSBIDE.Web.Controllers
         [RequiresVisualStudioConnectionForStudents]
         public ActionResult Index(int? id, int timestamp = -1)
         {
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
-            ActivityFeedQuery subscriptionsQuery = new ActivityFeedQuery(Db);
+            var query = new ActivityFeedQuery();
+            var subscriptionsQuery = new ActivityFeedQuery();
             ProfileViewModel vm = new ProfileViewModel();
             vm.User = CurrentUser;
             if (id != null)
@@ -42,11 +42,6 @@ namespace OSBIDE.Web.Controllers
             {
                 DateTime pullDate = new DateTime(timestamp);
                 query.StartDate = pullDate;
-            }
-            else
-            {
-                query.StartDate = DateTime.UtcNow.AddHours(-48);
-
             }
 
             //Only show social events

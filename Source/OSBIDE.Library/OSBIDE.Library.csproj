@@ -177,7 +177,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="IdenticonRenderer.cs" />
-    <Compile Include="Models\ActionRequestLog.cs" />
     <Compile Include="Models\Assignment.cs" />
     <Compile Include="Models\BuildDocument.cs" />
     <Compile Include="Models\BuildError.cs" />

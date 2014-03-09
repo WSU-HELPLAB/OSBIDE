@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
-using System.Web;
+using System.Net.Mail;
+using System.Runtime.Caching;
 using System.Web.Mvc;
+
+using OSBIDE.Data.SQLDatabase;
+using OSBIDE.Library;
+using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models;
-using System.Text.RegularExpressions;
-using System.Runtime.Caching;
-using OSBIDE.Library.Events;
 using OSBIDE.Web.Services;
-using OSBIDE.Library;
-using System.Net.Mail;
 
 namespace OSBIDE.Web.Controllers
 {
@@ -27,7 +27,7 @@ namespace OSBIDE.Web.Controllers
         {
             get
             {
-                string conn = "";
+                var conn = string.Empty;
 #if DEBUG
                 conn = System.Configuration.ConfigurationManager.ConnectionStrings["OsbideDebugContext"].ConnectionString;
 #else
@@ -201,17 +201,9 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         protected string[] GetRecentCompileErrors(OsbideUser user, DateTime timeframe)
         {
-            List<string> errors = new List<string>();
+            var errors = new List<string>();
 
-            List<ErrorListItem> errorItems = (from log in Db.EventLogs
-                                              join build in Db.BuildEvents on log.Id equals build.EventLogId
-                                              join buildError in Db.BuildEventErrorListItems on build.Id equals buildError.BuildEventId
-                                              join error in Db.ErrorListItems on buildError.ErrorListItemId equals error.Id
-                                              where
-                                                error.Description.ToLower().StartsWith("error") == true
-                                                && log.SenderId == user.Id
-                                                && log.DateReceived > timeframe
-                                              select error).ToList();
+            var errorItems = RecentErrorProc.Get(user.Id, timeframe);
             return errorItems.Where(e => e.CriticalErrorName.Length > 0).Select(e => e.CriticalErrorName).ToArray();
         }
         

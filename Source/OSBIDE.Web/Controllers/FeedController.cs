@@ -1,4 +1,10 @@
-﻿using DiffMatchPatch;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Web.Mvc;
+
+using OSBIDE.Data.DomainObjects;
 using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
@@ -7,12 +13,6 @@ using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models.Queries;
 using OSBIDE.Web.Models.ViewModels;
 using OSBIDE.Web.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Web;
-using System.Web.Mvc;
 
 namespace OSBIDE.Web.Controllers
 {
@@ -42,7 +42,7 @@ namespace OSBIDE.Web.Controllers
             //turned off for now.
             //return RedirectToAction("FeedDown", "Error");
 
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            var query = new ActivityFeedQuery();
 
             //Two ways that we can receive an error type: by name (errorTypeStr) or by ID (errorType).
             //First, we check the string and see if we can match it to an ID number.  Then, we check
@@ -71,7 +71,6 @@ namespace OSBIDE.Web.Controllers
             }
             else
             {
-                query.StartDate = DateTime.MinValue;
                 query.MaxQuerySize = 40;
             }
 
@@ -194,7 +193,7 @@ namespace OSBIDE.Web.Controllers
         {
             //return View("AjaxFeed", new List<AggregateFeedItem>()); 
 
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            var query = new ActivityFeedQuery();
             if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
@@ -370,7 +369,7 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1)
         {
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            var query = new ActivityFeedQuery();
             if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
@@ -438,7 +437,7 @@ namespace OSBIDE.Web.Controllers
                 }
             }
 
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
+            var query = new ActivityFeedQuery();
 
             List<int> ids = ParseIdString(id);
             foreach (int logId in ids)
@@ -664,7 +663,7 @@ namespace OSBIDE.Web.Controllers
             //check for null query
             if (query == null)
             {
-                query = new ActivityFeedQuery(Db);
+                query = new ActivityFeedQuery();
             }
 
             //add the event types that the user wants to see
