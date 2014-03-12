@@ -457,6 +457,11 @@ namespace OSBIDE.Web.Controllers
             MemoryStream stream = new MemoryStream();
             userBitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
             stream.Position = 0;
+
+            //set expires header
+            Response.Cache.SetExpires(DateTime.Now.AddDays(1));
+            Response.Cache.SetLastModified(DateTime.Now.AddDays(-1));
+
             return new FileStreamResult(stream, "image/png");
         }
 
