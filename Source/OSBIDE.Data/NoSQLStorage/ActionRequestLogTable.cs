@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -150,8 +151,9 @@ namespace OSBIDE.Data.NoSQLStorage
         {
             try
             {
-                var accountName = "appcoders";
-                var accountKey = "tdk2W5BulLYV6ofSuCIRswAqyuqG2duwf9T2ZfA5vjKfR5rYL3T/Xuv+9r0R+X0TDHd9ISKl6WAjjTfe7KWCbw==";
+                var configKey = ConfigurationManager.AppSettings["CloudTable"].Split('|');
+                var accountName = configKey[0];
+                var accountKey = configKey[1];
                 var creds = new StorageCredentials(accountName, accountKey);
                 var account = new CloudStorageAccount(creds, useHttps: true);
                 var client = account.CreateCloudTableClient();

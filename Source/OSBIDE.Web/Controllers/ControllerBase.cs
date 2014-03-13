@@ -392,6 +392,15 @@ namespace OSBIDE.Web.Controllers
             }
             return true;
         }
-
+        public void LogErrorMessage(Exception ex)
+        {
+            Db.LocalErrorLogs.Add(new LocalErrorLog
+            {
+                SenderId = CurrentUser.Id,
+                LogDate = DateTime.Now,
+                Content = ex.Message,
+            });
+            Db.SaveChanges();
+        }
     }
 }

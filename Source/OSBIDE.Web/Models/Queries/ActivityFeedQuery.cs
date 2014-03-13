@@ -18,7 +18,7 @@ namespace OSBIDE.Web.Models.Queries
         public ActivityFeedQuery()
         {
             StartDate = new DateTime(2010, 1, 1);
-            EndDate = DateTime.Today;
+            EndDate = DateTime.Today.AddDays(3);
             MinLogId = -1;
             MaxLogId = -1;
             MaxQuerySize = 20;

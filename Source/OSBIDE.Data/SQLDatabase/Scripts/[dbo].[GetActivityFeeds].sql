@@ -3,7 +3,7 @@
 -- sproc [GetActivityFeeds]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetActivityFeeds]
+create procedure [dbo].[GetActivityFeeds]
 
 	 @DateReceivedMin datetime
 	,@DateReceivedMax datetime
