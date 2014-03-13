@@ -15,7 +15,10 @@
     }
     List<int> globalRowIndicies = ViewBag.GlobalRows;
 }
-
+@section scripts
+{
+    <link rel="stylesheet" type="text/css" href="~/Content/Gradebook.css" />
+}
 
     @if (IsInstructorOrTa)
     {
