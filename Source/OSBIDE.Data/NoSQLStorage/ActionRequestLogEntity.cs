@@ -17,5 +17,6 @@ namespace OSBIDE.Data.NoSQLStorage
         public string ActionName { get; set; }
         public string ActionParameters { get; set; }
         public string IpAddress { get; set; }
+        public int CreatorId { get; set; }
     }
 }

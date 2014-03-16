@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Web.Mvc;
 
 using OSBIDE.Data.DomainObjects;
+using OSBIDE.Data.SQLDatabase;
 using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
@@ -144,7 +145,7 @@ namespace OSBIDE.Web.Controllers
             // 1. Find all errors being sent out
             // 2. Find students who have recently had these errors
             // 3. Add this info to our VM
-
+            #region class build errors
             //step 1
             List<BuildEvent> feedBuildEvents = feedItems
                 .Where(i => i.Log.LogType.CompareTo(BuildEvent.Name) == 0)
@@ -189,7 +190,7 @@ namespace OSBIDE.Web.Controllers
                     ErrorName = item.ErrorName
                 });
             }
-
+            #endregion
             vm.RecentClassErrors = classBuildErrors;
         }
 
@@ -253,11 +254,12 @@ namespace OSBIDE.Web.Controllers
             try
             {
                 List<int> logIds = new List<int>();
-                try
+
+                if (!string.IsNullOrWhiteSpace(Request["logIds"]))
                 {
                     logIds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<int>>(Request.Form["logIds"]);
                 }
-                catch (Exception)
+                else
                 {
                     logIds = new List<int>();
                 }
@@ -268,82 +270,55 @@ namespace OSBIDE.Web.Controllers
                     logIds.Add((int)singleLogId);
                 }
 
+                var allcomments = CommentsProc.Get(string.Join(",", logIds), CurrentUser.Id).OrderBy(c => c.EventDate);
+
                 //for each log Id, build the appropriate comments view model
                 Dictionary<int, List<CommentsViewModel>> viewModels = new Dictionary<int, List<CommentsViewModel>>();
                 List<object> jsonVm = new List<object>();
+
                 foreach (int logId in logIds)
                 {
-                    EventLog log = Db.EventLogs.Where(l => l.Id == logId).FirstOrDefault();
-                    int actualLogId = logId;
-                    if (log != null)
+                    var actualLogId = logId;
+
+                    if (allcomments.Any(c => c.OriginalId == logId && c.ActualId != logId))
                     {
-                        IList<LogCommentEvent> comments = new List<LogCommentEvent>();
+                        // original log is either a comment or a helpful mark
+                        actualLogId = allcomments.First(c => c.OriginalId == logId && c.ActualId != logId).ActualId;
+                    }
 
-                        //log comment events and mark helpful events need to pull their comments from the log to which they're attached.  All others
-                        //pull from themselves.
-                        if (log.LogType == LogCommentEvent.Name)
-                        {
-                            LogCommentEvent evt = Db.LogCommentEvents.Where(c => c.EventLogId == log.Id).FirstOrDefault();
-                            if (evt != null)
-                            {
-                                actualLogId = evt.SourceEventLogId;
-                                comments = evt.SourceEventLog.Comments;
-                            }
-                        }
-                        else if (log.LogType == HelpfulMarkGivenEvent.Name)
-                        {
-                            HelpfulMarkGivenEvent evt = Db.HelpfulMarkGivenEvents.Where(h => h.EventLogId == log.Id).FirstOrDefault();
-                            if (evt != null)
-                            {
-                                actualLogId = evt.LogCommentEvent.SourceEventLogId;
-                                comments = evt.LogCommentEvent.SourceEventLog.Comments;
-                            }
-                        }
-                        else
-                        {
-                            comments = log.Comments;
-                        }
-
-                        //ignore duplicate log Ids
-                        if (viewModels.ContainsKey(actualLogId) == true)
-                        {
-                            continue;
-                        }
+                    if (!viewModels.Keys.Contains(actualLogId))
+                    {
                         viewModels.Add(actualLogId, new List<CommentsViewModel>());
+                    }
 
-                        //sort comments
-                        comments = comments.OrderBy(c => c.EventDate).ToList();
-
-                        //convert LogCommentEvents into JSON
-                        foreach (LogCommentEvent comment in comments)
+                    var logComments = allcomments.Where(c => c.ActualId == actualLogId);
+                    //convert LogCommentEvents into JSON
+                    foreach (var comment in logComments)
+                    {
+                        if (!viewModels[actualLogId].Any(c => c.CommentId == comment.CommentId))
                         {
-                            CommentsViewModel c = new CommentsViewModel()
+                            var commentVM = new CommentsViewModel()
                             {
-                                CommentId = comment.Id,
-                                CourseName = comment.EventLog.Sender.DefaultCourse.Name,
+                                CommentId = comment.CommentId,
+                                CourseName = comment.CourseName,
                                 Content = comment.Content,
-                                FirstAndLastName = comment.EventLog.Sender.FirstAndLastName,
-                                ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.EventLog.SenderId, size = 48 }),
+                                FirstAndLastName = comment.FirstAndLastName,
+                                ProfileUrl = Url.Action("Picture", "Profile", new { id = comment.SenderId, size = 48 }),
                                 UtcEventDate = comment.EventDate,
-                                MarkHelpfulCount = comment.HelpfulMarks.Count(),
-                                MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.Id, returnUrl = Url.Action("Index", "Feed") })
+                                MarkHelpfulCount = comment.HelpfulMarkCounts,
+                                MarkHelpfulUrl = Url.Action("MarkCommentHelpful", "Feed", new { commentId = comment.CommentId, returnUrl = Url.Action("Index", "Feed") }),
+                                DisplayHelpfulMarkLink = !comment.IsHelpfulMarkSender,
                             };
 
-                            //check to see if the current user is allowed to mark the comment as helpful
-                            HelpfulMarkGivenEvent helpful = comment.HelpfulMarks.Where(m => m.EventLog.SenderId == CurrentUser.Id).FirstOrDefault();
-                            if (helpful == null && comment.EventLog.SenderId != CurrentUser.Id)
-                            {
-                                c.DisplayHelpfulMarkLink = true;
-                            }
-
                             //add to VM
-                            viewModels[actualLogId].Add(c);
+                            viewModels[actualLogId].Add(commentVM);
                         }
-
-                        //convert to json view model
-                        jsonVm.Add(new { Comments = viewModels[actualLogId], ActualLogId = actualLogId, OriginalLogId = logId });
                     }
+
+                    //convert to json view model
+                    jsonVm.Add(new { Comments = viewModels[actualLogId], ActualLogId = actualLogId, OriginalLogId = logId });
                 }
+
                 return this.Json(new { Data = jsonVm }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -427,7 +402,7 @@ namespace OSBIDE.Web.Controllers
 
                 return View("AjaxFeed", aggregateFeed);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
                 return RedirectToAction("FeedDown", "Error");
@@ -499,7 +474,7 @@ namespace OSBIDE.Web.Controllers
                 }
                 return View(vm);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
                 return RedirectToAction("FeedDown", "Error");
@@ -588,7 +563,7 @@ namespace OSBIDE.Web.Controllers
                     Db.SaveChanges();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
@@ -719,7 +694,7 @@ namespace OSBIDE.Web.Controllers
                 //save changes
                 Db.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }

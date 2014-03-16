@@ -13,15 +13,23 @@ namespace OSBIDE.Data.DomainObjects
         {
             using (var storage = new ActionRequestLogTable())
             {
+                var utc = DateTime.UtcNow;
                 var entity = new ActionRequestLogEntity
                 {
                     PartitionKey = log.SchoolId.ToString(CultureInfo.InvariantCulture),
-                    RowKey = string.Format("{0}_{1}", log.CreatorId.ToString(CultureInfo.InstalledUICulture), DateTime.UtcNow.ToBinary()),
+                    RowKey = string.Format("{0}_{1}_{2}_{3}_{4}_{5}",
+                                            log.CreatorId.ToString(CultureInfo.InstalledUICulture),
+                                            utc.ToLongDateString(),
+                                            utc.ToLongTimeString(),
+                                            log.ControllerName,
+                                            log.ActionName,
+                                            log.ActionParameters),
                     ControllerName = log.ControllerName,
                     ActionParameters = log.ActionParameters,
                     ActionName = log.ActionName,
                     AccessDate = log.AccessDate,
                     IpAddress = log.IpAddress,
+                    CreatorId=log.CreatorId,
                 };
                 storage.Insert(entity);
             }
@@ -40,6 +48,7 @@ namespace OSBIDE.Data.DomainObjects
                     ActionName = log.ActionName,
                     AccessDate = log.AccessDate,
                     IpAddress = log.IpAddress,
+                    CreatorId=log.CreatorId,
                 }));
             }
         }

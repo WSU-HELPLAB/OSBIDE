@@ -86,11 +86,6 @@ begin
 	-- EventLogs 
 	select Id, LogType, DateReceived, SenderId, IsResult from #events
 
-	-- Gravatars
-	select g.UserID, g.Picture
-	from [dbo].[ProfileImages] g with (nolock)
-	inner join #events b on b.SenderId=g.UserID
-
 	-- Event and Comment Users 
 	select distinct a.Id
 		 , a.Email
@@ -179,4 +174,5 @@ begin
 	inner join #events b on b.Id=a.EventLogId
 
 end
+
 

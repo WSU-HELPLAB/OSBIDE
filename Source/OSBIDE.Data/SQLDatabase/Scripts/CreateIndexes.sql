@@ -45,6 +45,9 @@ include(SourceEventLogId)
 
 create nonclustered index [IX_LogCommentEvents_SourceEventLogIdAll] on [dbo].[LogCommentEvents]([SourceEventLogId] asc)
 
+create nonclustered index [IX_LogCommentEvents_Id] on [dbo].[LogCommentEvents]([Id] asc)
+include(EventDate, Content, SourceEventLogId)
+
 create nonclustered index [IX_SaveEvents_EventLogId] on [dbo].[SaveEvents]([EventLogId] asc)
 include(Id, EventDate, DocumentId, SolutionName)
 

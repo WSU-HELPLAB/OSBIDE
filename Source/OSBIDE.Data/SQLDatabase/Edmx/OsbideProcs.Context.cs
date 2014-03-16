@@ -89,5 +89,18 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetRecentCompileErrors_Result>("GetRecentCompileErrors", senderIdParameter, timeframeParameter);
         }
+    
+        public virtual ObjectResult<GetComments_Result> GetComments(string eventLogIds, Nullable<int> currentUserId)
+        {
+            var eventLogIdsParameter = eventLogIds != null ?
+                new ObjectParameter("EventLogIds", eventLogIds) :
+                new ObjectParameter("EventLogIds", typeof(string));
+    
+            var currentUserIdParameter = currentUserId.HasValue ?
+                new ObjectParameter("CurrentUserId", currentUserId) :
+                new ObjectParameter("CurrentUserId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetComments_Result>("GetComments", eventLogIdsParameter, currentUserIdParameter);
+        }
     }
 }

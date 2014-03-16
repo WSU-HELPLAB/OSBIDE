@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
+    <Compile Include="DomainObjects\Comment.cs" />
     <Compile Include="DomainObjects\DomainConstants.cs" />
     <Compile Include="DomainObjects\FeedItem.cs" />
     <Compile Include="DomainObjects\DomainObjectHelpers.cs" />
@@ -67,6 +68,9 @@
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetBuildEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetComments_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetCutCopyPasteEvents_Result.cs">
@@ -99,9 +103,6 @@
     <Compile Include="SQLDatabase\Edmx\GetOsbideUsers_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetProfileImage_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetRecentCompileErrors_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -131,6 +132,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLDatabase\EventLogsProc.cs" />
+    <Compile Include="SQLDatabase\CommentsProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -158,7 +160,12 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />
+    <Content Include="SQLDatabase\Scripts\Dummy.sql" />
+    <Content Include="SQLDatabase\Scripts\EventView.sql" />
+    <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
   </ItemGroup>
   <ItemGroup>

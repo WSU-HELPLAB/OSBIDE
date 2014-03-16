@@ -394,11 +394,21 @@ namespace OSBIDE.Web.Controllers
         }
         public void LogErrorMessage(Exception ex)
         {
+            var msg = string.Format("message: {0}, source: {1}, stack trace: {2}, TargetSite: {3}", ex.Message, ex.Source, ex.StackTrace, ex.TargetSite);
+
+            if (ex.Data != null && ex.Data.Keys != null)
+            {
+                foreach (var key in ex.Data.Keys)
+                {
+                    msg = string.Format("{0}, {1}|{2},", msg, key, ex.Data[key]);
+                }
+            }
+
             Db.LocalErrorLogs.Add(new LocalErrorLog
             {
                 SenderId = CurrentUser.Id,
                 LogDate = DateTime.Now,
-                Content = ex.Message,
+                Content = msg
             });
             Db.SaveChanges();
         }

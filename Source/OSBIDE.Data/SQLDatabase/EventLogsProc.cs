@@ -40,17 +40,9 @@ namespace OSBIDE.Data.SQLDatabase
             var logs = new List<GetEventLogs_Result>();
             logs.AddRange(resultsR);
 
-            // the second result set includes a distinct list of involved users profile images
-            var imagesR = resultsR.GetNextResult<GetProfileImage_Result>();
-            var images = new List<ProfileImage>();
-            images.AddRange(imagesR.Select(i => new ProfileImage
-                                                          {
-                                                              UserID = i.UserID,
-                                                              Picture = i.Picture,
-                                                          }));
-
+            // the second image result is removed since it not used
             // the third result set includes a distinct list of involved users
-            var usersR = imagesR.GetNextResult<GetOsbideUsers_Result>();
+            var usersR = resultsR.GetNextResult<GetOsbideUsers_Result>();
             var users = new List<OsbideUser>();
             users.AddRange(usersR.Select(u => new OsbideUser
                                                           {
@@ -65,7 +57,6 @@ namespace OSBIDE.Data.SQLDatabase
                                                               ReceiveEmailOnNewFeedPost = u.ReceiveEmailOnNewFeedPost,
                                                               ReceiveNotificationEmails = u.ReceiveNotificationEmails,
                                                               LastVsActivity = u.LastVsActivity,
-                                                              ProfileImage = images.First(i => i.UserID == u.Id),
                                                           }));
 
             // the fourth result set includes the distinct list of comments on the criteria-qualified events
