@@ -10,7 +10,7 @@ create procedure [dbo].[GetActivityFeeds]
 	,@EventLogIds nvarchar(max)
 	,@EventTypes nvarchar(max)
 	,@CourseId int=0
-	,@RoleId int=0
+	,@RoleId int=99
 	,@SenderIds nvarchar(max)
 	,@MinLogId int=0
 	,@MaxLogId int=0
@@ -44,7 +44,7 @@ begin
 	set @sql+=N' from [dbo].[EventLogs] s with (nolock)'
 	set @sql+=N' inner join [dbo].[EventView] ev with (nolock) on ev.EventLogId=s.Id'
 	set @sql+=N' left join (select buildErrors=count(BuildErrorTypeId), LogId from [dbo].[BuildErrors] with (nolock) group by LogId) be on s.Id=be.LogId'
-	set @sql+=N' inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=' + cast(@RoleId as varchar(32)) + ' or ' + cast(@RoleId as varchar(32)) + '=-1)'
+	set @sql+=N' inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType>=' + cast(@RoleId as varchar(32)) + ' or ' + cast(@RoleId as varchar(32)) + '=99)'
 	set @sql+=N' inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId'
 	set @sql+=N' where (s.LogType in (' + @eventTypeFilters + ')'
 	set @sql+=case when @buildEventIncluded=1 then N' or s.LogType=''BuildEvent'' and be.buildErrors>0)' else N')' end
