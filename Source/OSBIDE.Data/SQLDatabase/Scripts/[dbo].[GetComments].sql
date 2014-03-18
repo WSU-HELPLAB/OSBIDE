@@ -119,11 +119,11 @@ begin
 		  ,u.FirstName
 		  ,l.SenderId
 		  ,cb.EventDate
-		  ,HelpfulMarkCounts=hm.HelpfulMarkCounts
+		  ,HelpfulMarkCounts=isnull(hm.HelpfulMarkCounts,0)
 		  ,IsHelpfulMarkSender=case when hm.HelpfulMarkSenderId > 0 then cast(1 as bit) else cast(0 as bit) end
 	from @events e
 	inner join [dbo].[HelpfulMarkGivenEvents] h with (nolock) on h.EventLogId=e.EventLogId
-	inner join [dbo].[LogCommentEvents] c with (nolock) on c.EventLogId=h.LogCommentEventId
+	inner join [dbo].[LogCommentEvents] c with (nolock) on c.Id=h.LogCommentEventId
 	inner join [dbo].[LogCommentEvents] cb with (nolock) on cb.SourceEventLogId=c.SourceEventLogId -- sibling comments
 	inner join [dbo].[EventLogs] l with (nolock) on l.Id=cb.EventLogId
 	inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=l.SenderId

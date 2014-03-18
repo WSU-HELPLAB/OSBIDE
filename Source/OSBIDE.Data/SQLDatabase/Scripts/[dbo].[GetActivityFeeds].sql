@@ -72,8 +72,8 @@ begin
 	select s.Id, s.LogType, s.DateReceived, s.SenderId, 0
 	from #events e
 	inner join [dbo].[HelpfulMarkGivenEvents] hm with (nolock) on hm.EventLogId=e.Id
-	inner join [dbo].[LogCommentEvents] cs with (nolock) on cs.EventLogId=hm.LogCommentEventId
-	inner join [dbo].[EventLogs] s with (nolock) on s.Id=cs.SourceEventLogId
+	inner join [dbo].[LogCommentEvents] cs with (nolock) on cs.Id=hm.LogCommentEventId
+	inner join [dbo].[EventLogs] s with (nolock) on (s.Id=cs.EventLogId or s.Id=cs.SourceEventLogId)
 	inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=@RoleId or @RoleId=-1)
 	inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId
 	where s.Id not in (select id from #events)

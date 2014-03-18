@@ -5,6 +5,7 @@ using System.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Auth;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Data.NoSQLStorage
 {
@@ -82,7 +83,14 @@ namespace OSBIDE.Data.NoSQLStorage
         /// <param name="entity"></param>
         public void Insert(ActionRequestLogEntity entity)
         {
-            GetTableReference().Execute(TableOperation.Insert(entity));
+            try
+            {
+                GetTableReference().Execute(TableOperation.Insert(entity));
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(entity, ex);
+            }
         }
 
         /// <summary>
@@ -169,6 +177,28 @@ namespace OSBIDE.Data.NoSQLStorage
 
                 throw;
             }
+        }
+        public void LogErrorMessage(ActionRequestLogEntity entity, Exception ex)
+        {
+            var msg = string.Format("message: {0}, source: {1}, stack trace: {2}, TargetSite: {3}", ex.Message, ex.Source, ex.StackTrace, ex.TargetSite);
+
+            if (ex.Data != null && ex.Data.Keys != null)
+            {
+                foreach (var key in ex.Data.Keys)
+                {
+                    msg = string.Format("{0}, {1}|{2},", msg, key, ex.Data[key]);
+                }
+            }
+                using (var context=new OsbideContext())
+                {
+                    context.LocalErrorLogs.Add(new LocalErrorLog
+                    {
+                        SenderId = Convert.ToInt32(entity.RowKey.Split('_')[0]),
+                        LogDate = DateTime.Now,
+                        Content = msg
+                    });
+                    context.SaveChanges();
+                }
         }
 
         #region IDispose

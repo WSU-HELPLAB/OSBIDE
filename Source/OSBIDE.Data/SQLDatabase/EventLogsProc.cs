@@ -325,7 +325,7 @@ namespace OSBIDE.Data.SQLDatabase
                 //  HelpfulMarkGivenEvent's comments are consumed through LogCommentEvent's source EventLog's Comments property
                 if (helpfulmarkO != null)
                 {
-                    helpfulmarkO.LogCommentEvent = comments.Where(cs => cs.EventLogId == helpfulmarkO.LogCommentEventId)
+                    helpfulmarkO.LogCommentEvent = comments.Where(cs => cs.Id == helpfulmarkO.LogCommentEventId)
                                                   .Select(cs => new LogCommentEvent
                                                   {
                                                       Id = cs.Id,
@@ -335,6 +335,17 @@ namespace OSBIDE.Data.SQLDatabase
                                                       EventDate = cs.EventDate,
                                                   })
                                                   .First();
+
+                    helpfulmarkO.LogCommentEvent.EventLog = logs.Where(cs => cs.Id == helpfulmarkO.LogCommentEvent.EventLogId)
+                                                 .Select(cs => new EventLog
+                                                 {
+                                                     Id = cs.Id,
+                                                     LogType = cs.LogType,
+                                                     SenderId = cs.SenderId,
+                                                     Sender = users.Single(u => u.Id == cs.SenderId),
+                                                     DateReceived = cs.DateReceived,
+                                                 })
+                                                 .First();
 
                     helpfulmarkO.LogCommentEvent.SourceEventLog = logs.Where(cs => cs.Id == helpfulmarkO.LogCommentEvent.SourceEventLogId)
                                                  .Select(cs => new EventLog

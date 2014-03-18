@@ -1,5 +1,35 @@
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
+-- Data clean up: remove EventLogs records that don't have any records in event tables
+--                remvoe event table records that don't have matching EventLogs records
+--				  RUN THIS BEFORE INDEXES ARE CREATED!!!
+-------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
+declare @sqlC nvarchar(max), @eventTypeC varchar(50)
+
+declare eventTypeCursor cursor
+for
+select distinct LogType from [dbo].[EventLogs]
+
+open eventTypeCursor
+fetch next from eventTypeCursor into @eventTypeC
+while (@@fetch_status <> -1)
+	begin
+
+		set @sqlC=N'delete from [dbo].[EventLogs] where [LogType]=''' + @eventTypeC + ''' and [Id] not in (select [EventLogId] from [dbo].[' + @eventTypeC + 's])'
+		exec sp_executesql @sqlC
+
+		set @sqlC=N'delete from [dbo].[' + @eventTypeC + 's] where EventLogId not in (select [Id] from [dbo].[EventLogs])'
+		exec sp_executesql @sqlC
+
+		fetch next from eventTypeCursor into @eventTypeC
+
+	end
+close eventTypeCursor
+deallocate eventTypeCursor
+
+-------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 -- Create event log cover indexes on event tables (this whole set runs 7:45 on my localhost)
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
