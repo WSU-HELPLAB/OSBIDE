@@ -118,7 +118,7 @@ namespace OSBIDE.Library.Models
                 OsbideContext _db;
 #if DEBUG
                 _db = new OsbideContext("OsbideDebugContext");
-                Database.SetInitializer<OsbideContext>(new CreateDatabaseIfNotExists<OsbideContext>());
+                Database.SetInitializer<OsbideContext>(new OsbideContextIfNotExistsInitializer());
                 //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 
                 //uncomment this line (and comment out the one above) when VS is acting stupid and won't

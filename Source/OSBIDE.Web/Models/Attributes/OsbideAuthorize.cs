@@ -72,7 +72,9 @@ namespace OSBIDE.Web.Models.Attributes
                 log.ActionParameters = parameters.ToString();
 
                 //save to azure table storage
+#if !DEBUG
                 DomainObjectHelpers.LogAccountRequest(log);
+#endif
             }
         }
     }
