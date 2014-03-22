@@ -108,17 +108,19 @@ namespace OSBIDE.Data.SQLDatabase
 
             // the 7th result set, BuildEvent
             var buildR = askforhelpR.GetNextResult<GetBuildEvents_Result>();
-            osbideEvents.AddRange(buildR.Select(e => new BuildEvent
+            osbideEvents.AddRange(buildR.GroupBy(e=>new { e.EventLogId, e.Id, e.EventDate, e.SolutionName })
+                                        .Select(e => new BuildEvent
                                                           {
-                                                              EventDate = e.EventDate,
+                                                              EventDate = e.Key.EventDate,
                                                               EventLog = new EventLog
                                                                              {
-                                                                                 Id = e.EventLogId,
+                                                                                 Id = e.Key.EventLogId,
                                                                                  LogType = "BuildEvent"
                                                                              },
-                                                              EventLogId = e.EventLogId,
-                                                              Id = e.Id,
-                                                              SolutionName = e.SolutionName
+                                                              EventLogId = e.Key.EventLogId,
+                                                              Id = e.Key.Id,
+                                                              SolutionName = e.Key.SolutionName,
+                                                              CriticalErrorNames = e.Select(c=>c.CriticalErrorName).ToList()
                                                           }));
 
             #region the placeholder for the events that may be included later

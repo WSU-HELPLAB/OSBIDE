@@ -3,7 +3,7 @@
 -- sproc [GetActivityFeeds]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetActivityFeeds]
+alter procedure [dbo].[GetActivityFeeds]
 
 	 @DateReceivedMin datetime
 	,@DateReceivedMax datetime
@@ -133,9 +133,17 @@ begin
 	from [dbo].[AskForHelpEvents] a with (nolock)
 	inner join #events b on b.Id=a.EventLogId
 
-	select a.Id, a.EventLogId, a.EventDate, a.SolutionName
+	select a.Id, a.EventLogId, a.EventDate, a.SolutionName, CriticalErrorName=[Description]
 	from [dbo].[BuildEvents] a with (nolock)
 	inner join #events b on b.Id=a.EventLogId
+	left join
+	(
+		select be.[BuildEventId], e.[Description]
+		from [dbo].[BuildEventErrorListItems] be
+		inner join [dbo].[ErrorListItems] e on e.[Id]=be.[ErrorListItemId]
+		inner join [dbo].[ErrorTypes] t on 'error ' + t.Name + ':'=substring(e.[Description], 1, charindex(':', e.[Description]))
+	)
+	builderror on builderror.[BuildEventId]=a.Id
 
 	select a.Id, a.EventLogId, a.EventDate, a.Content, a.DocumentName, a.EventAction, a.SolutionName
 	from [dbo].[CutCopyPasteEvents] a with (nolock)

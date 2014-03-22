@@ -98,16 +98,25 @@ namespace OSBIDE.Library.Events
         }
 
         [NotMapped]
+        private List<string> _criticalErrorNames;
         public List<string> CriticalErrorNames
         {
             get
             {
+                if (_criticalErrorNames == null)
+                {
+                    var query = from item in ErrorItems
+                                where item.ErrorListItem.CriticalErrorName != null
+                                && item.ErrorListItem.CriticalErrorName.Length > 0
+                                select item.ErrorListItem.CriticalErrorName;
+                    _criticalErrorNames = query.Distinct().ToList();
+                }
 
-                var query = from item in ErrorItems
-                            where item.ErrorListItem.CriticalErrorName != null
-                            && item.ErrorListItem.CriticalErrorName.Length > 0
-                            select item.ErrorListItem.CriticalErrorName;
-                return query.Distinct().ToList();
+                return _criticalErrorNames;
+            }
+            set
+            {
+                _criticalErrorNames = value;
             }
         }
 

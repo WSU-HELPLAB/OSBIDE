@@ -17,5 +17,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
         public int EventLogId { get; set; }
         public System.DateTime EventDate { get; set; }
         public string SolutionName { get; set; }
+        public string CriticalErrorName { get; set; }
     }
 }

@@ -119,6 +119,7 @@
           <Property Type="Int32" Name="EventLogId" Nullable="false" />
           <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
           <Property Type="String" Name="SolutionName" Nullable="false" />
+          <Property Type="String" Name="CriticalErrorName" Nullable="true" />
         </ComplexType>
         <ComplexType Name="GetCutCopyPasteEvents_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
@@ -285,6 +286,7 @@
                 <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
                 <ScalarProperty Name="EventDate" ColumnName="EventDate" />
                 <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+                <ScalarProperty Name="CriticalErrorName" ColumnName="CriticalErrorName" />
               </ComplexTypeMapping>
             </ResultMapping>
             <ResultMapping>
