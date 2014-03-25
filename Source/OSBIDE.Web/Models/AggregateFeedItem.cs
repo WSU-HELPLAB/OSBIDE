@@ -1,4 +1,5 @@
-﻿using OSBIDE.Library.Events;
+﻿using OSBIDE.Data.DomainObjects;
+using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Queries;
 using System;
@@ -49,7 +50,7 @@ namespace OSBIDE.Web.Models
             HelpfulMarks = item.HelpfulComments;
 
             //IDE events are anonymized
-            List<IOsbideEvent> ideEvents = ActivityFeedQuery.GetIdeEvents();
+            var ideEvents = ActivityFeedQuery.GetIdeEvents();
             bool isIde = (from evt in ideEvents
                           where evt.EventName == item.Event.EventName
                           select evt).FirstOrDefault() != null;
@@ -61,6 +62,7 @@ namespace OSBIDE.Web.Models
 
         public static List<AggregateFeedItem> FromFeedItems(IList<FeedItem> feedItems)
         {
+            #region comments
             /* AC: While this works, it won't serve at the moment
             LinkedList<FeedItem> feedItemsLinkedList = new LinkedList<FeedItem>(feedItems);
             LinkedListNode<FeedItem> node = feedItemsLinkedList.First;
@@ -108,6 +110,7 @@ namespace OSBIDE.Web.Models
             }
             feedItems = feedItemsLinkedList.ToList();
              * */
+            #endregion
             List<AggregateFeedItem> aggregateItems = new List<AggregateFeedItem>();
 
             //prime the loop

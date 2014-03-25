@@ -25,8 +25,10 @@ namespace OSBIDE.Web.Controllers
         [RequiresVisualStudioConnectionForStudents]
         public ActionResult Index(int? id, int timestamp = -1)
         {
-            ActivityFeedQuery query = new ActivityFeedQuery(Db);
-            ActivityFeedQuery subscriptionsQuery = new ActivityFeedQuery(Db);
+            try
+            {
+                var query = new ActivityFeedQuery();
+                var subscriptionsQuery = new ActivityFeedQuery();
             ProfileViewModel vm = new ProfileViewModel();
             vm.User = CurrentUser;
             if (id != null)
@@ -42,11 +44,6 @@ namespace OSBIDE.Web.Controllers
             {
                 DateTime pullDate = new DateTime(timestamp);
                 query.StartDate = pullDate;
-            }
-            else
-            {
-                query.StartDate = DateTime.UtcNow.AddHours(-48);
-
             }
 
             //Only show social events
@@ -127,17 +124,33 @@ namespace OSBIDE.Web.Controllers
 
             return View(vm);
         }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return RedirectToAction("Index", "Error");
+            }
+        }
 
         [OsbideAuthorize]
         public ActionResult Edit()
         {
+            try
+            {
             return View(BuildEditViewModel());
+        }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return RedirectToAction("Index", "Error");
+            }
         }
 
         [OsbideAuthorize]
         [HttpPost]
         public ActionResult Edit(EditProfileViewModel vm)
         {
+            try
+            {
             if (ModelState.IsValid)
             {
                 // We can determine which is desired by checking which button was pressed
@@ -170,6 +183,12 @@ namespace OSBIDE.Web.Controllers
 
             }
             return View("Edit", BuildEditViewModel(vm));
+        }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return RedirectToAction("Index", "Error");
+            }
         }
 
         [OsbideAuthorize]
@@ -380,14 +399,22 @@ namespace OSBIDE.Web.Controllers
 
         public FileStreamResult DefaultPicture(int size = 128)
         {
+            try
+            {
             string defaultImageLocation = Server.MapPath("/Content/icons/anonymous.png");
             MemoryStream defaultStream = new MemoryStream();
-            using(Image defaultImage = Image.FromFile(defaultImageLocation))
+                using (Image defaultImage = Image.FromFile(defaultImageLocation))
             {
                 defaultImage.Save(defaultStream, System.Drawing.Imaging.ImageFormat.Png);
             }
             defaultStream.Position = 0;
             return new FileStreamResult(defaultStream, "image/png");
+        }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return null;
+            }
         }
 
         /// <summary>
@@ -397,9 +424,10 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         public FileStreamResult Picture(int id, int size = 128)
         {
-
+            try
+            {
             //invalid user ID?
-            if(id < 1)
+                if (id < 1)
             {
                 return DefaultPicture(size);
             }
@@ -464,11 +492,19 @@ namespace OSBIDE.Web.Controllers
 
             return new FileStreamResult(stream, "image/png");
         }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return null;
+            }
+        }
 
         [HttpPost]
         [OsbideAuthorize]
         public ActionResult Picture(HttpPostedFileBase file)
         {
+            try
+            {
             //two options: user uploaded a profile picture 
             //             OR user requested a default profile picture
             if (Request.Params["upload"] != null)
@@ -535,6 +571,11 @@ namespace OSBIDE.Web.Controllers
             }
             return RedirectToAction("Edit");
         }
-
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                return RedirectToAction("Index", "Error");
+            }
+        }
     }
 }

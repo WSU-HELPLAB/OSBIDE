@@ -25,7 +25,8 @@ namespace OSBIDE.Web.Services
         {
 #if DEBUG
             Db = new OsbideContext("OsbideDebugContext");
-            Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
+            Database.SetInitializer<OsbideContext>(new CreateDatabaseIfNotExists<OsbideContext>());
+            //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 #else
             Db = new OsbideContext("OsbideReleaseContext");
 #endif

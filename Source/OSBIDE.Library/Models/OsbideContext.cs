@@ -28,7 +28,6 @@ namespace OSBIDE.Library.Models
         public DbSet<Assignment> Assignments { get; set; }
 
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
-        public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
         public DbSet<ErrorListItem> ErrorListItems { get; set; }
         public DbSet<ChatRoom> ChatRooms { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
@@ -119,7 +118,8 @@ namespace OSBIDE.Library.Models
                 OsbideContext _db;
 #if DEBUG
                 _db = new OsbideContext("OsbideDebugContext");
-                Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
+                Database.SetInitializer<OsbideContext>(new OsbideContextIfNotExistsInitializer());
+                //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 
                 //uncomment this line (and comment out the one above) when VS is acting stupid and won't
                 //recreate the database on model change.

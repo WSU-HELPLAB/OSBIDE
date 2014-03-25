@@ -1,8 +1,8 @@
-﻿using OSBIDE.Library.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Web.Models.Queries
 {
@@ -11,8 +11,8 @@ namespace OSBIDE.Web.Models.Queries
     /// </summary>
     public class StudentSubscriptionsQuery : IOsbideQuery<OsbideUser>
     {
-        private OsbideContext _db;
-        private OsbideUser _observer;
+        private readonly OsbideContext _db;
+        private readonly OsbideUser _observer;
 
         public StudentSubscriptionsQuery(OsbideContext db, OsbideUser observer)
         {
@@ -24,18 +24,15 @@ namespace OSBIDE.Web.Models.Queries
             _observer = observer;
         }
 
-        public IList<OsbideUser> Execute()
+        public IEnumerable<OsbideUser> Execute()
         {
-            List<OsbideUser> subjects = new List<OsbideUser>();
-
-            subjects = (from subscription in _db.UserSubscriptions
+            return (from subscription in _db.UserSubscriptions
                         join user in _db.Users on
                                           new { InstitutionId = subscription.SubjectInstitutionId, SchoolId = subscription.SubjectSchoolId }
                                           equals new { InstitutionId = user.InstitutionId, SchoolId = user.SchoolId }
                         where subscription.ObserverSchoolId == _observer.SchoolId
                            && subscription.ObserverInstitutionId == _observer.InstitutionId
                         select user).ToList();
-            return subjects;
         }
     }
 }

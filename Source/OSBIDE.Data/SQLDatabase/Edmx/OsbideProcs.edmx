@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OSBIDE.HybridModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <Function Name="GetActivityFeeds" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DateReceivedMin" Type="datetime" Mode="In" />
+          <Parameter Name="DateReceivedMax" Type="datetime" Mode="In" />
+          <Parameter Name="EventLogIds" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="EventTypes" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CourseId" Type="int" Mode="In" />
+          <Parameter Name="RoleId" Type="int" Mode="In" />
+          <Parameter Name="SenderIds" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="MinLogId" Type="int" Mode="In" />
+          <Parameter Name="MaxLogId" Type="int" Mode="In" />
+          <Parameter Name="OffsetN" Type="int" Mode="In" />
+          <Parameter Name="TopN" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetComments" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EventLogIds" Type="nvarchar(max)" Mode="In" />
+          <Parameter Name="CurrentUserId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetRecentCompileErrors" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SenderId" Type="int" Mode="In" />
+          <Parameter Name="Timeframe" Type="datetime" Mode="In" />
+        </Function>
+        <EntityContainer Name="OSBIDEHybridModelStoreContainer" />
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="OSBIDE.HybridModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="OsbideProcs" p1:LazyLoadingEnabled="true" >
+          <FunctionImport Name="GetActivityFeeds">
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetEventLogs_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetOsbideUsers_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetLogComments_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetSubscriptions_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetAskForHelpEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetBuildEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetCutCopyPasteEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetDebugEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetEditorActivityEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetExceptionEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetFeedPostEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetHelpfulMarkGivenEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetLogCommentEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetSaveEvents_Result)" />
+            <ReturnType Type="Collection(OSBIDE.HybridModel.GetSubmitEvents_Result)" />
+            <Parameter Name="DateReceivedMin" Mode="In" Type="DateTime" />
+            <Parameter Name="DateReceivedMax" Mode="In" Type="DateTime" />
+            <Parameter Name="EventLogIds" Mode="In" Type="String" />
+            <Parameter Name="EventTypes" Mode="In" Type="String" />
+            <Parameter Name="CourseId" Mode="In" Type="Int32" />
+            <Parameter Name="RoleId" Mode="In" Type="Int32" />
+            <Parameter Name="SenderIds" Mode="In" Type="String" />
+            <Parameter Name="MinLogId" Mode="In" Type="Int32" />
+            <Parameter Name="MaxLogId" Mode="In" Type="Int32" />
+            <Parameter Name="OffsetN" Mode="In" Type="Int32" />
+            <Parameter Name="TopN" Mode="In" Type="Int32" />
+            </FunctionImport>
+          <FunctionImport Name="GetRecentCompileErrors" ReturnType="Collection(OSBIDE.HybridModel.GetRecentCompileErrors_Result)">
+            <Parameter Name="SenderId" Mode="In" Type="Int32" />
+            <Parameter Name="Timeframe" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="GetComments" ReturnType="Collection(OSBIDE.HybridModel.GetComments_Result)">
+            <Parameter Name="EventLogIds" Mode="In" Type="String" />
+            <Parameter Name="CurrentUserId" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="GetEventLogs_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="LogType" Nullable="false" />
+          <Property Type="DateTime" Name="DateReceived" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="SenderId" Nullable="false" />
+          <Property Type="Boolean" Name="IsResult" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetOsbideUsers_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="Email" Nullable="false" />
+          <Property Type="String" Name="FirstName" Nullable="false" />
+          <Property Type="String" Name="LastName" Nullable="false" />
+          <Property Type="Int32" Name="SchoolId" Nullable="false" />
+          <Property Type="Int32" Name="InstitutionId" Nullable="false" />
+          <Property Type="Boolean" Name="ReceiveEmailOnNewAskForHelp" Nullable="false" />
+          <Property Type="Boolean" Name="ReceiveEmailOnNewFeedPost" Nullable="false" />
+          <Property Type="Boolean" Name="ReceiveNotificationEmails" Nullable="false" />
+          <Property Type="Int32" Name="DefaultCourseId" Nullable="false" />
+          <Property Type="DateTime" Name="LastVsActivity" Nullable="false" Precision="23" />
+          <Property Type="String" Name="DefaultCourseNumber" Nullable="false" />
+          <Property Type="String" Name="DefaultCourseNamePrefix" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetLogComments_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="Int32" Name="SourceEventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+          <Property Type="String" Name="Content" Nullable="false" />
+          <Property Type="String" Name="LogType" Nullable="false" />
+          <Property Type="Int32" Name="SenderId" Nullable="false" />
+          <Property Type="DateTime" Name="DateReceived" Nullable="false" Precision="23" />
+        </ComplexType>
+        <ComplexType Name="GetSubscriptions_Result">
+          <Property Type="Int32" Name="UserId" Nullable="false" />
+          <Property Type="Int32" Name="LogId" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetAskForHelpEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Code" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+          <Property Type="String" Name="UserComment" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetBuildEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+          <Property Type="String" Name="CriticalErrorName" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetCutCopyPasteEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Content" Nullable="false" />
+          <Property Type="String" Name="DocumentName" Nullable="false" />
+          <Property Type="Int32" Name="EventAction" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetDebugEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="DebugOutput" Nullable="false" />
+          <Property Type="String" Name="DocumentName" Nullable="false" />
+          <Property Type="Int32" Name="ExecutionAction" Nullable="false" />
+          <Property Type="Int32" Name="LineNumber" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetEditorActivityEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetExceptionEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="DocumentName" Nullable="false" />
+          <Property Type="Int32" Name="ExceptionAction" Nullable="false" />
+          <Property Type="Int32" Name="ExceptionCode" Nullable="false" />
+          <Property Type="String" Name="ExceptionDescription" Nullable="false" />
+          <Property Type="String" Name="ExceptionName" Nullable="false" />
+          <Property Type="String" Name="ExceptionType" Nullable="false" />
+          <Property Type="String" Name="LineContent" Nullable="false" />
+          <Property Type="Int32" Name="LineNumber" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetFeedPostEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Comment" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetHelpfulMarkGivenEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="LogCommentEventId" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetLogCommentEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="Content" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+          <Property Type="Int32" Name="SourceEventLogId" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetSaveEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="DocumentId" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetSubmitEvents_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="EventLogId" Nullable="false" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="Int32" Name="AssignmentId" Nullable="false" />
+          <Property Type="String" Name="SolutionName" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetRecentCompileErrors_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="Column" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" />
+          <Property Type="String" Name="File" Nullable="false" />
+          <Property Type="Int32" Name="Line" Nullable="false" />
+          <Property Type="String" Name="Project" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetComments_Result">
+          <Property Type="Int32" Name="CommentId" Nullable="true" />
+          <Property Type="Int32" Name="OriginalId" Nullable="true" />
+          <Property Type="Int32" Name="ActualId" Nullable="true" />
+          <Property Type="String" Name="CourseNumber" Nullable="true" />
+          <Property Type="String" Name="CoursePrefix" Nullable="true" />
+          <Property Type="String" Name="Content" Nullable="true" />
+          <Property Type="String" Name="LastName" Nullable="true" />
+          <Property Type="String" Name="FirstName" Nullable="true" />
+          <Property Type="Int32" Name="SenderId" Nullable="true" />
+          <Property Type="DateTime" Name="EventDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="HelpfulMarkCounts" Nullable="true" />
+          <Property Type="Boolean" Name="IsHelpfulMarkSender" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="OSBIDEHybridModelStoreContainer" CdmEntityContainer="OsbideProcs" >
+          <FunctionImportMapping FunctionImportName="GetActivityFeeds" FunctionName="OSBIDE.HybridModel.Store.GetActivityFeeds">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetEventLogs_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="LogType" ColumnName="LogType" />
+                <ScalarProperty Name="DateReceived" ColumnName="DateReceived" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="IsResult" ColumnName="IsResult" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetOsbideUsers_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="SchoolId" ColumnName="SchoolId" />
+                <ScalarProperty Name="InstitutionId" ColumnName="InstitutionId" />
+                <ScalarProperty Name="ReceiveEmailOnNewAskForHelp" ColumnName="ReceiveEmailOnNewAskForHelp" />
+                <ScalarProperty Name="ReceiveEmailOnNewFeedPost" ColumnName="ReceiveEmailOnNewFeedPost" />
+                <ScalarProperty Name="ReceiveNotificationEmails" ColumnName="ReceiveNotificationEmails" />
+                <ScalarProperty Name="DefaultCourseId" ColumnName="DefaultCourseId" />
+                <ScalarProperty Name="LastVsActivity" ColumnName="LastVsActivity" />
+                <ScalarProperty Name="DefaultCourseNumber" ColumnName="DefaultCourseNumber" />
+                <ScalarProperty Name="DefaultCourseNamePrefix" ColumnName="DefaultCourseNamePrefix" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetLogComments_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="SourceEventLogId" ColumnName="SourceEventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="LogType" ColumnName="LogType" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="DateReceived" ColumnName="DateReceived" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetSubscriptions_Result">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetAskForHelpEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+                <ScalarProperty Name="UserComment" ColumnName="UserComment" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetBuildEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+                <ScalarProperty Name="CriticalErrorName" ColumnName="CriticalErrorName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetCutCopyPasteEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="DocumentName" ColumnName="DocumentName" />
+                <ScalarProperty Name="EventAction" ColumnName="EventAction" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDebugEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="DebugOutput" ColumnName="DebugOutput" />
+                <ScalarProperty Name="DocumentName" ColumnName="DocumentName" />
+                <ScalarProperty Name="ExecutionAction" ColumnName="ExecutionAction" />
+                <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetEditorActivityEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetExceptionEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="DocumentName" ColumnName="DocumentName" />
+                <ScalarProperty Name="ExceptionAction" ColumnName="ExceptionAction" />
+                <ScalarProperty Name="ExceptionCode" ColumnName="ExceptionCode" />
+                <ScalarProperty Name="ExceptionDescription" ColumnName="ExceptionDescription" />
+                <ScalarProperty Name="ExceptionName" ColumnName="ExceptionName" />
+                <ScalarProperty Name="ExceptionType" ColumnName="ExceptionType" />
+                <ScalarProperty Name="LineContent" ColumnName="LineContent" />
+                <ScalarProperty Name="LineNumber" ColumnName="LineNumber" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetFeedPostEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetHelpfulMarkGivenEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="LogCommentEventId" ColumnName="LogCommentEventId" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetLogCommentEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+                <ScalarProperty Name="SourceEventLogId" ColumnName="SourceEventLogId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetSaveEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetSubmitEvents_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetRecentCompileErrors" FunctionName="OSBIDE.HybridModel.Store.GetRecentCompileErrors">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetRecentCompileErrors_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Column" ColumnName="Column" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="File" ColumnName="File" />
+                <ScalarProperty Name="Line" ColumnName="Line" />
+                <ScalarProperty Name="Project" ColumnName="Project" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetComments" FunctionName="OSBIDE.HybridModel.Store.GetComments">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetComments_Result">
+                <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+                <ScalarProperty Name="OriginalId" ColumnName="OriginalId" />
+                <ScalarProperty Name="ActualId" ColumnName="ActualId" />
+                <ScalarProperty Name="CourseNumber" ColumnName="CourseNumber" />
+                <ScalarProperty Name="CoursePrefix" ColumnName="CoursePrefix" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="HelpfulMarkCounts" ColumnName="HelpfulMarkCounts" />
+                <ScalarProperty Name="IsHelpfulMarkSender" ColumnName="IsHelpfulMarkSender" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram DiagramId="012d6f92be244dfd97f8da9d3579101e" Name="Diagram1" />
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

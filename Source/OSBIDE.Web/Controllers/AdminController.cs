@@ -1,4 +1,5 @@
-﻿using OSBIDE.Library.CSV;
+﻿using System.Globalization;
+using OSBIDE.Library.CSV;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using OSBIDE.Data.DomainObjects;
 namespace OSBIDE.Web.Controllers
 {
     [AllowAccess(SystemRole.Instructor)]
@@ -42,12 +43,12 @@ namespace OSBIDE.Web.Controllers
                     vm.ActivityItems.Add(log.DateReceived, log);
                 }
 
-                //pull request logs
-                List<ActionRequestLog> requestLogs = Db.ActionRequestLogs
-                                                       .Where(l => l.CreatorId == vm.SelectedStudentId)
-                                                       .Where(l => l.AccessDate > vm.SelectedDate)
-                                                       .Where(l => l.AccessDate < tomorrow)
-                                                       .ToList();
+                //pull request logs from azure storage
+                var requestLogs = DomainObjectHelpers.GetAccountRequest(1, vm.SelectedStudentId)
+                                        .Where(l => l.CreatorId == vm.SelectedStudentId)
+                                        .Where(l => l.AccessDate > vm.SelectedDate)
+                                        .Where(l => l.AccessDate < tomorrow)
+                                        .ToList();
                 foreach (ActionRequestLog log in requestLogs)
                 {
                     vm.ActivityItems.Add(log.AccessDate, log);
