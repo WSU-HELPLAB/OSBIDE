@@ -16,6 +16,11 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
+        public ActionResult GenericError(string message="")
+        {
+            return View(message);
+        }
+
         public ActionResult RequiresActiveVsConnection()
         {
             return View();

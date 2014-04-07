@@ -457,6 +457,7 @@
     <Content Include="Views\Error\FeedDown.cshtml" />
     <Content Include="Views\Gradebook\GradebookHelp.cshtml" />
     <Content Include="Views\Gradebook\Index.cshtml" />
+    <Content Include="Views\Error\GenericError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

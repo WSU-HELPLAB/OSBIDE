@@ -132,7 +132,7 @@ namespace OSBIDE.Web.Controllers
             {
                 LogErrorMessage(ex);
 
-                return RedirectToAction("FeedDown", "Error");
+                return RedirectToAction("GenericError", "Error", new { message = ex.Message });
             }
         }
 
