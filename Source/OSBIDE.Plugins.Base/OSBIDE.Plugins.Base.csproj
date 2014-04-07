@@ -78,9 +78,6 @@
     <Compile Include="ChatToolWindow.cs" />
     <Compile Include="CreateAccountToolWindow.cs" />
     <Compile Include="CommonGuidList.cs" />
-    <Compile Include="DummyControl.xaml.cs">
-      <DependentUpon>DummyControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="GenericOsbideToolWindow.cs" />
     <Compile Include="OsbideToolWindowManager.cs" />
     <Compile Include="CommonPkgCmdID.cs" />
@@ -100,12 +97,6 @@
   <ItemGroup>
     <None Include="osbide.plugins.base.snk" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="DummyControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
