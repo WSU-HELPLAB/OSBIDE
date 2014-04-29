@@ -22,6 +22,20 @@
           <Parameter Name="EventLogIds" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="CurrentUserId" Type="int" Mode="In" />
         </Function>
+        <Function Name="GetProcedureData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dateFrom" Type="datetime" Mode="In" />
+          <Parameter Name="dateTo" Type="datetime" Mode="In" />
+          <Parameter Name="nameToken" Type="nvarchar" Mode="In" />
+          <Parameter Name="Gender" Type="int" Mode="In" />
+          <Parameter Name="ageFrom" Type="int" Mode="In" />
+          <Parameter Name="ageTo" Type="int" Mode="In" />
+          <Parameter Name="courseId" Type="int" Mode="In" />
+          <Parameter Name="courseYear" Type="int" Mode="In" />
+          <Parameter Name="gradeFrom" Type="decimal" Mode="In" />
+          <Parameter Name="gradeTo" Type="decimal" Mode="In" />
+          <Parameter Name="overallGradeFrom" Type="decimal" Mode="In" />
+          <Parameter Name="overallGradeTo" Type="decimal" Mode="In" />
+        </Function>
         <Function Name="GetRecentCompileErrors" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="SenderId" Type="int" Mode="In" />
           <Parameter Name="Timeframe" Type="datetime" Mode="In" />
@@ -67,6 +81,20 @@
           <FunctionImport Name="GetComments" ReturnType="Collection(OSBIDE.HybridModel.GetComments_Result)">
             <Parameter Name="EventLogIds" Mode="In" Type="String" />
             <Parameter Name="CurrentUserId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetProcedureData" ReturnType="Collection(OSBIDE.HybridModel.GetProcedureData_Result)">
+            <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
+            <Parameter Name="dateTo" Mode="In" Type="DateTime" />
+            <Parameter Name="nameToken" Mode="In" Type="String" />
+            <Parameter Name="Gender" Mode="In" Type="Int32" />
+            <Parameter Name="ageFrom" Mode="In" Type="Int32" />
+            <Parameter Name="ageTo" Mode="In" Type="Int32" />
+            <Parameter Name="courseId" Mode="In" Type="Int32" />
+            <Parameter Name="courseYear" Mode="In" Type="Int32" />
+            <Parameter Name="gradeFrom" Mode="In" Type="Decimal" />
+            <Parameter Name="gradeTo" Mode="In" Type="Decimal" />
+            <Parameter Name="overallGradeFrom" Mode="In" Type="Decimal" />
+            <Parameter Name="overallGradeTo" Mode="In" Type="Decimal" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -217,6 +245,17 @@
           <Property Type="DateTime" Name="EventDate" Nullable="true" Precision="23" />
           <Property Type="Int32" Name="HelpfulMarkCounts" Nullable="true" />
           <Property Type="Boolean" Name="IsHelpfulMarkSender" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetProcedureData_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="InstitutionId" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="true" MaxLength="255" />
+          <Property Type="Int32" Name="Age" Nullable="true" />
+          <Property Type="String" Name="Gender_Gend" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Ethnicity_Ethn" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Class_Class" Nullable="true" MaxLength="255" />
+          <Property Type="String" Name="Semester" Nullable="false" MaxLength="255" />
+          <Property Type="Int32" Name="Year" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -410,6 +449,21 @@
                 <ScalarProperty Name="EventDate" ColumnName="EventDate" />
                 <ScalarProperty Name="HelpfulMarkCounts" ColumnName="HelpfulMarkCounts" />
                 <ScalarProperty Name="IsHelpfulMarkSender" ColumnName="IsHelpfulMarkSender" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetProcedureData" FunctionName="OSBIDE.HybridModel.Store.GetProcedureData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetProcedureData_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="InstitutionId" ColumnName="InstitutionId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Age" ColumnName="Age" />
+                <ScalarProperty Name="Gender_Gend" ColumnName="Gender_Gend" />
+                <ScalarProperty Name="Ethnicity_Ethn" ColumnName="Ethnicity_Ethn" />
+                <ScalarProperty Name="Class_Class" ColumnName="Class_Class" />
+                <ScalarProperty Name="Semester" ColumnName="Semester" />
+                <ScalarProperty Name="Year" ColumnName="Year" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

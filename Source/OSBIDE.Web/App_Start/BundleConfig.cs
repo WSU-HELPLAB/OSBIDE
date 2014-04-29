@@ -29,10 +29,6 @@ namespace OSBIDE.Web
                         "~/Scripts/moment-{version}.js"
                         ));
 
-            bundles.Add(new ScriptBundle("~/bundles/osbide").Include(
-                "~/Scripts/Osbide.*"
-                ));
-
             bundles.Add(new ScriptBundle("~/bundles/knockout").Include(
                         "~/Scripts/knockout-{version}.js",
                         "~/Scripts/knockout.mapping-{version}.js"
@@ -66,6 +62,10 @@ namespace OSBIDE.Web
                         "~/Content/themes/base/jquery.ui.timepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/osbide").Include(
+                "~/Scripts/Osbide.*"
+                ));
         }
     }
 }

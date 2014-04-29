@@ -1,15 +1,18 @@
-﻿using System.Globalization;
-using OSBIDE.Library.CSV;
-using OSBIDE.Library.Events;
-using OSBIDE.Library.Models;
-using OSBIDE.Web.Models.Attributes;
-using OSBIDE.Web.Models.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+
 using OSBIDE.Data.DomainObjects;
+using OSBIDE.Data.SQLDatabase;
+using OSBIDE.Library.CSV;
+using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
+using OSBIDE.Web.Models;
+using OSBIDE.Web.Models.Attributes;
+using OSBIDE.Web.Models.ViewModels;
+
 namespace OSBIDE.Web.Controllers
 {
     [AllowAccess(SystemRole.Instructor)]
@@ -72,21 +75,65 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult UploadRoster(HttpPostedFileBase file)
+        public ActionResult UploadRoster(AdminDataImport dataImport)
         {
             ViewBag.UploadResult = true;
-            List<List<string>> csvList = new List<List<string>>();
-            try
+
+            if (Request.Files.Count > 0 && Request.Files[0].ContentLength > 0)
             {
-                using (CsvReader reader = new CsvReader(file.InputStream))
+                try
                 {
-                    csvList = reader.Parse();
+                    var fileExtension = System.IO.Path.GetExtension(dataImport.File.FileName);
+                    if (fileExtension == ".xls" || fileExtension == ".xlsx")
+                    {
+                        ProcessExcel(dataImport, fileExtension);
+                    }
+                    else
+                    {
+                        ProcessCSV(dataImport.File);
+                    }
+                }
+                catch
+                {
+                    ViewBag.UploadResult = false;
                 }
             }
-            catch (Exception)
+
+            return View("Index");
+        }
+
+        private void ProcessExcel(AdminDataImport dataImport, string fileExtension)
+        {
+            var postedFile = Request.Files[0];
+            var filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, System.IO.Path.GetFileName(postedFile.FileName));
+            if (System.IO.File.Exists(filePath))
             {
-                ViewBag.UploadResult = false;
-                return View("Index");
+
+                System.IO.File.Delete(filePath);
+            }
+            postedFile.SaveAs(filePath);
+
+            if (postedFile.FileName.IndexOf("grade", StringComparison.InvariantCultureIgnoreCase) > -1)
+            {
+                ExcelImport.UploadGrades(filePath, fileExtension, CurrentUser.Id);
+            }
+            else
+            {
+                ExcelImport.UploadSurveys(filePath
+                                          , fileExtension
+                                          , dataImport.Year
+                                          , dataImport.Semester
+                                          , CurrentUser.Id);
+            }
+        }
+
+        private void ProcessCSV(HttpPostedFileBase file)
+        {
+            List<List<string>> csvList = new List<List<string>>();
+
+            using (CsvReader reader = new CsvReader(file.InputStream))
+            {
+                csvList = reader.Parse();
             }
 
             //Process of creating automatic user subscriptions:
@@ -159,16 +206,7 @@ namespace OSBIDE.Web.Controllers
             }
 
             //save any DB changes
-            try
-            {
-                Db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                ViewBag.UploadResult = false;
-            }
-
-            return View("Index");
+            Db.SaveChanges();
         }
     }
 }

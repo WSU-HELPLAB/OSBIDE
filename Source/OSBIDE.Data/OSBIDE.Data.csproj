@@ -59,11 +59,16 @@
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
     <Compile Include="DomainObjects\Comment.cs" />
+    <Compile Include="DomainObjects\ConstantsAndEnums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DomainObjects\Criteria.cs" />
     <Compile Include="DomainObjects\DomainConstants.cs" />
     <Compile Include="DomainObjects\FeedItem.cs" />
     <Compile Include="DomainObjects\DomainObjectHelpers.cs" />
-    <Compile Include="NoSQLStorage\ActionRequestLogEntity.cs" />
-    <Compile Include="NoSQLStorage\ActionRequestLogTable.cs" />
+    <Compile Include="DomainObjects\StudentDemographicInfo.cs" />
+    <Compile Include="NoSQLStorage\ActionRequestLogEntry.cs" />
+    <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
     <Compile Include="SQLDatabase\Edmx\GetAskForHelpEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -103,6 +108,9 @@
     <Compile Include="SQLDatabase\Edmx\GetOsbideUsers_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetProcedureData_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetRecentCompileErrors_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -133,7 +141,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLDatabase\EventLogsProc.cs" />
     <Compile Include="SQLDatabase\CommentsProc.cs" />
+    <Compile Include="SQLDatabase\ExcelToSQL.cs" />
+    <Compile Include="SQLDatabase\ExcelImport.cs" />
+    <Compile Include="SQLDatabase\SQLTemplateGrades.cs" />
+    <Compile Include="SQLDatabase\StudentDemographicInfoProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
+    <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
@@ -160,12 +173,14 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />
     <Content Include="SQLDatabase\Scripts\Dummy.sql" />
     <Content Include="SQLDatabase\Scripts\EventView.sql" />
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
   </ItemGroup>
   <ItemGroup>

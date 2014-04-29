@@ -8,117 +8,119 @@
 @{
     ViewBag.Title = "Activity Feed";
 }
-<!--
-<article style="max-width:500px;">
-    <h1>Notice</h1>
-    <p>In preparation for a higher than normal server load, automatic loading of new feed posts has been temporarily disabled.  
-    In order to view the most recent feed items, you will need to manually @Html.ActionLink("refresh", "Index", new { component = OsbideVsComponent.FeedOverview }, new {}) this page.</p>
-</article>
-    -->
-@using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class = "spinner" }))
-{
-    <article id="add-feed-comment">
-        <h1>Post a comment:</h1>
-        <div>
-            <textarea style="width: 100%; height: 50px" name="comment"></textarea>
-        </div>
-        <input type="submit" name="submit" id="post-comment-button" value="Post Comment" />
-        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
-        <input id="filter-options-button" type="button" value="Filter Options" />
+<section data-tab="ActivityFeed">
+    <!--
+    <article style="max-width:500px;">
+        <h1>Notice</h1>
+        <p>In preparation for a higher than normal server load, automatic loading of new feed posts has been temporarily disabled.
+        In order to view the most recent feed items, you will need to manually @Html.ActionLink("refresh", "Index", new { component = OsbideVsComponent.FeedOverview }, new {}) this page.</p>
     </article>
-}
-@using (Html.BeginForm("ApplyFeedFilter", "Feed"))
-{
-    <article id="filter-options" style="display: none;">
-        <article>
-            <h2>Filter by Activity Type:</h2>
-            <ul>
-                @foreach (IOsbideEvent evt in Model.EventFilterOptions)
-                {
-                    string checkbox = "";
-                    if (Model.UserEventFilterOptions.Where(o => o.EventName == evt.EventName).Count() > 0)
-                    {
-                        checkbox = @"checked=""checked""";
-                    }
-                    <li>
-                        <input @Html.Raw(checkbox) type="checkbox" id="event_@evt.EventName" name="event_@evt.EventName" />
-                        <label for="event_@evt.EventName">@evt.PrettyName</label>
-                    </li>
-                }
-            </ul>
+        -->
+    @using (Html.BeginForm("PostFeedComment", "Feed", FormMethod.Post, new { id = "post-comment-form", @class = "spinner" }))
+    {
+        <article id="add-feed-comment">
+            <h1>Post a comment:</h1>
+            <div>
+                <textarea style="width: 100%; height: 50px" name="comment"></textarea>
+            </div>
+            <input type="submit" name="submit" id="post-comment-button" value="Post Comment" />
+            <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
+            <input id="filter-options-button" type="button" value="Filter Options" />
         </article>
-        <article>
-            <h2>Filter by Error Type:</h2>
-            <select name="error-type">
-                <option value="-1">No Filter</option>
-                @foreach (ErrorType error in Model.ErrorTypes)
-                {
-                    string selectedText = "";
-                    if (error.Name.CompareTo(Model.SelectedErrorType.Name) == 0)
+    }
+    @using (Html.BeginForm("ApplyFeedFilter", "Feed"))
+    {
+        <article id="filter-options" style="display: none;">
+            <article>
+                <h2>Filter by Activity Type:</h2>
+                <ul>
+                    @foreach (IOsbideEvent evt in Model.EventFilterOptions)
                     {
-                        selectedText = @"selected=""selected""";
+                        string checkbox = "";
+                        if (Model.UserEventFilterOptions.Where(o => o.EventName == evt.EventName).Count() > 0)
+                        {
+                            checkbox = @"checked=""checked""";
+                        }
+                        <li>
+                            <input @Html.Raw(checkbox) type="checkbox" id="event_@evt.EventName" name="event_@evt.EventName" />
+                            <label for="event_@evt.EventName">@evt.PrettyName</label>
+                        </li>
                     }
-                    <option @Html.Raw(selectedText) value="@error.Id">@error.Name</option>
-                }
-            </select>
-        </article>
-        <article>
-            <h2>Filter by Course</h2>
-            <select name="course-filter">
-                <option value="-1">No Filter</option>
-                @foreach(Course course in Model.Courses)
-                {
-                    string selectedText = "";
-                    if(course.Id.CompareTo(Model.SelectedCourseId) == 0)
+                </ul>
+            </article>
+            <article>
+                <h2>Filter by Error Type:</h2>
+                <select name="error-type">
+                    <option value="-1">No Filter</option>
+                    @foreach (ErrorType error in Model.ErrorTypes)
                     {
-                        selectedText = @"selected=""selected""";
+                        string selectedText = "";
+                        if (error.Name.CompareTo(Model.SelectedErrorType.Name) == 0)
+                        {
+                            selectedText = @"selected=""selected""";
+                        }
+                        <option @Html.Raw(selectedText) value="@error.Id">@error.Name</option>
                     }
-                    <option @Html.Raw(selectedText) value="@course.Id">@course.Name</option>
-                }
-            </select>
-        </article>
-        <article>
-            <h2>Filter by User Type</h2>
-            <select name="user-type-filter">
-                <option value="-1">No Filter</option>
-                @foreach (CourseRole role in Model.CourseRoles)
-                {
-                    string selectedText = "";
-                    int roleValue = (int)role;
-                    string roleName = Enum.GetName(typeof(CourseRole), role);
-                    if (role == Model.SelectedCourseRole)
+                </select>
+            </article>
+            <article>
+                <h2>Filter by Course</h2>
+                <select name="course-filter">
+                    <option value="-1">No Filter</option>
+                    @foreach (Course course in Model.Courses)
                     {
-                        selectedText = @"selected=""selected""";
+                        string selectedText = "";
+                        if (course.Id.CompareTo(Model.SelectedCourseId) == 0)
+                        {
+                            selectedText = @"selected=""selected""";
+                        }
+                        <option @Html.Raw(selectedText) value="@course.Id">@course.Name</option>
                     }
-                    <option @Html.Raw(selectedText) value="@roleValue">@roleName</option>
-                }
-            </select>
+                </select>
+            </article>
+            <article>
+                <h2>Filter by User Type</h2>
+                <select name="user-type-filter">
+                    <option value="-1">No Filter</option>
+                    @foreach (CourseRole role in Model.CourseRoles)
+                    {
+                        string selectedText = "";
+                        int roleValue = (int)role;
+                        string roleName = Enum.GetName(typeof(CourseRole), role);
+                        if (role == Model.SelectedCourseRole)
+                        {
+                            selectedText = @"selected=""selected""";
+                        }
+                        <option @Html.Raw(selectedText) value="@roleValue">@roleName</option>
+                    }
+                </select>
+            </article>
+            <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
+            <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
         </article>
-        <input type="submit" name="ApplyFeedFilter" value="Apply Filter" />
-        <img class="submit-loading" src="~/Content/icons/loading.gif" title="loading" alt="loading" />
-    </article>
-}
-@Html.Partial("Feed/_Feed", Model)
-<script type="text/javascript">
+    }
+    @Html.Partial("Feed/_Feed", Model)
+    <script type="text/javascript">
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        //listen for comment posts
-        $("#post-comment-form").submit(function (event) {
+            //listen for comment posts
+            $("#post-comment-form").submit(function (event) {
 
-            //disable button for 7 seconds to prevent duplicate clicks
-            $("#post-comment-button").prop("disabled", true);
-            setTimeout(function () { $("#post-comment-button").prop("disabled", false); }, 7000);
+                //disable button for 7 seconds to prevent duplicate clicks
+                $("#post-comment-button").prop("disabled", true);
+                setTimeout(function () { $("#post-comment-button").prop("disabled", false); }, 7000);
+            });
+
+            //set up animation for drop down
+            $("#filter-options-button").click(function (e) {
+                if ($("#filter-options").css('display') == 'none') {
+                    $("#filter-options").slideDown();
+                }
+                else {
+                    $("#filter-options").slideUp();
+                }
+            });
         });
-
-        //set up animation for drop down
-        $("#filter-options-button").click(function (e) {
-            if ($("#filter-options").css('display') == 'none') {
-                $("#filter-options").slideDown();
-            }
-            else {
-                $("#filter-options").slideUp();
-            }
-        });
-    });
-</script>
+    </script>
+</section>

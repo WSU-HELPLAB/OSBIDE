@@ -102,5 +102,58 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetComments_Result>("GetComments", eventLogIdsParameter, currentUserIdParameter);
         }
+    
+        public virtual ObjectResult<GetProcedureData_Result> GetProcedureData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string nameToken, Nullable<int> gender, Nullable<int> ageFrom, Nullable<int> ageTo, Nullable<int> courseId, Nullable<int> courseYear, Nullable<decimal> gradeFrom, Nullable<decimal> gradeTo, Nullable<decimal> overallGradeFrom, Nullable<decimal> overallGradeTo)
+        {
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var nameTokenParameter = nameToken != null ?
+                new ObjectParameter("nameToken", nameToken) :
+                new ObjectParameter("nameToken", typeof(string));
+    
+            var genderParameter = gender.HasValue ?
+                new ObjectParameter("Gender", gender) :
+                new ObjectParameter("Gender", typeof(int));
+    
+            var ageFromParameter = ageFrom.HasValue ?
+                new ObjectParameter("ageFrom", ageFrom) :
+                new ObjectParameter("ageFrom", typeof(int));
+    
+            var ageToParameter = ageTo.HasValue ?
+                new ObjectParameter("ageTo", ageTo) :
+                new ObjectParameter("ageTo", typeof(int));
+    
+            var courseIdParameter = courseId.HasValue ?
+                new ObjectParameter("courseId", courseId) :
+                new ObjectParameter("courseId", typeof(int));
+    
+            var courseYearParameter = courseYear.HasValue ?
+                new ObjectParameter("courseYear", courseYear) :
+                new ObjectParameter("courseYear", typeof(int));
+    
+            var gradeFromParameter = gradeFrom.HasValue ?
+                new ObjectParameter("gradeFrom", gradeFrom) :
+                new ObjectParameter("gradeFrom", typeof(decimal));
+    
+            var gradeToParameter = gradeTo.HasValue ?
+                new ObjectParameter("gradeTo", gradeTo) :
+                new ObjectParameter("gradeTo", typeof(decimal));
+    
+            var overallGradeFromParameter = overallGradeFrom.HasValue ?
+                new ObjectParameter("overallGradeFrom", overallGradeFrom) :
+                new ObjectParameter("overallGradeFrom", typeof(decimal));
+    
+            var overallGradeToParameter = overallGradeTo.HasValue ?
+                new ObjectParameter("overallGradeTo", overallGradeTo) :
+                new ObjectParameter("overallGradeTo", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, courseYearParameter, gradeFromParameter, gradeToParameter, overallGradeFromParameter, overallGradeToParameter);
+        }
     }
 }

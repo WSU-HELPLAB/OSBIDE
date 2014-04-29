@@ -1,0 +1,29 @@
+﻿
+@using OSBIDE.Web.Models.Analytics
+
+<div data-wzstep="@WizardSteps.Procedure">
+
+    <div class="row">
+        <div class="col-xs-2">
+        </div>
+        <div class="col-xs-10">
+            <h2>Choose Procedure and Parameters</h2>
+        </div>
+    </div>
+
+    <div class="row form-group">
+        <label class="col-xs-2 control-label">Analytics Procedure</label>
+        <div class="col-xs-3">
+            <select id="procedure" name="Procedure" class="form-control">
+                <option value=""></option>
+                <option value="errorquotient">Error Quotient</option>
+                <option value="otherprocedure">Other Procedure</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="procedure-params">
+        @Html.Partial("_errorQuotient")
+    </div>
+
+</div>

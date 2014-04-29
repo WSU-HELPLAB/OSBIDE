@@ -1,32 +1,62 @@
-﻿@{
-    ViewBag.Title = "Admin Controls";
-    bool uploadRosterResult = false;
-    if(ViewBag.UploadResult != null)
-    {
-        uploadRosterResult = ViewBag.UploadResult;
-    }
-}
-<h1>Admin Controls</h1>
+﻿<section data-tab="Admin">
 
-@if (uploadRosterResult == true)
-{
-    <div class="notice">
-        <p>
-            Roster import complete.
-        </p>
-    </div>
-}
-@using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data" }))
-{
-    <fieldset>
-        <legend>
-            Student Subscription Uploader
-        </legend>
-        <p>
-        By using this form, you can automatically set up subscriptions for students, instructors, and TAs in a given section.
-    To do so, simply upload a two-column CSV file that lists student ID numbers and the desired section number.
-    </p>
-    <input type="file" id="file" name="file"/ onchange="check_extension(this.value)"><br />
-    <input id="upload" type="submit" value="Upload"/> 
-    </fieldset>
-}
+    @{
+        ViewBag.Title = "Admin Controls";
+        bool uploadRosterResult = false;
+        if (ViewBag.UploadResult != null)
+        {
+            uploadRosterResult = ViewBag.UploadResult;
+        }
+    }
+    <h1>Admin Controls</h1>
+
+    @if (uploadRosterResult == true)
+    {
+        <div class="notice">
+            <p>
+                Roster import complete.
+            </p>
+        </div>
+    }
+    @using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <fieldset>
+            <legend>
+                Student Subscription Uploader
+            </legend>
+            <section>
+                <p>
+                    By using this form, you can automatically set up subscriptions for students, instructors, and TAs in a given section.
+                    To do so, simply upload a two-column CSV file that lists student ID numbers and the desired section number.
+                </p>
+            </section>
+            <section>
+                <section>
+                    <input type="file" id="file" name="file" />
+                    <div id="fileMsg" class="field-validation-error"></div>
+                </section>
+                <section class="context-section">
+                    <div>
+                        <label for="surveyYear">School Year</label>
+                        <input id="surveyYear" name="SurveyYear" type="text" />
+                    </div>
+                    <div>
+                        <label for="surveySemester">Semester</label>
+                        <select id="surveySemester" name="SurveySemester">
+                            <option value=""></option>
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </div>
+                    <div id="timeframeMsg" class="field-validation-error"></div>
+                </section>
+            </section>
+            <section>
+                <input id="upload" type="submit" value="Upload" disabled="disabled" />
+            </section>
+        </fieldset>
+    }
+
+</section>

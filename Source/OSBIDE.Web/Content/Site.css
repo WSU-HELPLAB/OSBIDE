@@ -62,7 +62,8 @@ input[type="checkbox"] {
 }
 
 #body {
-    margin:7px;
+    margin:0px;
+    overflow-x: hidden;
 }
 
 .button {
@@ -315,3 +316,119 @@ table.form-entry th {
         color: red;
         font-weight: bold;
     }
+
+section {
+    margin-top: 1.2em;
+}
+
+section[data-tab="Admin"] {
+    min-height: 230px;
+}
+
+.context-section {
+    padding-left: 1.2em;
+    display: none;
+}
+.context-section div {
+    margin: 5px;
+}
+.context-section label {
+    display: inline-block;
+    width: 80px;
+}
+.context-section input {
+    width: 75px;
+    height: 13px;
+}
+.context-section select {
+    width: 79px;
+}
+header > ul > li > a {
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    position: relative;
+}
+
+header > ul > li > a.active:before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    margin-left: -12px;
+    border-width: 12px;
+    border-style: solid;
+    border-color: transparent transparent #fff transparent;
+}
+
+input[type="submit"]:disabled {
+    cursor: default;
+}
+input[type="file"] {
+    cursor: pointer;
+}
+
+/* wizard */
+.wizard a {
+    padding: 10px 12px 10px;
+    margin-right: 5px;
+    background: #efefef;
+    position: relative;
+    display: inline-block;
+}
+.wizard a:before {
+    width: 0;
+    height: 0;
+    border-top: 20px inset transparent;
+    border-bottom: 20px inset transparent;
+    border-left: 20px solid #fff;
+    position: absolute;
+    content: "";
+    top: 0;
+    left: 0;
+}
+.wizard a:after {
+    width: 0;
+    height: 0;
+    border-top: 20px inset transparent;
+    border-bottom: 20px inset transparent;
+    border-left: 20px solid #efefef;
+    position: absolute;
+    content: "";
+    top: 0;
+    right: -20px;
+    z-index: 2;
+}
+.wizard a:first-child:before,
+.wizard a:last-child:after {
+    border: none;
+}
+.wizard a:first-child {
+    -webkit-border-radius: 4px 0 0 4px;
+       -moz-border-radius: 4px 0 0 4px;
+            border-radius: 4px 0 0 4px;
+}
+.wizard a:last-child {
+    -webkit-border-radius: 0 4px 4px 0;
+       -moz-border-radius: 0 4px 4px 0;
+            border-radius: 0 4px 4px 0;
+}
+.wizard .badge {
+    margin: 0 5px 0 18px;
+    position: relative;
+    top: -1px;
+}
+.wizard a:first-child .badge {
+    margin-left: 0;
+}
+.wizard .current {
+    background: #007ACC;
+    color: #fff;
+}
+.wizard .current:after {
+    border-left-color: #007ACC;
+}
+
+div[data-wzstep] {
+    display: none;
+}

@@ -1,0 +1,56 @@
+﻿@model List<OSBIDE.Web.Models.Analytics.ProcedureDataItem>
+
+@using OSBIDE.Web.Models.Analytics
+
+<div data-wzstep="@WizardSteps.Refine">
+
+    <div class="row">
+        <div class="col-xs-1">
+        </div>
+        <div class="col-xs-8">
+            <h2>Refine Procedure Data</h2>
+        </div>
+    </div>
+
+    <div class="col-xs-1">
+    </div>
+    <div class="col-xs-11">
+        <table id="studentlist" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="selectAll" />
+                    </th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Age</th>
+                    <th>Ethnicity</th>
+                    <th>Class</th>
+                    <th>Year</th>
+                    <th>Quarter</th>
+                    <th>Grade</th>
+                    <th>Overall Grade</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model)
+                {
+                    var selectionState = @row.IsSelected ? "checked='checked'" : string.Empty;
+                    <tr>
+                        <td><input name="SelectDataItems" value="@row.Id" type="checkbox" @selectionState /></td>
+                        <td>@row.Name</td>
+                        <td>@row.Gender</td>
+                        <td>@row.Age</td>
+                        <td>@row.Ethnicity</td>
+                        <td>@row.Class</td>
+                        <td>@row.Year</td>
+                        <td>@row.Quarter</td>
+                        <td>@row.Grade</td>
+                        <td>@row.OverallGrade</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

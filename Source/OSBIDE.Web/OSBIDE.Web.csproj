@@ -151,6 +151,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AnalyticsController.cs" />
     <Compile Include="Controllers\AssignmentController.cs" />
     <Compile Include="Controllers\BuildEventController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
@@ -165,6 +166,12 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Controllers\WhatsNewController.cs" />
+    <Compile Include="Helpers\ActionSelectorAttribute.cs" />
+    <Compile Include="Models\AdminDataImport.cs" />
+    <Compile Include="Models\Analytics\Analytics.cs" />
+    <Compile Include="Models\Analytics\ErrorQuotientParam.cs" />
+    <Compile Include="Models\Analytics\ProcedureDataItem.cs" />
+    <Compile Include="Models\Analytics\WizardSteps.cs" />
     <Compile Include="Models\FileSystem\AssignmentFilePath.cs" />
     <Compile Include="Models\FileSystem\CourseFilePath.cs" />
     <Compile Include="Models\FileSystem\EmptyFilePathDecorator.cs" />
@@ -226,6 +233,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\icons\add_up.png" />
     <Content Include="Content\icons\anonymous.png" />
+    <Content Include="Content\icons\chartsample.png" />
     <Content Include="Content\icons\delete_up.png" />
     <Content Include="Content\icons\edit_up.png" />
     <Content Include="Content\icons\follow.png" />
@@ -343,9 +351,15 @@
     <None Include="Properties\PublishProfiles\filesystem.pubxml" />
     <None Include="Properties\PublishProfiles\osbide.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestaging - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestagingws - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestagingws - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
@@ -371,6 +385,7 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\Osbide.Account.Create.js" />
+    <Content Include="Scripts\Osbide.Analytics.js" />
     <Content Include="Scripts\Osbide.Default.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -385,7 +400,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -456,6 +473,12 @@
     <Content Include="Views\Error\FeedDown.cshtml" />
     <Content Include="Views\Gradebook\GradebookHelp.cshtml" />
     <Content Include="Views\Gradebook\Index.cshtml" />
+    <Content Include="Views\Analytics\Index.cshtml" />
+    <Content Include="Views\Analytics\_refine.cshtml" />
+    <Content Include="Views\Analytics\_criteria.cshtml" />
+    <Content Include="Views\Analytics\_procedure.cshtml" />
+    <Content Include="Views\Analytics\_results.cshtml" />
+    <Content Include="Views\Analytics\_errorQuotient.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

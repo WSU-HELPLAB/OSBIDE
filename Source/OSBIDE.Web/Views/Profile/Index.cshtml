@@ -10,7 +10,7 @@
     OsbideUser currentUser = ViewBag.CurrentUser;
 }
 
-<section>
+<section data-tab="Profile">
     <div class="feed-item-single-left">
         <img src="@Url.Action("Picture", "Profile", new { id = Model.User.Id })" title="profile image" alt="profile image" />
     </div>

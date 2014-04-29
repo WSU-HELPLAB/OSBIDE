@@ -11,10 +11,10 @@ namespace OSBIDE.Data.DomainObjects
     {
         public static void LogAccountRequest(ActionRequestLog log)
         {
-            using (var storage = new ActionRequestLogTable())
+            using (var storage = new ActionRequestLogStorage())
             {
                 var utc = DateTime.UtcNow;
-                var entity = new ActionRequestLogEntity
+                var entity = new ActionRequestLogEntry
                 {
                     PartitionKey = log.SchoolId.ToString(CultureInfo.InvariantCulture),
                     RowKey = string.Format("{0}_{1}_{2}_{3}_{4}_{5}",
@@ -37,9 +37,9 @@ namespace OSBIDE.Data.DomainObjects
 
         public static void LogAccountRequest(IEnumerable<ActionRequestLog> logs)
         {
-            using (var storage = new ActionRequestLogTable())
+            using (var storage = new ActionRequestLogStorage())
             {
-                storage.Insert(logs.Select(log => new ActionRequestLogEntity
+                storage.Insert(logs.Select(log => new ActionRequestLogEntry
                 {
                     PartitionKey = log.SchoolId.ToString(CultureInfo.InvariantCulture),
                     RowKey = string.Format("{0}_{1}", log.CreatorId.ToString(CultureInfo.InstalledUICulture), log.CreatorId.ToString(CultureInfo.InvariantCulture)),
@@ -55,7 +55,7 @@ namespace OSBIDE.Data.DomainObjects
 
         public static IEnumerable<ActionRequestLog> GetAccountRequest(int schoolId, int studentId)
         {
-            using (var storage = new ActionRequestLogTable())
+            using (var storage = new ActionRequestLogStorage())
             {
                 return storage.Select(schoolId.ToString(CultureInfo.InstalledUICulture), studentId.ToString(CultureInfo.InstalledUICulture))
                        .Select(log => new ActionRequestLog
