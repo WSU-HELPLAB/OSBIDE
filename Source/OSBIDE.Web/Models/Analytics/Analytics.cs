@@ -1,18 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Web;
 
 using OSBIDE.Data.DomainObjects;
 
 namespace OSBIDE.Web.Models.Analytics
 {
-    public class Analytics
+    [Serializable]
+    class Analytics
     {
-        public WizardSteps WizardStep { get; set; }
+        private const string AnalyticsSession = "ANALYTICS_SESSION_KEY";
+
         public Criteria Criteria { get; set; }
         public List<ProcedureDataItem> ProcedureData { get; set; }
         public List<int> SelectDataItems { get; set; }
-        public List<ProcedureType> ProcedureTypes { get; set; }
-        public ProcedureType SelectedProcedureType { get; set; }
-        public dynamic ProcedureParams { get; set; }
-        public dynamic ProcedureResult { get; set; }
+        public ProcedureSettings ProcedureSettings { get; set; }
+        public ProcedureResults ProcedureResults { get; set; }
+
+        public static Analytics FromSession()
+        {
+            if (HttpContext.Current.Session[AnalyticsSession] == null)
+            {
+                HttpContext.Current.Session[AnalyticsSession] = new Analytics();
+            }
+
+            return (Analytics)HttpContext.Current.Session[AnalyticsSession];
+        }
     }
 }

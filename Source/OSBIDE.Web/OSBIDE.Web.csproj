@@ -15,7 +15,7 @@
     <AssemblyName>OSBIDE.Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -31,6 +31,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,6 +62,10 @@
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks.Extensions">
       <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SendGridMail">
       <HintPath>..\..\packages\SendGrid.1.2.1\lib\SendGridMail.dll</HintPath>
@@ -128,10 +133,6 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <Private>True</Private>
-      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -167,10 +168,13 @@
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Controllers\WhatsNewController.cs" />
     <Compile Include="Helpers\ActionSelectorAttribute.cs" />
+    <Compile Include="Helpers\JsonSerializerExtensions.cs" />
     <Compile Include="Models\AdminDataImport.cs" />
     <Compile Include="Models\Analytics\Analytics.cs" />
-    <Compile Include="Models\Analytics\ErrorQuotientParam.cs" />
+    <Compile Include="Models\Analytics\CriteriaLookups.cs" />
     <Compile Include="Models\Analytics\ProcedureDataItem.cs" />
+    <Compile Include="Models\Analytics\ProcedureResults.cs" />
+    <Compile Include="Models\Analytics\ProcedureSettings.cs" />
     <Compile Include="Models\Analytics\WizardSteps.cs" />
     <Compile Include="Models\FileSystem\AssignmentFilePath.cs" />
     <Compile Include="Models\FileSystem\CourseFilePath.cs" />
@@ -239,6 +243,7 @@
     <Content Include="Content\icons\follow.png" />
     <Content Include="Content\icons\help.png" />
     <Content Include="Content\icons\loading.gif" />
+    <Content Include="Content\icons\Tabular.png" />
     <Content Include="Content\icons\tooltip.png" />
     <Content Include="Content\icons\unfollow.png" />
     <Content Include="Content\icons\users_16.png" />
@@ -385,7 +390,6 @@
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\Osbide.Account.Create.js" />
-    <Content Include="Scripts\Osbide.Analytics.js" />
     <Content Include="Scripts\Osbide.Default.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -473,12 +477,14 @@
     <Content Include="Views\Error\FeedDown.cshtml" />
     <Content Include="Views\Gradebook\GradebookHelp.cshtml" />
     <Content Include="Views\Gradebook\Index.cshtml" />
-    <Content Include="Views\Analytics\Index.cshtml" />
-    <Content Include="Views\Analytics\_refine.cshtml" />
-    <Content Include="Views\Analytics\_criteria.cshtml" />
-    <Content Include="Views\Analytics\_procedure.cshtml" />
-    <Content Include="Views\Analytics\_results.cshtml" />
-    <Content Include="Views\Analytics\_errorQuotient.cshtml" />
+    <Content Include="Views\Analytics\Refine.cshtml" />
+    <Content Include="Views\Analytics\Procedure.cshtml" />
+    <Content Include="Views\Analytics\Results.cshtml" />
+    <Content Include="Views\Analytics\ErrorQuotient.cshtml" />
+    <Content Include="Views\Analytics\Criteria.cshtml" />
+    <Content Include="Views\Analytics\Histogram.cshtml" />
+    <Content Include="Views\Analytics\Tabular.cshtml" />
+    <Content Include="Views\Analytics\ScatterChart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">
@@ -515,7 +521,9 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>62129</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:24867/</IISUrl>
+          <IISUrl>http://localhost/osbide</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost.osbide</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

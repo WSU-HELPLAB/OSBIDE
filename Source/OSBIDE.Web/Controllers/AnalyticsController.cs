@@ -3,73 +3,111 @@ using System.Linq;
 using System.Web.Mvc;
 
 using OSBIDE.Data.SQLDatabase;
-using OSBIDE.Web.Helpers;
 using OSBIDE.Web.Models.Analytics;
 using OSBIDE.Data.DomainObjects;
+using OSBIDE.Data.SQLDatabase.DataAnalytics;
 
 namespace OSBIDE.Web.Controllers
 {
     //[AllowAccess(SystemRole.Instructor)]
     public class AnalyticsController : ControllerBase
     {
-        public ActionResult Index()
+        public ActionResult Criteria()
         {
-            return View(new Analytics
+            var analytics = Analytics.FromSession();
+            if (analytics.Criteria == null)
             {
-                WizardStep = WizardSteps.Criteria,
-                Criteria = new Criteria(),
-            });
+                analytics.Criteria = new Criteria();
+            }
+            return View("Criteria", analytics.Criteria);
         }
 
         [HttpPost]
-        [ActionName("Analytics")]
-        [ActionSelector(Name = "Criteria")]
-        public ActionResult GetProcedureData(Criteria criteria)
+        public ActionResult Refine(Criteria criteria)
         {
-            return View("Index", new Analytics
-            {
-                WizardStep = WizardSteps.Refine,
-                ProcedureData = StudentDemographicInfoProc.Get(criteria)
-                    .Select(x => new ProcedureDataItem
-                    {
-                        IsSelected = true,
-                        Id = x.Id,
-                        Name = x.Name,
-                        Gender = x.Gender,
-                        Age = x.Age,
-                        Class = x.Class,
-                        Year = x.Year,
-                        Quarter = x.Quarter,
-                        Grade = x.Grade,
-                        OverallGrade = x.OverallGrade,
-                        Ethnicity = x.Ethnicity
-                    })
-                    .ToList()
-            });
+            var analytics = Analytics.FromSession();
+
+            analytics.Criteria = criteria;
+            analytics.ProcedureData = ProcedureDataProc.Get(criteria)
+                                                       .Select(x => new ProcedureDataItem
+                                                       {
+                                                           IsSelected = true,
+                                                           Id = x.Id,
+                                                           Name = x.Name,
+                                                           Gender = x.Gender.ToString(),
+                                                           Age = x.Age,
+                                                           Class = x.Class,
+                                                           Deliverable = x.Deliverable,
+                                                           Quarter = x.Quarter,
+                                                           Grade = x.Grade,
+                                                           Ethnicity = x.Ethnicity
+                                                       })
+                                                       .ToList();
+            analytics.SelectDataItems = null;
+
+            return View("Refine", analytics.ProcedureData);
+        }
+
+        public ActionResult Refine()
+        {
+            return View("Refine", Analytics.FromSession().ProcedureData);
         }
 
         [HttpPost]
-        [ActionName("Analytics")]
-        [ActionSelector(Name = "Refine")]
-        public ActionResult RefineDataSelection(List<int> selectDataItems)
+        public ActionResult Procedure(List<int> selectDataItems)
         {
-            return View("Index", new Analytics
+            var analytics = Analytics.FromSession();
+            analytics.SelectDataItems = selectDataItems;
+
+            if (analytics.ProcedureSettings == null)
             {
-                WizardStep = WizardSteps.Procedure,
-                SelectDataItems = selectDataItems,
-            });
+                analytics.ProcedureSettings = new ProcedureSettings
+                                                    {
+                                                        SelectedProcedureType = ProcedureType.ErrorQuotient,
+                                                        ProcedureParams = new ErrorQuotientParams()
+                                                    };
+            }
+            return View("Procedure", analytics.ProcedureSettings);
+        }
+
+        public ActionResult Procedure()
+        {
+            return View("Procedure", Analytics.FromSession().ProcedureSettings);
         }
 
         [HttpPost]
-        [ActionName("Analytics")]
-        [ActionSelector(Name = "Procedure")]
-        public ActionResult RunProcedure(ErrorQuotientParam procedureParams)
+        public ActionResult Results(ErrorQuotientParams procedureParams)
         {
-            return View("Index", new Analytics
+            var analytics = Analytics.FromSession();
+
+            analytics.ProcedureSettings.ProcedureParams = procedureParams;
+            if (analytics.ProcedureResults == null)
             {
-                WizardStep = WizardSteps.Results,
-                ProcedureParams = procedureParams,
-            });
+                analytics.ProcedureResults = new ProcedureResults
+                {
+                    ViewType = ResultViewType.Tabular,
+                    Results = ErrorQuotientAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems),
+                };
+
+                foreach (var r in analytics.ProcedureResults.Results)
+                {
+                    var user = analytics.ProcedureData.Where(d => d.Id == r.UserId).First();
+                    r.Grade = user.Grade;
+                    r.Name = user.Name;
+                }
+            }
+
+            return View("Results", analytics.ProcedureResults);
+        }
+
+        [HttpPost]
+        public ActionResult Charts(ProcedureResults procedureResults)
+        {
+            var analytics = Analytics.FromSession();
+
+            analytics.ProcedureResults.ViewType = procedureResults.ViewType;
+
+            return View("Results", analytics.ProcedureResults);
         }
     }
 }

@@ -369,66 +369,58 @@ input[type="file"] {
 }
 
 /* wizard */
+.wizard {
+    position: relative;
+    top: 15px;
+}
 .wizard a {
-    padding: 10px 12px 10px;
+    padding: 5px 6px 5px;
     margin-right: 5px;
     background: #efefef;
     position: relative;
     display: inline-block;
+    cursor: pointer;
 }
 .wizard a:before {
     width: 0;
     height: 0;
-    border-top: 20px inset transparent;
-    border-bottom: 20px inset transparent;
-    border-left: 20px solid #fff;
+    border-top: 15px inset transparent;
+    border-bottom: 15px inset transparent;
+    border-right: 15px solid #efefef;
     position: absolute;
     content: "";
     top: 0;
-    left: 0;
+    left: -14px;
 }
 .wizard a:after {
     width: 0;
     height: 0;
-    border-top: 20px inset transparent;
-    border-bottom: 20px inset transparent;
-    border-left: 20px solid #efefef;
+    border-top: 15px inset transparent;
+    border-bottom: 15px inset transparent;
+    border-left: 15px solid #efefef;
     position: absolute;
     content: "";
     top: 0;
-    right: -20px;
+    right: -14px;
     z-index: 2;
 }
-.wizard a:first-child:before,
-.wizard a:last-child:after {
+.wizard a:first-child:after,
+.wizard a:last-child:before {
     border: none;
 }
 .wizard a:first-child {
-    -webkit-border-radius: 4px 0 0 4px;
-       -moz-border-radius: 4px 0 0 4px;
-            border-radius: 4px 0 0 4px;
-}
-.wizard a:last-child {
     -webkit-border-radius: 0 4px 4px 0;
        -moz-border-radius: 0 4px 4px 0;
             border-radius: 0 4px 4px 0;
 }
-.wizard .badge {
-    margin: 0 5px 0 18px;
-    position: relative;
-    top: -1px;
-}
-.wizard a:first-child .badge {
-    margin-left: 0;
-}
-.wizard .current {
-    background: #007ACC;
-    color: #fff;
-}
-.wizard .current:after {
-    border-left-color: #007ACC;
+.wizard a:last-child {
+    -webkit-border-radius: 4px 0 0 4px;
+       -moz-border-radius: 4px 0 0 4px;
+            border-radius: 4px 0 0 4px;
 }
 
-div[data-wzstep] {
-    display: none;
+img[data-type="icon"] {
+    width: 18px;
+    position: relative;
+    top: 5px;
 }

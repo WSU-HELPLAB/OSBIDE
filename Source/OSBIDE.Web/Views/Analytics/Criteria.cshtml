@@ -1,0 +1,142 @@
+﻿@model OSBIDE.Data.DomainObjects.Criteria
+@using OSBIDE.Web.Models.Analytics
+
+@Styles.Render("~/Content/bootstrap.css")
+
+<section data-tab="Analytics" id="analytics" class="container-fluid">
+
+    @using (Html.BeginForm("Refine", "Analytics", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        <div data-wzstep="@WizardSteps.Criteria">
+
+            <div class="row">
+                <div class="col-xs-2">
+                </div>
+                <div class="col-xs-4">
+                    <h2>Enter Data Criteria</h2>
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Date Range:</label>
+                <div class="col-xs-2">
+                    @Html.TextBoxFor(m => m.DateFrom, new { @class = "form-control", placeholder = "From" })
+                </div>
+                <div class="col-xs-2">
+                    @Html.TextBoxFor(m => m.DateTo, new { @class = "form-control", placeholder = "To" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Name Contains:</label>
+                <div class="col-xs-2">
+                    @Html.TextBoxFor(m => m.NameToken, new { @class = "form-control", placeholder = "Any" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Gender:</label>
+                <div class="col-xs-2">
+                    @Html.DropDownListFor(m => m.GenderId, new SelectList(CriteriaLookups.Genders, "GenderId", "DisplayName"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Age Between:</label>
+                <div class="col-xs-2">
+                    @Html.DropDownListFor(m => m.AgeFrom, new SelectList(CriteriaLookups.AgeRange, "Age", "DisplayText"), new { @class = "form-control" })
+                </div>
+                <div class="col-xs-2">
+                    @Html.DropDownListFor(m => m.AgeTo, new SelectList(CriteriaLookups.AgeRange, "Age", "DisplayText"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Course:</label>
+                <div class="col-xs-4">
+                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayName"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Dileverable:</label>
+                <div class="col-xs-2">
+                    @Html.DropDownListFor(m => m.Deliverable, new SelectList(CriteriaLookups.Deliverables), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Grade Between:</label>
+                <div class="col-xs-2">
+                    @Html.TextBoxFor(m => m.GradeFrom, new { @class = "form-control", placeholder = "Any (%)" })
+                </div>
+                <div class="col-xs-2">
+                    @Html.TextBoxFor(m => m.GradeTo, new { @class = "form-control", placeholder = "Any (%)" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-xs-6">
+                </div>
+                <div class="col-xs-2 wizard">
+                    <a style="display:none" data-wzstep="@WizardSteps.Criteria">Prev</a>
+                    <a data-wzstep="@WizardSteps.Refine">Next</a>
+                </div>
+            </div>
+
+        </div>
+    }
+
+</section>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            Criteria.WireupEventHandlers();
+        });
+
+        if (typeof (Criteria) == "undefined") {
+
+            var Criteria = {
+
+                Validate: function () {
+
+                    var name = $("input[name='NameToken']").val();
+                    if (name.length > name.replace(/<\/?[^>]+>/gi, "").length) {
+
+                        return false;
+                    }
+                    return true;
+                },
+
+                WireupEventHandlers: function () {
+
+                    $("input[name='DateFrom']").datepicker({
+                        minDate: new Date("01/011/2010"),
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function () {
+                            $("input[name='DateFrom']").trigger("change");
+                        }
+                    });
+
+                    $("input[name='DateTo']").datepicker({
+                        minDate: new Date("01/011/2010"),
+                        changeMonth: true,
+                        changeYear: true,
+                        onSelect: function () {
+                            $("input[name='DateTo']").trigger("change");
+                        }
+                    });
+
+                    $("a[data-wzstep]").click(function (e) {
+
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (Criteria.Validate()) {
+
+                            $("form").submit();
+                        }
+                    });
+                }
+            };
+        }
+
+    </script>
+}

@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -58,17 +59,31 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
+    <Compile Include="DomainObjects\AgeLookup.cs" />
     <Compile Include="DomainObjects\Comment.cs" />
     <Compile Include="DomainObjects\ConstantsAndEnums.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DomainObjects\CourseLookup.cs" />
     <Compile Include="DomainObjects\Criteria.cs" />
     <Compile Include="DomainObjects\DomainConstants.cs" />
+    <Compile Include="DomainObjects\ErrorQuotientEvent.cs" />
+    <Compile Include="DomainObjects\ErrorQuotientParams.cs" />
+    <Compile Include="DomainObjects\ErrorQuotientResult.cs" />
+    <Compile Include="DomainObjects\ErrorQuotientResults.cs" />
     <Compile Include="DomainObjects\FeedItem.cs" />
     <Compile Include="DomainObjects\DomainObjectHelpers.cs" />
+    <Compile Include="DomainObjects\GenderLookup.cs" />
+    <Compile Include="DomainObjects\ProcedureTypeLookup.cs" />
     <Compile Include="DomainObjects\StudentDemographicInfo.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogEntry.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
+    <Compile Include="SQLDatabase\CriteriaLookupsProc.cs" />
+    <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotient.cs" />
+    <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotientAnalytics.cs" />
+    <Compile Include="SQLDatabase\Edmx\GetAgeLookup_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetAskForHelpEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -78,13 +93,28 @@
     <Compile Include="SQLDatabase\Edmx\GetComments_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetCourseLookup_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetCutCopyPasteEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetDebugEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetDeleverableLookup_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetEditorActivityEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetErrorQuotientDocumentData_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetErrorQuotientErrorTypeData_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetErrorQuotientSessionData_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetEventLogs_Result.cs">
@@ -143,8 +173,9 @@
     <Compile Include="SQLDatabase\CommentsProc.cs" />
     <Compile Include="SQLDatabase\ExcelToSQL.cs" />
     <Compile Include="SQLDatabase\ExcelImport.cs" />
+    <Compile Include="SQLDatabase\ErrorQuotientSessionDataProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateGrades.cs" />
-    <Compile Include="SQLDatabase\StudentDemographicInfoProc.cs" />
+    <Compile Include="SQLDatabase\ProcedureDataProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
   </ItemGroup>
@@ -180,6 +211,10 @@
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientDocumentData].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientErrorTypeData].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientSessionData].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetLookups].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
   </ItemGroup>
@@ -189,6 +224,7 @@
       <Name>OSBIDE.Library</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

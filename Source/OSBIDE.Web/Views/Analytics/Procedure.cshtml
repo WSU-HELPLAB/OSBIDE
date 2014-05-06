@@ -1,0 +1,84 @@
+﻿@model OSBIDE.Web.Models.Analytics.ProcedureSettings
+
+@using OSBIDE.Web.Models.Analytics
+@using OSBIDE.Data.DomainObjects
+
+    @Styles.Render("~/Content/bootstrap.css")
+
+    <section data-tab="Analytics" id="analytics" class="container-fluid">
+
+        @using (Html.BeginForm("Results", "Analytics", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            <div data-wzstep="@WizardSteps.Procedure">
+
+                <div class="row">
+                    <div class="col-xs-2">
+                    </div>
+                    <div class="col-xs-10">
+                        <h2>Choose Procedure and Parameters</h2>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <label class="col-xs-2 control-label">Analytics Procedure</label>
+                    <div class="col-xs-3">
+                        @Html.DropDownList("SelectedProcedureType", new SelectList(ProcedureSettings.ProcedureTypes, "ProcedureTypeId", "DisplayName"), new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div id="procedure-params">
+                    @if (Model.SelectedProcedureType == ProcedureType.ErrorQuotient)
+                    {
+                        Html.RenderPartial("ErrorQuotient", (ErrorQuotientParams)Model.ProcedureParams);
+                    }
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-xs-6">
+                    </div>
+                    <div class="col-xs-2 wizard">
+                        <a data-wzstep="@WizardSteps.Refine" href="@Url.Action("Refine")">Prev</a>
+                        <a data-wzstep="@WizardSteps.Results">Next</a>
+                    </div>
+                </div>
+
+            </div>
+        }
+
+    </section>
+
+@section Scripts
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            Procedure.WireupEventHandlers();
+        });
+
+        if (typeof (Procedure) == "undefined") {
+
+            var Procedure = {
+
+                Validate: function () {
+
+                    return true;
+                },
+
+                WireupEventHandlers: function () {
+
+                    $("a[data-wzstep='@WizardSteps.Results']").click(function (e) {
+
+                        e.stopPropagation();
+                        e.preventDefault();
+                        if (Procedure.Validate()) {
+
+                            $("form").submit();
+                        }
+                    });
+                }
+            };
+        }
+
+    </script>
+}

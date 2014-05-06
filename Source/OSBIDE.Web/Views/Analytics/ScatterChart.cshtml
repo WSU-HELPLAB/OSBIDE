@@ -1,0 +1,79 @@
+﻿@model List<OSBIDE.Data.DomainObjects.ErrorQuotientResult>
+@using OSBIDE.Web.Helpers
+
+<script src="http://code.highcharts.com/highcharts.js"></script>
+<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#container").highcharts({
+            chart: {
+                type: "scatter",
+                zoomType: "xy"
+            },
+            title: {
+                text: ""
+            },
+            subtitle: {
+                text: ""
+            },
+            xAxis: {
+                title: {
+                    enabled: true,
+                    text: "Avg Grades (%)"
+                },
+                startOnTick: true,
+                endOnTick: true,
+                showLastLabel: true
+            },
+            yAxis: {
+                title: {
+                    text: "EQs"
+                }
+            },
+            legend: {
+                layout: "vertical",
+                align: "left",
+                verticalAlign: "top",
+                x: 100,
+                y: 70,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || "#FFFFFF",
+                borderWidth: 1
+            },
+            plotOptions: {
+                scatter: {
+                    marker: {
+                        radius: 5,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineColor: "rgb(100,100,100)"
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: "",
+                        pointFormat: "{point.x}%, {point.y}"
+                    }
+                }
+            },
+            series: [{
+                name: "Grades vs EQs",
+                data: [@Html.Raw(string.Join(",", Model.Select(m=>string.Format("[{0}, {1}]", m.Grade, m.Score))))]
+            }]
+        });
+    })
+
+</script>

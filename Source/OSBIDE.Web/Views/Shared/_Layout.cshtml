@@ -32,8 +32,8 @@
                 <li data-tab="Courses">@Html.ActionLink("Courses", "Index", "Course", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
                 <li data-tab="Grades">@Html.ActionLink("Grades", "Index", "Gradebook", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
                 <li data-tab="Profile">@Html.ActionLink("Profile", "Index", "Profile", new { component = OsbideVsComponent.UserProfile, id = ViewBag.CurrentUser.Id }, new { })</li>
-                <li data-tab="Admin"><a href="/Admin">Admin</a></li>
-                <li data-tab="Analytics"><a href="/Analytics">Analytics</a></li>
+                <li data-tab="Admin"><a href="@Url.Content("~/Admin")">Admin</a></li>
+                <li data-tab="Analytics"><a href="@Url.Content("~/Analytics/Criteria")">Analytics</a></li>
             </ul>
             <!--
             <div class="content-wrapper">

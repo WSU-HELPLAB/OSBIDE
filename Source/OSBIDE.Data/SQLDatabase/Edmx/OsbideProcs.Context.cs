@@ -103,7 +103,57 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetComments_Result>("GetComments", eventLogIdsParameter, currentUserIdParameter);
         }
     
-        public virtual ObjectResult<GetProcedureData_Result> GetProcedureData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string nameToken, Nullable<int> gender, Nullable<int> ageFrom, Nullable<int> ageTo, Nullable<int> courseId, Nullable<int> courseYear, Nullable<decimal> gradeFrom, Nullable<decimal> gradeTo, Nullable<decimal> overallGradeFrom, Nullable<decimal> overallGradeTo)
+        public virtual ObjectResult<GetAgeLookup_Result> GetAgeLookup()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetAgeLookup_Result>("GetAgeLookup");
+        }
+    
+        public virtual ObjectResult<GetCourseLookup_Result> GetCourseLookup()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCourseLookup_Result>("GetCourseLookup");
+        }
+    
+        public virtual ObjectResult<GetDeleverableLookup_Result> GetDeleverableLookup()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeleverableLookup_Result>("GetDeleverableLookup");
+        }
+    
+        public virtual ObjectResult<GetErrorQuotientDocumentData_Result> GetErrorQuotientDocumentData(string buildIds)
+        {
+            var buildIdsParameter = buildIds != null ?
+                new ObjectParameter("buildIds", buildIds) :
+                new ObjectParameter("buildIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientDocumentData_Result>("GetErrorQuotientDocumentData", buildIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetErrorQuotientErrorTypeData_Result> GetErrorQuotientErrorTypeData(string buildIds)
+        {
+            var buildIdsParameter = buildIds != null ?
+                new ObjectParameter("buildIds", buildIds) :
+                new ObjectParameter("buildIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientErrorTypeData_Result>("GetErrorQuotientErrorTypeData", buildIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetErrorQuotientSessionData_Result> GetErrorQuotientSessionData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string userIds)
+        {
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var userIdsParameter = userIds != null ?
+                new ObjectParameter("userIds", userIds) :
+                new ObjectParameter("userIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientSessionData_Result>("GetErrorQuotientSessionData", dateFromParameter, dateToParameter, userIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetProcedureData_Result> GetProcedureData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string nameToken, Nullable<int> gender, Nullable<int> ageFrom, Nullable<int> ageTo, Nullable<int> courseId, string deliverable, Nullable<decimal> gradeFrom, Nullable<decimal> gradeTo)
         {
             var dateFromParameter = dateFrom.HasValue ?
                 new ObjectParameter("dateFrom", dateFrom) :
@@ -133,9 +183,9 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("courseId", courseId) :
                 new ObjectParameter("courseId", typeof(int));
     
-            var courseYearParameter = courseYear.HasValue ?
-                new ObjectParameter("courseYear", courseYear) :
-                new ObjectParameter("courseYear", typeof(int));
+            var deliverableParameter = deliverable != null ?
+                new ObjectParameter("deliverable", deliverable) :
+                new ObjectParameter("deliverable", typeof(string));
     
             var gradeFromParameter = gradeFrom.HasValue ?
                 new ObjectParameter("gradeFrom", gradeFrom) :
@@ -145,15 +195,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("gradeTo", gradeTo) :
                 new ObjectParameter("gradeTo", typeof(decimal));
     
-            var overallGradeFromParameter = overallGradeFrom.HasValue ?
-                new ObjectParameter("overallGradeFrom", overallGradeFrom) :
-                new ObjectParameter("overallGradeFrom", typeof(decimal));
-    
-            var overallGradeToParameter = overallGradeTo.HasValue ?
-                new ObjectParameter("overallGradeTo", overallGradeTo) :
-                new ObjectParameter("overallGradeTo", typeof(decimal));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, courseYearParameter, gradeFromParameter, gradeToParameter, overallGradeFromParameter, overallGradeToParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, deliverableParameter, gradeFromParameter, gradeToParameter);
         }
     }
 }

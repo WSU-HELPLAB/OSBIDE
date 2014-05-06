@@ -13,14 +13,19 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     
     public partial class GetProcedureData_Result
     {
-        public int Id { get; set; }
+        public int UserId { get; set; }
         public int InstitutionId { get; set; }
-        public string Name { get; set; }
-        public Nullable<int> Age { get; set; }
-        public string Gender_Gend { get; set; }
-        public string Ethnicity_Ethn { get; set; }
-        public string Class_Class { get; set; }
-        public string Semester { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public int Age { get; set; }
+        public int Gender { get; set; }
+        public string Ethnicity { get; set; }
+        public string Deliverable { get; set; }
+        public decimal Grade { get; set; }
+        public System.DateTime LastActivity { get; set; }
+        public string Prefix { get; set; }
+        public string CourseNumber { get; set; }
+        public string Season { get; set; }
         public int Year { get; set; }
     }
 }
