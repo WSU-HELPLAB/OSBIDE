@@ -118,15 +118,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeleverableLookup_Result>("GetDeleverableLookup");
         }
     
-        public virtual ObjectResult<GetErrorQuotientDocumentData_Result> GetErrorQuotientDocumentData(string buildIds)
-        {
-            var buildIdsParameter = buildIds != null ?
-                new ObjectParameter("buildIds", buildIds) :
-                new ObjectParameter("buildIds", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientDocumentData_Result>("GetErrorQuotientDocumentData", buildIdsParameter);
-        }
-    
         public virtual ObjectResult<GetErrorQuotientErrorTypeData_Result> GetErrorQuotientErrorTypeData(string buildIds)
         {
             var buildIdsParameter = buildIds != null ?
@@ -196,6 +187,15 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("gradeTo", typeof(decimal));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, deliverableParameter, gradeFromParameter, gradeToParameter);
+        }
+    
+        public virtual ObjectResult<GetErrorQuotientDocumentData_Result> GetErrorQuotientDocumentData(string buildIds)
+        {
+            var buildIdsParameter = buildIds != null ?
+                new ObjectParameter("buildIds", buildIds) :
+                new ObjectParameter("buildIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientDocumentData_Result>("GetErrorQuotientDocumentData", buildIdsParameter);
         }
     }
 }

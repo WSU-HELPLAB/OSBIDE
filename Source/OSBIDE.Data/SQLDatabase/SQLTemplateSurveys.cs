@@ -89,8 +89,7 @@ insert into [dbo].[OsbideSurveys]
            ,[mslq2_34]
            ,[mslq2_45]
            ,[mslq2_50]
-		   ,[Year]
-		   ,[Semester]
+		   ,[CourseId]
 		   ,[CreatedBy]
 		   ,[CreatedOn])
      values ";

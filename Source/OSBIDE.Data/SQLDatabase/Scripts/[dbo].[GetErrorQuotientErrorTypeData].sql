@@ -3,7 +3,7 @@
 -- sproc [GetErrorQuotientErrorTypeData]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetErrorQuotientErrorTypeData]
+create procedure [dbo].[GetErrorQuotientErrorTypeData]
 
 	@buildIds nvarchar(max)
 as

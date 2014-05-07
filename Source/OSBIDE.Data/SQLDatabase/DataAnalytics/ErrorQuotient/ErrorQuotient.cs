@@ -40,15 +40,19 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
                     score += eparams.EtypeDiffPenalty.Value;
                 }
 
-                // same error location?
-                if (subject.Documents != null && nextsibling.Documents != null && subject.Documents.Select(d => d.DocumentId).Intersect(nextsibling.Documents.Select(d => d.DocumentId)).Count() > 0)
+                // same error location, file name comparison, each build gets different file id?
+                if (subject.Documents != null
+                    && nextsibling.Documents != null
+                    && subject.Documents
+                              .Select(d => d.FileName.ToLower())
+                              .Intersect(nextsibling.Documents.Select(d => d.FileName.ToLower())).Count() > 0)
                 {
                     // yes
                     score += 3;
 
                     // same edit location?
                     if (subject.Documents.Any(d => nextsibling.Documents
-                                                              .Any(nd => nd.DocumentId == d.DocumentId
+                                                              .Any(nd => string.Compare(nd.FileName, d.FileName, true) == 0
                                                                       && nd.Line > d.Line - (eparams.ElineRange.HasValue ? eparams.ElineRange.Value : 1)
                                                                       && nd.Line > d.Line + (eparams.ElineRange.HasValue ? eparams.ElineRange.Value : 1)
                                                                       && nd.Column == d.Column)))

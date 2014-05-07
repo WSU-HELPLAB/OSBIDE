@@ -48,6 +48,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\..\packages\EPPlus.3.1.3.3\lib\net35\EPPlus.dll</HintPath>
+    </Reference>
     <Reference Include="FileCache, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FileCache.1.4.0\lib\FileCache.dll</HintPath>
@@ -355,6 +358,8 @@
     <Content Include="Content\icons\unfollow.pdn" />
     <None Include="Properties\PublishProfiles\filesystem.pubxml" />
     <None Include="Properties\PublishProfiles\osbide.pubxml" />
+    <None Include="Properties\PublishProfiles\osbideanalytics - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\osbideanalytics - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP.pubxml" />
@@ -522,8 +527,6 @@
           <DevelopmentServerPort>62129</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost/osbide</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://localhost.osbide</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -25,23 +25,25 @@ namespace OSBIDE.Data.SQLDatabase
                                              EventDate = e.EventDate,
                                          }).ToList();
 
-                var errorTypes = (from t in context.GetErrorQuotientErrorTypeData(string.Join(",", events.Select(e=>e.LogId))) select t).ToList();
+                var errorTypes = (from t in context.GetErrorQuotientErrorTypeData(string.Join(",", events.Select(e => e.LogId))) select t).ToList();
                 var errorDocs = (from d in context.GetErrorQuotientDocumentData(string.Join(",", events.Select(e => e.BuildId))) select d).ToList();
 
                 foreach (var e in events)
                 {
-                    var et = errorTypes.Where(t => t.LogId == e.LogId).Select(t=>t.ErrorTypeId).ToList();
+                    var et = errorTypes.Where(t => t.LogId == e.LogId).Select(t => t.ErrorTypeId).ToList();
                     if (et.Count > 0)
                     {
                         e.ErrorTypeIds = et;
                     }
 
                     var ed = errorDocs.Where(d => d.BuildId == e.BuildId)
-                                      .Select(d => new ErrorDocumentInfo {
-                                                        DocumentId=d.DocumentId,
-                                                        Line=d.Line,
-                                                        Column=d.Column
-                                                        }).ToList();
+                                      .Select(d => new ErrorDocumentInfo
+                                      {
+                                          DocumentId = d.DocumentId,
+                                          Line = d.Line,
+                                          Column = d.Column,
+                                          FileName = d.FileName
+                                      }).ToList();
                     if (ed.Count > 0)
                     {
                         e.Documents = ed;

@@ -95,11 +95,8 @@
             <Parameter Name="CurrentUserId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="GetAgeLookup" ReturnType="Collection(OSBIDE.HybridModel.GetAgeLookup_Result)" />
-          <FunctionImport Name="GetCourseLookup" ReturnType="Collection(OSBIDE.HybridModel.GetCourseLookup_Result1)" />
+          <FunctionImport Name="GetCourseLookup" ReturnType="Collection(OSBIDE.HybridModel.GetCourseLookup_Result)" />
           <FunctionImport Name="GetDeleverableLookup" ReturnType="Collection(OSBIDE.HybridModel.GetDeleverableLookup_Result)" />
-          <FunctionImport Name="GetErrorQuotientDocumentData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result)">
-          <Parameter Name="buildIds" Mode="In" Type="String" />
-          </FunctionImport>
           <FunctionImport Name="GetErrorQuotientErrorTypeData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientErrorTypeData_Result)">
           <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
@@ -119,6 +116,9 @@
             <Parameter Name="deliverable" Mode="In" Type="String" />
             <Parameter Name="gradeFrom" Mode="In" Type="Decimal" />
             <Parameter Name="gradeTo" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="GetErrorQuotientDocumentData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result)">
+            <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -277,18 +277,8 @@
         <ComplexType Name="GetAgeLookup_Result">
           <Property Type="Int32" Name="Age" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="GetCourseLookup_Result1">
-          <Property Type="Int32" Name="CourseId" Nullable="false" />
-          <Property Type="String" Name="CourseName" Nullable="true" />
-        </ComplexType>
         <ComplexType Name="GetDeleverableLookup_Result">
           <Property Type="String" Name="Deliverable" Nullable="true" MaxLength="255" />
-        </ComplexType>
-        <ComplexType Name="GetErrorQuotientDocumentData_Result">
-          <Property Type="Int32" Name="BuildId" Nullable="false" />
-          <Property Type="Int32" Name="DocumentId" Nullable="false" />
-          <Property Type="Int32" Name="Column" Nullable="false" />
-          <Property Type="Int32" Name="Line" Nullable="false" />
         </ComplexType>
         <ComplexType Name="GetErrorQuotientErrorTypeData_Result">
           <Property Type="Int32" Name="LogId" Nullable="false" />
@@ -315,6 +305,13 @@
           <Property Type="String" Name="CourseNumber" Nullable="false" MaxLength="4" />
           <Property Type="String" Name="Season" Nullable="false" MaxLength="4" />
           <Property Type="Int32" Name="Year" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetErrorQuotientDocumentData_Result">
+          <Property Type="Int32" Name="BuildId" Nullable="false" />
+          <Property Type="Int32" Name="DocumentId" Nullable="false" />
+          <Property Type="Int32" Name="Column" Nullable="false" />
+          <Property Type="Int32" Name="Line" Nullable="false" />
+          <Property Type="String" Name="FileName" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -520,7 +517,7 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="GetCourseLookup" FunctionName="OSBIDE.HybridModel.Store.GetCourseLookup">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetCourseLookup_Result1">
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetCourseLookup_Result">
                 <ScalarProperty Name="CourseId" ColumnName="CourseId" />
                 <ScalarProperty Name="CourseName" ColumnName="CourseName" />
               </ComplexTypeMapping>
@@ -530,16 +527,6 @@
             <ResultMapping>
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDeleverableLookup_Result">
                 <ScalarProperty Name="Deliverable" ColumnName="Deliverable" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetErrorQuotientDocumentData" FunctionName="OSBIDE.HybridModel.Store.GetErrorQuotientDocumentData">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result">
-                <ScalarProperty Name="BuildId" ColumnName="BuildId" />
-                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
-                <ScalarProperty Name="Column" ColumnName="Column" />
-                <ScalarProperty Name="Line" ColumnName="Line" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
@@ -578,6 +565,17 @@
                 <ScalarProperty Name="CourseNumber" ColumnName="CourseNumber" />
                 <ScalarProperty Name="Season" ColumnName="Season" />
                 <ScalarProperty Name="Year" ColumnName="Year" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetErrorQuotientDocumentData" FunctionName="OSBIDE.HybridModel.Store.GetErrorQuotientDocumentData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result">
+                <ScalarProperty Name="BuildId" ColumnName="BuildId" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="Column" ColumnName="Column" />
+                <ScalarProperty Name="Line" ColumnName="Line" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

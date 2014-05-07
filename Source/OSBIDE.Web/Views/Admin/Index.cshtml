@@ -1,4 +1,9 @@
-﻿<section data-tab="Admin">
+﻿@model OSBIDE.Web.Models.AdminDataImport
+@using OSBIDE.Web.Models.Analytics
+
+@Styles.Render("~/Content/bootstrap.css")
+
+<section data-tab="Admin">
 
     @{
         ViewBag.Title = "Admin Controls";
@@ -8,55 +13,69 @@
             uploadRosterResult = ViewBag.UploadResult;
         }
     }
-    <h1>Admin Controls</h1>
 
     @if (uploadRosterResult == true)
     {
-        <div class="notice">
-            <p>
+        <div class="notice row">
+            <div class="col-xs-2">
+            </div>
+            <div class="col-xs-4">
                 Roster import complete.
-            </p>
+            </div>
         </div>
     }
-    @using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+
+    @using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
     {
-        <fieldset>
-            <legend>
-                Student Subscription Uploader
-            </legend>
-            <section>
+        <div class="row">
+            <div class="col-xs-2">
+            </div>
+            <div class="col-xs-4">
+                <h2>Upload Files</h2>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-xs-2">
+            </div>
+            <div class="col-xs-8">
                 <p>
                     By using this form, you can automatically set up subscriptions for students, instructors, and TAs in a given section.
                     To do so, simply upload a two-column CSV file that lists student ID numbers and the desired section number.
                 </p>
-            </section>
-            <section>
-                <section>
-                    <input type="file" id="file" name="file" />
-                    <div id="fileMsg" class="field-validation-error"></div>
-                </section>
-                <section class="context-section">
-                    <div>
-                        <label for="surveyYear">School Year</label>
-                        <input id="surveyYear" name="SurveyYear" type="text" />
-                    </div>
-                    <div>
-                        <label for="surveySemester">Semester</label>
-                        <select id="surveySemester" name="SurveySemester">
-                            <option value=""></option>
-                            <option value="Spring">Spring</option>
-                            <option value="Summer">Summer</option>
-                            <option value="Fall">Fall</option>
-                            <option value="Winter">Winter</option>
-                        </select>
-                    </div>
-                    <div id="timeframeMsg" class="field-validation-error"></div>
-                </section>
-            </section>
-            <section>
+                <p>
+                    Grade or class surveys xlsx files can also be uploaded using this form.
+                </p>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-xs-2">
+            </div>
+            <div class="col-xs-8">
+                <input type="file" id="file" name="file" />
+                <div id="fileMsg" class="field-validation-error"></div>
+            </div>
+        </div>
+        <div class="form-group context-section">
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Year:</label>
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayName"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-xs-2 control-label">Dileverable:</label>
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(m => m.Deliverable, new SelectList(CriteriaLookups.Deliverables), new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col-xs-2">
+            </div>
+            <div class="col-xs-8">
                 <input id="upload" type="submit" value="Upload" disabled="disabled" />
-            </section>
-        </fieldset>
+            </div>
+        </div>
     }
 
 </section>

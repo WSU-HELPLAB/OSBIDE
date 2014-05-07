@@ -3,7 +3,7 @@
 -- sproc [GetErrorQuotientSessionData]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetErrorQuotientSessionData]
+create procedure [dbo].[GetErrorQuotientSessionData]
 
 	 @dateFrom DateTime
 	,@dateTo DateTime

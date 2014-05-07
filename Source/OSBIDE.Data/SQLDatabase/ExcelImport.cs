@@ -4,19 +4,19 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public class ExcelImport
     {
-        public static void UploadGrades(string fileLocation, string fileExtension, int createdBy)
+        public static void UploadGrades(string fileLocation, string fileExtension, int courseId, string deliverable, int createdBy)
         {
             ExcelToSQL.Execute(fileLocation,
                                 fileExtension,
-                                SQLTemplateGrades.Template, "{0},'{1}'",
-                                new string[] { createdBy.ToString(), DateTime.Now.ToString() });
+                                SQLTemplateGrades.Template, "{0},'{1}',{2},'{3}'",
+                                new string[] { courseId.ToString(), deliverable, createdBy.ToString(), DateTime.Now.ToString() });
         }
-        public static void UploadSurveys(string fileLocation, string fileExtension, int surveyYear, string surveySemester, int createdBy)
+        public static void UploadSurveys(string fileLocation, string fileExtension, int courseId, int createdBy)
         {
             ExcelToSQL.Execute(fileLocation,
                                 fileExtension,
-                                SQLTemplateSurveys.Template, "{0},'{1}',{2},'{3}'",
-                                new string[] { surveyYear.ToString(), surveySemester, createdBy.ToString(), DateTime.Now.ToString() });
+                                SQLTemplateSurveys.Template, "{0},{1},'{2}'",
+                                new string[] { courseId.ToString(), createdBy.ToString(), DateTime.Now.ToString() });
         }
     }
 }

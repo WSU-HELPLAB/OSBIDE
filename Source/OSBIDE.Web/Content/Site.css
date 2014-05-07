@@ -321,27 +321,13 @@ section {
     margin-top: 1.2em;
 }
 
-section[data-tab="Admin"] {
-    min-height: 230px;
+form{
+    min-height:230px;
 }
 
 .context-section {
     padding-left: 1.2em;
     display: none;
-}
-.context-section div {
-    margin: 5px;
-}
-.context-section label {
-    display: inline-block;
-    width: 80px;
-}
-.context-section input {
-    width: 75px;
-    height: 13px;
-}
-.context-section select {
-    width: 79px;
 }
 header > ul > li > a {
     display: inline-block;

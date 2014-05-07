@@ -1,9 +1,5 @@
-﻿using OSBIDE.Library.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OSBIDE.Data.DomainObjects
 {
@@ -25,5 +21,6 @@ namespace OSBIDE.Data.DomainObjects
         public int DocumentId { get; set; }
         public int Line { get; set; }
         public int Column { get; set; }
+        public string FileName { get; set; }
     }
 }

@@ -17,5 +17,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
         public int DocumentId { get; set; }
         public int Column { get; set; }
         public int Line { get; set; }
+        public string FileName { get; set; }
     }
 }

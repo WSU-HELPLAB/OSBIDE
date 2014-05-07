@@ -33,12 +33,30 @@ begin
 	--declare @ageTo int=30
 	--declare @deliverable nvarchar(255)='homework 1'
 	--declare @nameToken nvarchar(255)='ro'
+	
+	create table #temp
+	(
+		UserId int,
+		InstitutionId int,
+		FirstName nvarchar(255),
+		LastName nvarchar(255),
+		Age int,
+		Gender int,
+		Ethnicity nvarchar(255),
+		Prefix nvarchar(255),
+		CourseNumber nvarchar(255),
+		Season nvarchar(255),
+		[Year] int,
+		Deliverable nvarchar(255),
+		Grade decimal,
+		LastActivity datetime
+	)
 
+	insert into #temp
 	select UserId=u.Id, u.InstitutionId, u.FirstName, u.LastName,
 		   s.Age, Gender=u.GenderValue, Ethnicity=s.Ethnicity_Ethn,
 		   c.Prefix, c.CourseNumber, c.Season, c.[Year],
 		   g.Deliverable, g.Grade, LastActivity=max(e.DateReceived)
-	into #temp
 	from [dbo].[OsbideUsers] u with (nolock)
 	inner join [dbo].[OsbideSurveys] s with (nolock) on s.UserInstitutionId=u.InstitutionId
 													and (s.Age between @ageFrom and @ageTo
@@ -101,8 +119,8 @@ end
 
 exec [dbo].[GetProcedureData] @dateFrom='2000-01-01 00:00:00',
 @dateTo='2014-05-03 00:00:00',
-@nameToken='',@Gender=1,@ageFrom=-1,@ageTo=-1,
-@courseId=-1,@deliverable=N'Homework 1',@gradeFrom=0,@gradeTo=0
+@nameToken='',@Gender=1,@ageFrom=17,@ageTo=28
+@courseId=-1,@deliverable=N'Any',@gradeFrom=0,@gradeTo=0
 
 select * from [dbo].[Courses]
 

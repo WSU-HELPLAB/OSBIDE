@@ -35,14 +35,9 @@ function documentReady() {
         $(".notice").fadeOut();
     });
 
-    $("#surveyYear").change(function (e) {
-
-        FileManager.validateYear();
-    });
-
     $("#upload").submit(function (e) {
 
-        if (!FileManager.validateFileExtension() || !FileManager.validateYear() || !FileManager.validateSemester()) {
+        if (!FileManager.validateFileExtension() ) {
             e.stopPropagation();
             e.preventDefault();
         }
@@ -105,50 +100,20 @@ if (typeof (FileManager) == "undefined") {
             if (this.hash[ext] == 1) {
 
                 $("#upload").removeAttr("disabled");
-                $("#errorMsg").text("");
+                $("#fileMsg").text("");
 
                 if (ext == ".xlsx" || ext == ".xls") {
                     $(".context-section").fadeIn("slow");
                 }
+                else {
+                    $(".context-section").fadeOut("fast");
+                }
 
-                $("#fileMsg").text("");
                 return true;
             }
 
             $("#fileMsg").text("Invalid file extension!");
             return false;
         },
-
-        validateYear: function () {
-
-            var min = 2010;
-            var max = (new Date).getFullYear() + 1;
-
-            var yearValue = $("#surveyYear").val();
-            if (yearValue.match(/^[0-9]{4}$/)) {
-
-                var year = parseInt(yearValue, 10);
-
-                if (year > min && year < max) {
-                    $("#timeframeMsg").text("")
-                    return true;
-                }
-            }
-
-            $("#timeframeMsg").text("Invalid survey year!");
-            return false;
-        },
-
-        validateSemester: function (yearOnly) {
-
-            if ($("#surveySemester").val().length > 0) {
-
-                $("#timeframeMsg").text("")
-                return true;
-            }
-
-            $("#timeframeMsg").text("Invalid survey timeframe!");
-            return false;
-        }
     };
 }
