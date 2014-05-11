@@ -61,7 +61,7 @@ namespace OSBIDE.Data.NoSQLStorage
         {
             var result = GetTableReference().Execute(TableOperation.Retrieve<ActionRequestLogEntity>(partitionKey, rowKey));
 
-            return result == null ? null : (ActionRequestLogEntity) result.Result;
+            return result == null ? null : (ActionRequestLogEntity)result.Result;
         }
 
         /// <summary>
@@ -189,16 +189,16 @@ namespace OSBIDE.Data.NoSQLStorage
                     msg = string.Format("{0}, {1}|{2},", msg, key, ex.Data[key]);
                 }
             }
-                using (var context=new OsbideContext())
+            using (var context = OsbideContext.DefaultWebConnection)
+            {
+                context.LocalErrorLogs.Add(new LocalErrorLog
                 {
-                    context.LocalErrorLogs.Add(new LocalErrorLog
-                    {
-                        SenderId = Convert.ToInt32(entity.RowKey.Split('_')[0]),
-                        LogDate = DateTime.Now,
-                        Content = msg
-                    });
-                    context.SaveChanges();
-                }
+                    SenderId = Convert.ToInt32(entity.RowKey.Split('_')[0]),
+                    LogDate = DateTime.Now,
+                    Content = msg
+                });
+                context.SaveChanges();
+            }
         }
 
         #region IDispose

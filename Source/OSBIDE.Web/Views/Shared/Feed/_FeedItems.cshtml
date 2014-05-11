@@ -48,7 +48,9 @@
             <img src="@Url.Action("Picture", "Profile", new { id = item.Creator.Id, size = 64 })" height="64" width="64" title="profile image" alt="profile image" />
             @if (item.HelpfulMarks > 0)
             {
-                @:<span class="helpful-marks">+@item.HelpfulMarks</span>
+                //AC: presently, this appears to record the number of comments, not helpful marks
+                //TODO: fix item.HelpfulMarks
+                <!--<span class="helpful-marks">+@item.HelpfulMarks</span>-->
             }
             @if (isSubscribed)
             {

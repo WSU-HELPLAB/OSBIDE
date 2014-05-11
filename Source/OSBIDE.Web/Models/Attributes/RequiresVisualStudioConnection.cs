@@ -1,6 +1,7 @@
 ﻿using OSBIDE.Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -20,19 +21,24 @@ namespace OSBIDE.Web.Models.Attributes
             string key = auth.GetAuthenticationKey();
             OsbideUser user = auth.GetActiveUser(key);
             
-            //is the user a student?
-            if (user.Email != null && user.Role == SystemRole.Student)
+            //check web.config to see if we are requiring VS plugin install
+            if (ConfigurationManager.AppSettings["RequireVsPlugin"].Equals("true"))
             {
-                DateTime lastActivity = DateTime.UtcNow;
-                using (OsbideContext db = OsbideContext.DefaultWebConnection)
-                {
-                    lastActivity = db.Users.Where(u => u.Id == user.Id).Select(u => u.LastVsActivity).FirstOrDefault();
-                }
 
-                //only allow access if they've been active in Visual Studio in the last 7 days
-                if (lastActivity < DateTime.UtcNow.Subtract(new TimeSpan(7, 0, 0, 0, 0)))
+                //is the user a student?
+                if (user.Email != null && user.Role == SystemRole.Student)
                 {
-                    filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Error", action = "RequiresActiveVsConnection" }));
+                    DateTime lastActivity = DateTime.UtcNow;
+                    using (OsbideContext db = OsbideContext.DefaultWebConnection)
+                    {
+                        lastActivity = db.Users.Where(u => u.Id == user.Id).Select(u => u.LastVsActivity).FirstOrDefault();
+                    }
+
+                    //only allow access if they've been active in Visual Studio in the last 7 days
+                    if (lastActivity < DateTime.UtcNow.Subtract(new TimeSpan(7, 0, 0, 0, 0)))
+                    {
+                        filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Error", action = "RequiresActiveVsConnection" }));
+                    }
                 }
             }
         }
