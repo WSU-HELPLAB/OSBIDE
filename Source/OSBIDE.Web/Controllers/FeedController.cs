@@ -472,6 +472,21 @@ namespace OSBIDE.Web.Controllers
                 {
                     vm.IsSubscribed = true;
                 }
+
+                //AC quick hack: The current GetActivityFeeds sproc doesn't pull everything that we need for build events. As a hack, we can 
+                //inject them right here if necessary.
+                if(vm.FeedItem.FeedItemType == BuildEvent.Name)
+                {
+                    List<int> buildIds = vm.FeedItem.Items.Select(i => i.EventId).ToList();
+                    List<BuildEvent> buildEvents = (from evt in Db.BuildEvents
+                                                    where buildIds.Contains(evt.Id)
+                                                    select evt).ToList();
+                    for(int i = 0; i < vm.FeedItem.Items.Count; i++)
+                    {
+                        vm.FeedItem.Items[i].Event = buildEvents[i];
+                    }
+                }
+
                 return View(vm);
             }
             catch (Exception ex)
