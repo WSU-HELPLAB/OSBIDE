@@ -69,6 +69,7 @@
     </Compile>
     <Compile Include="DomainObjects\CourseLookup.cs" />
     <Compile Include="DomainObjects\Criteria.cs" />
+    <Compile Include="DomainObjects\DocUtilDetails.cs" />
     <Compile Include="DomainObjects\DomainConstants.cs" />
     <Compile Include="DomainObjects\ErrorQuotientEvent.cs" />
     <Compile Include="DomainObjects\ErrorQuotientParams.cs" />
@@ -84,10 +85,15 @@
     <Compile Include="SQLDatabase\CriteriaLookupsProc.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotient.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotientAnalytics.cs" />
+    <Compile Include="SQLDatabase\DocUtilProcs.cs" />
+    <Compile Include="SQLDatabase\DynamicSQLExecutor.cs" />
     <Compile Include="SQLDatabase\Edmx\GetAgeLookup_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetAskForHelpEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetBuildDocUtilBatch_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetBuildEvents_Result.cs">
@@ -181,6 +187,7 @@
     <Compile Include="SQLDatabase\ProcedureDataProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
+    <Compile Include="SQLDatabase\SQLTemplateUpdateBuildDocuments.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
@@ -207,6 +214,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQLDatabase\Scripts\AddColumnsToBuildDocumentsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />
     <Content Include="SQLDatabase\Scripts\Dummy.sql" />
@@ -222,6 +230,10 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DiffPlex\DiffPlex.csproj">
+      <Project>{42ed3f62-53c5-4880-b9b8-f8b78f575353}</Project>
+      <Name>DiffPlex</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Library\OSBIDE.Library.csproj">
       <Project>{a38761c0-8f42-4c04-9daa-05989b3971d0}</Project>
       <Name>OSBIDE.Library</Name>

@@ -115,15 +115,18 @@ namespace OSBIDE.Web.Controllers
 
             if (postedFile.FileName.IndexOf("grade", StringComparison.InvariantCultureIgnoreCase) > -1)
             {
-                ExcelImport.UploadGrades(filePath, fileExtension, CurrentUser.Id);
+                ExcelImport.UploadGrades(filePath
+                                         , fileExtension
+                                         , dataImport.CourseId
+                                         , dataImport.Deliverable
+                                         , CurrentUser.Id);
             }
             else
             {
                 ExcelImport.UploadSurveys(filePath
-                                          , fileExtension
-                                          , dataImport.Year
-                                          , dataImport.Semester
-                                          , CurrentUser.Id);
+                                         , fileExtension
+                                         , dataImport.CourseId
+                                         , CurrentUser.Id);
             }
         }
 

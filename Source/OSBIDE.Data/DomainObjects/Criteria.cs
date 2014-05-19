@@ -13,6 +13,7 @@ namespace OSBIDE.Data.DomainObjects
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime? DateTo { get; set; }
         public string NameToken { get; set; }
+        public int? StudentId { get; set; }
         public int GenderId { get; set; }
         public int AgeFrom { get; set; }
         public int AgeTo { get; set; }

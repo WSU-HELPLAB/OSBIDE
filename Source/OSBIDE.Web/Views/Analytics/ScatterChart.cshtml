@@ -1,4 +1,5 @@
-﻿@model List<OSBIDE.Data.DomainObjects.ErrorQuotientResult>
+﻿@model List<OSBIDE.Web.Models.Analytics.ProcedureDataItem>
+
 @using OSBIDE.Web.Helpers
 
 <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -10,6 +11,12 @@
 
     $(document).ready(function () {
 
+        Highcharts.setOptions({
+            lang: {
+                contextButtonTitle: "Export Commands"
+            }
+        });
+
         $("#container").highcharts({
             chart: {
                 type: "scatter",
@@ -18,8 +25,11 @@
             title: {
                 text: ""
             },
-            subtitle: {
-                text: ""
+            navigation: {
+                menuItemStyle: {
+                    padding: "5px",
+                    color: '#303030'
+                }
             },
             xAxis: {
                 title: {
@@ -65,12 +75,12 @@
                     },
                     tooltip: {
                         headerFormat: "",
-                        pointFormat: "{point.x}%, {point.y}"
+                        pointFormat: "{point.y}, {point.x}%"
                     }
                 }
             },
             series: [{
-                name: "Grades vs EQs",
+                name: "EQ vs Grades",
                 data: [@Html.Raw(string.Join(",", Model.Select(m=>string.Format("[{0}, {1}]", m.Grade, m.Score))))]
             }]
         });

@@ -85,7 +85,13 @@
 
             Validate: function () {
 
-                return $("input:checked").length > 0;
+                if ($("input:checked").length > 0) {
+                    return true;
+                }
+                else {
+                    alert("Please select data entries to proceed the procedure calculations.");
+                    return false;
+                }
             },
 
             WireupEventHandlers: function () {

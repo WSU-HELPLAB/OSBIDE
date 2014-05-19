@@ -7,8 +7,9 @@ alter procedure [dbo].[GetProcedureData]
 
 	 @dateFrom DateTime
 	,@dateTo DateTime
+	,@studentId int
 	,@nameToken nvarchar(255)
-	,@Gender int
+	,@gender int
 	,@ageFrom int
 	,@ageTo int
 	,@courseId int
@@ -25,7 +26,8 @@ begin
 
 	--declare @dateFrom datetime='1-1-2000'
 	--declare @dateTo datetime=getDate()
-	--declare @Gender int=1
+	--declare @studentId=3
+	--declare @gender int=1
 	--declare @courseId int=1
 	--declare @gradeFrom decimal=60
 	--declare @gradeTo decimal=100
@@ -59,6 +61,7 @@ begin
 		   g.Deliverable, g.Grade, LastActivity=max(e.DateReceived)
 	from [dbo].[OsbideUsers] u with (nolock)
 	inner join [dbo].[OsbideSurveys] s with (nolock) on s.UserInstitutionId=u.InstitutionId
+													and (u.InstitutionId=@studentId or @studentId=@anyValue)
 													and (s.Age between @ageFrom and @ageTo
 													     or @ageFrom=@anyValue and s.Age<=@ageTo
 														 or @ageTo=@anyValue and s.Age>=@ageFrom
@@ -139,8 +142,6 @@ select * from [dbo].[Courses]
 		,CourseNumber='test'
 		,Season='test'
 		,[Year]=100
-
-
 
 */
 

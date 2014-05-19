@@ -51,13 +51,13 @@
                     @switch (Model.ViewType)
                     {
                         case ResultViewType.Tabular:
-                            Html.RenderPartial("Tabular", (List<ErrorQuotientResult>)Model.Results);
+                            Html.RenderPartial("Tabular", (List<ProcedureDataItem>)Model.Results);
                             break;
                         case ResultViewType.Bar:
-                            Html.RenderPartial("Histogram", (List<ErrorQuotientResult>)Model.Results);
+                            Html.RenderPartial("Histogram", (List<ProcedureDataItem>)Model.Results);
                             break;
                         case ResultViewType.Scatter:
-                            Html.RenderPartial("ScatterChart", (List<ErrorQuotientResult>)Model.Results);
+                            Html.RenderPartial("ScatterChart", (List<ProcedureDataItem>)Model.Results);
                             break;
                     }
                 </div>

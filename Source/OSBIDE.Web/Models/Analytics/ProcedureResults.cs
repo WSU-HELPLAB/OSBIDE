@@ -1,4 +1,5 @@
 ﻿using OSBIDE.Data.DomainObjects;
+using System.Collections.Generic;
 
 namespace OSBIDE.Web.Models.Analytics
 {

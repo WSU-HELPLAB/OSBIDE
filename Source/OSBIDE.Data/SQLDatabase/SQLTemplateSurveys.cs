@@ -3,11 +3,7 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public static class SQLTemplateSurveys
     {
-        public static string Template
-        {
-            get
-            {
-                return @"
+        public const string Template = @"
 insert into [dbo].[OsbideSurveys]
            ([SurveyResponseId]
            ,[Completed]
@@ -93,7 +89,5 @@ insert into [dbo].[OsbideSurveys]
 		   ,[CreatedBy]
 		   ,[CreatedOn])
      values ";
-            }
-        }
     }
 }

@@ -57,13 +57,13 @@
         </div>
         <div class="form-group context-section">
             <div class="row form-group">
-                <label class="col-xs-2 control-label">Year:</label>
+                <label class="col-xs-2 control-label">Course:</label>
                 <div class="col-xs-3">
                     @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayName"), new { @class = "form-control" })
                 </div>
             </div>
             <div class="row form-group">
-                <label class="col-xs-2 control-label">Dileverable:</label>
+                <label class="col-xs-2 control-label">Deliverable:</label>
                 <div class="col-xs-3">
                     @Html.DropDownListFor(m => m.Deliverable, new SelectList(CriteriaLookups.Deliverables), new { @class = "form-control" })
                 </div>
@@ -77,5 +77,39 @@
             </div>
         </div>
     }
+
+</section>
+
+@*"self-contained" doc utils*@
+<section data-type="doc-utils">
+
+    <div class="row form-group">
+        <span class="col-xs-2"></span>
+        <div class="col-xs-2">
+            <button class="col-xs-8" id="doc-util">Run Doc Utils</button>
+        </div>
+        <img data-type="spinner" src="@Url.Content("~/Content/icons/spinner.gif")" class="col-xs-1" />
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("img[data-type='spinner']").hide();
+
+            $("#doc-util").click(function () {
+
+                $(this).prop("disabled", true);
+                $("img[data-type='spinner']").show();
+
+                $.getJSON("@Url.Content("~/Analytics/RunDocUtils")", function () {
+
+                    $("#doc-util").prop("disabled", false);
+                    $("img[data-type='spinner']").hide();
+                });
+            })
+        });
+
+    </script>
 
 </section>

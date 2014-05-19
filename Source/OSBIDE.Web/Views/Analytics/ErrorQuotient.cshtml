@@ -1,7 +1,7 @@
 ﻿@model OSBIDE.Data.DomainObjects.ErrorQuotientParams
 
 <div class="row form-group">
-    <label class="col-xs-2 control-label">touched-multiplier</label>
+    <label class="col-xs-2 control-label">touched-multiplier:</label>
     <div class="col-xs-3">
         @Html.TextBoxFor(m => m.TouchedMultiplier, new { @class = "form-control", placeholder = "1.0" })
     </div>
@@ -11,20 +11,29 @@ students touched the same line of code from one compilation to the next." />
     </div>
 </div>
 <div class="row form-group">
-    <label class="col-xs-2 control-label">eline-range</label>
+    <label class="col-xs-2 control-label">tline-range (touched):</label>
+    <div class="col-xs-3">
+        @Html.TextBoxFor(m => m.TlineRange, new { @class = "form-control", placeholder = "[-1, 1]" })
+    </div>
+    <div class="col-xs-1">
+        <img src="@Url.Content("~/Content/icons/tooltip.png")" data-type="icon" title="tline-range specifies what would constitute the same edit or touched location that will incur the touched-multiplier penalty" />
+    </div>
+</div>
+<div class="row form-group">
+    <label class="col-xs-2 control-label">eline-range (error):</label>
     <div class="col-xs-3">
         @Html.TextBoxFor(m => m.ElineRange, new { @class = "form-control", placeholder = "[-1, 1]" })
     </div>
     <div class="col-xs-1">
-        <img src="@Url.Content("~/Content/icons/tooltip.png")" data-type="icon" title="eline-range allowed
-us to control what constituted an error on the “same line”; a 0 would literally mean
+        <img src="@Url.Content("~/Content/icons/tooltip.png")" data-type="icon" title="eline-range specifies what would constitute
+             an error on the “same line”; a 0 would literally mean
 that two subsequent errors would need to be on exactly the same line, while the range [-
 3,3] would indicate that any error within three lines (in either direction) would constitute being
 “on the same line.”" />
     </div>
 </div>
 <div class="row form-group">
-    <label class="col-xs-2 control-label">eline-penalty</label>
+    <label class="col-xs-2 control-label">eline-penalty (error):</label>
     <div class="col-xs-3">
         @Html.TextBoxFor(m => m.ElinePenalty, new { @class = "form-control", placeholder = "3" })
     </div>
@@ -33,7 +42,7 @@ that two subsequent errors would need to be on exactly the same line, while the 
     </div>
 </div>
 <div class="row form-group">
-    <label class="col-xs-2 control-label">etype-same-penalty</label>
+    <label class="col-xs-2 control-label">etype-same-penalty:</label>
     <div class="col-xs-3">
         @Html.TextBoxFor(m => m.EtypeSamePenalty, new { @class = "form-control", placeholder = "5" })
     </div>
@@ -43,7 +52,7 @@ result." />
     </div>
 </div>
 <div class="row form-group">
-    <label class="col-xs-2 control-label">etype-diff-penalty</label>
+    <label class="col-xs-2 control-label">etype-diff-penalty:</label>
     <div class="col-xs-3">
         @Html.TextBoxFor(m => m.EtypeDiffPenalty, new { @class = "form-control", placeholder = "2" })
     </div>

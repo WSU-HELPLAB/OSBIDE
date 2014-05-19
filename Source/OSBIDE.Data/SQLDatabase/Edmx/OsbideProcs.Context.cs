@@ -144,7 +144,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientSessionData_Result>("GetErrorQuotientSessionData", dateFromParameter, dateToParameter, userIdsParameter);
         }
     
-        public virtual ObjectResult<GetProcedureData_Result> GetProcedureData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string nameToken, Nullable<int> gender, Nullable<int> ageFrom, Nullable<int> ageTo, Nullable<int> courseId, string deliverable, Nullable<decimal> gradeFrom, Nullable<decimal> gradeTo)
+        public virtual ObjectResult<GetProcedureData_Result> GetProcedureData(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, Nullable<int> studentId, string nameToken, Nullable<int> gender, Nullable<int> ageFrom, Nullable<int> ageTo, Nullable<int> courseId, string deliverable, Nullable<decimal> gradeFrom, Nullable<decimal> gradeTo)
         {
             var dateFromParameter = dateFrom.HasValue ?
                 new ObjectParameter("dateFrom", dateFrom) :
@@ -153,6 +153,10 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             var dateToParameter = dateTo.HasValue ?
                 new ObjectParameter("dateTo", dateTo) :
                 new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var studentIdParameter = studentId.HasValue ?
+                new ObjectParameter("studentId", studentId) :
+                new ObjectParameter("studentId", typeof(int));
     
             var nameTokenParameter = nameToken != null ?
                 new ObjectParameter("nameToken", nameToken) :
@@ -186,7 +190,21 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("gradeTo", gradeTo) :
                 new ObjectParameter("gradeTo", typeof(decimal));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, deliverableParameter, gradeFromParameter, gradeToParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProcedureData_Result>("GetProcedureData", dateFromParameter, dateToParameter, studentIdParameter, nameTokenParameter, genderParameter, ageFromParameter, ageToParameter, courseIdParameter, deliverableParameter, gradeFromParameter, gradeToParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> GetBuildDocUtilUsers()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("GetBuildDocUtilUsers");
+        }
+    
+        public virtual ObjectResult<GetBuildDocUtilBatch_Result> GetBuildDocUtilBatch(string userIds)
+        {
+            var userIdsParameter = userIds != null ?
+                new ObjectParameter("UserIds", userIds) :
+                new ObjectParameter("UserIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetBuildDocUtilBatch_Result>("GetBuildDocUtilBatch", userIdsParameter);
         }
     
         public virtual ObjectResult<GetErrorQuotientDocumentData_Result> GetErrorQuotientDocumentData(string buildIds)

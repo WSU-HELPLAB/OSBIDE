@@ -179,6 +179,7 @@
     <Compile Include="Models\Analytics\ProcedureResults.cs" />
     <Compile Include="Models\Analytics\ProcedureSettings.cs" />
     <Compile Include="Models\Analytics\WizardSteps.cs" />
+    <Compile Include="Models\DiffMatchPatch.cs" />
     <Compile Include="Models\FileSystem\AssignmentFilePath.cs" />
     <Compile Include="Models\FileSystem\CourseFilePath.cs" />
     <Compile Include="Models\FileSystem\EmptyFilePathDecorator.cs" />
@@ -202,7 +203,6 @@
     <Compile Include="Models\Attributes\RequiresVisualStudioConnection.cs" />
     <Compile Include="Models\Authentication.cs" />
     <Compile Include="Models\BuildDiffLine.cs" />
-    <Compile Include="Models\DiffMatchPatch.cs" />
     <Compile Include="Models\DocumentError.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\ExceptionEventHelpers.cs" />
@@ -246,6 +246,7 @@
     <Content Include="Content\icons\follow.png" />
     <Content Include="Content\icons\help.png" />
     <Content Include="Content\icons\loading.gif" />
+    <Content Include="Content\icons\spinner.gif" />
     <Content Include="Content\icons\Tabular.png" />
     <Content Include="Content\icons\tooltip.png" />
     <Content Include="Content\icons\unfollow.png" />
@@ -524,7 +525,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>62129</DevelopmentServerPort>
+          <DevelopmentServerPort>80</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost/osbide</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

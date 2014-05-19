@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.IO;
 using System.Text;
 
@@ -17,14 +15,13 @@ namespace OSBIDE.Data.SQLDatabase
             {
                 var worksheet = xlPackage.Workbook.Worksheets[1];
 
-                var now = DateTime.Now;
                 var query = new StringBuilder(sqlTemplate);
                 var batches = worksheet.Dimension.End.Row / BATCH_SIZE;
                 for (var b = 0; b < batches + 1; b++)
                 {
                     var firstRow = b == 0 ? 2 : b * BATCH_SIZE;
                     var lastRow = (b + 1) * BATCH_SIZE > worksheet.Dimension.End.Row ? worksheet.Dimension.End.Row : (b + 1) * BATCH_SIZE;
-                    for (var i = firstRow; i < worksheet.Dimension.End.Row + 1; i++)
+                    for (var i = firstRow; i < lastRow; i++)
                     {
                         // compose a row
                         query.Append("(");
@@ -53,12 +50,7 @@ namespace OSBIDE.Data.SQLDatabase
                     }
                 }
 
-                using (var sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["OsbideAdmin"].ConnectionString))
-                {
-                    sqlConnection.Open();
-                    (new SqlCommand(query.ToString().TrimEnd(','), sqlConnection)).ExecuteNonQuery();
-                    sqlConnection.Close();
-                }
+                DynamicSQLExecutor.Execute(query.ToString().TrimEnd(','));
             }
         }
     }

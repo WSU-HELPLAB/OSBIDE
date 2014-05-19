@@ -410,3 +410,7 @@ img[data-type="icon"] {
     position: relative;
     top: 5px;
 }
+
+.highcharts-contextmenu hr {
+    margin:0;
+}

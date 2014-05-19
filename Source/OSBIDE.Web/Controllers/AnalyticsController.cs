@@ -2,14 +2,16 @@
 using System.Linq;
 using System.Web.Mvc;
 
-using OSBIDE.Data.SQLDatabase;
-using OSBIDE.Web.Models.Analytics;
 using OSBIDE.Data.DomainObjects;
+using OSBIDE.Data.SQLDatabase;
 using OSBIDE.Data.SQLDatabase.DataAnalytics;
+using OSBIDE.Library.Models;
+using OSBIDE.Web.Models.Analytics;
+using OSBIDE.Web.Models.Attributes;
 
 namespace OSBIDE.Web.Controllers
 {
-    //[AllowAccess(SystemRole.Instructor)]
+    [AllowAccess(SystemRole.Instructor)]
     public class AnalyticsController : ControllerBase
     {
         public ActionResult Criteria()
@@ -20,6 +22,17 @@ namespace OSBIDE.Web.Controllers
                 analytics.Criteria = new Criteria();
             }
             return View("Criteria", analytics.Criteria);
+        }
+
+        public ActionResult RunDocUtils()
+        {
+            //var tsql = DocUtil.Run(CurrentUser.Id);
+            //using (var sw = new StreamWriter(Server.MapPath("~/tsql.txt"), true))
+            //{
+            //    sw.WriteLine(tsql);
+            //}
+
+            return Json(DocUtil.Run(CurrentUser.Id), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -81,21 +94,20 @@ namespace OSBIDE.Web.Controllers
             var analytics = Analytics.FromSession();
 
             analytics.ProcedureSettings.ProcedureParams = procedureParams;
-            if (analytics.ProcedureResults == null)
+            analytics.ProcedureResults = new ProcedureResults
             {
-                analytics.ProcedureResults = new ProcedureResults
-                {
-                    ViewType = ResultViewType.Tabular,
-                    Results = ErrorQuotientAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems),
-                };
+                ViewType = ResultViewType.Tabular,
+            };
 
-                foreach (var r in analytics.ProcedureResults.Results)
-                {
-                    var user = analytics.ProcedureData.Where(d => d.Id == r.UserId).First();
-                    r.Grade = user.Grade;
-                    r.Name = user.Name;
-                }
+            var resultlist = new List<ProcedureDataItem>();
+            foreach (var u in ErrorQuotientAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems))
+            {
+                var user = analytics.ProcedureData.Where(r => r.IsSelected && r.Id == u.UserId).First();
+                user.Score = u.Score;
+                resultlist.Add(user);
             }
+
+            analytics.ProcedureResults.Results = resultlist;
 
             return View("Results", analytics.ProcedureResults);
         }

@@ -15,5 +15,6 @@ namespace OSBIDE.Web.Models.Analytics
         public string Quarter { get; set; }
         public decimal Grade { get; set; }
         public string Ethnicity { get; set; }
+        public decimal Score { get; set; }
     }
 }

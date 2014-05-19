@@ -2,11 +2,7 @@
 {
     public static class SQLTemplateGrades
     {
-        public static string Template
-        {
-            get
-            {
-                return @"
+        public const string Template = @"
 insert into [dbo].[StudentGrades]
                 ([StudentId]
                 ,[Deliverable]
@@ -14,7 +10,5 @@ insert into [dbo].[StudentGrades]
                 ,[CreatedBy]
                 ,[CreatedOn])
                 values ";
-            }
-        }
     }
 }

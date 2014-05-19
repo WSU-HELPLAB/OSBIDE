@@ -1,4 +1,5 @@
-﻿@model List<OSBIDE.Data.DomainObjects.ErrorQuotientResult>
+﻿@model List<OSBIDE.Web.Models.Analytics.ProcedureDataItem>
+
 @using OSBIDE.Web.Helpers
 
 <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -9,6 +10,12 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
+    
+        Highcharts.setOptions({
+            lang: {
+                contextButtonTitle: "Export Commands"
+            }
+        });
 
         $("#container").highcharts({
             chart: {
@@ -17,12 +24,15 @@
             title: {
                 text: ""
             },
-            subtitle: {
-                text: ""
+            navigation: {
+                menuItemStyle: {
+                    padding: "5px",
+                    color: '#303030'
+                }
             },
             xAxis: {
                 categories: @Html.Raw(Model.Select(m=>m.Name).ToJson())
-                },
+            },
             yAxis: {
                 min: 0,
                 title: {
@@ -36,10 +46,9 @@
                 }
             },
             series: [{
-                name: "EQ Comparison",
+                name: "EQ",
                 data: @Model.Select(m=>m.Score).ToJson()
-
-                }]
+            }]
         });
     });
 

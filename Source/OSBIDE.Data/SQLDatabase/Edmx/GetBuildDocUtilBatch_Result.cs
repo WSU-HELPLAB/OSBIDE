@@ -11,14 +11,15 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
 {
     using System;
     
-    public partial class GetErrorQuotientDocumentData_Result
+    public partial class GetBuildDocUtilBatch_Result
     {
+        public int Id { get; set; }
         public int BuildId { get; set; }
         public int DocumentId { get; set; }
-        public int Column { get; set; }
-        public int Line { get; set; }
+        public int SenderId { get; set; }
+        public System.DateTime EventDate { get; set; }
+        public string SolutionName { get; set; }
         public string FileName { get; set; }
-        public Nullable<int> NumberOfModified { get; set; }
-        public string ModifiedLines { get; set; }
+        public string Content { get; set; }
     }
 }

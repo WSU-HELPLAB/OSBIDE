@@ -22,5 +22,7 @@ namespace OSBIDE.Data.DomainObjects
         public int Line { get; set; }
         public int Column { get; set; }
         public string FileName { get; set; }
+        public int NumberOfModified { get; set; }
+        public List<int> ModifiedLines { get; set; }
     }
 }
