@@ -221,6 +221,8 @@
     <Content Include="SQLDatabase\Scripts\EventView.sql" />
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilUsers].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientDocumentData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientErrorTypeData].sql" />
