@@ -71,7 +71,7 @@ begin
 													     or @dateFrom<@minDate and e.DateReceived<=@dateTo
 														 or @dateTo<@minDate and e.DateReceived>=@dateFrom
 														 or @dateFrom<@minDate and @dateTo<@minDate)
-	inner join [dbo].[StudentGrades] g with (nolock) on g.StudentId=u.Id and (g.Deliverable=@deliverable or @deliverable='Any')
+	inner join [dbo].[StudentGrades] g with (nolock) on g.StudentId=u.InstitutionId and (g.Deliverable=@deliverable or @deliverable='Any')
 													and (g.Grade between @gradeFrom and @gradeTo
 													     or @gradeFrom=@anyValue and g.Grade<=@gradeTo
 														 or @gradeTo=@anyValue and g.Grade>=@gradeFrom
