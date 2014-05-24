@@ -21,7 +21,7 @@ namespace OSBIDE.Data.SQLDatabase
                 {
                     var firstRow = b == 0 ? 2 : b * BATCH_SIZE;
                     var lastRow = (b + 1) * BATCH_SIZE > worksheet.Dimension.End.Row ? worksheet.Dimension.End.Row : (b + 1) * BATCH_SIZE;
-                    for (var i = firstRow; i < lastRow; i++)
+                    for (var i = firstRow; i <= lastRow; i++)
                     {
                         // compose a row
                         query.Append("(");

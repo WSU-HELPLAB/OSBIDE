@@ -5,8 +5,9 @@
         public const string Template = @"
 insert into [dbo].[StudentGrades]
                 ([StudentId]
-                ,[Deliverable]
                 ,[Grade]
+                ,[CourseId]
+                ,[Deliverable]
                 ,[CreatedBy]
                 ,[CreatedOn])
                 values ";
