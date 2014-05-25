@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 using OfficeOpenXml;
@@ -9,7 +10,7 @@ namespace OSBIDE.Data.SQLDatabase
     public static class ExcelToSQL
     {
         private const int BATCH_SIZE = 500;
-        public static void Execute(string filePath, string fileExtension, string sqlTemplate, string paramTemplate, string[] paramList)
+        public static void Execute(string filePath, string fileExtension, string sqlTemplate, string paramTemplate, string[] paramList, int[] digitalColumns)
         {
             using (var xlPackage = new ExcelPackage(new FileInfo(filePath)))
             {
@@ -20,8 +21,8 @@ namespace OSBIDE.Data.SQLDatabase
                 for (var b = 0; b < batches + 1; b++)
                 {
                     var firstRow = b == 0 ? 2 : b * BATCH_SIZE;
-                    var lastRow = (b + 1) * BATCH_SIZE > worksheet.Dimension.End.Row ? worksheet.Dimension.End.Row : (b + 1) * BATCH_SIZE;
-                    for (var i = firstRow; i <= lastRow; i++)
+                    var lastRow = (b + 1) * BATCH_SIZE > worksheet.Dimension.End.Row ? worksheet.Dimension.End.Row + 1 : (b + 1) * BATCH_SIZE;
+                    for (var i = firstRow; i < lastRow; i++)
                     {
                         // compose a row
                         query.Append("(");
@@ -35,7 +36,7 @@ namespace OSBIDE.Data.SQLDatabase
                             {
                                 query.Append("Null,");
                             }
-                            else if (j == 1 || j == 3 || j == 7 || j == 8)
+                            else if (digitalColumns.Any(c => c == j))
                             {
                                 query.AppendFormat("{0},", Convert.ToInt32(column));
                             }
