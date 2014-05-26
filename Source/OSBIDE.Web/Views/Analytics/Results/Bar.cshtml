@@ -28,15 +28,31 @@
             $.getJSON("@Url.Content("~/Analytics/GetScoreFor")", {x:$(this).val()}, function (results) {
 
                 var chart = $("#container").highcharts();
+                chart.series[0].remove();
                 chart.xAxis[0].categories = [];
-                var data = [];
+                var scores = [];
 
                 $.each(results, function(key, value){
                     chart.xAxis[0].categories.push(value.x);
-                    data.push(value.y);
+                    scores.push(value.y);
                 });
 
-                chart.series[0].setData(data, true);
+                if (chart.xAxis[0].categories.length <= 5) {
+                    chart.addSeries({
+                        pointWidth: 50,
+                        color: "#7CB5EC",
+                        name: "EQ",
+                        data: scores
+                    });
+                }
+                else {
+                    chart.addSeries({
+                        color: "#7CB5EC",
+                        name: "EQ",
+                        data: scores
+                    });
+                }
+
             });
         });
 
