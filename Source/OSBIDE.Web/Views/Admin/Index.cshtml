@@ -59,7 +59,7 @@
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Course:</label>
                 <div class="col-xs-3">
-                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayName"), new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayText"), new { @class = "form-control" })
                 </div>
             </div>
             <div class="row form-group">

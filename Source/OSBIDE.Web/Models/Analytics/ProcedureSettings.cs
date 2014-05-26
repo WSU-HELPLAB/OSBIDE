@@ -12,7 +12,7 @@ namespace OSBIDE.Web.Models.Analytics
             {
                 return new List<ProcedureTypeLookup>
                 {
-                    new ProcedureTypeLookup{ProcedureTypeId=(int)ProcedureType.ErrorQuotient, DisplayName="Error Quotient"},
+                    new ProcedureTypeLookup{ProcedureTypeId=(int)ProcedureType.ErrorQuotient, DisplayText="Error Quotient"},
                 };
             }
         }

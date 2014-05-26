@@ -38,6 +38,7 @@
                             <th>
                                 <input type="checkbox" id="selectAll" checked="checked" />
                             </th>
+                            <th>Student Id</th>
                             <th>Name</th>
                             <th>Gender</th>
                             <th>Age</th>
@@ -53,6 +54,7 @@
                         var selectionState = @row.IsSelected ? "checked='checked'" : string.Empty;
                         <tr>
                             <td><input name="SelectDataItems" value="@row.Id" type="checkbox" @selectionState /></td>
+                            <td>@row.InstitutionId</td>
                             <td>@row.Name</td>
                             <td>@row.Gender</td>
                             <td>@row.Age</td>

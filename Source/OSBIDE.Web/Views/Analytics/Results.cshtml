@@ -14,7 +14,7 @@
                 <div class="col-xs-1">
                 </div>
                 <div class="col-xs-8">
-                    <h2>Procedure Results</h2>
+                    <h2>Procedure Results View</h2>
                 </div>
                 <div class="col-xs-2 wizard">
                     <a data-wzstep="@WizardSteps.Refine" href="@Url.Action("Procedure")">Prev</a>
@@ -25,22 +25,28 @@
             <div class="row">
                 <div class="col-xs-1">
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-2">
                     <h4>
                         @Html.RadioButtonFor(m => m.ViewType, ResultViewType.Tabular, new { id = "tabular" })
-                        <label for="tabular">Tabular View</label>
+                        <label for="tabular">Tabular</label>
                     </h4>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-2">
                     <h4>
                         @Html.RadioButtonFor(m => m.ViewType, ResultViewType.Bar, new { id = "histogram" })
-                        <label for="histogram">Histogram View</label>
+                        <label for="histogram">Bar Graph</label>
                     </h4>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-2">
                     <h4>
                         @Html.RadioButtonFor(m => m.ViewType, ResultViewType.Scatter, new { id = "scatter" })
-                        <label for="scatter">Scatter Graph View</label>
+                        <label for="scatter">Scatter Graph</label>
+                    </h4>
+                </div>
+                <div class="col-xs-2">
+                    <h4>
+                        @Html.RadioButtonFor(m => m.ViewType, ResultViewType.Bubble, new { id = "bubble" })
+                        <label for="bubble">Bubble Graph</label>
                     </h4>
                 </div>
             </div>
@@ -48,18 +54,7 @@
                 <div class="col-xs-1">
                 </div>
                 <div class="col-xs-9">
-                    @switch (Model.ViewType)
-                    {
-                        case ResultViewType.Tabular:
-                            Html.RenderPartial("Tabular", (List<ProcedureDataItem>)Model.Results);
-                            break;
-                        case ResultViewType.Bar:
-                            Html.RenderPartial("Histogram", (List<ProcedureDataItem>)Model.Results);
-                            break;
-                        case ResultViewType.Scatter:
-                            Html.RenderPartial("ScatterChart", (List<ProcedureDataItem>)Model.Results);
-                            break;
-                    }
+                    @Html.Partial(string.Format("Results/{0}", Model.ViewType.ToString()), (List<ProcedureDataItem>)Model.Results)
                 </div>
             </div>
 

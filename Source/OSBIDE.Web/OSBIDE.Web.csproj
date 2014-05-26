@@ -488,9 +488,10 @@
     <Content Include="Views\Analytics\Results.cshtml" />
     <Content Include="Views\Analytics\ErrorQuotient.cshtml" />
     <Content Include="Views\Analytics\Criteria.cshtml" />
-    <Content Include="Views\Analytics\Histogram.cshtml" />
-    <Content Include="Views\Analytics\Tabular.cshtml" />
-    <Content Include="Views\Analytics\ScatterChart.cshtml" />
+    <Content Include="Views\Analytics\Results\Bar.cshtml" />
+    <Content Include="Views\Analytics\Results\Tabular.cshtml" />
+    <Content Include="Views\Analytics\Results\Scatter.cshtml" />
+    <Content Include="Views\Analytics\Results\Bubble.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

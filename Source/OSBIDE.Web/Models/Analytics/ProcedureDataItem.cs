@@ -12,7 +12,6 @@ namespace OSBIDE.Web.Models.Analytics
         public int? Age { get; set; }
         public string Class { get; set; }
         public string Deliverable { get; set; }
-        public string Quarter { get; set; }
         public decimal Grade { get; set; }
         public string Ethnicity { get; set; }
         public decimal Score { get; set; }

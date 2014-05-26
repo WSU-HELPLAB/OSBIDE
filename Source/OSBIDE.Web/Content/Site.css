@@ -414,3 +414,10 @@ img[data-type="icon"] {
 .highcharts-contextmenu hr {
     margin:0;
 }
+
+div[id^="ad-hoc-"].bootstrap-override {
+    width: 0;
+    padding: 0;
+    top: 7px;
+    left: -5px;
+}

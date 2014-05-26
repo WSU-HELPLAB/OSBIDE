@@ -1,16 +1,45 @@
 ﻿@model List<OSBIDE.Web.Models.Analytics.ProcedureDataItem>
 
+@using OSBIDE.Data.DomainObjects
 @using OSBIDE.Web.Helpers
 
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
-<div id="container" style="min-width: 310px; height: 400px; max-width: 800px; margin: 0 auto"></div>
-
+<div class="row">
+    <div class="col-xs-1">
+    </div>
+    <div class="col-xs-2">
+        @Html.DropDownList("CategoryColumn", new SelectList(Enum<CategoryColumn>.Get(), CategoryColumn.Name.ToString()))
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+</div>
 <script type="text/javascript">
 
     $(document).ready(function () {
-    
+
+        $("#CategoryColumn").change(function(){
+
+            $.getJSON("@Url.Content("~/Analytics/GetScoreFor")", {x:$(this).val()}, function (results) {
+
+                var chart = $("#container").highcharts();
+                chart.xAxis[0].categories = [];
+                var data = [];
+
+                $.each(results, function(key, value){
+                    chart.xAxis[0].categories.push(value.x);
+                    data.push(value.y);
+                });
+
+                chart.series[0].setData(data, true);
+            });
+        });
+
         Highcharts.setOptions({
             lang: {
                 contextButtonTitle: "Export Commands"
@@ -19,10 +48,10 @@
 
         $("#container").highcharts({
             chart: {
-                type: "column"
+                type: "bar"
             },
             title: {
-                text: ""
+                text: null
             },
             navigation: {
                 menuItemStyle: {
@@ -32,7 +61,7 @@
             },
             xAxis: {
                 categories: @Html.Raw(Model.Select(m=>m.Name).ToJson())
-            },
+                },
             yAxis: {
                 min: 0,
                 title: {
@@ -48,7 +77,7 @@
             series: [{
                 name: "EQ",
                 data: @Model.Select(m=>m.Score).ToJson()
-            }]
+                }]
         });
     });
 

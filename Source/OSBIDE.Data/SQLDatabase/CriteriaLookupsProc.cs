@@ -26,9 +26,9 @@ namespace OSBIDE.Data.SQLDatabase
             using (var context = new OsbideProcs())
             {
                 var courses = (from c in context.GetCourseLookup()
-                               select new CourseLookup { CourseId = c.CourseId, DisplayName = c.CourseName }).ToList();
+                               select new CourseLookup { CourseId = c.CourseId, DisplayText = c.CourseName }).ToList();
 
-                courses.Insert(0, new CourseLookup { CourseId = -1, DisplayName = "Any" });
+                courses.Insert(0, new CourseLookup { CourseId = -1, DisplayText = "Any" });
 
                 return courses;
             }
@@ -51,9 +51,9 @@ namespace OSBIDE.Data.SQLDatabase
             {
                 return new List<GenderLookup>
                 {
-                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Unknown, DisplayName="Any"},
-                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Female, DisplayName="Female"},
-                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Male, DisplayName="Male"},
+                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Unknown, DisplayText="Any"},
+                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Female, DisplayText="Female"},
+                    new GenderLookup{GenderId=(int)OSBIDE.Library.Models.Gender.Male, DisplayText="Male"},
                 };
             }
         }

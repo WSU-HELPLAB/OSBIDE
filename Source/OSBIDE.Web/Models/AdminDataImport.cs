@@ -1,5 +1,7 @@
 ﻿using System.Web;
 
+using OSBIDE.Data.DomainObjects;
+
 namespace OSBIDE.Web.Models
 {
     public class AdminDataImport

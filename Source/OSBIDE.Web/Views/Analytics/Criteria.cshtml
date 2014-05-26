@@ -19,10 +19,13 @@
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Date Range:</label>
                 <div class="col-xs-2">
-                    @Html.TextBoxFor(m => m.DateFrom, new { @class = "form-control", placeholder = "From" })
+                    @Html.TextBoxFor(m => m.DateFrom, new { Value = Model.DateFrom.HasValue ? Model.DateFrom.Value.ToString("MM/dd/yyyy") : string.Empty, @class = "form-control", placeholder = "From" })
+                </div>
+                <div id="ad-hoc-date" class="col-xs-1 bootstrap-override">
+                    to
                 </div>
                 <div class="col-xs-2">
-                    @Html.TextBoxFor(m => m.DateTo, new { @class = "form-control", placeholder = "To" })
+                    @Html.TextBoxFor(m => m.DateTo, new { Value = Model.DateTo.HasValue ? Model.DateTo.Value.ToString("MM/dd/yyyy") : string.Empty, @class = "form-control", placeholder = "To" })
                 </div>
             </div>
             <div class="row form-group">
@@ -40,13 +43,16 @@
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Gender:</label>
                 <div class="col-xs-2">
-                    @Html.DropDownListFor(m => m.GenderId, new SelectList(CriteriaLookups.Genders, "GenderId", "DisplayName"), new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.GenderId, new SelectList(CriteriaLookups.Genders, "GenderId", "DisplayText"), new { @class = "form-control" })
                 </div>
             </div>
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Age Between:</label>
                 <div class="col-xs-2">
                     @Html.DropDownListFor(m => m.AgeFrom, new SelectList(CriteriaLookups.AgeRange, "Age", "DisplayText"), new { @class = "form-control" })
+                </div>
+                <div id="ad-hoc-age" class="col-xs-1 bootstrap-override">
+                    to
                 </div>
                 <div class="col-xs-2">
                     @Html.DropDownListFor(m => m.AgeTo, new SelectList(CriteriaLookups.AgeRange, "Age", "DisplayText"), new { @class = "form-control" })
@@ -55,7 +61,7 @@
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Course:</label>
                 <div class="col-xs-4">
-                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayName"), new { @class = "form-control" })
+                    @Html.DropDownListFor(m => m.CourseId, new SelectList(CriteriaLookups.Courses, "CourseId", "DisplayText"), new { @class = "form-control" })
                 </div>
             </div>
             <div class="row form-group">
@@ -65,9 +71,12 @@
                 </div>
             </div>
             <div class="row form-group">
-                <label class="col-xs-2 control-label">Grade Between:</label>
+                <label class="col-xs-2 control-label">Grade Range:</label>
                 <div class="col-xs-2">
                     @Html.TextBoxFor(m => m.GradeFrom, new { @class = "form-control", placeholder = "Any (%)" })
+                </div>
+                <div id="ad-hoc-grade" class="col-xs-1 bootstrap-override">
+                    to
                 </div>
                 <div class="col-xs-2">
                     @Html.TextBoxFor(m => m.GradeTo, new { @class = "form-control", placeholder = "Any (%)" })
@@ -156,7 +165,8 @@
 
                     $("input[name^='Grade']").change(function () {
                         var grade = parseFloat($(this).val());
-                        if (isNaN(grade) || grade < 0 || grade > 100) {
+
+                        if ($.trim($(this).val()).length > 0 && (isNaN(grade) || grade < 0 || grade > 100)) {
                             $(this).parent().addClass("has-error");
                         }
                         else {
