@@ -5,13 +5,14 @@ using System.Web.Mvc;
 using OSBIDE.Data.DomainObjects;
 using OSBIDE.Data.SQLDatabase;
 using OSBIDE.Data.SQLDatabase.DataAnalytics;
+using OSBIDE.Web.Helpers;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Analytics;
 using OSBIDE.Web.Models.Attributes;
 
 namespace OSBIDE.Web.Controllers
 {
-    [AllowAccess(SystemRole.Instructor)]
+    [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
     public class AnalyticsController : ControllerBase
     {
         public ActionResult Criteria()
@@ -46,12 +47,12 @@ namespace OSBIDE.Web.Controllers
                                                        {
                                                            IsSelected = true,
                                                            Id = x.Id,
+                                                           InstitutionId = x.InstitutionId,
                                                            Name = x.Name,
-                                                           Gender = x.Gender.ToString(),
+                                                           Gender = ((Gender)x.Gender).ToString(),
                                                            Age = x.Age,
                                                            Class = x.Class,
                                                            Deliverable = x.Deliverable,
-                                                           Quarter = x.Quarter,
                                                            Grade = x.Grade,
                                                            Ethnicity = x.Ethnicity
                                                        })
@@ -120,6 +121,49 @@ namespace OSBIDE.Web.Controllers
             analytics.ProcedureResults.ViewType = procedureResults.ViewType;
 
             return View("Results", analytics.ProcedureResults);
+        }
+
+        public ActionResult GetScoreFor(CategoryColumn x)
+        {
+            var analytics = Analytics.FromSession();
+
+            switch (x)
+            {
+                case CategoryColumn.Age:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .Where(r=>r.Age.HasValue)
+                                                                   .GroupBy(r => r.Age.Value)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+                case CategoryColumn.Class:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .Where(r => !string.IsNullOrWhiteSpace(r.Class))
+                                                                   .GroupBy(r => r.Class)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+                case CategoryColumn.Ethnicity:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .Where(r => !string.IsNullOrWhiteSpace(r.Ethnicity))
+                                                                   .GroupBy(r => r.Ethnicity)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+                case CategoryColumn.Gender:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .Where(r => !string.IsNullOrWhiteSpace(r.Gender))
+                                                                   .GroupBy(r => r.Gender)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+                case CategoryColumn.InstitutionId:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .GroupBy(r => r.InstitutionId)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+                default:
+                    return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
+                                                                   .GroupBy(r => r.Name)
+                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .ToArray(), JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }
