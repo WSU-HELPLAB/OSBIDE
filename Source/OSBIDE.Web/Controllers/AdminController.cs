@@ -15,7 +15,7 @@ using OSBIDE.Web.Models.ViewModels;
 
 namespace OSBIDE.Web.Controllers
 {
-    [AllowAccess(SystemRole.Instructor)]
+    [AllowAccess(SystemRole.Admin)]
     public class AdminController : ControllerBase
     {
         //

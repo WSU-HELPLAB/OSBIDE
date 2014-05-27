@@ -12,6 +12,7 @@ if not exists (
 
 	create table [dbo].[OsbideSurveys]
 	(
+		[Id] [int] not null identity primary key,
 		[SurveyResponseId] [int] not null,
 		[Completed] [datetime],
 		[LastPageSeen] [int],
@@ -92,7 +93,6 @@ if not exists (
 		[mslq2_34] [nvarchar](255),
 		[mslq2_45] [nvarchar](255),
 		[mslq2_50] [nvarchar](255),
-		[OsbideSurveyId] [int] not null identity primary key,
 		[CourseId] [int] not null,
 		[CreatedOn] datetime not null,
 		[CreatedBy] int not null
@@ -114,10 +114,10 @@ if not exists (
 
 	create table [dbo].[StudentGrades]
 	(
-		[StudentGradeId] [int] not null identity primary key,
+		[Id] [int] not null identity primary key,
 		[StudentId] [int] not null,
 		[Deliverable] [nvarchar](255),
-		[Grade] [decimal] not null,
+		[Grade] [decimal](18, 2) not null,
 		[CourseId] [int],
 		[CreatedOn] datetime not null,
 		[CreatedBy] int not null

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Reflection;
+using System.Configuration;
 
 namespace OSBIDE.Library
 {
@@ -188,6 +189,18 @@ namespace OSBIDE.Library
             get
             {
                 return string.Format("Data Source={0};Max Database Size=4091", LocalDatabasePath);
+            }
+        }
+
+        public static string WebConnectionString
+        {
+            get
+            {
+#if DEBUG
+                return ConfigurationManager.ConnectionStrings["OsbideDebugContext"].ConnectionString;
+#else
+                return ConfigurationManager.ConnectionStrings["OsbideReleaseContext"].ConnectionString;
+#endif
             }
         }
 

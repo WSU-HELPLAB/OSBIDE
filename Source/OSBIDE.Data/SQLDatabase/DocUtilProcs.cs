@@ -14,7 +14,7 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public class DocUtil
     {
-        private const int BATCH_SIZE = 20;
+        private const int BATCH_SIZE = 5;
 
         public static bool Run(int updatedBy)
         {

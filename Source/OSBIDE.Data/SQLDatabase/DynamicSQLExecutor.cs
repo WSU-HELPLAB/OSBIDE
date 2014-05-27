@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using OSBIDE.Library;
+using System.Configuration;
 using System.Data.SqlClient;
 
 namespace OSBIDE.Data.SQLDatabase
@@ -9,7 +10,7 @@ namespace OSBIDE.Data.SQLDatabase
         {
             if (string.IsNullOrWhiteSpace(sql)) return;
 
-            using (var sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["OsbideAdmin"].ConnectionString))
+            using (var sqlConnection = new SqlConnection(StringConstants.WebConnectionString))
             {
                 // should add retries
                 sqlConnection.Open();

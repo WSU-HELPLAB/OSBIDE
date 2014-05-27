@@ -189,7 +189,7 @@ namespace OSBIDE.Data.NoSQLStorage
                     msg = string.Format("{0}, {1}|{2},", msg, key, ex.Data[key]);
                 }
             }
-                using (var context=new OsbideContext())
+                using (var context= OsbideContext.DefaultWebConnection)
                 {
                     context.LocalErrorLogs.Add(new LocalErrorLog
                     {
