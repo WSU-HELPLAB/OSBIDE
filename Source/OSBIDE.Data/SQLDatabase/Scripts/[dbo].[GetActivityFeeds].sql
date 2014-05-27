@@ -63,8 +63,8 @@ begin
 	from [dbo].[EventLogs] s with (nolock)
 	inner join [dbo].[LogCommentEvents] cs with (nolock) on cs.SourceEventLogId=s.Id
 	inner join #events e on e.Id=cs.EventLogId
-	inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=@RoleId or @RoleId=-1)
-	inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId
+	--inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=@RoleId or @RoleId=-1)
+	--inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId
 	where s.Id not in (select id from #events)
 
 	-- for helpful mark events add their comments and comments sources
@@ -74,8 +74,8 @@ begin
 	inner join [dbo].[HelpfulMarkGivenEvents] hm with (nolock) on hm.EventLogId=e.Id
 	inner join [dbo].[LogCommentEvents] cs with (nolock) on cs.Id=hm.LogCommentEventId
 	inner join [dbo].[EventLogs] s with (nolock) on (s.Id=cs.EventLogId or s.Id=cs.SourceEventLogId)
-	inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=@RoleId or @RoleId=-1)
-	inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId
+	--inner join CourseUserRelationships cr with (nolock) on cr.UserId=s.SenderId and (cr.RoleType=@RoleId or @RoleId=-1)
+	--inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId
 	where s.Id not in (select id from #events)
 
 	-------------------------------------------------------------------------------------

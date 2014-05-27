@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
 using OSBIDE.Data.DomainObjects;
 using OSBIDE.Data.SQLDatabase;
 using OSBIDE.Data.SQLDatabase.DataAnalytics;
-using OSBIDE.Web.Helpers;
 using OSBIDE.Library.Models;
+using OSBIDE.Web.Helpers;
 using OSBIDE.Web.Models.Analytics;
 using OSBIDE.Web.Models.Attributes;
 
@@ -27,12 +28,6 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult RunDocUtils()
         {
-            //var tsql = DocUtil.Run(CurrentUser.Id);
-            //using (var sw = new StreamWriter(Server.MapPath("~/tsql.txt"), true))
-            //{
-            //    sw.WriteLine(tsql);
-            //}
-
             return Json(DocUtil.Run(CurrentUser.Id), JsonRequestBehavior.AllowGet);
         }
 
@@ -131,37 +126,43 @@ namespace OSBIDE.Web.Controllers
             {
                 case CategoryColumn.Age:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
-                                                                   .Where(r=>r.Age.HasValue)
+                                                                   .Where(r => r.Age.HasValue)
                                                                    .GroupBy(r => r.Age.Value)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
                 case CategoryColumn.Class:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
                                                                    .Where(r => !string.IsNullOrWhiteSpace(r.Class))
                                                                    .GroupBy(r => r.Class)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
                 case CategoryColumn.Ethnicity:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
                                                                    .Where(r => !string.IsNullOrWhiteSpace(r.Ethnicity))
                                                                    .GroupBy(r => r.Ethnicity)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
                 case CategoryColumn.Gender:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
                                                                    .Where(r => !string.IsNullOrWhiteSpace(r.Gender))
                                                                    .GroupBy(r => r.Gender)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
                 case CategoryColumn.InstitutionId:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
                                                                    .GroupBy(r => r.InstitutionId)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
                 default:
                     return Json(((List<ProcedureDataItem>)analytics.ProcedureResults.Results)
                                                                    .GroupBy(r => r.Name)
-                                                                   .Select(r => new { x = r.Key, y = r.Average(s => s.Score) })
+                                                                   .Select(r => new { x = r.Key, y = Math.Truncate(100 * r.Average(s => s.Score)) / 100 })
+                                                                   .OrderBy(r => r.x)
                                                                    .ToArray(), JsonRequestBehavior.AllowGet);
             }
         }
