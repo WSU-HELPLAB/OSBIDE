@@ -372,6 +372,9 @@
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
+    <Content Include="Scripts\exporting.js" />
+    <Content Include="Scripts\highcharts.js" />
+    <Content Include="Scripts\highcharts-more.js" />
     <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />

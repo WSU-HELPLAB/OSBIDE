@@ -16,3 +16,6 @@
 /// <reference path="osbide.account.create.js" />
 /// <reference path="osbide.default.js" />
 /// <reference path="respond.js" />
+/// <reference path="exporting.js" />
+/// <reference path="highcharts-more.js" />
+/// <reference path="highcharts.js" />

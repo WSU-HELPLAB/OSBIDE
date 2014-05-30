@@ -39,7 +39,14 @@ namespace OSBIDE.Data.SQLDatabase
                             }
                             else if (digitalColumns.Any(c => c == j))
                             {
-                                query.AppendFormat("{0},", Convert.ToInt32(column));
+                                try
+                                {
+                                    query.AppendFormat("{0},", Convert.ToInt32(column));
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(string.Format("{0} at row {1} column {2}.", ex.Message.TrimEnd('.'), i, j));
+                                }
                             }
                             else
                             {
@@ -83,7 +90,14 @@ namespace OSBIDE.Data.SQLDatabase
                             }
                             else if (digitalColumns.Any(c => c == j))
                             {
-                                sqlRow = sqlRow.Replace(string.Format("C_{0}", j), Convert.ToInt32(column).ToString());
+                                try
+                                {
+                                    sqlRow = sqlRow.Replace(string.Format("C_{0}", j), Convert.ToInt32(column).ToString());
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(string.Format("{0} at row {1} column {2}.", ex.Message.TrimEnd('.'), i, j));
+                                }
                             }
                             else
                             {

@@ -98,9 +98,10 @@ namespace OSBIDE.Web.Controllers
                         ProcessCSV(dataImport.File);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     ViewBag.UploadResult = false;
+                    ViewBag.ErrorMessage = ex.Message;
                 }
             }
 

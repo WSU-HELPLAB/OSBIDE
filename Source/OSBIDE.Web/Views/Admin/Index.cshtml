@@ -9,22 +9,24 @@
 
     @{
         ViewBag.Title = "Admin Controls";
-        bool uploadRosterResult = false;
-        if (ViewBag.UploadResult != null)
-        {
-            uploadRosterResult = ViewBag.UploadResult;
-        }
+        var notice = ViewBag.UploadResult != null
+                   ? (ViewBag.UploadResult == true ? "Roster import complete." : ViewBag.ErrorMessage)
+                   : string.Empty;
     }
 
-    @if (uploadRosterResult == true)
+    @if (notice.Length > 0)
     {
         <div class="notice row">
             <div class="col-xs-2">
             </div>
-            <div class="col-xs-4">
-                Roster import complete.
+            <div class="col-xs-10">
+                @notice
             </div>
         </div>
+    }
+    else
+    {
+        <div class="field-validation-error">@ViewBag.ErrorMessage</div>
     }
 
     @using (Html.BeginForm("UploadRoster", "Admin", new { }, FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
@@ -74,7 +76,7 @@
                 <input id="rootUrl" type="hidden" value="@Url.Content("~")" />
                 <label class="col-xs-2 control-label">Deliverable:</label>
                 <div class="col-xs-3">
-                    <select class="form-control" id="Deliverable" name="Deliverable"><option>Not Applicable</option></select>
+                    <select class="form-control" id="Deliverable" name="Deliverable"><option>Any</option></select>
                 </div>
             </div>
         </div>
