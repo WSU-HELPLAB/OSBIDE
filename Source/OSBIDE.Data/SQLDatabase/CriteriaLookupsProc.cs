@@ -33,16 +33,11 @@ namespace OSBIDE.Data.SQLDatabase
                 return courses;
             }
         }
-        public static List<string> GetDeliverables()
+        public static List<string> GetDeliverables(int courseId)
         {
             using (var context = new OsbideProcs())
             {
-                var dls = (from d in context.GetDeleverableLookup()
-                        select d.Deliverable).ToList();
-                
-                dls.Insert(0, "Any");
-                
-                return dls;
+                return (from d in context.GetDeliverableLookup(courseId) select d.Deliverable).ToList();
             }
         }
         public static List<GenderLookup> GetGenders()

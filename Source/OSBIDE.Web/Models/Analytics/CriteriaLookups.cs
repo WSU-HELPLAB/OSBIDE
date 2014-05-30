@@ -21,13 +21,6 @@ namespace OSBIDE.Web.Models.Analytics
                 return CriteriaLookupsProc.GetAges();
             }
         }
-        public static List<string> Deliverables
-        {
-            get
-            {
-                return CriteriaLookupsProc.GetDeliverables();
-            }
-        }
         public static List<CourseLookup> Courses
         {
             get

@@ -26,6 +26,15 @@ function documentReady() {
         $(this).val(localOffset);
     });
 
+    $("#Deliverable").closest("div.row").hide();
+    if ($("#CourseId").val() != "-1") {
+        FileManager.updateCourseDependencies();
+    }
+
+    $("#CourseId").change(function () {
+        FileManager.updateCourseDependencies();
+    });
+
     $("#file").change(function (e) {
 
         e.stopPropagation();
@@ -84,6 +93,20 @@ if (typeof (Nav) == "undefined") {
 if (typeof (FileManager) == "undefined") {
     var FileManager = {
 
+        updateCourseDependencies: function(){
+
+            var url = $("#rootUrl").val() + "Admin/GetCourseDeliverables?courseId=" + $("#CourseId").val();
+            $.getJSON(url, function (data) {
+
+                var items = "<option>Any</option>";
+                $.each(data, function (i, deliverable) {
+                    items += "<option>" + deliverable + "</option>";
+                });
+                $("#Deliverable").html(items);
+                $("#Deliverable").closest("div.row").show();
+            });
+        },
+
         hash: {
             ".csv" : 1,
             ".zip" : 1,
@@ -114,6 +137,6 @@ if (typeof (FileManager) == "undefined") {
 
             $("#fileMsg").text("Invalid file extension!");
             return false;
-        },
+        }
     };
 }

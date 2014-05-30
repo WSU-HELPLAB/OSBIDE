@@ -28,7 +28,9 @@
           <Parameter Name="CurrentUserId" Type="int" Mode="In" />
         </Function>
         <Function Name="GetCourseLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
-        <Function Name="GetDeleverableLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetDeliverableLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="courseId" Type="int" Mode="In" />
+        </Function>
         <Function Name="GetErrorQuotientDocumentData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
@@ -45,7 +47,7 @@
           <Parameter Name="dateTo" Type="datetime" Mode="In" />
           <Parameter Name="studentId" Type="int" Mode="In" />
           <Parameter Name="nameToken" Type="nvarchar" Mode="In" />
-          <Parameter Name="Gender" Type="int" Mode="In" />
+          <Parameter Name="gender" Type="int" Mode="In" />
           <Parameter Name="ageFrom" Type="int" Mode="In" />
           <Parameter Name="ageTo" Type="int" Mode="In" />
           <Parameter Name="courseId" Type="int" Mode="In" />
@@ -101,7 +103,6 @@
           </FunctionImport>
           <FunctionImport Name="GetAgeLookup" ReturnType="Collection(OSBIDE.HybridModel.GetAgeLookup_Result)" />
           <FunctionImport Name="GetCourseLookup" ReturnType="Collection(OSBIDE.HybridModel.GetCourseLookup_Result)" />
-          <FunctionImport Name="GetDeleverableLookup" ReturnType="Collection(OSBIDE.HybridModel.GetDeleverableLookup_Result)" />
           <FunctionImport Name="GetErrorQuotientErrorTypeData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientErrorTypeData_Result)">
           <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
@@ -115,7 +116,7 @@
             <Parameter Name="dateTo" Mode="In" Type="DateTime" />
             <Parameter Name="studentId" Mode="In" Type="Int32" />
             <Parameter Name="nameToken" Mode="In" Type="String" />
-            <Parameter Name="Gender" Mode="In" Type="Int32" />
+            <Parameter Name="gender" Mode="In" Type="Int32" />
             <Parameter Name="ageFrom" Mode="In" Type="Int32" />
             <Parameter Name="ageTo" Mode="In" Type="Int32" />
             <Parameter Name="courseId" Mode="In" Type="Int32" />
@@ -128,7 +129,10 @@
           <Parameter Name="UserIds" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetErrorQuotientDocumentData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result)">
-            <Parameter Name="buildIds" Mode="In" Type="String" />
+          <Parameter Name="buildIds" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetDeliverableLookup" ReturnType="Collection(OSBIDE.HybridModel.GetDeliverableLookup_Result)">
+            <Parameter Name="courseId" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -287,9 +291,6 @@
         <ComplexType Name="GetAgeLookup_Result">
           <Property Type="Int32" Name="Age" Nullable="true" />
         </ComplexType>
-        <ComplexType Name="GetDeleverableLookup_Result">
-          <Property Type="String" Name="Deliverable" Nullable="true" MaxLength="255" />
-        </ComplexType>
         <ComplexType Name="GetErrorQuotientErrorTypeData_Result">
           <Property Type="Int32" Name="LogId" Nullable="false" />
           <Property Type="Int32" Name="ErrorTypeId" Nullable="false" />
@@ -334,6 +335,9 @@
           <Property Type="String" Name="FileName" Nullable="false" />
           <Property Type="Int32" Name="NumberOfModified" Nullable="true" />
           <Property Type="String" Name="ModifiedLines" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetDeliverableLookup_Result">
+          <Property Type="String" Name="Deliverable" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -545,13 +549,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetDeleverableLookup" FunctionName="OSBIDE.HybridModel.Store.GetDeleverableLookup">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDeleverableLookup_Result">
-                <ScalarProperty Name="Deliverable" ColumnName="Deliverable" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="GetErrorQuotientErrorTypeData" FunctionName="OSBIDE.HybridModel.Store.GetErrorQuotientErrorTypeData">
             <ResultMapping>
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetErrorQuotientErrorTypeData_Result">
@@ -615,6 +612,13 @@
                 <ScalarProperty Name="FileName" ColumnName="FileName" />
                 <ScalarProperty Name="NumberOfModified" ColumnName="NumberOfModified" />
                 <ScalarProperty Name="ModifiedLines" ColumnName="ModifiedLines" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetDeliverableLookup" FunctionName="OSBIDE.HybridModel.Store.GetDeliverableLookup">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDeliverableLookup_Result">
+                <ScalarProperty Name="Deliverable" ColumnName="Deliverable" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

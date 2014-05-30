@@ -65,9 +65,10 @@
                 </div>
             </div>
             <div class="row form-group">
-                <label class="col-xs-2 control-label">Dileverable:</label>
+                <input id="rootUrl" type="hidden" value="@Url.Content("~")" />
+                <label class="col-xs-2 control-label">Deliverable:</label>
                 <div class="col-xs-2">
-                    @Html.DropDownListFor(m => m.Deliverable, new SelectList(CriteriaLookups.Deliverables), new { @class = "form-control" })
+                    <select class="form-control" id="Deliverable" name="Deliverable"><option>Not Applicable</option></select>
                 </div>
             </div>
             <div class="row form-group">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OSBIDE.Data.SQLDatabase
 {
@@ -6,17 +7,23 @@ namespace OSBIDE.Data.SQLDatabase
     {
         public static void UploadGrades(string fileLocation, string fileExtension, int courseId, string deliverable, int createdBy)
         {
-            ExcelToSQL.Execute(fileLocation,
+            ExcelToSQL.Upsert(fileLocation,
                                 fileExtension,
-                                SQLTemplateGrades.Template, "{0},'{1}',{2},'{3}'",
-                                new string[] { courseId.ToString(), deliverable, createdBy.ToString(), DateTime.Now.ToString() },
+                                SQLTemplateGrades.Upsert,
+                                new Dictionary<string, string>
+                                {
+                                    {"K1", courseId.ToString()},
+                                    {"K2", deliverable},
+                                    {"K3", DateTime.Now.ToString()},
+                                    {"K4", createdBy.ToString()},
+                                },
                                 new int[] { 1, 2 });
         }
         public static void UploadSurveys(string fileLocation, string fileExtension, int courseId, int createdBy)
         {
-            ExcelToSQL.Execute(fileLocation,
+            ExcelToSQL.Insert(fileLocation,
                                 fileExtension,
-                                SQLTemplateSurveys.Template, "{0},{1},'{2}'",
+                                SQLTemplateSurveys.Insert, "{0},{1},'{2}'",
                                 new string[] { courseId.ToString(), createdBy.ToString(), DateTime.Now.ToString() },
                                 new int[] { 1, 3, 7, 8 });
         }

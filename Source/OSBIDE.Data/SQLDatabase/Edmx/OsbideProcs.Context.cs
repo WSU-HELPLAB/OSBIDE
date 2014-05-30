@@ -113,11 +113,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCourseLookup_Result>("GetCourseLookup");
         }
     
-        public virtual ObjectResult<GetDeleverableLookup_Result> GetDeleverableLookup()
-        {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeleverableLookup_Result>("GetDeleverableLookup");
-        }
-    
         public virtual ObjectResult<GetErrorQuotientErrorTypeData_Result> GetErrorQuotientErrorTypeData(string buildIds)
         {
             var buildIdsParameter = buildIds != null ?
@@ -163,8 +158,8 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("nameToken", typeof(string));
     
             var genderParameter = gender.HasValue ?
-                new ObjectParameter("Gender", gender) :
-                new ObjectParameter("Gender", typeof(int));
+                new ObjectParameter("gender", gender) :
+                new ObjectParameter("gender", typeof(int));
     
             var ageFromParameter = ageFrom.HasValue ?
                 new ObjectParameter("ageFrom", ageFrom) :
@@ -214,6 +209,15 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("buildIds", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientDocumentData_Result>("GetErrorQuotientDocumentData", buildIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetDeliverableLookup_Result> GetDeliverableLookup(Nullable<int> courseId)
+        {
+            var courseIdParameter = courseId.HasValue ?
+                new ObjectParameter("courseId", courseId) :
+                new ObjectParameter("courseId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeliverableLookup_Result>("GetDeliverableLookup", courseIdParameter);
         }
     }
 }

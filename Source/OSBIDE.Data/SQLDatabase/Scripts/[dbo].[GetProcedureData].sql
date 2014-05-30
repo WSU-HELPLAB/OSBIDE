@@ -3,7 +3,7 @@
 -- sproc [GetProcedureData]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetProcedureData]
+create procedure [dbo].[GetProcedureData]
 
 	 @dateFrom DateTime
 	,@dateTo DateTime
@@ -26,7 +26,7 @@ begin
 
 	--declare @dateFrom datetime='1-1-2000'
 	--declare @dateTo datetime=getDate()
-	--declare @studentId=3
+	--declare @studentId int=3
 	--declare @gender int=1
 	--declare @courseId int=1
 	--declare @gradeFrom decimal=60
@@ -71,12 +71,14 @@ begin
 													     or @dateFrom<@minDate and e.DateReceived<=@dateTo
 														 or @dateTo<@minDate and e.DateReceived>=@dateFrom
 														 or @dateFrom<@minDate and @dateTo<@minDate)
-	inner join [dbo].[StudentGrades] g with (nolock) on g.StudentId=u.InstitutionId and (g.Deliverable=@deliverable or @deliverable='Any')
+	inner join [dbo].[StudentGrades] g with (nolock) on g.StudentId=u.InstitutionId
+													and (g.CourseId=@courseId or @courseId=@anyValue)
+													and (g.Deliverable=@deliverable or @deliverable='Any')
 													and (g.Grade between @gradeFrom and @gradeTo
 													     or @gradeFrom=@anyValue and g.Grade<=@gradeTo
 														 or @gradeTo=@anyValue and g.Grade>=@gradeFrom
 														 or @gradeFrom=@anyValue and @gradeTo=@anyValue)
-	inner join [dbo].[Courses] c with (nolock) on c.Id=g.CourseId and (c.Id=@courseId or @courseId=@anyValue)
+	inner join [dbo].[Courses] c with (nolock) on c.Id=g.CourseId
 	where u.RoleValue=1 and (u.GenderValue=@Gender or @Gender=1)
 	group by u.Id, u.InstitutionId, u.FirstName, u.LastName, s.Age, u.GenderValue, s.Ethnicity_Ethn, c.Prefix, c.CourseNumber, c.Year, c.Season, g.Deliverable, g.Grade
 

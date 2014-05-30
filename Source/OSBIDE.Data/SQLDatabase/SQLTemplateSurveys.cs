@@ -3,7 +3,7 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public static class SQLTemplateSurveys
     {
-        public const string Template = @"
+        public const string Insert = @"
 insert into [dbo].[OsbideSurveys]
            ([SurveyResponseId]
            ,[Completed]

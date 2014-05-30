@@ -32,17 +32,20 @@ go
 
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetDeleverableLookup]
+create procedure [dbo].[GetDeliverableLookup]
 
+	 @courseId int
 as
 begin
 
 	set nocount on;
 
-	select distinct Deliverable from [dbo].[StudentGrades] with (nolock)
+	select Deliverable=Name from [dbo].[Assignments] with (nolock) where CourseId=@courseId and IsDeleted=0
 
 end
 go
+
+
 
 
 

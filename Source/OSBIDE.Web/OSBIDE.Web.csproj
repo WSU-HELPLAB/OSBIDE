@@ -508,6 +508,7 @@
     <Content Include="Views\Analytics\Results\Tabular.cshtml" />
     <Content Include="Views\Analytics\Results\Scatter.cshtml" />
     <Content Include="Views\Analytics\Results\Bubble.cshtml" />
+    <Content Include="Views\Analytics\Watson.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

@@ -15,7 +15,7 @@ using OSBIDE.Web.Models.ViewModels;
 
 namespace OSBIDE.Web.Controllers
 {
-    [AllowAccess(SystemRole.Admin)]
+    [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
     public class AdminController : ControllerBase
     {
         //
@@ -74,6 +74,11 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
+        public ActionResult GetCourseDeliverables(int courseId)
+        {
+            return Json(CriteriaLookupsProc.GetDeliverables(courseId), JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public ActionResult UploadRoster(AdminDataImport dataImport)
         {
@@ -84,7 +89,7 @@ namespace OSBIDE.Web.Controllers
                 try
                 {
                     var fileExtension = System.IO.Path.GetExtension(dataImport.File.FileName);
-                    if (fileExtension == ".xls" || fileExtension == ".xlsx")
+                    if (dataImport.Schema != FileUploadSchema.CSV.ToString())
                     {
                         ProcessExcel(dataImport, fileExtension);
                     }
@@ -113,7 +118,7 @@ namespace OSBIDE.Web.Controllers
             }
             postedFile.SaveAs(filePath);
 
-            if (postedFile.FileName.IndexOf("grade", StringComparison.InvariantCultureIgnoreCase) > -1)
+            if (dataImport.Schema == FileUploadSchema.Grade.ToString())
             {
                 ExcelImport.UploadGrades(filePath
                                          , fileExtension

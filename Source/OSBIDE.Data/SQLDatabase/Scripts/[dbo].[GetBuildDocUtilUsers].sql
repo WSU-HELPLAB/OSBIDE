@@ -3,7 +3,7 @@
 -- sproc [GetBuildDocUtilUsers]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetBuildDocUtilUsers]
+create procedure [dbo].[GetBuildDocUtilUsers]
 as
 begin
 

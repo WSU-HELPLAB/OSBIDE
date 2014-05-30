@@ -113,7 +113,7 @@
     <Compile Include="SQLDatabase\Edmx\GetDebugEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetDeleverableLookup_Result.cs">
+    <Compile Include="SQLDatabase\Edmx\GetDeliverableLookup_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetEditorActivityEvents_Result.cs">

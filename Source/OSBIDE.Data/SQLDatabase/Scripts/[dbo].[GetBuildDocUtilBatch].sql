@@ -3,7 +3,7 @@
 -- sproc [GetBuildDocUtilBatch]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetBuildDocUtilBatch]
+create procedure [dbo].[GetBuildDocUtilBatch]
 
 	 @UserIds nvarchar(max)
 as

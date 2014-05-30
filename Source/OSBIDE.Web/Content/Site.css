@@ -321,10 +321,6 @@ section {
     margin-top: 1.2em;
 }
 
-form{
-    min-height:230px;
-}
-
 .context-section {
     padding-left: 1.2em;
     display: none;

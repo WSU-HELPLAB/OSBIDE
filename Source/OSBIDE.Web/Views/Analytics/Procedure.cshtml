@@ -22,7 +22,7 @@
                 <div class="row form-group">
                     <label class="col-xs-2 control-label">Analytics Procedure:</label>
                     <div class="col-xs-3">
-                        @Html.DropDownList("SelectedProcedureType", new SelectList(ProcedureSettings.ProcedureTypes, "ProcedureTypeId", "DisplayText"), new { @class = "form-control" })
+                        @Html.DropDownList("SelectedProcedureType", new SelectList(Enum<ProcedureType>.Get(), ProcedureType.ErrorQuotient), new { @class = "form-control" })
                     </div>
                 </div>
 
