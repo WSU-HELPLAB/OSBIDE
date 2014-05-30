@@ -80,10 +80,8 @@
     <Compile Include="DomainObjects\GenderLookup.cs" />
     <Compile Include="DomainObjects\ProcedureTypeLookup.cs" />
     <Compile Include="DomainObjects\StudentDemographicInfo.cs" />
-    <Compile Include="NoSQLStorage\ActionRequestLogEntity.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogEntry.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
-    <Compile Include="NoSQLStorage\ActionRequestLogTable.cs" />
     <Compile Include="SQLDatabase\CriteriaLookupsProc.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotient.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotientAnalytics.cs" />
