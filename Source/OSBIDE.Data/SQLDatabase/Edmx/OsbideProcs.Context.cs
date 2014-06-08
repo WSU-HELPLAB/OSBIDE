@@ -118,7 +118,9 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             var buildIdsParameter = buildIds != null ?
                 new ObjectParameter("buildIds", buildIds) :
                 new ObjectParameter("buildIds", typeof(string));
-    
+
+            //AC: increase server timeout duration as this is a pretty expensive query
+            ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = 180;
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientErrorTypeData_Result>("GetErrorQuotientErrorTypeData", buildIdsParameter);
         }
     
