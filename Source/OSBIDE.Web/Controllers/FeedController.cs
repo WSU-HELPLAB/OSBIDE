@@ -19,6 +19,7 @@ namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
     [RequiresVisualStudioConnectionForStudents]
+    [DenyAccess(SystemRole.Student)]
     public class FeedController : ControllerBase
     {
 

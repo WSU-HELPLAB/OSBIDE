@@ -13,6 +13,7 @@ using System.Web.Mvc;
 namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
+    [DenyAccess(SystemRole.Student)]
     public class AssignmentController : ControllerBase
     {
         //

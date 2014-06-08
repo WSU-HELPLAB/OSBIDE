@@ -5,12 +5,17 @@
 
 body {
     min-width:325px;
+    padding-top:35px;
 }
 
 header {
     background:#007ACC;
     color:#EFEFEF;
     padding:7px;
+    margin:0px;
+    top:0px;
+    width:100%;
+    position:fixed;
 }
     header a {
         color:#EFEFEF;

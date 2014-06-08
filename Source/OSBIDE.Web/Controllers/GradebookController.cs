@@ -15,6 +15,7 @@ namespace OSBIDE.Web.Controllers
 {
     //AC Note: This controller was more or less pulled directly from the OSBLE project.
     //         As such, it is pretty hacky and probably use a good cleanup.
+    [DenyAccess(SystemRole.Student)]
     public class GradebookController : ControllerBase
     {
         public GradebookController()
