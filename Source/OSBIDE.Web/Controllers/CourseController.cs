@@ -397,11 +397,12 @@ namespace OSBIDE.Web.Controllers
 
             foreach (Course course in vm.AllCourses)
             {
+                string key = string.Format("{0}_{1}_{2}", course.Prefix, course.CourseNumber, course.Season);
                 if (vm.CoursesByPrefix.ContainsKey(course.Prefix) == false)
                 {
                     vm.CoursesByPrefix.Add(course.Prefix, new SortedDictionary<string, Course>());
                 }
-                vm.CoursesByPrefix[course.Prefix].Add(course.CourseNumber, course);
+                vm.CoursesByPrefix[course.Prefix].Add(key, course);
             }
             return vm;
         }
