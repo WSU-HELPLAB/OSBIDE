@@ -27,7 +27,7 @@ function documentReady() {
     });
 
     $("#Deliverable").closest("div.row").hide();
-    if ($("#CourseId").val() != "-1") {
+    if ($("#CourseId").length > 0 && $("#CourseId").val() != "-1") {
         FileManager.updateCourseDependencies();
     }
 
