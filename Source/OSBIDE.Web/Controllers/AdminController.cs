@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using OSBIDE.Data.DomainObjects;
+using OSBIDE.Web.Models.FileSystem;
 namespace OSBIDE.Web.Controllers
 {
     [AllowAccess(SystemRole.Instructor)]
@@ -22,6 +23,47 @@ namespace OSBIDE.Web.Controllers
         {
             return View();
         }
+
+        [DenyAccess]
+        [AllowAccess(SystemRole.Admin)]
+        public ActionResult Anonymize()
+        {
+            return View();
+        }
+
+        [DenyAccess]
+        [AllowAccess(SystemRole.Admin)]
+        [HttpPost]
+        public ActionResult Anonymize(string vm)
+        {
+            FileSystem fs = new FileSystem();
+            FileCollection fc = fs.File(f => f.Contains("Names"));
+            if(fc.Count == 2)
+            {
+                string[] delimiter = {"\r\n"};
+                IDictionary<string, byte[]> fileBits = fc.ToBytes();
+                List<string> firstNames = System.Text.Encoding.Default.GetString(fileBits["FirstNames.txt"]).Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
+                List<string> lastNames = System.Text.Encoding.Default.GetString(fileBits["LastNames.txt"]).Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
+                Random rng = new Random();
+                List<OsbideUser> users = Db.Users.ToList();
+                foreach(OsbideUser user in users)
+                {
+                    string firstName = firstNames[rng.Next(0, firstNames.Count - 1)];
+                    string lastName = lastNames[rng.Next(0, lastNames.Count - 1)];
+
+                    //convert "ADAM" to "Adam"
+                    firstName = firstName.First().ToString().ToUpper() + firstName.Substring(1).ToLower();
+                    lastName = lastName.First().ToString().ToUpper() + lastName.Substring(1).ToLower();
+
+                    user.FirstName = firstName;
+                    user.LastName = lastName;
+                }
+
+                Db.SaveChanges();
+            }
+            return View();
+        }
+
 
         public ActionResult DailyActivity(int? SelectedStudentId, DateTime? SelectedDate)
         {
