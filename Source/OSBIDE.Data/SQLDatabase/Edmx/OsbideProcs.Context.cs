@@ -118,9 +118,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             var buildIdsParameter = buildIds != null ?
                 new ObjectParameter("buildIds", buildIds) :
                 new ObjectParameter("buildIds", typeof(string));
-
-            //AC: increase server timeout duration as this is a pretty expensive query
-            ((IObjectContextAdapter)this).ObjectContext.CommandTimeout = 180;
+    
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientErrorTypeData_Result>("GetErrorQuotientErrorTypeData", buildIdsParameter);
         }
     
@@ -220,6 +218,29 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("courseId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeliverableLookup_Result>("GetDeliverableLookup", courseIdParameter);
+        }
+    
+        public virtual ObjectResult<GetErrorFixTimeStats_Result> GetErrorFixTimeStats()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorFixTimeStats_Result>("GetErrorFixTimeStats");
+        }
+    
+        public virtual ObjectResult<GetBuildErrorMessages_Result> GetBuildErrorMessages(string buildIds)
+        {
+            var buildIdsParameter = buildIds != null ?
+                new ObjectParameter("buildIds", buildIds) :
+                new ObjectParameter("buildIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetBuildErrorMessages_Result>("GetBuildErrorMessages", buildIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetWatwinScoringErrorTypeData_Result> GetWatwinScoringErrorTypeData(string buildIds)
+        {
+            var buildIdsParameter = buildIds != null ?
+                new ObjectParameter("buildIds", buildIds) :
+                new ObjectParameter("buildIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetWatwinScoringErrorTypeData_Result>("GetWatwinScoringErrorTypeData", buildIdsParameter);
         }
     }
 }

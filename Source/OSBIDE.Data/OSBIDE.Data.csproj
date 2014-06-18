@@ -71,10 +71,11 @@
     <Compile Include="DomainObjects\Criteria.cs" />
     <Compile Include="DomainObjects\DocUtilDetails.cs" />
     <Compile Include="DomainObjects\DomainConstants.cs" />
-    <Compile Include="DomainObjects\ErrorQuotientEvent.cs" />
+    <Compile Include="DomainObjects\ErrorFixTimeStats.cs" />
+    <Compile Include="DomainObjects\BuildErrorEvent.cs" />
     <Compile Include="DomainObjects\ErrorQuotientParams.cs" />
-    <Compile Include="DomainObjects\ErrorQuotientResult.cs" />
-    <Compile Include="DomainObjects\ErrorQuotientResults.cs" />
+    <Compile Include="DomainObjects\ScoringResult.cs" />
+    <Compile Include="DomainObjects\WatwinScoringParams.cs" />
     <Compile Include="DomainObjects\FeedItem.cs" />
     <Compile Include="DomainObjects\DomainObjectHelpers.cs" />
     <Compile Include="DomainObjects\GenderLookup.cs" />
@@ -82,6 +83,12 @@
     <Compile Include="DomainObjects\StudentDemographicInfo.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogEntry.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
+    <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoring.cs" />
+    <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoringAnalytics.cs" />
+    <Compile Include="SQLDatabase\Edmx\GetBuildErrorMessages_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\ErrorFixTimeStatsProc.cs" />
     <Compile Include="SQLDatabase\CriteriaLookupsProc.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotient.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\ErrorQuotient\ErrorQuotientAnalytics.cs" />
@@ -115,6 +122,9 @@
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetEditorActivityEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetErrorFixTimeStats_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetErrorQuotientDocumentData_Result.cs">
@@ -162,6 +172,9 @@
     <Compile Include="SQLDatabase\Edmx\GetSubscriptions_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetWatwinScoringErrorTypeData_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\OsbideProcs.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -182,7 +195,7 @@
     <Compile Include="SQLDatabase\CommentsProc.cs" />
     <Compile Include="SQLDatabase\ExcelToSQL.cs" />
     <Compile Include="SQLDatabase\ExcelImport.cs" />
-    <Compile Include="SQLDatabase\ErrorQuotientSessionDataProc.cs" />
+    <Compile Include="SQLDatabase\BuildEventSessionDataProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateGrades.cs" />
     <Compile Include="SQLDatabase\ProcedureDataProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
@@ -215,13 +228,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SQLDatabase\Scripts\AddColumnsToBuildDocumentsTable.sql" />
+    <Content Include="SQLDatabase\Scripts\CreateErrorFixTimeStatsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />
     <Content Include="SQLDatabase\Scripts\Dummy.sql" />
+    <Content Include="SQLDatabase\Scripts\EventTimeView.sql" />
     <Content Include="SQLDatabase\Scripts\EventView.sql" />
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorFixTimeStats].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilUsers].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientDocumentData].sql" />
@@ -230,6 +246,7 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetLookups].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetWatwinScoringErrorTypeData].sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DiffPlex\DiffPlex.csproj">

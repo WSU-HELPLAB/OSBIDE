@@ -1,9 +1,9 @@
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
--- sproc [GetErrorQuotientErrorTypeData]
+-- sproc [GetBuildErrorMessages]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetErrorQuotientErrorTypeData]
+create procedure [dbo].[GetBuildErrorMessages]
 
 	@buildIds nvarchar(max)
 as
@@ -14,17 +14,10 @@ begin
 	declare @logs table(EventLogId int)
 	insert into @logs select buildId=cast(items as int) from [dbo].[Split](@buildIds, ',')
 
-	select distinct be.LogId, ErrorTypeId=be.BuildErrorTypeId
-	from @logs a
-	inner join [dbo].[BuildErrors] be with(nolock) on be.LogId=a.EventLogId
+	select LogId=b.EventLogId, ErrorMessage=eli.[Description]
+	from @logs b
+	inner join [dbo].[BuildEvents] be on be.EventLogId=b.EventLogId
+	inner join [dbo].[BuildEventErrorListItems] beeli on beeli.BuildEventId=be.Id
+	inner join [dbo].[ErrorListItems] eli on eli.Id=beeli.ErrorListItemId
 
 end
-
-
-
-/*
-
-exec [dbo].[GetErrorQuotientSessionData] @dateFrom='2000-01-01',@dateTo='2014-05-03',@userIds='150,54,151'
-
-*/
-

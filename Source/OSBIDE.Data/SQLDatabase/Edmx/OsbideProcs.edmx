@@ -23,6 +23,9 @@
           <Parameter Name="UserIds" Type="nvarchar(max)" Mode="In" />
         </Function>
         <Function Name="GetBuildDocUtilUsers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="GetBuildErrorMessages" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
+        </Function>
         <Function Name="GetComments" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="EventLogIds" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="CurrentUserId" Type="int" Mode="In" />
@@ -31,6 +34,7 @@
         <Function Name="GetDeliverableLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="courseId" Type="int" Mode="In" />
         </Function>
+        <Function Name="GetErrorFixTimeStats" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetErrorQuotientDocumentData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
@@ -58,6 +62,9 @@
         <Function Name="GetRecentCompileErrors" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="SenderId" Type="int" Mode="In" />
           <Parameter Name="Timeframe" Type="datetime" Mode="In" />
+        </Function>
+        <Function Name="GetWatwinScoringErrorTypeData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
         <EntityContainer Name="OSBIDEHybridModelStoreContainer" />
       </Schema></edmx:StorageModels>
@@ -132,7 +139,14 @@
           <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetDeliverableLookup" ReturnType="Collection(OSBIDE.HybridModel.GetDeliverableLookup_Result)">
-            <Parameter Name="courseId" Mode="In" Type="Int32" />
+          <Parameter Name="courseId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetErrorFixTimeStats" ReturnType="Collection(OSBIDE.HybridModel.GetErrorFixTimeStats_Result)" />
+          <FunctionImport Name="GetBuildErrorMessages" ReturnType="Collection(OSBIDE.HybridModel.GetBuildErrorMessages_Result)">
+          <Parameter Name="buildIds" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetWatwinScoringErrorTypeData" ReturnType="Collection(OSBIDE.HybridModel.GetWatwinScoringErrorTypeData_Result)">
+            <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -338,6 +352,22 @@
         </ComplexType>
         <ComplexType Name="GetDeliverableLookup_Result">
           <Property Type="String" Name="Deliverable" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetErrorFixTimeStats_Result">
+          <Property Type="Int32" Name="ErrorTypeId" Nullable="false" />
+          <Property Type="Decimal" Name="Mean" Nullable="false" Precision="38" Scale="6" />
+          <Property Type="Decimal" Name="StandardDeviation" Nullable="false" Precision="38" Scale="6" />
+          <Property Type="Decimal" Name="PopulationStandardDeviation" Nullable="false" Precision="38" Scale="6" />
+        </ComplexType>
+        <ComplexType Name="GetBuildErrorMessages_Result">
+          <Property Type="Int32" Name="LogId" Nullable="true" />
+          <Property Type="String" Name="ErrorMessage" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetWatwinScoringErrorTypeData_Result">
+          <Property Type="Int32" Name="LogId" Nullable="false" />
+          <Property Type="Int32" Name="BuildErrorTypeId" Nullable="false" />
+          <Property Type="String" Name="BuildErrorType" Nullable="true" />
+          <Property Type="Int64" Name="TimeToFix" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -619,6 +649,34 @@
             <ResultMapping>
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDeliverableLookup_Result">
                 <ScalarProperty Name="Deliverable" ColumnName="Deliverable" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetErrorFixTimeStats" FunctionName="OSBIDE.HybridModel.Store.GetErrorFixTimeStats">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetErrorFixTimeStats_Result">
+                <ScalarProperty Name="ErrorTypeId" ColumnName="ErrorTypeId" />
+                <ScalarProperty Name="Mean" ColumnName="Mean" />
+                <ScalarProperty Name="StandardDeviation" ColumnName="StandardDeviation" />
+                <ScalarProperty Name="PopulationStandardDeviation" ColumnName="PopulationStandardDeviation" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetBuildErrorMessages" FunctionName="OSBIDE.HybridModel.Store.GetBuildErrorMessages">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetBuildErrorMessages_Result">
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetWatwinScoringErrorTypeData" FunctionName="OSBIDE.HybridModel.Store.GetWatwinScoringErrorTypeData">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetWatwinScoringErrorTypeData_Result">
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+                <ScalarProperty Name="BuildErrorTypeId" ColumnName="BuildErrorTypeId" />
+                <ScalarProperty Name="BuildErrorType" ColumnName="BuildErrorType" />
+                <ScalarProperty Name="TimeToFix" ColumnName="TimeToFix" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

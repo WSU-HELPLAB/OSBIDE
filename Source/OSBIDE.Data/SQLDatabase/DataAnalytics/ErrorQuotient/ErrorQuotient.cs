@@ -7,7 +7,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
 {
     public class ErrorQuotient
     {
-        public static decimal Calculate(ErrorQuotientParams eparams, IEnumerable<ErrorQuotientEvent> sessionEvents)
+        public static decimal Calculate(ErrorQuotientParams eparams, IEnumerable<BuildErrorEvent> sessionEvents)
         {
             var orderedEvents = sessionEvents.OrderBy(e => e.EventDate).ToArray();
             var score = 0m;
@@ -19,16 +19,16 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
                 var nextEvent = orderedEvents[i + 1];
 
                 // do both events end in errors?
-                if (currentEvent.ErrorTypeIds != null && nextEvent.ErrorTypeIds != null)
+                if (currentEvent.ErrorTypes != null && nextEvent.ErrorTypes != null)
                 {
                     // yes
                     score += 2;
                 }
 
                 // same error type?
-                if (currentEvent.ErrorTypeIds != null
-                    && nextEvent.ErrorTypeIds != null
-                    && currentEvent.ErrorTypeIds.Intersect(nextEvent.ErrorTypeIds).Count() > 0)
+                if (currentEvent.ErrorTypes != null
+                    && nextEvent.ErrorTypes != null
+                    && currentEvent.ErrorTypes.Select(e => e.ErrorTypeId).Intersect(nextEvent.ErrorTypes.Select(e => e.ErrorTypeId)).Count() > 0)
                 {
                     // yes
                     score += 3;

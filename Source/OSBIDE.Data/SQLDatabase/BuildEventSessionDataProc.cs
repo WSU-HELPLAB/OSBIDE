@@ -7,7 +7,7 @@ using OSBIDE.Data.SQLDatabase.Edmx;
 
 namespace OSBIDE.Data.SQLDatabase
 {
-    public class ErrorQuotientSessionDataProc
+    public class BuildEventSessionDataProc
     {
         /// <summary>
         /// build a list of qualified error quotient events with error types and documents
@@ -16,37 +16,58 @@ namespace OSBIDE.Data.SQLDatabase
         /// <param name="dateTo"></param>
         /// <param name="userIds"></param>
         /// <returns></returns>
-        public static List<ErrorQuotientEvent> Get(DateTime? dateFrom, DateTime? dateTo, IList<int> userIds)
+        public static List<BuildErrorEvent> Get(DateTime? dateFrom, DateTime? dateTo, IList<int> userIds, bool includeErrorFixInfo = false)
         {
             using (var context = new OsbideProcs())
             {
-                // filter qualified error quotient event for the selected users
+                #region filter qualified build error event for the selected users
+                // filter qualified build error event for the selected users
                 var minDate = new DateTime(2000, 1, 1);
                 var events = (from e in context.GetErrorQuotientSessionData((!dateFrom.HasValue || dateFrom.Value < minDate) ? minDate : dateFrom,
                                                                             (!dateTo.HasValue || dateTo.Value < minDate) ? DateTime.Today : dateTo,
                                                                             string.Join(",", userIds))
-                              select new ErrorQuotientEvent
+                              select new BuildErrorEvent
                                          {
                                              BuildId = e.BuildId,
                                              LogId = e.LogId,
                                              UserId = e.SenderId,
                                              EventDate = e.EventDate,
                                          }).ToList();
+                #endregion
 
-                // error types for the resultant error quotient events
-                var errorTypes = (from t in context.GetErrorQuotientErrorTypeData(string.Join(",", events.Select(e => e.LogId))) select t).ToList();
+                var eventLogIds = string.Join(",", events.Select(e => e.LogId));
 
-                // error documents for the resultant error quotient events
+                // error types for the resultant build error events
+                var errorTypes = GetErrorTypes(context, eventLogIds, includeErrorFixInfo);
+
+                #region error messages for the resultant build error events
+                // error messages for the resultant build error events
+                var errorMessages = new List<GetBuildErrorMessages_Result>();
+                if (includeErrorFixInfo)
+                {
+                    errorMessages = (from e in context.GetBuildErrorMessages(eventLogIds) select e).ToList();
+                }
+                #endregion
+
+                // error documents for the resultant build error events
                 var errorDocs = (from d in context.GetErrorQuotientDocumentData(string.Join(",", events.Select(e => e.BuildId))) select d).ToList();
 
-                // associate error types and documents to error quotient events
+                #region associate error types and documents to the build error events
+                // associate error types and documents to the build error events
                 foreach (var e in events)
                 {
                     // error types
-                    var et = errorTypes.Where(t => t.LogId == e.LogId).Select(t => t.ErrorTypeId).ToList();
+                    var et = errorTypes.Where(t => t.LogId == e.LogId).ToList();
                     if (et.Count > 0)
                     {
-                        e.ErrorTypeIds = et;
+                        e.ErrorTypes = et;
+                    }
+
+                    // error messages
+                    var em = errorMessages.Where(m => m.LogId == e.LogId).Select(m => m.ErrorMessage).ToList();
+                    if (em.Count > 0)
+                    {
+                        e.ErrorMessages = em;
                     }
 
                     // error documents
@@ -66,9 +87,32 @@ namespace OSBIDE.Data.SQLDatabase
                         e.Documents = ed;
                     }
                 }
+                #endregion
 
                 return events;
             }
+        }
+
+        private static List<ErrorTypeDetails> GetErrorTypes(OsbideProcs context, string eventLogIds, bool includeErrorFixInfo)
+        {
+            if (includeErrorFixInfo)
+            {
+                return (from e in context.GetWatwinScoringErrorTypeData(eventLogIds)
+                        select new ErrorTypeDetails
+                        {
+                            LogId = e.LogId,
+                            ErrorTypeId = e.BuildErrorTypeId,
+                            ErrorType = e.BuildErrorType,
+                            FixingTime = e.TimeToFix.HasValue ? e.TimeToFix.Value : 2592000, /*30 days in seconds*/
+                        }).ToList();
+            }
+
+            return (from e in context.GetErrorQuotientErrorTypeData(eventLogIds)
+                    select new ErrorTypeDetails
+                    {
+                        LogId = e.LogId,
+                        ErrorTypeId = e.ErrorTypeId,
+                    }).ToList();
         }
     }
 }

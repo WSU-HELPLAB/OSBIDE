@@ -85,7 +85,36 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Results(ErrorQuotientParams procedureParams)
+        [ActionName("ProcedureHandler")]
+        [ActionSelector(Name = "ChangeProcedure")]
+        public ActionResult ChangeProcedure(FormCollection form)
+        {
+            var analytics = Analytics.FromSession();
+            analytics.ProcedureSettings.SelectedProcedureType = (ProcedureType)Enum.Parse(typeof(ProcedureType), form["SelectedProcedureType"]);
+
+            if (analytics.ProcedureSettings.SelectedProcedureType == ProcedureType.WatwinScoring)
+            {
+                var procedureParams = analytics.ProcedureSettings.ProcedureParams as WatwinScoringParams;
+                if (procedureParams == null)
+                {
+                    analytics.ProcedureSettings.ProcedureParams = new WatwinScoringParams();
+                }
+            }
+            else
+            {
+                var procedureParams = analytics.ProcedureSettings.ProcedureParams as ErrorQuotientParams;
+                if (procedureParams == null)
+                {
+                    analytics.ProcedureSettings.ProcedureParams = new ErrorQuotientParams();
+                }
+            }
+            return View("Procedure", analytics.ProcedureSettings);
+        }
+
+        [HttpPost]
+        [ActionName("ProcedureHandler")]
+        [ActionSelector(Name = "ErrorQuotient")]
+        public ActionResult CalcErrorQuotient(ErrorQuotientParams procedureParams)
         {
             var analytics = Analytics.FromSession();
 
@@ -104,6 +133,34 @@ namespace OSBIDE.Web.Controllers
             }
 
             analytics.ProcedureResults.Results = resultlist;
+            ViewBag.ScoreTitle = "EQ Score";
+
+            return View("Results", analytics.ProcedureResults);
+        }
+
+        [HttpPost]
+        [ActionName("ProcedureHandler")]
+        [ActionSelector(Name = "WatwinScoring")]
+        public ActionResult CalcWatwinScoring(WatwinScoringParams procedureParams)
+        {
+            var analytics = Analytics.FromSession();
+
+            analytics.ProcedureSettings.ProcedureParams = procedureParams;
+            analytics.ProcedureResults = new ProcedureResults
+            {
+                ViewType = ResultViewType.Tabular,
+            };
+
+            var resultlist = new List<ProcedureDataItem>();
+            foreach (var u in WatwinScoringAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems))
+            {
+                var user = analytics.ProcedureData.Where(r => r.IsSelected && r.Id == u.UserId).First();
+                user.Score = u.Score;
+                resultlist.Add(user);
+            }
+
+            analytics.ProcedureResults.Results = resultlist;
+            ViewBag.ScoreTitle = "WS Score";
 
             return View("Results", analytics.ProcedureResults);
         }

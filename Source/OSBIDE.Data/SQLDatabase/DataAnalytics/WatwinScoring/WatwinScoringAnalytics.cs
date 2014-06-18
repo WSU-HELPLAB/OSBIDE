@@ -6,15 +6,15 @@ using OSBIDE.Data.DomainObjects;
 
 namespace OSBIDE.Data.SQLDatabase.DataAnalytics
 {
-    public class ErrorQuotientAnalytics
+    public class WatwinScoringAnalytics
     {
-        public static List<ScoringResult> GetResults(ErrorQuotientParams eparams, DateTime? dateFrom, DateTime? dateTo, List<int> users)
+        public static List<ScoringResult> GetResults(WatwinScoringParams eparams, DateTime? dateFrom, DateTime? dateTo, List<int> users)
         {
             var results = new List<ScoringResult>();
 
             if (users != null && users.Count > 0)
             {
-                var eventSessions = BuildEventSessionDataProc.Get(dateFrom, dateTo, users);
+                var eventSessions = BuildEventSessionDataProc.Get(dateFrom, dateTo, users, true);
 
                 foreach (var u in users)
                 {
@@ -23,7 +23,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
                         results.Add(new ScoringResult
                         {
                             UserId = u,
-                            Score = ErrorQuotient.Calculate(eparams, eventSessions.Where(e => e.UserId == u))
+                            Score = WatwinScoring.Calculate(eparams, eventSessions.Where(e => e.UserId == u))
                         });
                     }
                 }

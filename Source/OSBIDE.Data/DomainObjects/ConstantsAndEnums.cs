@@ -7,7 +7,7 @@ namespace OSBIDE.Data.DomainObjects
     public enum ProcedureType
     {
         ErrorQuotient = 1,
-        Watson = 2,
+        WatwinScoring = 2,
     }
     public enum ResultViewType
     {

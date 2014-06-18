@@ -6,14 +6,15 @@ namespace OSBIDE.Data.DomainObjects
     /// <summary>
     /// The collated compilation event for error quotient procedure
     /// </summary>
-    public class ErrorQuotientEvent
+    public class BuildErrorEvent
     {
         public int BuildId { get; set; }
         public int LogId { get; set; }
         public int UserId { get; set; }
         public DateTime EventDate { get; set; }
         public List<ErrorDocumentInfo> Documents { get; set; }
-        public List<int> ErrorTypeIds { get; set; }
+        public List<ErrorTypeDetails> ErrorTypes { get; set; }
+        public List<string> ErrorMessages { get; set; }
     }
 
     public class ErrorDocumentInfo
@@ -24,5 +25,12 @@ namespace OSBIDE.Data.DomainObjects
         public string FileName { get; set; }
         public int NumberOfModified { get; set; }
         public List<int> ModifiedLines { get; set; }
+    }
+    public class ErrorTypeDetails
+    {
+        public int LogId { get; set; }
+        public int ErrorTypeId { get; set; }
+        public string ErrorType { get; set; }
+        public long FixingTime { get; set; }
     }
 }
