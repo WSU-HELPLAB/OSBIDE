@@ -105,7 +105,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
             }
 
             var max_score = slowSolvePenalty + medSolvePenalty + sameLinePenalty + sameErrorPenalty;
-            return score > 0 ? decimal.Round(score / (max_score * orderedEvents.Length - 1), 2) : 0m;
+            return score > 0 ? decimal.Round(score / (max_score * ( orderedEvents.Length - 1 ) ), 2) : 0m;
         }
     }
 }

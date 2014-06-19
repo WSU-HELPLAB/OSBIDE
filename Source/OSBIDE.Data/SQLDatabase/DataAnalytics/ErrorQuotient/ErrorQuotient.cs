@@ -113,7 +113,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
                 }
             }
 
-            return score > 0 ? decimal.Round(score / (9 * orderedEvents.Length), 2) : 0m;
+            return score > 0 ? decimal.Round(score / (9 * ( orderedEvents.Length - 1 ) ), 2) : 0m;
         }
     }
 }
