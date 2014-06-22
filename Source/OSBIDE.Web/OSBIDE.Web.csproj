@@ -15,7 +15,7 @@
     <AssemblyName>OSBIDE.Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -161,6 +161,7 @@
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\CourseController.cs" />
+    <Compile Include="Controllers\DataVisualizationController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\FileController.cs" />
@@ -371,7 +372,10 @@
     <None Include="Properties\PublishProfiles\osbidestagingws - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy.pubxml" />
+    <Content Include="Scripts\Charts\bullet.json" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
+    <Content Include="Scripts\Charts\bullet.js" />
+    <Content Include="Scripts\Charts\d3.js" />
     <Content Include="Scripts\exporting.js" />
     <Content Include="Scripts\highcharts.js" />
     <Content Include="Scripts\highcharts-more.js" />
@@ -496,6 +500,7 @@
     <Content Include="Views\Analytics\Results\Scatter.cshtml" />
     <Content Include="Views\Analytics\Results\Bubble.cshtml" />
     <Content Include="Views\Analytics\WatwinScoring.cshtml" />
+    <Content Include="Views\Analytics\DataVisualization.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">
@@ -530,9 +535,9 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>42286</DevelopmentServerPort>
+          <DevelopmentServerPort>80</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:39827/</IISUrl>
+          <IISUrl>http://localhost:80/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

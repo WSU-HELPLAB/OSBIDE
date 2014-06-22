@@ -24,7 +24,13 @@
             <div class="row form-group">
                 <label class="col-xs-2 control-label">Analytics Procedure:</label>
                 <div class="col-xs-3">
-                    @Html.DropDownList("SelectedProcedureType", new SelectList(Enum<ProcedureType>.Get(), Model.SelectedProcedureType), new { @class = "form-control" })
+                    <select id="SelectedProcedureType" name="SelectedProcedureType" class="form-control">
+                        @foreach (var e in Enum<ProcedureType>.Get())
+                        {
+                            var selected = e.Value == (int)Model.SelectedProcedureType ? "selected" : string.Empty;
+                            <option value="@e.Value" @selected>@e.Text</option>
+                        }
+                    </select>
                 </div>
             </div>
 
@@ -59,6 +65,7 @@
 
         $(document).ready(function () {
 
+            $("#SelectedProcedureType").val("@Model.SelectedProcedureType.ToString("d")");
             Procedure.WireupEventHandlers();
         });
 
@@ -80,8 +87,13 @@
 
                     $("#SelectedProcedureType").change(function () {
                         
-                        $("input[name='ActionSelector']").val("ChangeProcedure");
-                        $("form").submit();
+                        if ($(this).val() == "@ProcedureType.DataVisualization.ToString("d")") {
+                            window.location = "@Url.Content("~/DataVisualization/")";
+                        }
+                        else {
+                            $("input[name='ActionSelector']").val("ChangeProcedure");
+                            $("form").submit();
+                        }
                     });
 
                     $("a[data-wzstep='@WizardSteps.Results']").click(function (e) {
@@ -90,7 +102,8 @@
                         e.preventDefault();
                         if (Procedure.Validate()) {
 
-                            $("input[name='ActionSelector']").val($("#SelectedProcedureType").val());
+                            var actionName = $("#SelectedProcedureType").children("[selected]:first").text().replace(/\s/g, "");
+                            $("input[name='ActionSelector']").val(actionName);
                             $("form").submit();
                         }
                     });

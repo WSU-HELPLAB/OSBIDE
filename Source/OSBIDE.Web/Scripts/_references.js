@@ -19,3 +19,5 @@
 /// <reference path="exporting.js" />
 /// <reference path="highcharts-more.js" />
 /// <reference path="highcharts.js" />
+/// <reference path="charts/d3.js" />
+/// <reference path="charts/bullet.js" />

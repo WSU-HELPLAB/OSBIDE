@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
     <Compile Include="DomainObjects\AgeLookup.cs" />
+    <Compile Include="DomainObjects\TimelineChartData.cs" />
     <Compile Include="DomainObjects\Comment.cs" />
     <Compile Include="DomainObjects\ConstantsAndEnums.cs">
       <SubType>Code</SubType>
@@ -201,6 +202,7 @@
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
     <Compile Include="SQLDatabase\SQLTemplateUpdateBuildDocuments.cs" />
+    <Compile Include="SQLDatabase\TimelineChartDataProc.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />

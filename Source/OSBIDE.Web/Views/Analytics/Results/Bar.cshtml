@@ -10,7 +10,13 @@
     <div class="col-xs-1">
     </div>
     <div class="col-xs-2">
-        @Html.DropDownList("CategoryColumn", new SelectList(Enum<CategoryColumn>.Get(), CategoryColumn.Name.ToString()))
+        <select id="CategoryColumn" name="CategoryColumn" class="form-control">
+            @foreach (var e in Enum<ProcedureType>.Get())
+            {
+                var selected = e.Value == (int)CategoryColumn.Name ? "selected" : string.Empty;
+                <option value="@e.Value" @selected>@e.Text</option>
+            }
+        </select>
     </div>
 </div>
 <div class="row">

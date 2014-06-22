@@ -1,0 +1,111 @@
+﻿@using OSBIDE.Web.Models.Analytics
+@using OSBIDE.Data.DomainObjects
+
+@Styles.Render("~/Content/bootstrap.css")
+
+<section data-tab="Analytics" id="analytics" class="container-fluid">
+    <div data-wzstep="@WizardSteps.DataVisualization" class="form-horizontal">
+
+        <div class="row">
+            <div class="col-xs-1">
+            </div>
+            <div class="col-xs-8">
+                <h2>Data Visualization</h2>
+            </div>
+            <div class="col-xs-2 wizard">
+                <a data-wzstep="@WizardSteps.Procedure" href="@Url.Action("Procedure", "Analytics")">Prev</a>
+                <a style="display:none" data-wzstep="@WizardSteps.Procedure">Next</a>
+            </div>
+        </div>
+        <br />
+        <div class="row form-group">
+            <label class="col-xs-2 control-label">Time Scale:</label>
+            <div class="col-xs-3">
+                <select name="ScaleSetting" id="ScaleSetting" class="form-control">
+                    @foreach (var e in Enum<TimeScale>.Get())
+                    {
+                        <option value="@e.Value">@e.Text</option>
+                    }
+                </select>
+            </div>
+            <label class="col-xs-3 control-label">Idle Timeout (min):</label>
+            <input type="text" id="timeout" name="Timeout" placeholder="5" />
+        </div>
+        <div id="chartBody">
+        </div>
+    </div>
+</section>
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/Scripts/Charts/d3.js"></script>
+    <script type="text/javascript" src="~/Scripts/Charts/bullet.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            DataVisualization.WireupEventHandlers();
+            Chart.Draw();
+        });
+
+        var DataVisualization = {
+
+            WireupEventHandlers: function () {
+
+                $("#ScaleSetting").change(function () {
+
+                    Chart.Draw();
+                })
+            },
+        };
+
+        var Chart = (function () {
+
+            var margin = { top: 10, right: 40, bottom: 20, left: 120 },
+            width = 960 - margin.left - margin.right,
+            height = 80 - margin.top - margin.bottom;
+
+            var chart = d3.bullet().width(width).height(height);
+
+            return {
+
+                Draw: function () {
+
+                    d3.json("@Url.Content("~/DataVisualization/GetData")" + "?timeScale=" + $("#ScaleSetting").val() + "&timeout=" + $("#timeout").val(), function (error, data) {
+
+                        var svg = d3.select("#chartBody").selectAll("svg")
+                            .data(data)
+                            .enter().append("svg")
+                            .attr("class", "bullet")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height)
+                            .append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                            .call(chart);
+
+                        var title = svg.append("g")
+                            .style("text-anchor", "end")
+                            .attr("transform", "translate(-6," + height / 2 + ")");
+
+                        title.append("text")
+                            .attr("class", "title")
+                            .text(function (d) { return d.title; });
+
+                        setTimeout(function () {
+                            $("svg").find("line.marker").each(function (index, value) {
+                                var el = document.createElementNS('http://www.w3.org/2000/svg', "text");
+                                el.setAttribute("x", parseFloat($(this).attr("x1")));
+                                el.setAttribute("y", parseFloat($(this).attr("y1")) - 1);
+                                el.textContent = $(this).attr("data-label");
+                                $(this).after(el);
+                            })
+                        }, 300);
+                    });
+                },
+            };
+
+        })();
+
+    </script>
+}

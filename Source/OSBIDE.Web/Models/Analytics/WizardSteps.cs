@@ -7,5 +7,6 @@ namespace OSBIDE.Web.Models.Analytics
         Refine = 2,
         Procedure = 3,
         Results = 4,
+        DataVisualization = 5,
     }
 }

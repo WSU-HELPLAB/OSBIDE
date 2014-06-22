@@ -417,3 +417,32 @@ div[id^="ad-hoc-"].bootstrap-override {
     top: 7px;
     left: -5px;
 }
+/* d3 */
+.bullet {
+    font: 10px sans-serif;
+}
+
+    .bullet .marker {
+        stroke: #000;
+        stroke-width: 2px;
+    }
+    .bullet .tick line {
+        stroke: #666;
+        stroke-width: .5px;
+    }
+    .bullet .measure.idle {
+        fill:#79BAEC;
+    }
+    .bullet .measure.edit {
+        fill:#56A5EC;
+    }
+    .bullet .measure.debug {
+        fill:#357EC7;
+    }
+    .bullet .measure.run {
+        fill:#1569C7;
+    }
+    .bullet .title {
+        font-size: 14px;
+        font-weight: bold;
+    }
