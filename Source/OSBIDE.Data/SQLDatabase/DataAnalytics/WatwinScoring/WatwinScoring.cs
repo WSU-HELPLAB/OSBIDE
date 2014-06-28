@@ -17,7 +17,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
             var sameErrorPenalty = wparams.SameErrorPenalty.HasValue ? wparams.SameErrorPenalty.Value : 4;
             var sameTypePenalty = wparams.SameTypePenalty.HasValue ? wparams.SameTypePenalty.Value : 4;
             var sameLinePenalty = wparams.SameLinePenalty.HasValue ? wparams.SameLinePenalty.Value : 2;
-            var penalty = wparams.FastSolvePenalty.HasValue ? wparams.FastSolvePenalty.Value : 1;
+            var fastSolvePenalty = wparams.FastSolvePenalty.HasValue ? wparams.FastSolvePenalty.Value : 1;
             var slowSolvePenalty = wparams.SlowSolvePenalty.HasValue ? wparams.SlowSolvePenalty.Value : 25;
             var medSolvePenalty = wparams.MedSolvePenalty.HasValue ? wparams.MedSolvePenalty.Value : 15;
 
@@ -71,6 +71,13 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
                         }
                     }
                 }
+
+                //Since we want to apply the greatest penalty for any error
+                //we start with the smallest penalty as our default
+                //we then look at each error and how long it took to solve
+                //if we find a penalty greater than our current one, we update it
+                //then at the end we apply this, which will be the greatest penalty of all the errors
+                var penalty = fastSolvePenalty;
 
                 if (currentEvent.ErrorTypes != null && currentEvent.ErrorTypes.Count > 0)
                 {
