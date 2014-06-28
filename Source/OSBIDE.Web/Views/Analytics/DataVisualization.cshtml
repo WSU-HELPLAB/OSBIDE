@@ -5,39 +5,107 @@
 
 <section data-tab="Analytics" id="analytics" class="container-fluid">
     <div data-wzstep="@WizardSteps.DataVisualization" class="form-horizontal">
-
         <div class="row">
             <div class="col-xs-1">
             </div>
-            <div class="col-xs-8">
-                <h2>Data Visualization</h2>
-            </div>
-            <div class="col-xs-2 wizard">
-                <a data-wzstep="@WizardSteps.Procedure" href="@Url.Action("Procedure", "Analytics")">Prev</a>
-                <a style="display:none" data-wzstep="@WizardSteps.Procedure">Next</a>
+            <div class="col-xs-10">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <h2>Data Visualization</h2>
+                    </div>
+                    <div class="col-xs-2 wizard">
+                        <a data-wzstep="@WizardSteps.Procedure" href="@Url.Action("Procedure", "Analytics")">Prev</a>
+                        <a style="display:none" data-wzstep="@WizardSteps.Procedure">Next</a>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-xs-2 control-label">Time Scale:</label>
+                    <div class="col-xs-2">
+                        <select name="ScaleSetting" id="ScaleSetting" class="form-control">
+                            @foreach (var e in Enum<TimeScale>.Get())
+                            {
+                                <option value="@e.Value">@e.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <label class="col-xs-2 control-label">Idle Timeout (min):</label>
+                    <span class="col-xs-2"><input class="form-control" type="text" id="timeout" name="Timeout" placeholder="5" /></span>
+                    <label class="col-xs-2 control-label">Grayscale:</label>
+                    <input type="checkbox" id="grayscale" />
+                </div>
+                <div class="row">
+                    <div class="col-xs-1"></div>
+                    <div class="col-xs-6">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Social Event Legend</th>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td class="col-xs-3">QP: Question posted</td>
+                                <td class="col-xs-3">NP: Non-question posted</td>
+                            </tr>
+                            <tr>
+                                <td>QF: Follow-up to own question</td>
+                                <td>NF: Follow-up to own non-question</td>
+                            </tr>
+                            <tr>
+                                <td>RQ: Response to question received</td>
+                                <td>RN: Response to non-question receieved</td>
+                            </tr>
+                            <tr>
+                                <td>QR: Reply to other's question posted</td>
+                                <td>NR: Reply to other's non-question posted</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-1"></div>
+                    <div class="col-xs-6">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">State Legend</th>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <td colspan="2" class="col-xs-3"><div id="idle" class="legend color_default idle"></div> = Idle</td>
+                            </tr>
+                            <tr>
+                                <td><div id="edit_syn_u_sem_u" class="legend color_default edit_syn_u_sem_u"></div> = Editing: SynCorrect: ?; SemCorrect: ?</td>
+                                <td><div id="debug_unknown" class="legend color_default debug_unknown"></div> = Debugging: SemCorrect: ?</td>
+                            </tr>
+                            <tr>
+                                <td><div id="edit_syn_y_sem_u" class="legend color_default edit_syn_y_sem_u"></div> = Editing: SynCorrect: Y; SemCorrect: ?</td>
+                                <td><div id="debug_wrong" class="legend color_default debug_wrong"></div> = Debugging: SemCorrect: No</td>
+                            </tr>
+                            <tr>
+                                <td><div id="edit_syn_y_sem_n" class="legend color_default edit_syn_y_sem_n"></div> = Editing: SynCorrect: Y; SemCorrect: N</td>
+                                <td><div id="run_unknown" class="legend color_default run_unknown"></div> = Running: SemCorrect: ?</td>
+                            </tr>
+                            <tr>
+                                <td><div id="edit_syn_n_sem_u" class="legend color_default edit_syn_n_sem_u"></div> = Editing: SynCorrect: N; SemCorrect: ?</td>
+                                <td><div id="run_wrong" class="legend color_default run_wrong"></div> = Running: SemCorrect: No</td>
+                            </tr>
+                            <tr>
+                                <td><div id="edit_syn_n_sem_n" class="legend color_default edit_syn_n_sem_n"></div> = Editing: SynCorrect: N; SemCorrect: N</td>
+                                <td><div id="run_last_success" class="legend color_default run_last_success"></div> = Running: Last Successful Build</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <br />
-        <div class="row form-group">
-            <label class="col-xs-2 control-label">Time Scale:</label>
-            <div class="col-xs-3">
-                <select name="ScaleSetting" id="ScaleSetting" class="form-control">
-                    @foreach (var e in Enum<TimeScale>.Get())
-                    {
-                        <option value="@e.Value">@e.Text</option>
-                    }
-                </select>
-            </div>
-            <label class="col-xs-3 control-label">Idle Timeout (min):</label>
-            <input type="text" id="timeout" name="Timeout" placeholder="5" />
-        </div>
-        <div id="chartBody">
+        <div class="row" id="chartBody">
         </div>
     </div>
 </section>
 
 @section Scripts
 {
+
     <script type="text/javascript" src="~/Scripts/Charts/d3.js"></script>
     <script type="text/javascript" src="~/Scripts/Charts/bullet.js"></script>
 
@@ -57,13 +125,22 @@
 
                     Chart.Draw();
                 })
+
+                $("#grayscale").change(function () {
+                    if ($(this).is(':checked')) {
+                        $(".color_default").switchClass("color_default", "color_grayscale");
+                    } else {
+                        $(".color_grayscale").switchClass("color_grayscale", "color_default");
+                    }
+                    Chart.Draw();
+                })
             },
         };
 
         var Chart = (function () {
 
             var margin = { top: 10, right: 40, bottom: 20, left: 120 },
-            width = 960 - margin.left - margin.right,
+            width = $(window).width() - margin.left - margin.right,
             height = 80 - margin.top - margin.bottom;
 
             var chart = d3.bullet().width(width).height(height);
@@ -71,8 +148,8 @@
             return {
 
                 Draw: function () {
-
-                    d3.json("@Url.Content("~/DataVisualization/GetData")" + "?timeScale=" + $("#ScaleSetting").val() + "&timeout=" + $("#timeout").val(), function (error, data) {
+                    d3.json("@Url.Content("~/DataVisualization/GetData")" + "?timeScale=" + $("#ScaleSetting").val() + "&timeout=" + $("#timeout").val() + "&grayscale=" + $("#grayscale").is(':checked'), function (error, data) {
+                        d3.select("#chartBody").selectAll("svg").remove();
 
                         var svg = d3.select("#chartBody").selectAll("svg")
                             .data(data)

@@ -14,9 +14,9 @@ namespace OSBIDE.Web.Controllers
             return View("~/Views/Analytics/DataVisualization.cshtml");
         }
 
-        public ActionResult GetData(int timeScale, int? timeout)
+        public ActionResult GetData(int timeScale, int? timeout, bool grayscale)
         {
-            return Json(TimelineChartDataProc.Get((TimeScale)timeScale, timeout), JsonRequestBehavior.AllowGet);
+            return Json(TimelineChartDataProc.Get((TimeScale)timeScale, timeout, grayscale), JsonRequestBehavior.AllowGet);
         }
     }
 }

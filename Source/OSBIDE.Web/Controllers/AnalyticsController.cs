@@ -52,7 +52,7 @@ namespace OSBIDE.Web.Controllers
                                                            Ethnicity = x.Ethnicity
                                                        })
                                                        .ToList();
-            analytics.SelectDataItems = null;
+            analytics.SelectedDataItems = null;
 
             return View("Refine", analytics.ProcedureData);
         }
@@ -63,10 +63,10 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Procedure(List<int> selectDataItems)
+        public ActionResult Procedure(List<int> selectedDataItems)
         {
             var analytics = Analytics.FromSession();
-            analytics.SelectDataItems = selectDataItems;
+            analytics.SelectedDataItems = selectedDataItems;
 
             if (analytics.ProcedureSettings == null)
             {
@@ -125,7 +125,7 @@ namespace OSBIDE.Web.Controllers
             };
 
             var resultlist = new List<ProcedureDataItem>();
-            foreach (var u in ErrorQuotientAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems))
+            foreach (var u in ErrorQuotientAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectedDataItems))
             {
                 var user = analytics.ProcedureData.Where(r => r.IsSelected && r.Id == u.UserId).First();
                 user.Score = u.Score;
@@ -152,7 +152,7 @@ namespace OSBIDE.Web.Controllers
             };
 
             var resultlist = new List<ProcedureDataItem>();
-            foreach (var u in WatwinScoringAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectDataItems))
+            foreach (var u in WatwinScoringAnalytics.GetResults(procedureParams, analytics.Criteria.DateFrom, analytics.Criteria.DateTo, analytics.SelectedDataItems))
             {
                 var user = analytics.ProcedureData.Where(r => r.IsSelected && r.Id == u.UserId).First();
                 user.Score = u.Score;

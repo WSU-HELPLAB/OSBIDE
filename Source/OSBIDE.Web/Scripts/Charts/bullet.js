@@ -3,9 +3,9 @@
     // Chart design based on the recommendations of Stephen Few. Implementation
     // based on the work of Clint Ivy, Jamie Love, and Jason Davies.
     // http://projects.instantcognition.com/protovis/bulletchart/
+    // yw. This chart has become a stacked chart from the original bullet chart
     d3.bullet = function () {
-        var orient = "left", // TODO top & bottom
-            reverse = false,
+        var orient = "left",
             markers = bulletMarkers,
             measures = bulletMeasures,
             width = 380,
@@ -19,23 +19,30 @@
                 if (d.showTicks) this.parentNode.height.baseVal.value += 30;
 
                 var markerz = markers.call(this, d, i).slice(),
-                    measurez = measures.call(this, d, i).slice().reverse(),
+                    measurez = measures.call(this, d, i).slice(),
+                    measurezR = measures.call(this, d, i).slice().reverse(), // using the last segment's endpoint position to calculate the chart scales
                     g = d3.select(this);
 
                 // Compute the new x-scale.
                 var x1 = d3.scale.linear()
-                                 .domain([0, measurez[0].Position])
-                                 .range(reverse ? [width, 0] : [0, width]);
+                                 .domain([0, measurezR[0].EndPoint])
+                                 .range([0, width]);
 
                 // Retrieve the old x-scale, if this is an update.
                 var x0 = this.__chart__ || d3.scale.linear()
                                                    .domain([0, Infinity])
                                                    .range(x1.range());
 
-                // Stash the new scale.
+                // Stash the new scale
                 this.__chart__ = x1;
 
-                // Derive width-scales from the x-scales.
+                // Derive starting points and width-scales from the x-scales for segments.
+                var px0 = wbulletStart(x0),
+                    px1 = wbulletStart(x1),
+                    ww0 = wbulletWidth(x0),
+                    ww1 = wbulletWidth(x1);
+
+                // Derive width-scales from the x-scales for markers.
                 var w0 = bulletWidth(x0),
                     w1 = bulletWidth(x1);
 
@@ -45,19 +52,14 @@
 
                 measure.enter().append("rect")
                     .attr("class", function (d, i) { return "measure " + measurez[i].Name; })
-                    .attr("width", w0)
+                    .attr("opacity", function (d, i) { return measurez[i].Opacity > 0 ? measurez[i].Opacity : 1; })
+                    .attr("width", ww0)
                     .attr("height", height / 3)
-                    .attr("x", reverse ? x0 : 0)
+                    .attr("x", px0)
                     .attr("y", height / 3)
                   .transition()
-                    .attr("width", w1)
-                    .attr("x", reverse ? x1 : 0);
-
-                measure.transition()
-                    .attr("width", w1)
-                    .attr("height", height / 3)
-                    .attr("x", reverse ? x1 : 0)
-                    .attr("y", height / 3);
+                    .attr("width", ww1)
+                    .attr("x", px1);
 
                 // Update the marker lines.
                 var marker = g.selectAll("line.marker")
@@ -65,9 +67,9 @@
 
                 marker.enter().append("line")
                     .attr("class", "marker")
-                    .attr("data-label", function (d, i) { return markerz[i]; })
-                    .attr("x1", x0)
-                    .attr("x2", x0)
+                    .attr("data-label", function (d, i) { return markerz[i].Name; })
+                    .attr("x1", w0)
+                    .attr("x2", w0)
                     .attr("y1", height / 6)
                     .attr("y2", height * 5 / 6)
                   .transition()
@@ -75,8 +77,8 @@
                     .attr("x2", x1);
 
                 marker.transition()
-                    .attr("x1", x1)
-                    .attr("x2", x1)
+                    .attr("x1", w1)
+                    .attr("x2", w1)
                     .attr("y1", height / 6)
                     .attr("y2", height * 5 / 6);
 
@@ -180,6 +182,18 @@
     function bulletTranslate(x) {
         return function (d) {
             return "translate(" + x(d) + ",0)";
+        };
+    }
+
+    function wbulletStart(x) {
+        return function (d) {
+            return Math.abs(x(d.StartPoint) - x(0));
+        };
+    }
+
+    function wbulletWidth(x) {
+        return function (d) {
+            return Math.abs(x(d.EndPoint) - x(d.StartPoint) - x(0));
         };
     }
 

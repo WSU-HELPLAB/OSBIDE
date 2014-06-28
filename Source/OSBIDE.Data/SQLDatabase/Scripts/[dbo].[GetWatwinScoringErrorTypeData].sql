@@ -3,7 +3,7 @@
 -- sproc [GetWatwinScoringErrorTypeData]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetWatwinScoringErrorTypeData]
+create procedure [dbo].[GetWatwinScoringErrorTypeData]
 
 	@buildIds nvarchar(max)
 as

@@ -76,6 +76,7 @@
     <Compile Include="DomainObjects\BuildErrorEvent.cs" />
     <Compile Include="DomainObjects\ErrorQuotientParams.cs" />
     <Compile Include="DomainObjects\ScoringResult.cs" />
+    <Compile Include="DomainObjects\VisualizationParams.cs" />
     <Compile Include="DomainObjects\WatwinScoringParams.cs" />
     <Compile Include="DomainObjects\FeedItem.cs" />
     <Compile Include="DomainObjects\DomainObjectHelpers.cs" />
@@ -87,6 +88,9 @@
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoring.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoringAnalytics.cs" />
     <Compile Include="SQLDatabase\Edmx\GetBuildErrorMessages_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetStateMachineEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\ErrorFixTimeStatsProc.cs" />

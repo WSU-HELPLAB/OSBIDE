@@ -51,4 +51,3 @@ from
 )
 stats
 group by stats.BuildErrorTypeId
-

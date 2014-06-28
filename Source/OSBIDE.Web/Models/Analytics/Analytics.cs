@@ -13,9 +13,10 @@ namespace OSBIDE.Web.Models.Analytics
 
         public Criteria Criteria { get; set; }
         public List<ProcedureDataItem> ProcedureData { get; set; }
-        public List<int> SelectDataItems { get; set; }
+        public List<int> SelectedDataItems { get; set; }
         public ProcedureSettings ProcedureSettings { get; set; }
         public ProcedureResults ProcedureResults { get; set; }
+        public VisualizationParams VisualizationParams {get;set;}
 
         public static Analytics FromSession()
         {

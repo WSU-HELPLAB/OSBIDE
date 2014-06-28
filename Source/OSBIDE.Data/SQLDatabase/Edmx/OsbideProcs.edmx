@@ -63,6 +63,11 @@
           <Parameter Name="SenderId" Type="int" Mode="In" />
           <Parameter Name="Timeframe" Type="datetime" Mode="In" />
         </Function>
+        <Function Name="GetStateMachineEvents" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="dateFrom" Type="datetime" Mode="In" />
+          <Parameter Name="dateTo" Type="datetime" Mode="In" />
+          <Parameter Name="studentIds" Type="varchar(max)" Mode="In" />
+        </Function>
         <Function Name="GetWatwinScoringErrorTypeData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
@@ -146,7 +151,12 @@
           <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="GetWatwinScoringErrorTypeData" ReturnType="Collection(OSBIDE.HybridModel.GetWatwinScoringErrorTypeData_Result)">
-            <Parameter Name="buildIds" Mode="In" Type="String" />
+          <Parameter Name="buildIds" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetStateMachineEvents" ReturnType="Collection(OSBIDE.HybridModel.GetStateMachineEvents_Result)">
+            <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
+            <Parameter Name="dateTo" Mode="In" Type="DateTime" />
+            <Parameter Name="studentIds" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -368,6 +378,16 @@
           <Property Type="Int32" Name="BuildErrorTypeId" Nullable="false" />
           <Property Type="String" Name="BuildErrorType" Nullable="true" />
           <Property Type="Int64" Name="TimeToFix" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetStateMachineEvents_Result">
+          <Property Type="Int32" Name="SenderId" Nullable="false" />
+          <Property Type="DateTime" Name="DateReceived" Nullable="false" Precision="23" />
+          <Property Type="String" Name="LogType" Nullable="false" />
+          <Property Type="Int32" Name="BuildErrorLogId" Nullable="true" />
+          <Property Type="Int32" Name="ExecutionAction" Nullable="true" />
+          <Property Type="String" Name="FirstName" Nullable="false" />
+          <Property Type="String" Name="LastName" Nullable="false" />
+          <Property Type="Int32" Name="InstitutionId" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -677,6 +697,20 @@
                 <ScalarProperty Name="BuildErrorTypeId" ColumnName="BuildErrorTypeId" />
                 <ScalarProperty Name="BuildErrorType" ColumnName="BuildErrorType" />
                 <ScalarProperty Name="TimeToFix" ColumnName="TimeToFix" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetStateMachineEvents" FunctionName="OSBIDE.HybridModel.Store.GetStateMachineEvents">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetStateMachineEvents_Result">
+                <ScalarProperty Name="SenderId" ColumnName="SenderId" />
+                <ScalarProperty Name="DateReceived" ColumnName="DateReceived" />
+                <ScalarProperty Name="LogType" ColumnName="LogType" />
+                <ScalarProperty Name="BuildErrorLogId" ColumnName="BuildErrorLogId" />
+                <ScalarProperty Name="ExecutionAction" ColumnName="ExecutionAction" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="InstitutionId" ColumnName="InstitutionId" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

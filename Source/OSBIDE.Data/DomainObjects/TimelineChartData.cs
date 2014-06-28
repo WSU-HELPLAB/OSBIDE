@@ -7,13 +7,18 @@ namespace OSBIDE.Data.DomainObjects
         public string Name { get; set; }
         public int Position { get; set; }
     }
+    public class State
+    {
+        public string Name { get; set; }
+        public int StartPoint { get; set; }
+        public int EndPoint { get; set; }
+        public decimal Opacity { get; set; }
+    }
     public class TimelineChartData
     {
-        public const int DEFAULT_TIMEOUT = 3;
-
         public string title { get; set; }
-        public List<Point> measures { get; set; }
-        public List<int> markers { get; set; }
+        public List<State> measures { get; set; }
+        public List<Point> markers { get; set; }
         public bool showTicks { get; set; }
     }
 }

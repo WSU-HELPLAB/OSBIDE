@@ -372,7 +372,6 @@
     <None Include="Properties\PublishProfiles\osbidestagingws - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy.pubxml" />
-    <Content Include="Scripts\Charts\bullet.json" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
     <Content Include="Scripts\Charts\bullet.js" />
     <Content Include="Scripts\Charts\d3.js" />

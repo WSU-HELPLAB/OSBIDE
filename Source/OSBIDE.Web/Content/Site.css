@@ -417,19 +417,8 @@ div[id^="ad-hoc-"].bootstrap-override {
     top: 7px;
     left: -5px;
 }
-/* d3 */
-.bullet {
-    font: 10px sans-serif;
-}
+/* d3 
 
-    .bullet .marker {
-        stroke: #000;
-        stroke-width: 2px;
-    }
-    .bullet .tick line {
-        stroke: #666;
-        stroke-width: .5px;
-    }
     .bullet .measure.idle {
         fill:#79BAEC;
     }
@@ -442,7 +431,132 @@ div[id^="ad-hoc-"].bootstrap-override {
     .bullet .measure.run {
         fill:#1569C7;
     }
-    .bullet .title {
+    .bullet .measure.nonidle {
+        fill:#112244;
+    }
+*/
+.bullet .measure{
+    fill:#369235;
+}
+
+.bullet {
+    font: 10px sans-serif;
+}
+
+    .bullet .marker {
+        stroke: #000;
+        stroke-width: 2px;
+    }
+    .bullet .tick line {
+        stroke: #666;
+        stroke-width: .5px;
+    }
+        .bullet .title {
         font-size: 14px;
         font-weight: bold;
     }
+
+
+   /*legend*/
+.legend{
+  display: inline-block;
+  font: 14px sans-serif;
+  text-align: center;
+  width: 40px;
+  height: 12px;
+}
+
+.idle.color_default{
+     background-color: #688181;
+     fill: #688181;
+ }
+
+.debug_unknown.color_default{
+     background-color: #E86731;
+     fill: #E86731;
+ }
+.debug_wrong.color_default{
+     background-color: #B31B1B;
+     fill: #B31B1B;
+ }
+
+.run_unknown.color_default{
+     background-color: #6F9749;
+     fill: #6F9749;
+ }
+.run_wrong.color_default{
+     background-color: #317250;
+     fill: #317250;
+ }
+.run_last_success.color_default{
+     background-color: #56B203;
+     fill: #56B203;
+ }
+
+.edit_syn_u_sem_u.color_default {
+     background-color:#79BAEC;
+     fill:#79BAEC;
+}
+.edit_syn_y_sem_u.color_default {
+     background-color:#56A5EC;
+     fill:#56A5EC;
+}
+.edit_syn_y_sem_n.color_default {
+     background-color:#357EC7;
+     fill:#357EC7;
+}
+.edit_syn_n_sem_u.color_default {
+     background-color:#1569C7;
+     fill:#1569C7;
+}
+.edit_syn_n_sem_n.color_default {
+     background-color:#0040B0;
+     fill:#0040B0;
+}
+
+.idle.color_grayscale{
+     background-color: #EEEEEE;
+     fill: #EEEEEE;
+ }
+.debug_unknown.color_grayscale{
+     background-color: #777777;
+     fill: #777777;
+ }
+.debug_wrong.color_grayscale{
+     background-color: #666666;
+     fill: #666666;
+ }
+
+.run_unknown.color_grayscale{
+     background-color: #444444;
+     fill: #444444;
+ }
+.run_wrong.color_grayscale{
+     background-color: #333333;
+     fill: #333333;
+ }
+.run_last_success.color_grayscale{
+     background-color: #222222;
+     fill: #222222;
+ }
+
+.edit_syn_u_sem_u.color_grayscale {
+     background-color:#DDDDDD;
+     fill:#DDDDDD;
+}
+.edit_syn_y_sem_u.color_grayscale {
+     background-color:#CCCCCC;
+     fill:#CCCCCC;
+}
+.edit_syn_y_sem_n.color_grayscale {
+     background-color:#BBBBBB;
+     fill:#BBBBBB;
+}
+.edit_syn_n_sem_u.color_grayscale {
+     background-color:#AAAAAA;
+     fill:#AAAAAA;
+}
+.edit_syn_n_sem_n.color_grayscale {
+     background-color:#999999;
+     fill:#999999;
+}
