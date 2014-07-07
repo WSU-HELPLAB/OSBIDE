@@ -1,15 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace OSBIDE.Data.DomainObjects
 {
+    public enum ErrorsConsidered
+    {
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4,
+        Five = 5,
+        All = 6,
+    }
     public enum TimeScale
     {
-        Minutes = 1,
+        Days = 1,
         Hours = 2,
-        Days = 3,
+        Minutes = 3,
+    }
+    public enum ProgrammingState
+    {
+        idle,
+        debug_sem_u,
+        debug_sem_n,
+        run_sem_u,
+        run_sem_n,
+        run_last_success,
+        edit_syn_u_sem_u,
+        edit_syn_y_sem_u,
+        edit_syn_y_sem_n,
+        edit_syn_n_sem_u,
+        edit_syn_n_sem_n,
     }
     public enum ProcedureType
     {

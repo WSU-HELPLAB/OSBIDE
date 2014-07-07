@@ -1,7 +1,10 @@
-﻿@using OSBIDE.Web.Models.Analytics
+﻿@model OSBIDE.Data.DomainObjects.VisualizationParams
+
+@using OSBIDE.Web.Models.Analytics
 @using OSBIDE.Data.DomainObjects
 
 @Styles.Render("~/Content/bootstrap.css")
+@Styles.Render("~/Content/jquery.datetimepicker.css")
 
 <section data-tab="Analytics" id="analytics" class="container-fluid">
     <div data-wzstep="@WizardSteps.DataVisualization" class="form-horizontal">
@@ -10,7 +13,7 @@
             </div>
             <div class="col-xs-10">
                 <div class="row">
-                    <div class="col-xs-8">
+                    <div class="col-xs-9">
                         <h2>Data Visualization</h2>
                     </div>
                     <div class="col-xs-2 wizard">
@@ -19,170 +22,54 @@
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label class="col-xs-2 control-label">Time Scale:</label>
-                    <div class="col-xs-2">
-                        <select name="ScaleSetting" id="ScaleSetting" class="form-control">
+                    <label class="col-xs-1 control-label">Time Scale:</label>
+                    <div class="col-xs-1">
+                        <select name="ScaleSetting" id="timescale-setting" class="form-control">
                             @foreach (var e in Enum<TimeScale>.Get())
                             {
                                 <option value="@e.Value">@e.Text</option>
                             }
                         </select>
                     </div>
+                    <div class="col-xs-2 bootstrap-timepicker">
+                        @Html.TextBoxFor(m => m.TimeFrom, new { id="timeFrom", Value = Model.TimeFrom.HasValue ? Model.TimeFrom.Value.ToString("yyyy/MM/dd hh:mm") : string.Empty, @class = "form-control", placeholder = "From" })
+                        <i class="icon-time"></i>
+                    </div>
+                    <div id="ad-hoc-date" class="col-xs-1 bootstrap-override">
+                        to
+                    </div>
+                    <div class="col-xs-2  bootstrap-timepicker">
+                        @Html.TextBoxFor(m => m.TimeTo, new { id = "timeTo", Value = Model.TimeTo.HasValue ? Model.TimeTo.Value.ToString("yyyy/MM/dd hh:mm") : string.Empty, @class = "form-control", placeholder = "To" })
+                        <i class="icon-time"></i>
+                    </div>
+                    <div class="col-xs-1"><a href="javascript:" class="btn btn-primary">redraw</a></div>
                     <label class="col-xs-2 control-label">Idle Timeout (min):</label>
-                    <span class="col-xs-2"><input class="form-control" type="text" id="timeout" name="Timeout" placeholder="5" /></span>
-                    <label class="col-xs-2 control-label">Grayscale:</label>
-                    <input type="checkbox" id="grayscale" />
+                    <div class="col-xs-1"><input class="form-control" type="text" id="timeout" name="Timeout" placeholder="3" /></div>
+                    <label class="col-xs-1 control-label">Grayscale:</label><input type="checkbox" id="grayscale" />
                 </div>
-                <div class="row">
-                    <div class="col-xs-1"></div>
-                    <div class="col-xs-6">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Social Event Legend</th>
-                                </tr>
-                            </thead>
-                            <tr>
-                                <td class="col-xs-3">QP: Question posted</td>
-                                <td class="col-xs-3">NP: Non-question posted</td>
-                            </tr>
-                            <tr>
-                                <td>QF: Follow-up to own question</td>
-                                <td>NF: Follow-up to own non-question</td>
-                            </tr>
-                            <tr>
-                                <td>RQ: Response to question received</td>
-                                <td>RN: Response to non-question receieved</td>
-                            </tr>
-                            <tr>
-                                <td>QR: Reply to other's question posted</td>
-                                <td>NR: Reply to other's non-question posted</td>
-                            </tr>
+                <div data-type="chart-area">
+                    <div class="row" id="chartBody">
+                        <table>
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
+                    @Html.Partial("~/Views/Analytics/DataVisualizationLegend.cshtml")
+                    @Html.Partial("~/Views/Analytics/DataVisualizationLegendDetails.cshtml")
                 </div>
-                <div class="row">
-                    <div class="col-xs-1"></div>
-                    <div class="col-xs-6">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">State Legend</th>
-                                </tr>
-                            </thead>
-                            <tr>
-                                <td colspan="2" class="col-xs-3"><div id="idle" class="legend color_default idle"></div> = Idle</td>
-                            </tr>
-                            <tr>
-                                <td><div id="edit_syn_u_sem_u" class="legend color_default edit_syn_u_sem_u"></div> = Editing: SynCorrect: ?; SemCorrect: ?</td>
-                                <td><div id="debug_unknown" class="legend color_default debug_unknown"></div> = Debugging: SemCorrect: ?</td>
-                            </tr>
-                            <tr>
-                                <td><div id="edit_syn_y_sem_u" class="legend color_default edit_syn_y_sem_u"></div> = Editing: SynCorrect: Y; SemCorrect: ?</td>
-                                <td><div id="debug_wrong" class="legend color_default debug_wrong"></div> = Debugging: SemCorrect: No</td>
-                            </tr>
-                            <tr>
-                                <td><div id="edit_syn_y_sem_n" class="legend color_default edit_syn_y_sem_n"></div> = Editing: SynCorrect: Y; SemCorrect: N</td>
-                                <td><div id="run_unknown" class="legend color_default run_unknown"></div> = Running: SemCorrect: ?</td>
-                            </tr>
-                            <tr>
-                                <td><div id="edit_syn_n_sem_u" class="legend color_default edit_syn_n_sem_u"></div> = Editing: SynCorrect: N; SemCorrect: ?</td>
-                                <td><div id="run_wrong" class="legend color_default run_wrong"></div> = Running: SemCorrect: No</td>
-                            </tr>
-                            <tr>
-                                <td><div id="edit_syn_n_sem_n" class="legend color_default edit_syn_n_sem_n"></div> = Editing: SynCorrect: N; SemCorrect: N</td>
-                                <td><div id="run_last_success" class="legend color_default run_last_success"></div> = Running: Last Successful Build</td>
-                            </tr>
-                        </table>
-                    </div>
+                <div data-type="spinner">
+                    <div class="col-xs-4"></div>
+                    <img src="@Url.Content("~/Content/icons/spinner.gif")" class="col-xs-1" />
                 </div>
             </div>
-        </div>
-        <div class="row" id="chartBody">
         </div>
     </div>
 </section>
 
 @section Scripts
 {
-
     <script type="text/javascript" src="~/Scripts/Charts/d3.js"></script>
     <script type="text/javascript" src="~/Scripts/Charts/bullet.js"></script>
-
-    <script type="text/javascript">
-
-        $(document).ready(function () {
-
-            DataVisualization.WireupEventHandlers();
-            Chart.Draw();
-        });
-
-        var DataVisualization = {
-
-            WireupEventHandlers: function () {
-
-                $("#ScaleSetting").change(function () {
-
-                    Chart.Draw();
-                })
-
-                $("#grayscale").change(function () {
-                    if ($(this).is(':checked')) {
-                        $(".color_default").switchClass("color_default", "color_grayscale");
-                    } else {
-                        $(".color_grayscale").switchClass("color_grayscale", "color_default");
-                    }
-                    Chart.Draw();
-                })
-            },
-        };
-
-        var Chart = (function () {
-
-            var margin = { top: 10, right: 40, bottom: 20, left: 120 },
-            width = $(window).width() - margin.left - margin.right,
-            height = 80 - margin.top - margin.bottom;
-
-            var chart = d3.bullet().width(width).height(height);
-
-            return {
-
-                Draw: function () {
-                    d3.json("@Url.Content("~/DataVisualization/GetData")" + "?timeScale=" + $("#ScaleSetting").val() + "&timeout=" + $("#timeout").val() + "&grayscale=" + $("#grayscale").is(':checked'), function (error, data) {
-                        d3.select("#chartBody").selectAll("svg").remove();
-
-                        var svg = d3.select("#chartBody").selectAll("svg")
-                            .data(data)
-                            .enter().append("svg")
-                            .attr("class", "bullet")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height)
-                            .append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                            .call(chart);
-
-                        var title = svg.append("g")
-                            .style("text-anchor", "end")
-                            .attr("transform", "translate(-6," + height / 2 + ")");
-
-                        title.append("text")
-                            .attr("class", "title")
-                            .text(function (d) { return d.title; });
-
-                        setTimeout(function () {
-                            $("svg").find("line.marker").each(function (index, value) {
-                                var el = document.createElementNS('http://www.w3.org/2000/svg', "text");
-                                el.setAttribute("x", parseFloat($(this).attr("x1")));
-                                el.setAttribute("y", parseFloat($(this).attr("y1")) - 1);
-                                el.textContent = $(this).attr("data-label");
-                                $(this).after(el);
-                            })
-                        }, 300);
-                    });
-                },
-            };
-
-        })();
-
-    </script>
+    <script type="text/javascript" src="~/Scripts/Charts/data-visualization.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.datetimepicker.js"></script>
 }

@@ -16,7 +16,7 @@ namespace OSBIDE.Data.SQLDatabase
         /// <param name="dateTo"></param>
         /// <param name="userIds"></param>
         /// <returns></returns>
-        public static List<BuildErrorEvent> Get(DateTime? dateFrom, DateTime? dateTo, IList<int> userIds, bool includeErrorFixInfo = false)
+        public static List<BuildErrorEvent> Get(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, bool includeErrorFixInfo = false)
         {
             using (var context = new OsbideProcs())
             {

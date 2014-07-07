@@ -381,13 +381,14 @@
         </ComplexType>
         <ComplexType Name="GetStateMachineEvents_Result">
           <Property Type="Int32" Name="SenderId" Nullable="false" />
-          <Property Type="DateTime" Name="DateReceived" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
           <Property Type="String" Name="LogType" Nullable="false" />
           <Property Type="Int32" Name="BuildErrorLogId" Nullable="true" />
           <Property Type="Int32" Name="ExecutionAction" Nullable="true" />
           <Property Type="String" Name="FirstName" Nullable="false" />
           <Property Type="String" Name="LastName" Nullable="false" />
           <Property Type="Int32" Name="InstitutionId" Nullable="false" />
+          <Property Type="String" Name="MarkerType" Nullable="true" MaxLength="2" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -704,13 +705,14 @@
             <ResultMapping>
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetStateMachineEvents_Result">
                 <ScalarProperty Name="SenderId" ColumnName="SenderId" />
-                <ScalarProperty Name="DateReceived" ColumnName="DateReceived" />
+                <ScalarProperty Name="EventDate" ColumnName="EventDate" />
                 <ScalarProperty Name="LogType" ColumnName="LogType" />
                 <ScalarProperty Name="BuildErrorLogId" ColumnName="BuildErrorLogId" />
                 <ScalarProperty Name="ExecutionAction" ColumnName="ExecutionAction" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="InstitutionId" ColumnName="InstitutionId" />
+                <ScalarProperty Name="MarkerType" ColumnName="MarkerType" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

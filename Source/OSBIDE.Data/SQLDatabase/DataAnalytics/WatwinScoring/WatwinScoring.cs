@@ -12,7 +12,7 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
         {
             var orderedEvents = sessionEvents.OrderBy(e => e.EventDate).ToArray();
             var score = 0m;
-            var previous_errors = new List<string>();
+            var previous_counted_errors = new List<string>();
 
             var sameErrorPenalty = wparams.SameErrorPenalty.HasValue ? wparams.SameErrorPenalty.Value : 4;
             var sameTypePenalty = wparams.SameTypePenalty.HasValue ? wparams.SameTypePenalty.Value : 4;
@@ -81,9 +81,13 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
 
                 if (currentEvent.ErrorTypes != null && currentEvent.ErrorTypes.Count > 0)
                 {
-                    currentEvent.ErrorMessages.ForEach(x =>
+
+                    var numConsidered = wparams.ErrorsConsidered == (int)ErrorsConsidered.All ? -1 : currentEvent.ErrorMessages.Count();
+                    var limit = System.Math.Min(numConsidered, currentEvent.ErrorMessages.Count());
+
+                    currentEvent.ErrorMessages.Take(limit).ToList().ForEach( x=> 
                                                         {
-                                                            if (previous_errors == null || previous_errors.Any(s => string.Compare(s, x, true) == 0))
+                                                            if (previous_counted_errors == null || previous_counted_errors.Any(s => string.Compare(s, x, true) == 0))
                                                             {
                                                                 var match = Regex.Match(x, errorTypePattern);
                                                                 var errorTypeName = match.Groups[1].Value.TrimEnd();
@@ -104,14 +108,13 @@ namespace OSBIDE.Data.SQLDatabase.DataAnalytics
 
                                                         });
 
-                    score += penalty;
-
+                    // the errors not counted this time should not be ignored in the next event
+                    previous_counted_errors = currentEvent.ErrorMessages.Take(limit).ToList();
                 }
-
-                previous_errors = currentEvent.ErrorMessages;
+                score += penalty;
             }
 
-            var max_score = slowSolvePenalty + medSolvePenalty + sameLinePenalty + sameErrorPenalty;
+            var max_score = slowSolvePenalty + sameLinePenalty + sameErrorPenalty + sameTypePenalty;
             return score > 0 ? decimal.Round(score / (max_score * ( orderedEvents.Length - 1 ) ), 2) : 0m;
         }
     }

@@ -1,4 +1,5 @@
 ﻿@model OSBIDE.Data.DomainObjects.WatwinScoringParams
+@using OSBIDE.Data.DomainObjects
 
 <div class="row form-group">
     <label class="col-xs-2 control-label">eline-range (error):</label>
@@ -68,5 +69,20 @@ result." />
         <img src="@Url.Content("~/Content/icons/tooltip.png")" data-type="icon" title="This penalty is applied when a student solves an error slower than 1 standard deviation above the average time" />
     </div>
 </div>
+<div class="row form-group">
+    <label class="col-xs-2 control-label">Errors Considered:</label>
+    <div class="col-xs-3">
+        <select name="ErrorsConsidered" class="form-control">
+            @foreach (var e in Enum<ErrorsConsidered>.Get())
+            {
+                <option value="@e.Value">@e.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-xs-1">
+        <img src="@Url.Content("~/Content/icons/tooltip.png")" data-type="icon" title="This decides how many errors are taken into consideration per build event" />
+    </div>
+</div>
+
 
 

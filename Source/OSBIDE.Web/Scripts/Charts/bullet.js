@@ -9,14 +9,17 @@
             markers = bulletMarkers,
             measures = bulletMeasures,
             width = 380,
-            height = 30,
-            tickFormat = null;
+            height = 50,
+            tickFormat = null,
+            timeScale = 20,
+            numTicks = 10,
+            tickScale = 1;
 
         // For each small multiple…
         function bullet(g) {
             g.each(function (d, i) {
 
-                if (d.showTicks) this.parentNode.height.baseVal.value += 30;
+                if (d.showTicks) this.parentNode.height.baseVal.value += 50;
 
                 var markerz = markers.call(this, d, i).slice(),
                     measurez = measures.call(this, d, i).slice(),
@@ -24,9 +27,16 @@
                     g = d3.select(this);
 
                 // Compute the new x-scale.
+
+                
                 var x1 = d3.scale.linear()
                                  .domain([0, measurezR[0].EndPoint])
-                                 .range([0, width]);
+                                 .range([0, measurezR[0].EndPoint * timeScale]);
+
+
+                var tickscale = d3.scale.linear()
+                                 .domain([0, measurezR[0].EndPoint / tickScale])
+                                 .range([0, measurezR[0].EndPoint * timeScale]);
 
                 // Retrieve the old x-scale, if this is an update.
                 var x0 = this.__chart__ || d3.scale.linear()
@@ -40,7 +50,9 @@
                 var px0 = wbulletStart(x0),
                     px1 = wbulletStart(x1),
                     ww0 = wbulletWidth(x0),
-                    ww1 = wbulletWidth(x1);
+                    ww1 = wbulletWidth(x1),
+                    tx0 = bulletText(x0),
+                    tx1 = bulletText(x1);
 
                 // Derive width-scales from the x-scales for markers.
                 var w0 = bulletWidth(x0),
@@ -49,10 +61,9 @@
                 // Update the measure rects.
                 var measure = g.selectAll("rect.measure")
                     .data(measurez);
-
-                measure.enter().append("rect")
-                    .attr("class", function (d, i) { return "measure " + measurez[i].Name; })
-                    .attr("opacity", function (d, i) { return measurez[i].Opacity > 0 ? measurez[i].Opacity : 1; })
+                var measureEnter = measure.enter().append("g");
+                measureEnter.append("rect")
+                    .attr("class", function (d, i) { return "measure " + measurez[i].CssClass; })
                     .attr("width", ww0)
                     .attr("height", height / 3)
                     .attr("x", px0)
@@ -60,6 +71,20 @@
                   .transition()
                     .attr("width", ww1)
                     .attr("x", px1);
+
+                // rect labels
+                if (tickScale <= 1) {
+                    measureEnter.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("x", tx0)
+                        .attr("y", height * 7 / 12)
+                        .text(function (d) {
+                            return d.Name;
+                        })
+                      .transition()
+                        .attr("width", ww1)
+                        .attr("x", tx1);
+                }
 
                 // Update the marker lines.
                 var marker = g.selectAll("line.marker")
@@ -72,9 +97,6 @@
                     .attr("x2", w0)
                     .attr("y1", height / 6)
                     .attr("y2", height * 5 / 6)
-                  .transition()
-                    .attr("x1", x1)
-                    .attr("x2", x1);
 
                 marker.transition()
                     .attr("x1", w1)
@@ -84,10 +106,10 @@
 
                 if (d.showTicks) {
                     // Compute the tick format.
-                    var format = tickFormat || x1.tickFormat(8);
+                    var format = tickFormat || tickscale.tickFormat(8);
                     // Update the tick groups.
                     var tick = g.selectAll("g.tick")
-                        .data(x1.ticks(8), function (d) {
+                        .data(tickscale.ticks(numTicks), function (d) {
                             return this.textContent || format(d);
                         });
 
@@ -107,14 +129,14 @@
                         .attr("y", height * 7 / 6)
                         .text(format);
 
-                    // Transition the entering ticks to the new scale, x1.
+                    // Transition the entering ticks to the new scale, tickscale.
                     tickEnter.transition()
-                        .attr("transform", bulletTranslate(x1))
+                        .attr("transform", bulletTranslate(tickscale))
                         .style("opacity", 1);
 
-                    // Transition the updating ticks to the new scale, x1.
+                    // Transition the updating ticks to the new scale, tickscale.
                     var tickUpdate = tick.transition()
-                        .attr("transform", bulletTranslate(x1))
+                        .attr("transform", bulletTranslate(tickscale))
                         .style("opacity", 1);
 
                     tickUpdate.select("line")
@@ -124,9 +146,9 @@
                     tickUpdate.select("text")
                         .attr("y", height * 7 / 6);
 
-                    // Transition the exiting ticks to the new scale, x1.
+                    // Transition the exiting ticks to the new scale, tickscale.
                     tick.exit().transition()
-                        .attr("transform", bulletTranslate(x1))
+                        .attr("transform", bulletTranslate(tickscale))
                         .style("opacity", 1e-6)
                         .remove();
                 }
@@ -168,6 +190,24 @@
             return bullet;
         };
 
+        bullet.timeScale = function (x) {
+            if (!arguments.length) return timeScale;
+            timeScale = x;
+            return bullet;
+        };
+
+        bullet.numTicks = function (x) {
+            if (!arguments.length) return numTicks;
+            numTicks = x;
+            return bullet;
+        };
+
+        bullet.tickScale = function (x) {
+            if (!arguments.length) return tickScale;
+            tickScale = x;
+            return bullet;
+        };
+
         return bullet;
     };
 
@@ -201,6 +241,18 @@
         var x0 = x(0);
         return function (d) {
             return Math.abs(x(d.Position) - x0);
+        };
+    }
+
+    function bulletText(x) {
+        return function (d) {
+
+            if (d.EndPoint - d.StartPoint > 100) {
+                return Math.abs(x(d.StartPoint) - x(0) + 100);
+            }
+            else {
+                return Math.abs(x(d.StartPoint + (d.EndPoint - d.StartPoint) / 3) - x(0));
+            }
         };
     }
 

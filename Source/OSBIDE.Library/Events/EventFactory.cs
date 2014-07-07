@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace OSBIDE.Library.Events
 {
-    public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging, StartWithoutDebugging };
+    public enum DebugActions { Undefined=-1, Start=0, StepOver=1, StepInto=2, StepOut=3, StopDebugging=4, StartWithoutDebugging=5 };
     public enum CutCopyPasteActions { Cut, Copy, Paste };
     public class EventFactory
     {

@@ -14,6 +14,7 @@ namespace OSBIDE.Data.DomainObjects
         public decimal? FastSolvePenalty { get; set; }
         public decimal? MedSolvePenalty { get; set; }
         public decimal? SlowSolvePenalty { get; set; }
+        public int ErrorsConsidered { get; set; }
 
     }
 }
