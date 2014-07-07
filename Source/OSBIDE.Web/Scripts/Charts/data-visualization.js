@@ -76,7 +76,7 @@ if (typeof (DataVisualization) == "undefined") {
             var legendHR = $("div[data-type='legend-hour-view']");
             var legendMIN = $("div[data-type='legend-minute-view']");
 
-            if (DataVisualization.Timescale == 3 && DataVisualization.TimeRangeInHours() > 48) {
+            if (DataVisualization.TimeScale() == 3) {
                 legendHR.hide();
                 legendMIN.show();
             }
