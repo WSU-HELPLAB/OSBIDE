@@ -245,6 +245,7 @@
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildErrorMessages].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorFixTimeStats].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilUsers].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />
@@ -254,6 +255,7 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetLookups].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetStateMachineEvents].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetWatwinScoringErrorTypeData].sql" />
   </ItemGroup>
   <ItemGroup>
