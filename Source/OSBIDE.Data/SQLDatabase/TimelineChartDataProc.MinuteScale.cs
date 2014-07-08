@@ -119,29 +119,38 @@ namespace OSBIDE.Data.SQLDatabase
                         var prevEventTime = prevState.StartTime;
                         prevStateName = prevState.ProgrammingState;
 
-                        if (prevStateName != ProgrammingState.idle && (currEventTime - prevEventTime).TotalMinutes > timeoutVal)
+                        if ((currEventTime - prevEventTime).TotalMinutes > timeoutVal)
                         {
-                            #region add a new idle state
-
-                            prevStateName = ProgrammingState.idle;
-                            var uiproperties = TimelineStateDictionaries.UIProperties[prevStateName];
-                            var idleState = new State
+                            if (prevStateName == ProgrammingState.idle)
                             {
-                                ProgrammingState = prevStateName,
-                                Name = uiproperties.Label,
-                                CssClass = grayscale ? uiproperties.CssGray : uiproperties.Css,
-                                StartTime = prevEventTime.AddMinutes(timeoutVal),
-                                StartPoint = (prevEventTime - timeFrom).TotalMinutes + timeoutVal,
-                                EndTime = currEventTime,
-                                EndPoint = currEventPoint,
-                            };
-                            userData.measures.Add(idleState);
+                                // extend the initial idle state to avoid the extra rectangle
+                                prevState.EndTime = currEventTime;
+                                prevState.EndPoint = currEventPoint;
+                            }
+                            else
+                            {
+                                #region add a new idle state
 
-                            // terminate previous non-idle state
-                            prevState.EndTime = idleState.StartTime;
-                            prevState.EndPoint = idleState.StartPoint;
+                                prevStateName = ProgrammingState.idle;
+                                var uiproperties = TimelineStateDictionaries.UIProperties[prevStateName];
+                                var idleState = new State
+                                {
+                                    ProgrammingState = prevStateName,
+                                    Name = uiproperties.Label,
+                                    CssClass = grayscale ? uiproperties.CssGray : uiproperties.Css,
+                                    StartTime = prevEventTime.AddMinutes(timeoutVal),
+                                    StartPoint = (prevEventTime - timeFrom).TotalMinutes + timeoutVal,
+                                    EndTime = currEventTime,
+                                    EndPoint = currEventPoint,
+                                };
+                                userData.measures.Add(idleState);
 
-                            #endregion
+                                // terminate previous non-idle state
+                                prevState.EndTime = idleState.StartTime;
+                                prevState.EndPoint = idleState.StartPoint;
+
+                                #endregion
+                            }
                         }
 
                         #endregion

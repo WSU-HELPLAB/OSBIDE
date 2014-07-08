@@ -3,7 +3,7 @@
 -- sproc [GetStateMachineEvents]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetStateMachineEvents]
+alter procedure [dbo].[GetStateMachineEvents]
 
 	 @dateFrom DateTime
 	,@dateTo DateTime
@@ -31,6 +31,9 @@ begin
 
 					  when sl.SenderId<>l.SenderId and sp.Comment like '%?%' then 'QR'
 					  when sl.SenderId<>l.SenderId and sp.Comment not like '%?%' then 'NR'
+
+					  when sl.SenderId=l.SenderId and sp.Comment like '%?%' then 'QF'
+					  when sl.SenderId=l.SenderId and sp.Comment not like '%?%' then 'NF'
 				 end
 	from @users u
 	inner join [dbo].[EventLogs] l on l.SenderId=u.UserId
@@ -42,10 +45,14 @@ begin
 	left join ([dbo].[FeedPostEvents] p
 				inner join [dbo].[EventLogs] ol on ol.Id=p.EventLogId
 				left join [dbo].[LogCommentEvents] oc on oc.EventLogId=ol.Id) on p.EventLogId=l.Id
-	-- subject user's comments
+	-- subject user's comments on posts
 	left join ([dbo].[LogCommentEvents] sc
 				inner join [dbo].[EventLogs] sl on sl.Id=sc.SourceEventLogId
 				inner join [dbo].[FeedPostEvents] sp on sp.EventLogId=sl.Id) on sc.EventLogId=l.Id
+	-- subject user's comments on ask for help
+	left join ([dbo].[LogCommentEvents] hc
+				inner join [dbo].[EventLogs] hl on hl.Id=hc.SourceEventLogId
+				inner join [dbo].[AskForHelpEvents] hp on hp.EventLogId=hl.Id) on hc.EventLogId=l.Id
 	where v.EventDate between @dateFrom and @dateTo
 		or @dateFrom<@minDate and v.EventDate<=@dateTo
 		or @dateTo<@minDate and v.EventDate>=@dateFrom

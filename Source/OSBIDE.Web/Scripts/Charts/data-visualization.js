@@ -54,12 +54,16 @@ if (typeof (DataVisualization) == "undefined") {
             var self = this;
 
             var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
+            var runElms = $("rect.run").next("text");
 
             if (self.GrayScaleElm().prop("checked") == true) {
                 chartElms.each(function (i, e) {
                     var newClass = $(this).attr(cls) + grayscale;
                     $(this).attr(cls, newClass);
                 })
+                runElms.each(function (i, e) {
+                    $(this).css("fill", "#fff");
+                });
                 self.LegendElm().addClass(grayscale);
             }
             else {
@@ -67,6 +71,9 @@ if (typeof (DataVisualization) == "undefined") {
                     var newClass = $(this).attr(cls).replace(grayscale, "");
                     $(this).attr(cls, newClass);
                 })
+                runElms.each(function (i, e) {
+                    $(this).css("fill", "#333");
+                });
                 self.LegendElm().removeClass(grayscale);
             }
         },
@@ -242,7 +249,7 @@ if (typeof (Chart) == "undefined") {
                     if ($tickNode.children().length > 0) $tickNode.children().remove();
                     $tickNode.append(DataVisualization.TickLabel);
 
-                    if (DataVisualization.TimeScale == 3) {
+                    if (DataVisualization.TimeScale() == 3) {
                         //only show social event labels in minute view
                         setTimeout(function () {
                             $("svg").find("line.marker").each(function (index, value) {
