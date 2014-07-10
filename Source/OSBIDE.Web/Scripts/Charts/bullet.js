@@ -10,7 +10,7 @@
             measures = bulletMeasures,
             width = 380,
             height = 50,
-            tickFormat = null,
+            tickFormat = d3.time.format("%m/%d/%y, %H:%M"),
             timeScale = 20,
             numTicks = 10,
             tickScale = 1;
@@ -33,10 +33,11 @@
                                  .domain([0, measurezR[0].EndPoint])
                                  .range([0, measurezR[0].EndPoint * timeScale]);
 
-
-                var tickscale = d3.scale.linear()
-                                 .domain([0, measurezR[0].EndPoint / tickScale])
+                var tickscale = d3.time.scale()
+                                 .domain([parseInt(measurez[0].StartTime.substring(6)), parseInt(measurezR[0].EndTime.substring(6))])
                                  .range([0, measurezR[0].EndPoint * timeScale]);
+
+
 
                 // Retrieve the old x-scale, if this is an update.
                 var x0 = this.__chart__ || d3.scale.linear()
@@ -68,9 +69,17 @@
                     .attr("height", height / 3)
                     .attr("x", px0)
                     .attr("y", height / 3)
+                    .attr("onmousemove", "showTooltip(evt)")
+                    .attr("onmouseout", "hideTooltip(evt)")
                   .transition()
                     .attr("width", ww1)
                     .attr("x", px1);
+
+                measureEnter.append("text")
+                 .attr("class", "tooltipT")
+                 .attr("visibility", "hidden")
+                 .text(function (d, i) { return measurez[i].TimeRange; });
+
 
                 // rect labels
                 if (tickScale <= 1) {
@@ -123,11 +132,28 @@
                         .attr("y1", height)
                         .attr("y2", height * 7 / 6);
 
+                    if (tickScale > 60) format = d3.time.format("%m/%d/%y");
+
                     tickEnter.append("text")
                         .attr("text-anchor", "middle")
                         .attr("dy", "1em")
                         .attr("y", height * 7 / 6)
                         .text(format);
+                        
+
+                    if (tickScale <= 1) {
+                        tickEnter.select("text")
+                        .attr("visibility", "hidden")
+                        .attr("onmouseout", "hideTooltipTK(evt)");
+
+                        tickEnter.append("text")
+                            .attr("text-anchor", "middle")
+                            .attr("dy", "1em")
+                            .attr("y", height * 7 / 6)
+                            .text(d3.time.format("%H:%M"))
+                            .attr("onmousemove", "showTooltipTK(evt)");
+                    }
+
 
                     // Transition the entering ticks to the new scale, tickscale.
                     tickEnter.transition()
@@ -246,13 +272,7 @@
 
     function bulletText(x) {
         return function (d) {
-
-            if (d.EndPoint - d.StartPoint > 100) {
-                return Math.abs(x(d.StartPoint) - x(0) + 100);
-            }
-            else {
-                return Math.abs(x(d.StartPoint + (d.EndPoint - d.StartPoint) / 3) - x(0));
-            }
+              return Math.abs(x(d.StartPoint) - x(0) + 6);
         };
     }
 

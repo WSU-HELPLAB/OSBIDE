@@ -104,7 +104,7 @@ namespace OSBIDE.Data.SQLDatabase
                     if (!string.IsNullOrWhiteSpace(r.MarkerType))
                     {
                         // yes, add social media event marker
-                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint });
+                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint, TickTime = currEventTime});
                     }
                     else
                     {

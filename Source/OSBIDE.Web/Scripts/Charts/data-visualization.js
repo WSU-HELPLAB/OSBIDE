@@ -54,7 +54,7 @@ if (typeof (DataVisualization) == "undefined") {
             var self = this;
 
             var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
-            var runElms = $("rect.run").next("text");
+            var runElms = $("rect.run, rect.debug, rect.edit").next("text");
 
             if (self.GrayScaleElm().prop("checked") == true) {
                 chartElms.each(function (i, e) {
@@ -151,6 +151,30 @@ if (typeof (DataVisualization) == "undefined") {
     };
 }
 
+function showTooltip(evt) {
+    var tooltip = evt.target.parentElement.getElementsByClassName('tooltipT')[0];
+    tooltip.setAttributeNS(null, "x", $("#chartBody").scrollLeft() + evt.clientX - 250);
+    tooltip.setAttributeNS(null, "y", 8);
+    tooltip.setAttributeNS(null, "visibility", "visible");
+}
+
+function hideTooltip(evt) {
+    var tooltip = evt.target.parentElement.getElementsByClassName('tooltipT')[0];
+    tooltip.setAttributeNS(null, "visibility", "hidden");
+}
+
+function showTooltipTK(evt) {
+    var tooltip = evt.target.previousElementSibling;
+    tooltip.setAttributeNS(null, "visibility", "visible");
+    evt.target.setAttributeNS(null, "visibility", "hidden");
+}
+
+function hideTooltipTK(evt) {
+    var tooltip = evt.target.nextElementSibling;
+    tooltip.setAttributeNS(null, "visibility", "visible");
+    evt.target.setAttributeNS(null, "visibility", "hidden");
+}
+
 if (typeof (Chart) == "undefined") {
     var Chart = (function () {
 
@@ -183,8 +207,16 @@ if (typeof (Chart) == "undefined") {
                     var t = data[0];
                     var len = t.measures[t.measures.length - 1].EndPoint;
                     var scale = 100;
-                    var numTicks = len / 10;
+                    var numTicks = len;
                     var tickScale = 1;
+
+                    if ($("#timeFrom").val().length == 0) {
+                        $("#timeFrom").val(t.measures[0].StartTimeDisplayText);
+                    }
+
+                    if ($("#timeTo").val().length == 0) {
+                        $("#timeTo").val(t.measures[t.measures.length - 1].EndTimeDisplayText);
+                    }
 
                     if (DataVisualization.TimeScale() == 1) {
                         // day view
@@ -201,7 +233,7 @@ if (typeof (Chart) == "undefined") {
 
                     // instantiate svg drawing instance
                     var width = $(window).width() * 2 / 3, height = 60;
-                    var margin = { top: 0, right: 40, bottom: 10, left: 0 },
+                    var margin = { top: 0, right: 100, bottom: 10, left: 0 },
                         width = width - margin.left - margin.right,
                         height = height - margin.top - margin.bottom;
                     var chart = d3.bullet().width(width).height(height).timeScale(scale).numTicks(numTicks).tickScale(tickScale);
@@ -231,10 +263,10 @@ if (typeof (Chart) == "undefined") {
                                     .enter()
                                     .append("svg")
                                     .attr("class", "bullet")
-                                    .attr("width", wid)
+                                    .attr("width", wid + 70)
                                     .attr("height", height)
                                     .append("g")
-                                .attr("transform", "translate(0, 0)")
+                                .attr("transform", "translate(30, 0)")
                                     .call(chart)
                             });
 
