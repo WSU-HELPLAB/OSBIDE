@@ -13,6 +13,7 @@ namespace OSBIDE.Data.DomainObjects
     {
         // the top 3 properties are used internally for calculating timeout idle state
         internal ProgrammingState ProgrammingState { get; set; }
+        internal DateTime ShiftedStartTime { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 

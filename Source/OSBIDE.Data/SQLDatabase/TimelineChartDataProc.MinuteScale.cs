@@ -55,7 +55,7 @@ namespace OSBIDE.Data.SQLDatabase
                         {
                             UserId = r.SenderId,
                             title = string.Format("{0} {1}", r.FirstName, r.LastName),
-                             markers = new List<Point>(),
+                            markers = new List<Point>(),
                             measures = new List<State>(),
                         };
 
@@ -71,6 +71,7 @@ namespace OSBIDE.Data.SQLDatabase
                                 Name = uiproperties.Label,
                                 CssClass = grayscale ? uiproperties.CssGray : uiproperties.Css,
                                 StartTime = timeFrom,
+                                ShiftedStartTime = timeFrom,
                                 StartPoint = 0,
                                 EndTime = currEventTime,
                                 EndPoint = currEventPoint,
@@ -88,6 +89,7 @@ namespace OSBIDE.Data.SQLDatabase
                                 Name = uiproperties.Label,
                                 CssClass = grayscale ? uiproperties.CssGray : uiproperties.Css,
                                 StartTime = timeFrom,
+                                ShiftedStartTime = timeFrom,
                                 StartPoint = 0,
                                 EndTime = timeTo,
                                 EndPoint = totalMinutes,
@@ -104,7 +106,7 @@ namespace OSBIDE.Data.SQLDatabase
                     if (!string.IsNullOrWhiteSpace(r.MarkerType))
                     {
                         // yes, add social media event marker
-                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint, TickTime = currEventTime});
+                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint, TickTime = currEventTime });
                     }
                     else
                     {
@@ -116,7 +118,7 @@ namespace OSBIDE.Data.SQLDatabase
                         #region insert an idle state if the timespan between this event and previous event is too long
 
                         var prevState = userData.measures.Last();
-                        var prevEventTime = prevState.StartTime;
+                        var prevEventTime = prevState.ShiftedStartTime;
                         prevStateName = prevState.ProgrammingState;
 
                         if ((currEventTime - prevEventTime).TotalMinutes > timeoutVal)
@@ -203,6 +205,7 @@ namespace OSBIDE.Data.SQLDatabase
                                 Name = uiproperties.Label,
                                 CssClass = grayscale ? uiproperties.CssGray : uiproperties.Css,
                                 StartTime = currEventTime,
+                                ShiftedStartTime = currEventTime,
                                 StartPoint = currEventPoint,
                                 EndTime = timeTo,
                                 EndPoint = totalMinutes,
@@ -213,7 +216,7 @@ namespace OSBIDE.Data.SQLDatabase
                         else
                         {
                             // update continous state start time so it won't timeout to idle state
-                            prevState.StartTime = currEventTime;
+                            prevState.ShiftedStartTime = currEventTime;
                         }
                     }
                 }
@@ -223,7 +226,7 @@ namespace OSBIDE.Data.SQLDatabase
                 chartData.ForEach(x =>
                 {
                     var lastMeasure = x.measures.Last();
-                    if (lastMeasure.EndTime == timeTo && totalMinutes - lastMeasure.StartPoint > timeoutVal)
+                    if (lastMeasure.EndTime == timeTo && (timeTo - lastMeasure.ShiftedStartTime).TotalMinutes > timeoutVal)
                     {
                         // prepare a new idle state for the end
                         var uiproperties = TimelineStateDictionaries.UIProperties[ProgrammingState.idle];

@@ -7,7 +7,7 @@
 if (typeof (DataVisualization) == "undefined") {
     var DataVisualization = {
 
-        Init: function(){
+        Init: function () {
 
             this.TimeFromElm().datetimepicker({ value: this.TimeFromElm().val() });
             this.TimeToElm().datetimepicker({ value: this.TimeToElm().val() });
@@ -17,7 +17,7 @@ if (typeof (DataVisualization) == "undefined") {
             this.SetChartVisibility(false);
         },
 
-        SetChartVisibility: function(isVisible) {
+        SetChartVisibility: function (isVisible) {
 
             if (isVisible) {
                 this.SpinnerElm().hide();
@@ -50,11 +50,11 @@ if (typeof (DataVisualization) == "undefined") {
             })
         },
 
-        UpdateColorScale: function(){
+        UpdateColorScale: function () {
             var self = this;
 
             var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
-            var runElms = $("rect.run, rect.debug, rect.edit").next("text");
+            var runElms = $("rect.run, rect.debug, rect.edit").next();
 
             if (self.GrayScaleElm().prop("checked") == true) {
                 chartElms.each(function (i, e) {
@@ -78,7 +78,7 @@ if (typeof (DataVisualization) == "undefined") {
             }
         },
 
-        UpdateLegend: function(){
+        UpdateLegend: function () {
 
             var legendHR = $("div[data-type='legend-hour-view']");
             var legendMIN = $("div[data-type='legend-minute-view']");
@@ -98,20 +98,20 @@ if (typeof (DataVisualization) == "undefined") {
             return $("#timescale-setting").val();
         },
 
-        TickLabel: function(){
+        TickLabel: function () {
             var lbl = DataVisualization.TimeScale() == 1 ? " (day)" : (DataVisualization.TimeScale() == 2 ? " (hour)" : " (min)");
             return "<span class='tick-label'>Time " + lbl + " <span class='arrow'><span class='line'></span><span class='point'></span></span></span>";
         },
 
-        ChartArea: function(){
+        ChartArea: function () {
             return $("div[data-type='chart-area']");
         },
 
-        GrayScaleElm: function(){
+        GrayScaleElm: function () {
             return $("#grayscale");
         },
 
-        LegendElm: function(){
+        LegendElm: function () {
             return $("div.legend");
         },
 
@@ -152,14 +152,14 @@ if (typeof (DataVisualization) == "undefined") {
 }
 
 function showTooltip(evt) {
-    var tooltip = evt.target.parentElement.getElementsByClassName('tooltipT')[0];
-    tooltip.setAttributeNS(null, "x", $("#chartBody").scrollLeft() + evt.clientX - 250);
+    var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
+    tooltip.setAttributeNS(null, "x", $("#chartBody").scrollLeft() + evt.pageX - $("#chartBody").offset().left - 100);
     tooltip.setAttributeNS(null, "y", 8);
     tooltip.setAttributeNS(null, "visibility", "visible");
 }
 
 function hideTooltip(evt) {
-    var tooltip = evt.target.parentElement.getElementsByClassName('tooltipT')[0];
+    var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
     tooltip.setAttributeNS(null, "visibility", "hidden");
 }
 
@@ -185,10 +185,10 @@ if (typeof (Chart) == "undefined") {
                 // update data from the server
                 var path = window.location.origin + window.location.pathname;
                 var query = "GetData?timeScale=" + $("#timescale-setting").val()
-                            + "&timeFrom=" +  $("#timeFrom").val()
+                            + "&timeFrom=" + $("#timeFrom").val()
                             + "&timeTo=" + $("#timeTo").val()
                             + "&timeout=" + $("#timeout").val()
-                            + "&grayscale=" + $("#grayscale").is(':checked');
+                            + "&grayscale=" + $("#grayscale").is(":checked");
 
                 d3.json(path + query, function (error, data) {
 
@@ -247,28 +247,28 @@ if (typeof (Chart) == "undefined") {
 
                     // add statistic names to each row
                     var tds = rows.each(function (r) {
-                                d3.select(this)
-                                    .selectAll("td")
-                             .data(function () { return [r.title, ""]; })
-                                    .enter()
-                                    .append("td")
-                                .text(function (d) { return d; });
-                            });
+                        d3.select(this)
+                            .selectAll("td")
+                     .data(function () { return [r.title, ""]; })
+                            .enter()
+                            .append("td")
+                        .text(function (d) { return d; });
+                    });
 
                     // add svg to the second td of each row
-                    var svgs = rows.each(function(r) {
-                                d3.select(this).select("td:last-child")
-                                    .selectAll("svg")
-                             .data(function () { return [r]; })
-                                    .enter()
-                                    .append("svg")
-                                    .attr("class", "bullet")
-                                    .attr("width", wid + 70)
-                                    .attr("height", height)
-                                    .append("g")
-                                .attr("transform", "translate(30, 0)")
-                                    .call(chart)
-                            });
+                    var svgs = rows.each(function (r) {
+                        d3.select(this).select("td:last-child")
+                            .selectAll("svg")
+                     .data(function () { return [r]; })
+                            .enter()
+                            .append("svg")
+                            .attr("class", "bullet")
+                            .attr("width", wid + 70)
+                            .attr("height", height)
+                            .append("g")
+                        .attr("transform", "translate(30, 0)")
+                            .call(chart)
+                    });
 
                     // add fixed column styles
                     rows.each(function (r) {
@@ -285,7 +285,7 @@ if (typeof (Chart) == "undefined") {
                         //only show social event labels in minute view
                         setTimeout(function () {
                             $("svg").find("line.marker").each(function (index, value) {
-                                var el = document.createElementNS('http://www.w3.org/2000/svg', "text");
+                                var el = document.createElementNS("http://www.w3.org/2000/svg", "text");
                                 el.setAttribute("x", parseFloat($(this).attr("x1")));
                                 el.setAttribute("y", parseFloat($(this).attr("y1")) - 1);
                                 el.textContent = $(this).attr("data-label");

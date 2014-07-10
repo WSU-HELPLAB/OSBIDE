@@ -10,7 +10,7 @@
             measures = bulletMeasures,
             width = 380,
             height = 50,
-            tickFormat = d3.time.format("%m/%d/%y, %H:%M"),
+            tickFormat = d3.time.format.utc("%m/%d/%y, %H:%M"),
             timeScale = 20,
             numTicks = 10,
             tickScale = 1;
@@ -75,12 +75,6 @@
                     .attr("width", ww1)
                     .attr("x", px1);
 
-                measureEnter.append("text")
-                 .attr("class", "tooltipT")
-                 .attr("visibility", "hidden")
-                 .text(function (d, i) { return measurez[i].TimeRange; });
-
-
                 // rect labels
                 if (tickScale <= 1) {
                     measureEnter.append("text")
@@ -94,6 +88,11 @@
                         .attr("width", ww1)
                         .attr("x", tx1);
                 }
+
+                measureEnter.append("text")
+                 .attr("class", "tooltipT")
+                 .attr("visibility", "hidden")
+                 .text(function (d, i) { return measurez[i].TimeRange; });
 
                 // Update the marker lines.
                 var marker = g.selectAll("line.marker")
@@ -132,7 +131,7 @@
                         .attr("y1", height)
                         .attr("y2", height * 7 / 6);
 
-                    if (tickScale > 60) format = d3.time.format("%m/%d/%y");
+                    if (tickScale > 60) format = d3.time.format.utc("%m/%d/%y");
 
                     tickEnter.append("text")
                         .attr("text-anchor", "middle")
@@ -150,7 +149,7 @@
                             .attr("text-anchor", "middle")
                             .attr("dy", "1em")
                             .attr("y", height * 7 / 6)
-                            .text(d3.time.format("%H:%M"))
+                            .text(d3.time.format.utc("%H:%M"))
                             .attr("onmousemove", "showTooltipTK(evt)");
                     }
 
