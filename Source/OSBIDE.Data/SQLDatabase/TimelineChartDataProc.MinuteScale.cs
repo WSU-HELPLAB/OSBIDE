@@ -31,6 +31,8 @@ namespace OSBIDE.Data.SQLDatabase
                 var chartData = new List<TimelineChartData>();
                 foreach (var r in rawR)
                 {
+                    //AC TODO: On solution name change, revert back to syn_u_sym_u (Reminder: ask Chris at next meeting)
+
                     // processing the flat events and compose a list of programming states for each user
                     // the composed list of programming states are ordered by the event time
                     // so the output is a collection of state timelines for the list of users
@@ -171,6 +173,7 @@ namespace OSBIDE.Data.SQLDatabase
                         else if (string.Compare(r.LogType, "DebugEvent", true) == 0 && r.ExecutionAction.HasValue)
                         {
                             // the key check should be removed once the state dictionaries cover all scenarios
+                            //TODO: Code Review 2014-07-14: Change ProgrammingState.idle to prevStateName?
                             nextStateName = r.ExecutionAction == (int)DebugActions.StartWithoutDebugging
                                             ? TimelineStateDictionaries.NextStateForStartWithoutDebugging[ProgrammingState.idle]
                                             : TimelineStateDictionaries.NextStateForDebug[ProgrammingState.idle];
