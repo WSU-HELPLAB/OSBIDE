@@ -41,7 +41,7 @@ namespace OSBIDE.Data.SQLDatabase
             {ProgrammingState.run_sem_u, ProgrammingState.edit_syn_n_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.edit_syn_n_sem_n},
             {ProgrammingState.run_last_success, ProgrammingState.edit_syn_n_sem_u},
-            {ProgrammingState.idle, ProgrammingState.edit_syn_y_sem_n}, //AC: should be edit_syn_n_sem_u?
+            {ProgrammingState.idle, ProgrammingState.edit_syn_n_sem_u},
         };
 
         public static Dictionary<ProgrammingState, ProgrammingState> NextStateForBuildWithoutError = new Dictionary<ProgrammingState, ProgrammingState>
@@ -57,7 +57,7 @@ namespace OSBIDE.Data.SQLDatabase
             {ProgrammingState.run_sem_u, ProgrammingState.run_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.run_sem_n},
             {ProgrammingState.run_last_success, ProgrammingState.run_last_success},
-            {ProgrammingState.idle, ProgrammingState.edit_syn_u_sem_u}, //AC should be edit_syn_y_sem_u?
+            {ProgrammingState.idle, ProgrammingState.edit_syn_y_sem_u},
         };
 
         public static Dictionary<ProgrammingState, ProgrammingState> NextStateForStartWithoutDebugging = new Dictionary<ProgrammingState, ProgrammingState>
@@ -73,7 +73,7 @@ namespace OSBIDE.Data.SQLDatabase
             {ProgrammingState.run_sem_u, ProgrammingState.run_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.run_sem_n},
             {ProgrammingState.run_last_success, ProgrammingState.run_last_success},
-            {ProgrammingState.idle, ProgrammingState.run_sem_u}, //AC: Wouldn't we have to check last build to determine sem_u or sem_n?
+            {ProgrammingState.idle, ProgrammingState.edit_syn_u_sem_u},
         };
 
         public static Dictionary<ProgrammingState, ProgrammingState> NextStateForDebug = new Dictionary<ProgrammingState, ProgrammingState>
@@ -89,7 +89,7 @@ namespace OSBIDE.Data.SQLDatabase
             {ProgrammingState.run_sem_u, ProgrammingState.debug_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.debug_sem_n},
             {ProgrammingState.run_last_success, ProgrammingState.debug_sem_u},
-            {ProgrammingState.idle, ProgrammingState.debug_sem_u}, //AC: Check last build to determine sem_u or sem_n?
+            {ProgrammingState.idle, ProgrammingState.edit_syn_y_sem_u},
         };
 
         public static Dictionary<ProgrammingState, ProgrammingState> NextStateForEditorEvent = new Dictionary<ProgrammingState, ProgrammingState>
@@ -105,7 +105,15 @@ namespace OSBIDE.Data.SQLDatabase
             {ProgrammingState.run_sem_u, ProgrammingState.edit_syn_y_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.edit_syn_y_sem_n},
             {ProgrammingState.run_last_success, ProgrammingState.edit_syn_y_sem_u},
-            {ProgrammingState.idle, ProgrammingState.edit_syn_u_sem_u}, //AC: check last state for idle
+            {ProgrammingState.idle, ProgrammingState.edit_syn_u_sem_u},
+        };
+
+        public static Dictionary<ProgrammingState, ProgrammingState> NextStateForExceptionEvent = new Dictionary<ProgrammingState, ProgrammingState>
+        {
+            // {current state, next state}
+            {ProgrammingState.debug_sem_n, ProgrammingState.debug_sem_n},
+            {ProgrammingState.debug_sem_u, ProgrammingState.debug_sem_n},
+            {ProgrammingState.idle, ProgrammingState.debug_sem_n},
         };
 
         public static List<string> EditorEvents = new List<string>

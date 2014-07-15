@@ -19,7 +19,7 @@ begin
 	declare @users table(UserId int)
 	insert into @users select UserId=cast(items as int) from dbo.Split(@studentIds, ',')
 
-	select distinct l.SenderId, v.EventDate, l.LogType, BuildErrorLogId=be.LogId,d.ExecutionAction, eu.FirstName, eu.LastName, eu.InstitutionId
+	select distinct l.SenderId, v.EventDate, v.SolutionName, l.LogType, BuildErrorLogId=be.LogId,d.ExecutionAction, eu.FirstName, eu.LastName, eu.InstitutionId
 	, MarkerType=case when l.LogType='AskForHelpEvent' or p.Comment like '%?%' then 'QP'
 					  when p.Comment not like '%?%' then 'NP'
 

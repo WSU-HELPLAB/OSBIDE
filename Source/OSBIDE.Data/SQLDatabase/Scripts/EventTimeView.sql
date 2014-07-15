@@ -3,27 +3,38 @@
 -- The view includes all event types with original EventDate and event time at minute level (EventTimeMin)
 -------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
-create view [dbo].[EventTimeView] as
+alter view [dbo].[EventTimeView] as
 
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[AskForHelpEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[AskForHelpEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[BuildEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[BuildEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[CutCopyPasteEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[CutCopyPasteEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[DebugEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[DebugEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[EditorActivityEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[EditorActivityEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[ExceptionEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[ExceptionEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[FeedPostEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[FeedPostEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[HelpfulMarkGivenEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[HelpfulMarkGivenEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[LogCommentEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[LogCommentEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[SaveEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[SaveEvents]
 	union all
-	select EventLogId, EventDate, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120) from [dbo].[SubmitEvents]
+	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
+	from [dbo].[SubmitEvents]
 

@@ -10,7 +10,7 @@
             measures = bulletMeasures,
             width = 380,
             height = 50,
-            tickFormat = d3.time.format.utc("%m/%d/%y, %H:%M"),
+            tickFormat = d3.time.format("%m/%d/%y, %H:%M"),
             timeScale = 20,
             numTicks = 10,
             tickScale = 1;
@@ -69,8 +69,8 @@
                     .attr("height", height / 3)
                     .attr("x", px0)
                     .attr("y", height / 3)
-                    .attr("onmousemove", "showTooltip(evt)")
-                    .attr("onmouseout", "hideTooltip(evt)")
+                    .attr("onmousemove", "Chart.showTooltip(evt)")
+                    .attr("onmouseout", "Chart.hideTooltip(evt)")
                   .transition()
                     .attr("width", ww1)
                     .attr("x", px1);
@@ -78,7 +78,7 @@
                 // rect labels
                 if (tickScale <= 1) {
                     measureEnter.append("text")
-                        .attr("text-anchor", "middle")
+                        .attr("class", "rect-label")
                         .attr("x", tx0)
                         .attr("y", height * 7 / 12)
                         .text(function (d) {
@@ -92,7 +92,7 @@
                 measureEnter.append("text")
                  .attr("class", "tooltipT")
                  .attr("visibility", "hidden")
-                 .text(function (d, i) { return measurez[i].TimeRange; });
+                 .text(function (d, i) { return measurez[i].TimeRangeDisplayText; });
 
                 // Update the marker lines.
                 var marker = g.selectAll("line.marker")
@@ -131,7 +131,7 @@
                         .attr("y1", height)
                         .attr("y2", height * 7 / 6);
 
-                    if (tickScale > 60) format = d3.time.format.utc("%m/%d/%y");
+                    if (tickScale > 60) format = d3.time.format("%m/%d/%y");
 
                     tickEnter.append("text")
                         .attr("text-anchor", "middle")
@@ -143,14 +143,14 @@
                     if (tickScale <= 1) {
                         tickEnter.select("text")
                         .attr("visibility", "hidden")
-                        .attr("onmouseout", "hideTooltipTK(evt)");
+                        .attr("onmouseout", "Chart.hideTooltipTK(evt)");
 
                         tickEnter.append("text")
                             .attr("text-anchor", "middle")
                             .attr("dy", "1em")
                             .attr("y", height * 7 / 6)
-                            .text(d3.time.format.utc("%H:%M"))
-                            .attr("onmousemove", "showTooltipTK(evt)");
+                            .text(d3.time.format("%H:%M"))
+                            .attr("onmousemove", "Chart.showTooltipTK(evt)");
                     }
 
 

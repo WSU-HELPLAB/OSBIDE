@@ -382,6 +382,7 @@
         <ComplexType Name="GetStateMachineEvents_Result">
           <Property Type="Int32" Name="SenderId" Nullable="false" />
           <Property Type="DateTime" Name="EventDate" Nullable="false" Precision="23" />
+          <Property Type="String" Name="SolutionName" Nullable="true" />
           <Property Type="String" Name="LogType" Nullable="false" />
           <Property Type="Int32" Name="BuildErrorLogId" Nullable="true" />
           <Property Type="Int32" Name="ExecutionAction" Nullable="true" />
@@ -706,6 +707,7 @@
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetStateMachineEvents_Result">
                 <ScalarProperty Name="SenderId" ColumnName="SenderId" />
                 <ScalarProperty Name="EventDate" ColumnName="EventDate" />
+                <ScalarProperty Name="SolutionName" ColumnName="SolutionName" />
                 <ScalarProperty Name="LogType" ColumnName="LogType" />
                 <ScalarProperty Name="BuildErrorLogId" ColumnName="BuildErrorLogId" />
                 <ScalarProperty Name="ExecutionAction" ColumnName="ExecutionAction" />

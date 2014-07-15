@@ -489,7 +489,7 @@ div[data-wzstep="DataVisualization"] .form-group a.btn {
     }
 
 #chartBody {
-    margin-left: 16.666666666666664%;
+    margin-left: 8.333333333333332%;
     overflow-y: visible;
     overflow-x: auto;
 }
@@ -506,7 +506,7 @@ div[data-wzstep="DataVisualization"] .form-group a.btn {
 #chartBody table td.headcol {
     position: absolute;
     left: 0;
-    width: 16.666666666666664%;
+    width: 8.333333333333332%;
     text-align: right;
     margin-top: 1em;
     font-weight: bold;

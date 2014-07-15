@@ -15,6 +15,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     {
         public int SenderId { get; set; }
         public System.DateTime EventDate { get; set; }
+        public string SolutionName { get; set; }
         public string LogType { get; set; }
         public Nullable<int> BuildErrorLogId { get; set; }
         public Nullable<int> ExecutionAction { get; set; }

@@ -54,7 +54,7 @@ if (typeof (DataVisualization) == "undefined") {
             var self = this;
 
             var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
-            var runElms = $("rect.run, rect.debug, rect.edit").next();
+            var runElms = $("rect.run, rect.debug, rect.edit").siblings(".rect-label");
 
             if (self.GrayScaleElm().prop("checked") == true) {
                 chartElms.each(function (i, e) {
@@ -151,34 +151,34 @@ if (typeof (DataVisualization) == "undefined") {
     };
 }
 
-function showTooltip(evt) {
-    var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
-    tooltip.setAttributeNS(null, "x", $("#chartBody").scrollLeft() + evt.pageX - $("#chartBody").offset().left - 100);
-    tooltip.setAttributeNS(null, "y", 8);
-    tooltip.setAttributeNS(null, "visibility", "visible");
-}
-
-function hideTooltip(evt) {
-    var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
-    tooltip.setAttributeNS(null, "visibility", "hidden");
-}
-
-function showTooltipTK(evt) {
-    var tooltip = evt.target.previousElementSibling;
-    tooltip.setAttributeNS(null, "visibility", "visible");
-    evt.target.setAttributeNS(null, "visibility", "hidden");
-}
-
-function hideTooltipTK(evt) {
-    var tooltip = evt.target.nextElementSibling;
-    tooltip.setAttributeNS(null, "visibility", "visible");
-    evt.target.setAttributeNS(null, "visibility", "hidden");
-}
-
 if (typeof (Chart) == "undefined") {
     var Chart = (function () {
 
         return {
+
+            showTooltip: function (evt) {
+                var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
+                tooltip.setAttributeNS(null, "x", $("#chartBody").scrollLeft() + evt.pageX - $("#chartBody").offset().left - 100);
+                tooltip.setAttributeNS(null, "y", 8);
+                tooltip.setAttributeNS(null, "visibility", "visible");
+            },
+
+            hideTooltip: function (evt) {
+                var tooltip = evt.target.parentElement.getElementsByClassName("tooltipT")[0];
+                tooltip.setAttributeNS(null, "visibility", "hidden");
+            },
+
+            showTooltipTK: function (evt) {
+                var tooltip = evt.target.previousElementSibling;
+                tooltip.setAttributeNS(null, "visibility", "visible");
+                evt.target.setAttributeNS(null, "visibility", "hidden");
+            },
+
+            hideTooltipTK: function (evt) {
+                var tooltip = evt.target.nextElementSibling;
+                tooltip.setAttributeNS(null, "visibility", "visible");
+                evt.target.setAttributeNS(null, "visibility", "hidden");
+            },
 
             Draw: function () {
 
@@ -223,7 +223,8 @@ if (typeof (Chart) == "undefined") {
                         scale = 500 / (60 * 24);
                         numTicks = len / (60 * 24);
                         tickScale = 24 * 60;
-                    } else if (DataVisualization.TimeScale() == 2) {
+                    }
+                    else if (DataVisualization.TimeScale() == 2) {
                         // hour view
                         scale = 500 / 60;
                         numTicks = len / 60;
@@ -249,7 +250,7 @@ if (typeof (Chart) == "undefined") {
                     var tds = rows.each(function (r) {
                         d3.select(this)
                             .selectAll("td")
-                     .data(function () { return [r.title, ""]; })
+                     .data(function () { return [r.UserId, ""]; })
                             .enter()
                             .append("td")
                         .text(function (d) { return d; });
@@ -272,7 +273,7 @@ if (typeof (Chart) == "undefined") {
 
                     // add fixed column styles
                     rows.each(function (r) {
-                        d3.select(this).select("td:first-child").attr("class", "headcol");
+                        d3.select(this).select("td:first-child").attr("class", "headcol").attr("title", r.title);
                         d3.select(this).select("td:last-child").attr("class", "col-xs-12");
                     });
 
