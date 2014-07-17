@@ -188,9 +188,7 @@ namespace OSBIDE.Data.SQLDatabase
                         }
                         else if (string.Compare(r.LogType, "DebugEvent", true) == 0 && r.ExecutionAction.HasValue)
                         {
-                            nextStateName = r.ExecutionAction == (int)DebugActions.StartWithoutDebugging
-                                            ? TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName]
-                                            : TimelineStateDictionaries.NextStateForDebug[prevStateName];
+                            nextStateName = GetNextStateForDebugEvent(userData, prevStateName, r.ExecutionAction.Value);
                         }
                         else if (string.Compare(r.LogType, "ExceptionEvent", true) == 0 && (prevStateName == ProgrammingState.debug_sem_u || prevStateName == ProgrammingState.idle))
                         {
@@ -280,6 +278,43 @@ namespace OSBIDE.Data.SQLDatabase
 
                 return chartData;
             }
+        }
+
+        private static ProgrammingState GetNextStateForDebugEvent(TimelineChartData userData, ProgrammingState prevStateName, int executionAction)
+        {
+            var nextStateName = prevStateName;
+
+            if (executionAction == (int)DebugActions.StopDebugging)
+            {
+                // set the next state for stop debugging event
+                // based on the editing state before current debugging state
+                if (userData.measures.LastOrDefault(x => x.ProgrammingState == ProgrammingState.edit_syn_y_sem_n) != null)
+                {
+                    nextStateName = ProgrammingState.edit_syn_y_sem_n;
+                }
+                else
+                {
+                    nextStateName = ProgrammingState.edit_syn_y_sem_u;
+                }
+            }
+            else if (executionAction == (int)DebugActions.StartWithoutDebugging)
+            {
+                nextStateName = TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName];
+            }
+            else
+            {
+                // the rest of the exectution actions including start, stepOver, stepInto, ans stepOut
+                var lastState = userData.measures.Last();
+                if (lastState.ProgrammingState == ProgrammingState.debug_sem_n)
+                {
+                    // should not have semantic error if the debugging state can continue
+                    lastState.ProgrammingState = ProgrammingState.debug_sem_u;
+                }
+
+                nextStateName = TimelineStateDictionaries.NextStateForDebug[prevStateName];
+            }
+
+            return nextStateName;
         }
     }
 }

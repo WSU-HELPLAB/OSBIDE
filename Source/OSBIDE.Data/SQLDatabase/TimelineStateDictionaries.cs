@@ -80,11 +80,11 @@ namespace OSBIDE.Data.SQLDatabase
         {
             // {current state, next state}
             {ProgrammingState.edit_syn_u_sem_u, ProgrammingState.debug_sem_u},
-            {ProgrammingState.edit_syn_n_sem_n, ProgrammingState.debug_sem_n},
-            {ProgrammingState.edit_syn_n_sem_u, ProgrammingState.debug_sem_u},
+            {ProgrammingState.edit_syn_n_sem_n, ProgrammingState.debug_sem_n}, // should not happen, the syntax has to be correct in debugging mode
+            {ProgrammingState.edit_syn_n_sem_u, ProgrammingState.debug_sem_u}, // should not happen
             {ProgrammingState.edit_syn_y_sem_n, ProgrammingState.debug_sem_n},
             {ProgrammingState.edit_syn_y_sem_u, ProgrammingState.debug_sem_u},
-            {ProgrammingState.debug_sem_n, ProgrammingState.debug_sem_n},
+            {ProgrammingState.debug_sem_n, ProgrammingState.debug_sem_u}, // no semantic error if the debugging state can continue 
             {ProgrammingState.debug_sem_u, ProgrammingState.debug_sem_u},
             {ProgrammingState.run_sem_u, ProgrammingState.debug_sem_u},
             {ProgrammingState.run_sem_n, ProgrammingState.debug_sem_n},
@@ -113,12 +113,15 @@ namespace OSBIDE.Data.SQLDatabase
             // {current state, next state}
             {ProgrammingState.debug_sem_n, ProgrammingState.debug_sem_n},
             {ProgrammingState.debug_sem_u, ProgrammingState.debug_sem_n},
+            {ProgrammingState.run_sem_u, ProgrammingState.run_sem_n},
+            {ProgrammingState.run_sem_n, ProgrammingState.run_sem_n},
+            {ProgrammingState.run_last_success, ProgrammingState.run_sem_n},
             {ProgrammingState.idle, ProgrammingState.debug_sem_n},
         };
 
         public static List<string> EditorEvents = new List<string>
         {
-            "CutCopyPasteEvent","EditorActivityEvent","ExceptionEvent","SaveEvent","SubmitEvent"
+            "CutCopyPasteEvent","EditorActivityEvent","SaveEvent","SubmitEvent"
         };
     }
 }
