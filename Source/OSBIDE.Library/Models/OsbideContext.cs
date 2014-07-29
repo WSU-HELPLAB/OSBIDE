@@ -62,6 +62,7 @@ namespace OSBIDE.Library.Models
         public DbSet<FeedPostEvent> FeedPostEvents { get; set; }
         public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
         public DbSet<HelpfulMarkGivenEvent> HelpfulMarkGivenEvents { get; set; }
+        public DbSet<Syllable> Syllables { get; set; }
 
         public OsbideContext()
             : base()
