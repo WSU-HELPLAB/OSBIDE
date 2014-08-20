@@ -159,7 +159,7 @@ namespace OSBIDE.Data.NoSQLStorage
         {
             try
             {
-                var configKey = ConfigurationManager.AppSettings["CloudTable"].Split('|');
+                var configKey = ConfigurationManager.AppSettings["StorageConnectionString"].Split('|');
                 var accountName = configKey[0];
                 var accountKey = configKey[1];
                 var creds = new StorageCredentials(accountName, accountKey);

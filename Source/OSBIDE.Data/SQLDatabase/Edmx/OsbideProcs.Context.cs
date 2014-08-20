@@ -27,8 +27,11 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<FeedPostHashtags> FeedPostHashtags { get; set; }
+        public virtual DbSet<FeedPostUserTags> FeedPostUserTags { get; set; }
+        public virtual DbSet<HashTags> HashTags { get; set; }
     
-        public virtual ObjectResult<GetEventLogs_Result> GetActivityFeeds(Nullable<System.DateTime> dateReceivedMin, Nullable<System.DateTime> dateReceivedMax, string eventLogIds, string eventTypes, Nullable<int> courseId, Nullable<int> roleId, string senderIds, Nullable<int> minLogId, Nullable<int> maxLogId, Nullable<int> offsetN, Nullable<int> topN)
+        public virtual ObjectResult<GetEventLogs_Result> GetActivityFeeds(Nullable<System.DateTime> dateReceivedMin, Nullable<System.DateTime> dateReceivedMax, string eventLogIds, string eventTypes, Nullable<int> courseId, Nullable<int> roleId, string commentFilter, string senderIds, Nullable<int> minLogId, Nullable<int> maxLogId, Nullable<int> offsetN, Nullable<int> topN)
         {
             var dateReceivedMinParameter = dateReceivedMin.HasValue ?
                 new ObjectParameter("DateReceivedMin", dateReceivedMin) :
@@ -54,6 +57,10 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("RoleId", roleId) :
                 new ObjectParameter("RoleId", typeof(int));
     
+            var commentFilterParameter = commentFilter != null ?
+                new ObjectParameter("CommentFilter", commentFilter) :
+                new ObjectParameter("CommentFilter", typeof(string));
+    
             var senderIdsParameter = senderIds != null ?
                 new ObjectParameter("SenderIds", senderIds) :
                 new ObjectParameter("SenderIds", typeof(string));
@@ -74,7 +81,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("TopN", topN) :
                 new ObjectParameter("TopN", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetEventLogs_Result>("GetActivityFeeds", dateReceivedMinParameter, dateReceivedMaxParameter, eventLogIdsParameter, eventTypesParameter, courseIdParameter, roleIdParameter, senderIdsParameter, minLogIdParameter, maxLogIdParameter, offsetNParameter, topNParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetEventLogs_Result>("GetActivityFeeds", dateReceivedMinParameter, dateReceivedMaxParameter, eventLogIdsParameter, eventTypesParameter, courseIdParameter, roleIdParameter, commentFilterParameter, senderIdsParameter, minLogIdParameter, maxLogIdParameter, offsetNParameter, topNParameter);
         }
     
         public virtual ObjectResult<GetRecentCompileErrors_Result> GetRecentCompileErrors(Nullable<int> senderId, Nullable<System.DateTime> timeframe)
@@ -258,6 +265,102 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("studentIds", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStateMachineEvents_Result>("GetStateMachineEvents", dateFromParameter, dateToParameter, studentIdsParameter);
+        }
+    
+        public virtual int InsertPostTags(Nullable<int> postId, string usertags, string hashtags)
+        {
+            var postIdParameter = postId.HasValue ?
+                new ObjectParameter("postId", postId) :
+                new ObjectParameter("postId", typeof(int));
+    
+            var usertagsParameter = usertags != null ?
+                new ObjectParameter("usertags", usertags) :
+                new ObjectParameter("usertags", typeof(string));
+    
+            var hashtagsParameter = hashtags != null ?
+                new ObjectParameter("hashtags", hashtags) :
+                new ObjectParameter("hashtags", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InsertPostTags", postIdParameter, usertagsParameter, hashtagsParameter);
+        }
+    
+        public virtual ObjectResult<GetPassiveSocialEvents_Result> GetPassiveSocialEvents(Nullable<int> skip, Nullable<int> take)
+        {
+            var skipParameter = skip.HasValue ?
+                new ObjectParameter("skip", skip) :
+                new ObjectParameter("skip", typeof(int));
+    
+            var takeParameter = take.HasValue ?
+                new ObjectParameter("take", take) :
+                new ObjectParameter("take", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPassiveSocialEvents_Result>("GetPassiveSocialEvents", skipParameter, takeParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> GetActionRequestsCount()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("GetActionRequestsCount");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> GetPassiveSocialEventsCount()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("GetPassiveSocialEventsCount");
+        }
+    
+        public virtual ObjectResult<GetHashtags_Result> GetHashtags(string tag, Nullable<bool> ishandle)
+        {
+            var tagParameter = tag != null ?
+                new ObjectParameter("tag", tag) :
+                new ObjectParameter("tag", typeof(string));
+    
+            var ishandleParameter = ishandle.HasValue ?
+                new ObjectParameter("ishandle", ishandle) :
+                new ObjectParameter("ishandle", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetHashtags_Result>("GetHashtags", tagParameter, ishandleParameter);
+        }
+    
+        public virtual ObjectResult<GetTrends_Result> GetTrends(Nullable<int> num)
+        {
+            var numParameter = num.HasValue ?
+                new ObjectParameter("num", num) :
+                new ObjectParameter("num", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTrends_Result>("GetTrends", numParameter);
+        }
+    
+        public virtual ObjectResult<GetNotifications_Result> GetNotifications(Nullable<int> user, Nullable<int> num, Nullable<bool> getAll)
+        {
+            var userParameter = user.HasValue ?
+                new ObjectParameter("user", user) :
+                new ObjectParameter("user", typeof(int));
+    
+            var numParameter = num.HasValue ?
+                new ObjectParameter("num", num) :
+                new ObjectParameter("num", typeof(int));
+    
+            var getAllParameter = getAll.HasValue ?
+                new ObjectParameter("getAll", getAll) :
+                new ObjectParameter("getAll", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetNotifications_Result>("GetNotifications", userParameter, numParameter, getAllParameter);
+        }
+    
+        public virtual int MarkRead(Nullable<int> postId, Nullable<int> user, Nullable<bool> read)
+        {
+            var postIdParameter = postId.HasValue ?
+                new ObjectParameter("PostId", postId) :
+                new ObjectParameter("PostId", typeof(int));
+    
+            var userParameter = user.HasValue ?
+                new ObjectParameter("User", user) :
+                new ObjectParameter("User", typeof(int));
+    
+            var readParameter = read.HasValue ?
+                new ObjectParameter("Read", read) :
+                new ObjectParameter("Read", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("MarkRead", postIdParameter, userParameter, readParameter);
         }
     }
 }

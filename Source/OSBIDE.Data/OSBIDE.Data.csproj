@@ -63,6 +63,8 @@
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
     <Compile Include="DomainObjects\AgeLookup.cs" />
+    <Compile Include="DomainObjects\Hashtag.cs" />
+    <Compile Include="DomainObjects\Notification.cs" />
     <Compile Include="DomainObjects\TimelineChartData.cs" />
     <Compile Include="DomainObjects\Comment.cs" />
     <Compile Include="DomainObjects\ConstantsAndEnums.cs">
@@ -87,10 +89,31 @@
     <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoring.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoringAnalytics.cs" />
+    <Compile Include="SQLDatabase\Edmx\FeedPostHashtags.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\FeedPostUserTags.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetBuildErrorMessages_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetHashtags_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetNotifications_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetPassiveSocialEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetStateMachineEvents_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetTrends_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\HashTags.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\ErrorFixTimeStatsProc.cs" />
@@ -201,6 +224,10 @@
     <Compile Include="SQLDatabase\ExcelToSQL.cs" />
     <Compile Include="SQLDatabase\ExcelImport.cs" />
     <Compile Include="SQLDatabase\BuildEventSessionDataProc.cs" />
+    <Compile Include="SQLDatabase\GetHashtagsProc.cs" />
+    <Compile Include="SQLDatabase\MarkReadProc.cs" />
+    <Compile Include="SQLDatabase\PassiveSocialEventUtilProc.cs" />
+    <Compile Include="SQLDatabase\SQLTemplatePassiveSocialEvents.cs" />
     <Compile Include="SQLDatabase\SQLTemplateGrades.cs" />
     <Compile Include="SQLDatabase\ProcedureDataProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
@@ -236,12 +263,16 @@
   <ItemGroup>
     <Content Include="SQLDatabase\Scripts\AddColumnsToBuildDocumentsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateErrorFixTimeStatsTable.sql" />
+    <Content Include="SQLDatabase\Scripts\CreateHashtagTables.sql" />
+    <Content Include="SQLDatabase\Scripts\CreatePassiveSocialEventTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />
     <Content Include="SQLDatabase\Scripts\Dummy.sql" />
     <Content Include="SQLDatabase\Scripts\EventTimeView.sql" />
     <Content Include="SQLDatabase\Scripts\EventView.sql" />
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
+    <Content Include="SQLDatabase\Scripts\ParsePassiveSocialEvents.sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetActionReqestsCount].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildErrorMessages].sql" />
@@ -251,11 +282,18 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientDocumentData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientErrorTypeData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientSessionData].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetHashtags].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetLookups].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetNotifications].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEventsCount].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEvents].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetStateMachineEvents].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetTrends].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetWatwinScoringErrorTypeData].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[InsertPostTags].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[MarkRead].sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DiffPlex\DiffPlex.csproj">

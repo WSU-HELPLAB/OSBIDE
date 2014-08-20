@@ -7,6 +7,18 @@ namespace OSBIDE.Data.DomainObjects
     {
         public string Name { get; set; }
         public double Position { get; set; }
+
+        public DateTime EventTime { get; set; }
+
+        public string EventTimeDisplayText
+        {
+            get
+            {
+                // for datatime picker to init the popup calendar values, local time
+                return string.Format("{0}/{1}/{2} {3}:{4}",
+                    EventTime.Year, EventTime.Month, EventTime.Day, EventTime.Hour, EventTime.Minute);
+            }
+        }
     }
     public class State
     {
@@ -34,7 +46,7 @@ namespace OSBIDE.Data.DomainObjects
             }
         }
         // for rectangle state duration message, utc matches d3 format
-        public string TimeRangeDisplayText { get { return string.Format("{0} - {1}", StartTime.ToString("g"), EndTime.ToString("g")); } }
+        public string TimeRangeDisplayText { get { return string.Format("{0} - {1}", StartTime.ToUniversalTime().ToString("g"), EndTime.ToUniversalTime().ToString("g")); } }
         // plotting and displaying properties
         public string Name { get; set; }
         public DateTime StartTime { get; set; }

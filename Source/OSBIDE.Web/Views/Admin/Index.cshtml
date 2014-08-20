@@ -100,32 +100,39 @@
 @*"self-contained" doc utils*@
 <section data-type="doc-utils">
 
-    <div class="row form-group">
+    <div class="row">
         <span class="col-xs-2"></span>
-        <div class="col-xs-2">
-            <button class="col-xs-8" id="doc-util">Run Doc Utils</button>
+        <div class="col-xs-8">
+            <a class="row" href="@Url.Content("~/Analytics/RunDocUtils")">Run Doc Util</a>
+            @*<a class="row" href="@Url.Content("~/DataVisualization/ProcessAzureTableStorage")">Process Azure Table Storage</a>*@
+            @*<a class="row" href="@Url.Content("~/DataVisualization/ProcessSQLTableStorage")">Process SQL Server Table Storage</a>*@
+            <div class="row">
+                <span class="col-xs-1"></span><img data-type="spinner" src="@Url.Content("~/Content/icons/spinner.gif")" width="50" height="50" />
+            </div>
         </div>
-        <img data-type="spinner" src="@Url.Content("~/Content/icons/spinner.gif")" class="col-xs-1" />
     </div>
 
     <script type="text/javascript">
 
-        $(document).ready(function () {
+    $(document).ready(function () {
 
-            $("img[data-type='spinner']").hide();
+        $("img[data-type='spinner']").hide();
 
-            $("#doc-util").click(function () {
+        $("section[data-type='doc-utils'] a").click(function (e) {
 
-                $(this).prop("disabled", true);
-                $("img[data-type='spinner']").show();
+            e.stopPropagation();
+            e.preventDefault();
 
-                $.getJSON("@Url.Content("~/Analytics/RunDocUtils")", function () {
+            $("section[data-type='doc-utils'] a").addClass("disabled").prop("disabled", true);
+            $("img[data-type='spinner']").show();
 
-                    $("#doc-util").prop("disabled", false);
-                    $("img[data-type='spinner']").hide();
-                });
-            })
-        });
+            $.getJSON($(this).attr("href"), function () {
+
+                $("section[data-type='doc-utils'] a").removeClass("disabled").prop("disabled", false);
+                $("img[data-type='spinner']").hide();
+            });
+        })
+    });
 
     </script>
 

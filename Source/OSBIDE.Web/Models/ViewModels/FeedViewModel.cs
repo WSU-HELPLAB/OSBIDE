@@ -23,6 +23,7 @@ namespace OSBIDE.Web.Models.ViewModels
         public int SelectedCourseId { get; set; }
         public List<string> RecentUserErrors { get; set; }
         public List<UserBuildErrorsByType> RecentClassErrors { get; set; }
+        public string Keyword { get; set; }
 
         public FeedViewModel()
         {

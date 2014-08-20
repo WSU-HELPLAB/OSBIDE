@@ -408,6 +408,10 @@
     <Content Include="Scripts\Osbide.Default.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Typeahead\jquery.overlay.js" />
+    <Content Include="Scripts\Typeahead\jquery.textcomplete.js" />
+    <Content Include="Scripts\Typeahead\osbide-posts.js" />
+    <Content Include="Scripts\Typeahead\typeahead-0.10.4.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Services\OsbideWebService.svc" />
     <Content Include="Web.config">

@@ -19,6 +19,7 @@ namespace OSBIDE.Web.Models.Queries
         {
             StartDate = new DateTime(2010, 1, 1);
             EndDate = DateTime.Today.AddDays(3);
+            CommentFilter = string.Empty;
             MinLogId = -1;
             MaxLogId = -1;
             MaxQuerySize = 20;
@@ -67,6 +68,11 @@ namespace OSBIDE.Web.Models.Queries
         /// courses.
         /// </summary>
         public Course CourseFilter { private get; set; }
+
+        /// <summary>
+        /// Comment search token entered by the user
+        /// </summary>
+        public string CommentFilter { private get; set; }
 
         /// <summary>
         /// returns a lits of all social events in OSBLE
@@ -179,6 +185,7 @@ namespace OSBIDE.Web.Models.Queries
                                     , _eventSelectors.Select(e => e.EventName)
                                     , CourseFilter != null && CourseFilter.Id > 0 ? CourseFilter.Id : 0
                                     , (int)CourseRoleFilter
+                                    , CommentFilter
                                     , SubscriptionSubjects.Select(s => s.Id).ToList()
                                     , MinLogId
                                     , MaxLogId

@@ -3,7 +3,7 @@
 -- The view includes all event types with original EventDate and event time at minute level (EventTimeMin)
 -------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
-alter view [dbo].[EventTimeView] as
+create view [dbo].[EventTimeView] as
 
 	select EventLogId, EventDate, SolutionName, EventTimeMin=convert(varchar(25), dateadd(minute, datediff(minute, 0, EventDate), 0), 120)
 	from [dbo].[AskForHelpEvents]

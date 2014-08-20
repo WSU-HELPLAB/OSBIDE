@@ -1,4 +1,5 @@
-﻿using OSBIDE.Library;
+﻿using OSBIDE.Data.SQLDatabase.Edmx;
+using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models;
@@ -198,7 +199,7 @@ namespace OSBIDE.Web.Services
                         sorted.Add(c.Name, c);
                     }
                 }
-                foreach(KeyValuePair<string, Course> kvp in sorted)
+                foreach (KeyValuePair<string, Course> kvp in sorted)
                 {
                     courses.Add(new Course(kvp.Value));
                 }
@@ -223,7 +224,7 @@ namespace OSBIDE.Web.Services
                     .Where(a => a.CourseId == courseId)
                     .Where(a => a.IsDeleted == false)
                     .OrderBy(a => a.Name).ToList();
-                foreach(Assignment assignment in efAssignments)
+                foreach (Assignment assignment in efAssignments)
                 {
                     assignments.Add(new Assignment(assignment));
                 }
@@ -365,6 +366,9 @@ namespace OSBIDE.Web.Services
             {
                 return null;
             }
+
+            var hashtags = string.Empty;
+            var usertags = string.Empty;
             if (log.LogType == AskForHelpEvent.Name)
             {
                 Db.AskForHelpEvents.Add((AskForHelpEvent)evt);
@@ -472,6 +476,8 @@ namespace OSBIDE.Web.Services
             }
             else if (log.LogType == FeedPostEvent.Name)
             {
+                hashtags = string.Join(",", ParseHashtags(((FeedPostEvent)evt).Comment));
+                usertags = string.Join(",", ParseUserTags(((FeedPostEvent)evt).Comment));
                 Db.FeedPostEvents.Add((FeedPostEvent)evt);
             }
             else if (log.LogType == HelpfulMarkGivenEvent.Name)
@@ -493,6 +499,11 @@ namespace OSBIDE.Web.Services
             try
             {
                 Db.SaveChanges();
+                if(hashtags.Length >= 0 || usertags.Length >= 0 )
+                using (var context = new OsbideProcs())
+                {
+                    context.InsertPostTags(log.Id, usertags, hashtags);
+                }
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
@@ -511,6 +522,20 @@ namespace OSBIDE.Web.Services
                 return null;
             }
             return log;
+        }
+
+        private List<string> ParseHashtags(string content)
+        {
+            string HashRegex = "#[A-Za-z][A-Za-z0-9]+";
+            MatchCollection matchList = Regex.Matches(content, HashRegex);
+            return matchList.Cast<Match>().Select(match => match.Value.Substring(1)).ToList();
+        }
+
+        private List<string> ParseUserTags(string content)
+        {
+            string HashRegex = "@[A-Za-z]+";
+            MatchCollection matchList = Regex.Matches(content, HashRegex);
+            return matchList.Cast<Match>().Select(match => match.Value.Substring(1)).ToList();
         }
 
         [OperationContract]
@@ -543,7 +568,7 @@ namespace OSBIDE.Web.Services
             //other: send only "ask for help" events
             if (authUser.Role != SystemRole.Student)
             {
-                if(log.LogType != AskForHelpEvent.Name)
+                if (log.LogType != AskForHelpEvent.Name)
                 {
                     return localId;
                 }

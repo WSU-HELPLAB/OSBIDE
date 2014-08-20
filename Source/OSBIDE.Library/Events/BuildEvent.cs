@@ -116,7 +116,7 @@ namespace OSBIDE.Library.Events
             }
             set
             {
-                _criticalErrorNames = value;
+                _criticalErrorNames = value.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
             }
         }
 
@@ -136,7 +136,7 @@ namespace OSBIDE.Library.Events
                 }
                 return items;
             }
-        } 
+        }
 
         public List<CodeDocument> GetSolutionFiles(Solution solution)
         {

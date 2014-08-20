@@ -1,6 +1,7 @@
 ﻿a {
     text-decoration: none;
     color: #0082D9;
+    cursor: pointer;
 }
 
 body {
@@ -40,18 +41,31 @@ header {
         list-style: none;
     }
 
-h1 {
-    font-size: 16px;
+section[data-tab] h1 {
     color: #007ACC;
+    font-size: 16px;
+    margin: 0;
 }
 
-h2 {
-    font-size: 14px;
+article h2 {
     color: #4099D4;
+    font-size: 100%;
+    margin: 0;
+}
+div[data-wzstep] h2 {
+    color: #4099D4;
+    font-size: 2em;
+    margin-bottom: .5em;
 }
 
-input[type="checkbox"] {
+section[data-tab] input[type="checkbox"] {
     vertical-align: middle;
+    margin: 0;
+}
+
+section[data-tab] label {
+    margin: 0;
+    font-weight: normal;
 }
 
 #add-feed-comment {
@@ -319,7 +333,7 @@ table.form-entry th {
     }
 
 section {
-    margin-top: 1.2em;
+    margin: 10px;
 }
 
 .context-section {
@@ -438,6 +452,10 @@ div[data-wzstep="DataVisualization"] .form-group input[type="checkbox"] {
     margin-top: 10px;
 }
 
+div[data-wzstep="DataVisualization"]  a[data-wzstep="Procedure"] {
+    margin-top: -.5em;
+}
+
 div[data-wzstep="DataVisualization"] .form-group a.btn {
     background-color: #efefef;
     color: #1a3750;
@@ -494,8 +512,13 @@ div[data-wzstep="DataVisualization"] .form-group a.btn {
     overflow-x: auto;
 }
 
+#chartBody > a {
+    padding-left: 35px;
+}
+
 #chartBody table {
     border: none;
+    margin-top: 15px;
 }
 
 #chartBody table td {
@@ -606,4 +629,71 @@ div[data-type="chart-area"] th {
     background-color: #999;
     fill: #999;
     color:#fff;
+}
+
+section[data-type='doc-utils'] a.disabled:hover {
+    cursor: default;
+    text-decoration: none;
+    border-bottom: none;
+    color: #0082D9;
+}
+
+/* typeahead */
+.typeahead {
+    display: block;
+    width: 98%;
+    overflow: visible;
+}
+
+textarea.typeahead {
+    height: 50px;
+}
+
+input[type="text"].typeahead {
+    width: 295px;
+}
+
+.twitter-typeahead{
+    width: 75%;
+}
+
+.tt-dropdown-menu{
+    width: 100%;
+    padding: 8px 0 2px 5px;
+    background-color: #f8f8ff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+            border-radius: 8px;
+    -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+            box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+/* trends and notifications */
+.activity-feed-dashboard {
+    margin: 5em 1em 1em 2em;
+}
+.trends-container, .notifications-container {
+    border: solid 1px #a9a9a9;
+    padding: 1em 2em 1em 2em;
+    border-radius: 1em;
+    margin-bottom: 1em;
+}
+
+.trends-container h3, .notifications-container h3 {
+    color: #66757f;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 22px;
+    margin: 0;
+}
+
+.trends-container ul, .notifications-container ul {
+    margin-top: 1em;
+}
+.trends-container li, .notifications-container li {
+    line-height: 1em;
+    padding-bottom: .5em;
 }

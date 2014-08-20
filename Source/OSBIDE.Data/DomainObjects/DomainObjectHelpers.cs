@@ -4,12 +4,14 @@ using System.Globalization;
 using System.Linq;
 
 using OSBIDE.Data.NoSQLStorage;
+using System.Text.RegularExpressions;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Data.DomainObjects
 {
     public static class DomainObjectHelpers
     {
-        public static void LogAccountRequest(ActionRequestLog log)
+        public static void LogActionRequest(ActionRequestLog log)
         {
             using (var storage = new ActionRequestLogStorage())
             {
@@ -35,25 +37,24 @@ namespace OSBIDE.Data.DomainObjects
             }
         }
 
-        public static void LogAccountRequest(IEnumerable<ActionRequestLog> logs)
+        public static IEnumerable<PassiveSocialEvent> GetPassiveSocialActivities(int schoolId)
         {
             using (var storage = new ActionRequestLogStorage())
             {
-                storage.Insert(logs.Select(log => new ActionRequestLogEntry
-                {
-                    PartitionKey = log.SchoolId.ToString(CultureInfo.InvariantCulture),
-                    RowKey = string.Format("{0}_{1}", log.CreatorId.ToString(CultureInfo.InstalledUICulture), log.CreatorId.ToString(CultureInfo.InvariantCulture)),
-                    ControllerName = log.ControllerName,
-                    ActionParameters = log.ActionParameters,
-                    ActionName = log.ActionName,
-                    AccessDate = log.AccessDate,
-                    IpAddress = log.IpAddress,
-                    CreatorId=log.CreatorId,
-                }));
+                var logIdOffset = ("singleLogId=").Length;
+                var storeResults = storage.Select(schoolId.ToString(CultureInfo.InstalledUICulture)).ToList();
+                return storeResults
+                       .Where(log => Regex.IsMatch(log.ActionParameters, @"^(?i)singleLogId=[1-9][0-9]*\|\|\|$"))
+                       .Select(log => new PassiveSocialEvent
+                       {
+                           EventLogId = Convert.ToInt32(log.ActionParameters.Substring(logIdOffset, log.ActionParameters.Length - logIdOffset - 3)),
+                           UserId = Convert.ToInt32(log.RowKey.Split('_')[0]),
+                           EventDate = log.AccessDate,
+                       });
             }
         }
 
-        public static IEnumerable<ActionRequestLog> GetAccountRequest(int schoolId, int studentId)
+        public static IEnumerable<ActionRequestLog> GetActionRequests(int schoolId, int studentId)
         {
             using (var storage = new ActionRequestLogStorage())
             {

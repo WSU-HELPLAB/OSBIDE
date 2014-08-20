@@ -19,6 +19,18 @@ begin
 	declare @users table(UserId int)
 	insert into @users select UserId=cast(items as int) from dbo.Split(@studentIds, ',')
 
+	select SenderId=e.UserId, EventDate=e.AccessDate,
+	SolutionName=null, LogType='PassiveSocialEvent', BuildErrorLogId=null,ExecutionAction='',
+	u.FirstName, u.LastName, u.InstitutionId, MarkerType=e.EventCode
+	from @users uu
+	inner join [dbo].[PassiveSocialEvents] e on e.UserId=uu.UserId
+	inner join [dbo].[OsbideUsers] u on u.Id=e.UserId
+	where e.AccessDate between @dateFrom and @dateTo
+		or @dateFrom<@minDate and e.AccessDate<=@dateTo
+		or @dateTo<@minDate and e.AccessDate>=@dateFrom
+		or @dateFrom<@minDate and @dateTo<@minDate
+
+	union all
 	select distinct l.SenderId, v.EventDate, v.SolutionName, l.LogType, BuildErrorLogId=be.LogId,d.ExecutionAction, eu.FirstName, eu.LastName, eu.InstitutionId
 	, MarkerType=case when l.LogType='AskForHelpEvent' or p.Comment like '%?%' then 'QP'
 					  when p.Comment not like '%?%' then 'NP'

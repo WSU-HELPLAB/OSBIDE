@@ -1,5 +1,4 @@
 ﻿$(document).ready(function () {
-
     DataVisualization.Init();
     Chart.Draw();
 });
@@ -15,139 +14,148 @@ if (typeof (DataVisualization) == "undefined") {
             this.SpinnerElm().height($(window).height() * .5).css("margin-top", $(window).height() * .25);
             this.WireupEventHandlers();
             this.SetChartVisibility(false);
+
+            $("#timescale-setting").val($("#timescale-setting").children(":selected").val());
         },
 
-        SetChartVisibility: function (isVisible) {
+    SetChartVisibility: function (isVisible) {
 
-            if (isVisible) {
-                this.SpinnerElm().hide();
-                this.ChartArea().fadeIn();
+        if (isVisible) {
+            this.SpinnerElm().hide();
+            this.ChartArea().fadeIn();
 
-                // hack
-                $("h2").css("display", "inline-block")
-                       .next().remove().end()
-                       .after("<span> Activity Timeline " + $("#timescale-setting option:selected").text().slice(0, -1) + " View</span>")
-            }
-            else {
-                this.ChartArea().hide();
-                this.SpinnerElm().show();
-            }
-        },
+            // hack
+            $("h2").css("display", "inline-block")
+                   .next().remove().end()
+                   .after("<span> Activity Timeline " + $("#timescale-setting option:selected").text().slice(0, -1) + " View</span>")
+        }
+        else {
+            this.ChartArea().hide();
+            this.SpinnerElm().show();
+        }
+    },
 
-        WireupEventHandlers: function () {
-            var self = this;
-            $("#grayscale").change(function () {
-                self.UpdateColorScale();
+    WireupEventHandlers: function () {
+        var self = this;
+
+        $("#grayscale").change(function () {
+            self.UpdateColorScale();
+        });
+
+        $("#download").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            $(this).closest("form").submit();
+        });
+
+        // redraw chart
+        $("div[data-wzstep='DataVisualization'] .form-group a.btn").click(function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            self.SetChartVisibility(false);
+            Chart.Draw();
+        })
+    },
+
+    UpdateColorScale: function () {
+        var self = this;
+
+        var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
+        var runElms = $("rect.run, rect.debug, rect.edit").siblings(".rect-label");
+
+        if (self.GrayScaleElm().prop("checked") == true) {
+            chartElms.each(function (i, e) {
+                var newClass = $(this).attr(cls) + grayscale;
+                $(this).attr(cls, newClass);
             })
-
-            // redraw chart
-            $("div[data-wzstep='DataVisualization'] .form-group a.btn").click(function (e) {
-                e.stopPropagation();
-                e.preventDefault();
-
-                self.SetChartVisibility(false);
-                Chart.Draw();
+            runElms.each(function (i, e) {
+                $(this).css("fill", "#fff");
+            });
+            self.LegendElm().addClass(grayscale);
+        }
+        else {
+            chartElms.each(function (i, e) {
+                var newClass = $(this).attr(cls).replace(grayscale, "");
+                $(this).attr(cls, newClass);
             })
-        },
+            runElms.each(function (i, e) {
+                $(this).css("fill", "#333");
+            });
+            self.LegendElm().removeClass(grayscale);
+        }
+    },
 
-        UpdateColorScale: function () {
-            var self = this;
+    UpdateLegend: function () {
 
-            var chartElms = $("rect"), grayscale = " grayscale", cls = "class";
-            var runElms = $("rect.run, rect.debug, rect.edit").siblings(".rect-label");
+        var legendHR = $("div[data-type='legend-hour-view']");
+        var legendMIN = $("div[data-type='legend-minute-view']");
 
-            if (self.GrayScaleElm().prop("checked") == true) {
-                chartElms.each(function (i, e) {
-                    var newClass = $(this).attr(cls) + grayscale;
-                    $(this).attr(cls, newClass);
-                })
-                runElms.each(function (i, e) {
-                    $(this).css("fill", "#fff");
-                });
-                self.LegendElm().addClass(grayscale);
-            }
-            else {
-                chartElms.each(function (i, e) {
-                    var newClass = $(this).attr(cls).replace(grayscale, "");
-                    $(this).attr(cls, newClass);
-                })
-                runElms.each(function (i, e) {
-                    $(this).css("fill", "#333");
-                });
-                self.LegendElm().removeClass(grayscale);
-            }
-        },
+        if (DataVisualization.TimeScale() == 3) {
+            legendHR.hide();
+            legendMIN.show();
+        }
+        else {
+            legendHR.show();
+            legendMIN.hide();
+        }
+    },
 
-        UpdateLegend: function () {
+    TimeScale: function () {
 
-            var legendHR = $("div[data-type='legend-hour-view']");
-            var legendMIN = $("div[data-type='legend-minute-view']");
+        return $("#timescale-setting").val();
+    },
 
-            if (DataVisualization.TimeScale() == 3) {
-                legendHR.hide();
-                legendMIN.show();
-            }
-            else {
-                legendHR.show();
-                legendMIN.hide();
-            }
-        },
+    TickLabel: function () {
+        var lbl = DataVisualization.TimeScale() == 1 ? " (day)" : (DataVisualization.TimeScale() == 2 ? " (hour)" : " (min)");
+        return "<span class='tick-label'>Time " + lbl + " <span class='arrow'><span class='line'></span><span class='point'></span></span></span>";
+    },
 
-        TimeScale: function () {
+    ChartArea: function () {
+        return $("div[data-type='chart-area']");
+    },
 
-            return $("#timescale-setting").val();
-        },
+    GrayScaleElm: function () {
+        return $("#grayscale");
+    },
 
-        TickLabel: function () {
-            var lbl = DataVisualization.TimeScale() == 1 ? " (day)" : (DataVisualization.TimeScale() == 2 ? " (hour)" : " (min)");
-            return "<span class='tick-label'>Time " + lbl + " <span class='arrow'><span class='line'></span><span class='point'></span></span></span>";
-        },
+    LegendElm: function () {
+        return $("div.legend");
+    },
 
-        ChartArea: function () {
-            return $("div[data-type='chart-area']");
-        },
+    SpinnerElm: function () {
 
-        GrayScaleElm: function () {
-            return $("#grayscale");
-        },
+        return $("div[data-type='spinner']");
+    },
 
-        LegendElm: function () {
-            return $("div.legend");
-        },
+    TimeFromElm: function () {
 
-        SpinnerElm: function () {
+        return $("#timeFrom");
+    },
 
-            return $("div[data-type='spinner']");
-        },
+    TimeToElm: function () {
 
-        TimeFromElm: function () {
+        return $("#timeTo");
+    },
 
-            return $("#timeFrom");
-        },
+    TimeVal: function (timeElm) {
 
-        TimeToElm: function () {
+        var t = timeElm.val();
+        if (t.length > 0) {
+            return new Date(t);
+        }
 
-            return $("#timeTo");
-        },
+        return new Date();
+    },
 
-        TimeVal: function (timeElm) {
+    TimeString: function (time) {
+        var str = time.toString("yyyy-MM-dd HH:mm");
+        return str.substring(0, str.lastIndexOf(":"));
+    },
 
-            var t = timeElm.val();
-            if (t.length > 0) {
-                return new Date(t);
-            }
-
-            return new Date();
-        },
-
-        TimeString: function (time) {
-            var str = time.toString("yyyy-MM-dd HH:mm");
-            return str.substring(0, str.lastIndexOf(":"));
-        },
-
-        TimeRangeInHours: function () {
-            return parseInt((this.TimeVal(this.TimeFromElm()).getTime() - this.TimeVal(this.TimeToElm()).getTime()) / (3600 * 1000));
-        },
+    TimeRangeInHours: function () {
+        return parseInt((this.TimeVal(this.TimeFromElm()).getTime() - this.TimeVal(this.TimeToElm()).getTime()) / (3600 * 1000));
+    },
     };
 }
 

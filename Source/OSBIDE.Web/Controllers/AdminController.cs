@@ -47,7 +47,7 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //pull request logs from azure storage
-                var requestLogs = DomainObjectHelpers.GetAccountRequest(1, vm.SelectedStudentId)
+                var requestLogs = DomainObjectHelpers.GetActionRequests(1, vm.SelectedStudentId)
                                         .Where(l => l.CreatorId == vm.SelectedStudentId)
                                         .Where(l => l.AccessDate > vm.SelectedDate)
                                         .Where(l => l.AccessDate < tomorrow)

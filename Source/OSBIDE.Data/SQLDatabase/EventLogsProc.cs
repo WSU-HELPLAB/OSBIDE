@@ -11,15 +11,19 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public static class EventLogsProc
     {
-        public static IEnumerable<FeedItem> GetActivityFeeds(DateTime dateReceivedMin, DateTime dateReceivedMax, IEnumerable<int> logIds, IEnumerable<string> eventTypes, int? courseId, int? roleId, IEnumerable<int> senderIds, int? minLogId, int? maxLogId, int offsetN, int? topN)
+        public static IEnumerable<FeedItem> GetActivityFeeds(DateTime dateReceivedMin, DateTime dateReceivedMax,
+            IEnumerable<int> logIds, IEnumerable<string> eventTypes,
+            int? courseId, int? roleId, string commentFilter,
+            IEnumerable<int> senderIds, int? minLogId, int? maxLogId, int offsetN, int? topN)
         {
             using (var context = new OsbideProcs())
             {
+                var c = commentFilter.Length > 0 ? string.Format("%{0}%", commentFilter) : string.Empty;
                 var l = string.Join(",", logIds.Where(i => i > 0).ToArray());
                 var t = eventTypes.Count() > 0 ? string.Format("'{0}'", string.Join("','", eventTypes.Where(i => !string.IsNullOrWhiteSpace(i)).ToArray())) : string.Empty;
                 var s = string.Join(",", senderIds.Where(i => i > 0).ToArray());
 
-                return ReadResults(context.GetActivityFeeds(dateReceivedMin, dateReceivedMax, l, t, courseId, roleId, s, minLogId, maxLogId, offsetN, topN));
+                return ReadResults(context.GetActivityFeeds(dateReceivedMin, dateReceivedMax, l, t, courseId, roleId, c, s, minLogId, maxLogId, offsetN, topN));
             }
         }
 

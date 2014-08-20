@@ -6,8 +6,12 @@
 @Styles.Render("~/Content/bootstrap.css")
 @Styles.Render("~/Content/jquery.datetimepicker.css")
 
+
+
 <section data-tab="Analytics" id="analytics" class="container-fluid">
-    <div data-wzstep="@WizardSteps.DataVisualization" class="form-horizontal">
+@using (Html.BeginForm("GetCSVData", "DataVisualization", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{ 
+        <div data-wzstep="@WizardSteps.DataVisualization">
         <div class="row">
             <div class="col-xs-1">
             </div>
@@ -27,7 +31,8 @@
                         <select name="ScaleSetting" id="timescale-setting" class="form-control">
                             @foreach (var e in Enum<TimeScale>.Get())
                             {
-                                <option value="@e.Value">@e.Text</option>
+                                var selected = (int)Model.TimeScale == e.Value ? "selected" : string.Empty;
+                                <option value="@e.Value" @selected>@e.Text</option>
                             }
                         </select>
                     </div>
@@ -49,6 +54,7 @@
                 </div>
                 <div data-type="chart-area">
                     <div class="row" id="chartBody">
+                        <a id="download">Export current visualization to CSV</a>
                         <table>
                             <tbody>
                             </tbody>
@@ -64,6 +70,7 @@
             </div>
         </div>
     </div>
+}
 </section>
 
 @section Scripts
