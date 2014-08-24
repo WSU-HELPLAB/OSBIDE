@@ -44,6 +44,11 @@
 <table>
     @foreach (string error in criticalBuildErrors)
     {
+        if(error == null)
+        {
+            continue;
+        }
+        
         //what is the error type that we're having?
         ErrorType thisError = AllErrorTypes.Where(e => e.Name.CompareTo(error) == 0).FirstOrDefault();
         if (thisError == null)

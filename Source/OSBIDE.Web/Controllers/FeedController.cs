@@ -19,7 +19,6 @@ namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
     [RequiresVisualStudioConnectionForStudents]
-    [DenyAccess(SystemRole.Student)]
     public class FeedController : ControllerBase
     {
 
@@ -474,8 +473,8 @@ namespace OSBIDE.Web.Controllers
                     vm.IsSubscribed = true;
                 }
 
-                //AC quick hack: The current GetActivityFeeds sproc doesn't pull everything that we need for build events. As a hack, we can 
-                //inject them right here if necessary.
+                //AC quick hack: The current GetActivityFeeds sproc doesn't pull everything that we need for build and debug
+                //events. As a hack, we can inject them right here if necessary.
                 if(vm.FeedItem.FeedItemType == BuildEvent.Name)
                 {
                     List<int> buildIds = vm.FeedItem.Items.Select(i => i.EventId).ToList();
@@ -485,6 +484,17 @@ namespace OSBIDE.Web.Controllers
                     for(int i = 0; i < vm.FeedItem.Items.Count; i++)
                     {
                         vm.FeedItem.Items[i].Event = buildEvents[i];
+                    }
+                }
+                else if(vm.FeedItem.FeedItemType == ExceptionEvent.Name)
+                {
+                    List<int> debugIds = vm.FeedItem.Items.Select(i => i.EventId).ToList();
+                    List<ExceptionEvent> debugEvents = (from evt in Db.ExceptionEvents
+                                                    where debugIds.Contains(evt.Id)
+                                                    select evt).ToList();
+                    for (int i = 0; i < vm.FeedItem.Items.Count; i++)
+                    {
+                        vm.FeedItem.Items[i].Event = debugEvents[i];
                     }
                 }
 

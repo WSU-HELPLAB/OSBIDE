@@ -13,7 +13,7 @@ using OSBIDE.Data.DomainObjects;
 using OSBIDE.Web.Models.FileSystem;
 namespace OSBIDE.Web.Controllers
 {
-    [AllowAccess(SystemRole.Instructor)]
+    [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
     public class AdminController : ControllerBase
     {
         //
@@ -24,14 +24,14 @@ namespace OSBIDE.Web.Controllers
             return View();
         }
 
-        [DenyAccess]
+        //[DenyAccess]
         [AllowAccess(SystemRole.Admin)]
         public ActionResult Anonymize()
         {
             return View();
         }
 
-        [DenyAccess]
+        //[DenyAccess]
         [AllowAccess(SystemRole.Admin)]
         [HttpPost]
         public ActionResult Anonymize(string vm)

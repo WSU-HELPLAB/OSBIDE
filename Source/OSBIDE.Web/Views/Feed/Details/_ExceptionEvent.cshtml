@@ -1,6 +1,7 @@
 ﻿@using OSBIDE.Library.Models
 @using OSBIDE.Library.Events
 @using OSBIDE.Web.Models
+@using OSBIDE.Data.DomainObjects
 @using System.IO
 @model OSBIDE.Web.Models.AggregateFeedItem
 @{
@@ -38,8 +39,8 @@
 @foreach (ExceptionEvent exEvent in exceptionLines.Values)
 {
     <h1>@exEvent.ExceptionDescription</h1>
-    <section>
-        <h1>Stack Trace</h1>
+    <article>
+        <h2>Stack Trace</h2>
         @if (exEvent.StackFrames.Count == 0)
         {
             @:Not Available
@@ -72,20 +73,24 @@
                     content.Add(text);
                 }
             }
-            <h2>Function: @frame.FunctionName</h2>
-            <h3>Code</h3>
+            <h3>Function: @frame.FunctionName</h3>
+            <strong>Code</strong>
             <div>
                 <pre><code class="cpp">@Html.Raw(string.Join("\n", content))</code></pre>
             </div>
-            <h4>Local Variables</h4>
-            <ul>
+            <strong>Local Variables</strong>
+            <table>
+                
                 @foreach (StackFrameVariable variable in frame.Variables)
                 {
-                    <li>
-                        <pre><code class="cpp">@variable.Name = @variable.Value.Trim()</code></pre>
-                    </li>
+                    <tr>
+                        <td style="padding:4px;"><pre>@variable.Name</pre></td>
+                        <td style="padding:4px;"><pre>@variable.Value.Trim()</pre></td>
+                    </tr>
                 }
-            </ul>
+
+            </table>
+            
                 if (frame.FunctionName.ToLower().CompareTo("main") == 0)
                 {
                     //stop once we reach the main() function.  We have to manually check as
@@ -93,5 +98,5 @@
                     break;
                 }
         }
-    </section>
+    </article>
 }
