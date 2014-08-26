@@ -27,7 +27,7 @@
             var items = [];
             $.each(data, function (idx, obj) {
                 var val = obj.Name;
-                items.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "'>" + val + "</a></li>");
+                items.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
             });
             $(".trends-container ul").children().remove().end().append(items.join(""));
         }

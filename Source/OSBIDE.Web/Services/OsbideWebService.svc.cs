@@ -533,7 +533,7 @@ namespace OSBIDE.Web.Services
 
         private List<string> ParseUserTags(string content)
         {
-            string HashRegex = "@[A-Za-z]+";
+            string HashRegex = "@[A-Za-z][A-Za-z0-9]+";
             MatchCollection matchList = Regex.Matches(content, HashRegex);
             return matchList.Cast<Match>().Select(match => match.Value.Substring(1)).ToList();
         }

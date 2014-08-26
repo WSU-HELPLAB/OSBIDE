@@ -54,7 +54,7 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last event received by the user.  Used for AJAX updates</param>
         /// <returns></returns>
-        public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "", string keyword = "")
+        public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "", string keyword = "", int hash = 0)
         {
             //turned off for now.
             //return RedirectToAction("FeedDown", "Error");
@@ -62,7 +62,7 @@ namespace OSBIDE.Web.Controllers
             {
                 var query = new ActivityFeedQuery();
 
-                query.CommentFilter = keyword;
+                query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
 
                 //Two ways that we can receive an error type: by name (errorTypeStr) or by ID (errorType).
                 //First, we check the string and see if we can match it to an ID number.  Then, we check

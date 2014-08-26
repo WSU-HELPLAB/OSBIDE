@@ -23,6 +23,7 @@ begin
 
 	declare @minDate datetime='1-1-2010'
 	declare @anyValue int=-1
+	if datediff(day, @dateFrom, @dateTo)=0 and @dateTo>@minDate set @dateTo=dateadd(day, 1, @dateTo)
 
 	--declare @dateFrom datetime='1-1-2000'
 	--declare @dateTo datetime=getDate()
@@ -144,6 +145,7 @@ select * from [dbo].[Courses]
 		,CourseNumber='test'
 		,Season='test'
 		,[Year]=100
+exec [dbo].[GetProcedureData] @dateFrom='2014-01-17 00:00:00',@dateTo='2014-01-17 00:00:00',@studentId=-1,@nameToken=N'',@gender=1,@ageFrom=-1,@ageTo=-1,@courseId=-1,@deliverable=N'Any',@gradeFrom=-1,@gradeTo=-1
 
 */
 

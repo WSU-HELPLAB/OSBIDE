@@ -362,5 +362,40 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("MarkRead", postIdParameter, userParameter, readParameter);
         }
+    
+        public virtual ObjectResult<GetPassiveSocialEventProcessLog_Result> GetPassiveSocialEventProcessLog()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPassiveSocialEventProcessLog_Result>("GetPassiveSocialEventProcessLog");
+        }
+    
+        public virtual int InsertPassiveSocialEventProcessLog(string tableName)
+        {
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("tableName", tableName) :
+                new ObjectParameter("tableName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InsertPassiveSocialEventProcessLog", tableNameParameter);
+        }
+    
+        public virtual int UpdatePassiveSocialEventProcessLog(Nullable<int> id, string destTableName, Nullable<bool> completed, Nullable<int> processedRecordCounts)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            var destTableNameParameter = destTableName != null ?
+                new ObjectParameter("destTableName", destTableName) :
+                new ObjectParameter("destTableName", typeof(string));
+    
+            var completedParameter = completed.HasValue ?
+                new ObjectParameter("completed", completed) :
+                new ObjectParameter("completed", typeof(bool));
+    
+            var processedRecordCountsParameter = processedRecordCounts.HasValue ?
+                new ObjectParameter("processedRecordCounts", processedRecordCounts) :
+                new ObjectParameter("processedRecordCounts", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdatePassiveSocialEventProcessLog", idParameter, destTableNameParameter, completedParameter, processedRecordCountsParameter);
+        }
     }
 }

@@ -52,11 +52,6 @@ where
 	or ControllerName='File' and (ActionName='GetAssignmentAttachment' or ActionName='GetCourseDocument')
 	or ControllerName='Profile' and (ActionName='Edit' or ActionName='Index')
 )
-and ActionName != 'RecentFeedItems'
-and ActionName != 'PostComment'
-and ActionName != 'PostCommentAsync'
-and ActionName != 'PostFeedComment'
-and (ActionName != 'GetComments' or ActionParameters like '%singleLogId%' and ActionParameters != 'singleLogId=[null]|||')
 
 
 --exec [dbo].[GetStateMachineEvents] @dateFrom='2014-01-15 12:00:00',@dateTo='2014-01-31 12:00:00',@studentIds='68,95,157'

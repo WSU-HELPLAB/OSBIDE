@@ -6,6 +6,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage.Auth;
 using OSBIDE.Library.Models;
+using OSBIDE.Data.SQLDatabase.Edmx;
 
 namespace OSBIDE.Data.NoSQLStorage
 {
@@ -165,8 +166,15 @@ namespace OSBIDE.Data.NoSQLStorage
                 var creds = new StorageCredentials(accountName, accountKey);
                 var account = new CloudStorageAccount(creds, useHttps: true);
                 var client = account.CreateCloudTableClient();
-                var table = client.GetTableReference("ActionRequestLogEntity");
-                table.CreateIfNotExists();
+                var table = client.GetTableReference(GetTableName(DateTime.Today));
+                if (table.CreateIfNotExists())
+                {
+                    // log a record in PassiveSocialEventProcessLog table
+                    using (var context = new OsbideProcs())
+                    {
+                        context.InsertPassiveSocialEventProcessLog(table.Name);
+                    }
+                }
 
                 return table;
             }
@@ -178,6 +186,12 @@ namespace OSBIDE.Data.NoSQLStorage
                 throw;
             }
         }
+
+        public static string GetTableName(DateTime dateTime)
+        {
+            return string.Format("ActionRequestLogEntity_{0}_{1}", dateTime.Year, dateTime.Month);
+        }
+
         public void LogErrorMessage(ActionRequestLogEntry entity, Exception ex)
         {
             var msg = string.Format("message: {0}, source: {1}, stack trace: {2}, TargetSite: {3}", ex.Message, ex.Source, ex.StackTrace, ex.TargetSite);

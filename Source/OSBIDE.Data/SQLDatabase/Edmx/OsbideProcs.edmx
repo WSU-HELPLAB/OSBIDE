@@ -93,6 +93,7 @@
           <Parameter Name="num" Type="int" Mode="In" />
           <Parameter Name="getAll" Type="bit" Mode="In" />
         </Function>
+        <Function Name="GetPassiveSocialEventProcessLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetPassiveSocialEvents" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="skip" Type="int" Mode="In" />
           <Parameter Name="take" Type="int" Mode="In" />
@@ -126,6 +127,9 @@
         <Function Name="GetWatwinScoringErrorTypeData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
+        <Function Name="InsertPassiveSocialEventProcessLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="tableName" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="InsertPostTags" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="postId" Type="int" Mode="In" />
           <Parameter Name="usertags" Type="varchar(max)" Mode="In" />
@@ -135,6 +139,12 @@
           <Parameter Name="PostId" Type="int" Mode="In" />
           <Parameter Name="User" Type="int" Mode="In" />
           <Parameter Name="Read" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="UpdatePassiveSocialEventProcessLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+          <Parameter Name="destTableName" Type="nvarchar" Mode="In" />
+          <Parameter Name="completed" Type="bit" Mode="In" />
+          <Parameter Name="processedRecordCounts" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="OSBIDEHybridModelStoreContainer">
           <EntitySet Name="FeedPostHashtags" EntityType="Self.FeedPostHashtags" Schema="dbo" store:Type="Tables" />
@@ -266,6 +276,16 @@
             <Parameter Name="PostId" Mode="In" Type="Int32" />
             <Parameter Name="User" Mode="In" Type="Int32" />
             <Parameter Name="Read" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="GetPassiveSocialEventProcessLog" ReturnType="Collection(OSBIDE.HybridModel.GetPassiveSocialEventProcessLog_Result)" />
+          <FunctionImport Name="InsertPassiveSocialEventProcessLog">
+            <Parameter Name="tableName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="UpdatePassiveSocialEventProcessLog">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+            <Parameter Name="destTableName" Mode="In" Type="String" />
+            <Parameter Name="completed" Mode="In" Type="Boolean" />
+            <Parameter Name="processedRecordCounts" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -560,6 +580,13 @@
           <Property Type="Int32" Name="EventLogId" Nullable="false" />
           <Property Type="Boolean" Name="Viewed" Nullable="false" />
           <Property Type="Int32" Name="UserId" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="GetPassiveSocialEventProcessLog_Result">
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="SourceTableName" Nullable="false" MaxLength="256" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="23" />
+          <Property Type="DateTime" Name="LastProcessedDate" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="ProcessedRecordCounts" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -956,6 +983,19 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="MarkRead" FunctionName="OSBIDE.HybridModel.Store.MarkRead" />
+          <FunctionImportMapping FunctionImportName="GetPassiveSocialEventProcessLog" FunctionName="OSBIDE.HybridModel.Store.GetPassiveSocialEventProcessLog">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetPassiveSocialEventProcessLog_Result">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SourceTableName" ColumnName="SourceTableName" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="LastProcessedDate" ColumnName="LastProcessedDate" />
+                <ScalarProperty Name="ProcessedRecordCounts" ColumnName="ProcessedRecordCounts" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="InsertPassiveSocialEventProcessLog" FunctionName="OSBIDE.HybridModel.Store.InsertPassiveSocialEventProcessLog" />
+          <FunctionImportMapping FunctionImportName="UpdatePassiveSocialEventProcessLog" FunctionName="OSBIDE.HybridModel.Store.UpdatePassiveSocialEventProcessLog" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

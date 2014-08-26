@@ -104,6 +104,9 @@
     <Compile Include="SQLDatabase\Edmx\GetNotifications_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetPassiveSocialEventProcessLog_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetPassiveSocialEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -264,6 +267,7 @@
     <Content Include="SQLDatabase\Scripts\AddColumnsToBuildDocumentsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateErrorFixTimeStatsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateHashtagTables.sql" />
+    <Content Include="SQLDatabase\Scripts\CreatePassiveSocialEventLogTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreatePassiveSocialEventTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreateIndexes.sql" />

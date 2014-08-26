@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using OSBIDE.Data.DomainObjects;
 using OSBIDE.Data.SQLDatabase.Edmx;
 using OSBIDE.Library.Events;
-
 
 namespace OSBIDE.Data.SQLDatabase
 {
@@ -117,7 +117,7 @@ namespace OSBIDE.Data.SQLDatabase
                     if (!string.IsNullOrWhiteSpace(r.MarkerType))
                     {
                         // yes, add social media event marker
-                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint, EventTime = r.EventDate});
+                        userData.markers.Add(new Point { Name = r.MarkerType, Position = currEventPoint, EventTime = r.EventDate });
                     }
                     else
                     {
@@ -280,6 +280,43 @@ namespace OSBIDE.Data.SQLDatabase
 
                 return chartData;
             }
+        }
+
+        private static ProgrammingState GetNextStateForDebugEvent(TimelineChartData userData, ProgrammingState prevStateName, int executionAction)
+        {
+            var nextStateName = prevStateName;
+
+            if (executionAction == (int)DebugActions.StopDebugging)
+            {
+                // set the next state for stop debugging event
+                // based on the editing state before current debugging state
+                if (userData.measures.LastOrDefault(x => x.ProgrammingState == ProgrammingState.edit_syn_y_sem_n) != null)
+                {
+                    nextStateName = ProgrammingState.edit_syn_y_sem_n;
+                }
+                else
+                {
+                    nextStateName = ProgrammingState.edit_syn_y_sem_u;
+                }
+            }
+            else if (executionAction == (int)DebugActions.StartWithoutDebugging)
+            {
+                nextStateName = TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName];
+            }
+            else
+            {
+                // the rest of the exectution actions including start, stepOver, stepInto, ans stepOut
+                var lastState = userData.measures.Last();
+                if (lastState.ProgrammingState == ProgrammingState.debug_sem_n)
+                {
+                    // should not have semantic error if the debugging state can continue
+                    lastState.ProgrammingState = ProgrammingState.debug_sem_u;
+                }
+
+                nextStateName = TimelineStateDictionaries.NextStateForDebug[prevStateName];
+            }
+
+            return nextStateName;
         }
     }
 }
