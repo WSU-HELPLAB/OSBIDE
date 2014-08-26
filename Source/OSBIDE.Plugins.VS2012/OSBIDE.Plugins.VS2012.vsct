@@ -76,7 +76,8 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-
+        
+          <!-- turned off for control studies 
             <Button guid="guidOSBIDE_ContextMenuCmdSet" id="cmdOsbideAskForHelp" priority="0x0100" type="Button">
                 <Parent guid="guidOSBIDE_ContextMenuCmdSet" id="MyContextMenuGroup" />
                 <Icon guid="guidImages" id="askForHelp" />
@@ -85,7 +86,7 @@
                     <ButtonText>Ask For Help...</ButtonText>
                 </Strings>
             </Button>
-
+          -->
             <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideLogin" priority="0x0100" type="Button">
                 <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
                 <Icon guid="guidImages" id="login" />
@@ -104,6 +105,7 @@
                 </Strings>
             </Button>
 
+          <!-- turned off for control studies 
             <Button guid="guidOSBIDE_OsbideToolsMenuCmdSet" id="cmdidOsbideSubmitAssignmentCommand" priority="0x0100" type="Button">
                 <Parent guid="guidOSBIDE_OsbideToolsMenuCmdSet" id="OsbideToolsMenu" />
                 <Icon guid="guidImages" id="generic" />
@@ -115,7 +117,6 @@
 
             <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideActivityFeedTool" priority="0x0100" type="Button">
                 <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
-                <!--<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>-->
                 <Icon guid="guidImages" id="feed" />
                 <Strings>
                     <CommandName>cmdidOsbideActivityFeedTool</CommandName>
@@ -132,20 +133,9 @@
                 </Strings>
             </Button>
 
-            <!-- Turned off for Spring 2014 study
-      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideChatTool" priority="0x0100" type="Button">
-        <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="chat" />
-        <Strings>
-          <CommandName>cmdidOsbideChatTool</CommandName>
-          <ButtonText>OSBIDE Chat</ButtonText>
-        </Strings>
-      </Button>
-      -->
 
             <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideUserProfileTool" priority="0x0100" type="Button">
                 <Parent guid="guidOSBIDE_VSPackageCmdSet" id="MyMenuGroup" />
-                <!--<Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>-->
                 <Icon guid="guidImages" id="profile" />
                 <Strings>
                     <CommandName>cmdidOsbideUserProfileTool</CommandName>
@@ -170,16 +160,6 @@
                     <ButtonText>View OSBIDE in browser</ButtonText>
                 </Strings>
             </Button>
-
-            <!-- Commented out for Fall 2013 release at instructor request 
-      <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideAskTheProfessor" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
-        <Icon guid="guidImages" id="bmpPic1" />
-        <Strings>
-          <CommandName>cmdidOsbideAskTheProfessor</CommandName>
-          <ButtonText>Ask the Professor</ButtonText>
-        </Strings>
-      </Button>
 	  -->
 
             <Button guid="guidOSBIDE_VSPackageCmdSet" id="cmdidOsbideCreateAccountTool" priority="0x0100" type="Button">

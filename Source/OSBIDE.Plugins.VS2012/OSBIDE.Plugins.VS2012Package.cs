@@ -1,4 +1,9 @@
-﻿using System;
+﻿/**
+ * OSBIDE Visual Studio Client for control studies based on the 2.x release.
+ * This version of the plugin in intended for control studies (i.e. social
+ * stuff turned off).  
+ * */
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -135,65 +140,7 @@ namespace OSBIDE.Plugins.VS2012
                 MenuCommand menuLoginMenuOption = new MenuCommand(OpenLoginScreen, loginMenuOption);
                 mcs.AddCommand(menuLoginMenuOption);
 
-                //activity feed
-                CommandID activityFeedId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideActivityFeedTool);
-                MenuCommand menuActivityWin = new MenuCommand(ShowActivityFeedTool, activityFeedId);
-                mcs.AddCommand(menuActivityWin);
-
-                //activity feed details
-                CommandID activityFeedDetailsId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideActivityFeedDetailsTool);
-                MenuCommand menuActivityDetailsWin = new MenuCommand(ShowActivityFeedDetailsTool, activityFeedDetailsId);
-                mcs.AddCommand(menuActivityDetailsWin);
-
-                //chat window
-                CommandID chatWindowId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideChatTool);
-                MenuCommand menuChatWin = new MenuCommand(ShowChatTool, chatWindowId);
-                mcs.AddCommand(menuChatWin);
-
-                //profile page
-                CommandID profileWindowId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideUserProfileTool);
-                MenuCommand menuProfileWin = new MenuCommand(ShowProfileTool, profileWindowId);
-                mcs.AddCommand(menuProfileWin);
-
-                //"ask for help context" menu
-                CommandID askForHelpId = new CommandID(CommonGuidList.guidOSBIDE_ContextMenuCmdSet, (int)CommonPkgCmdIDList.cmdOsbideAskForHelp);
-                OleMenuCommand askForHelpWin = new OleMenuCommand(ShowAskForHelp, askForHelpId);
-                askForHelpWin.BeforeQueryStatus += AskForHelpCheckActive;
-                mcs.AddCommand(askForHelpWin);
-
-                //create account window
-                CommandID createAccountWindowId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideCreateAccountTool);
-                MenuCommand menuAccountWin = new MenuCommand(ShowCreateAccountTool, createAccountWindowId);
-                mcs.AddCommand(menuAccountWin);
-
-                //OSBIDE documentation link
-                CommandID documentationId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideDocumentationTool);
-                MenuCommand documentationWin = new MenuCommand(OpenDocumentation, documentationId);
-                mcs.AddCommand(documentationWin);
-
-                //OSBIDE web link
-                CommandID webLinkId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideWebLinkTool);
-                MenuCommand webLinkWin = new MenuCommand(OpenOsbideWebLink, webLinkId);
-                mcs.AddCommand(webLinkWin);
-
-                //generic OSBIDE window
-                CommandID genericId = new CommandID(CommonGuidList.guidOSBIDE_VSPackageCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideGenericToolWindow);
-                MenuCommand genericWindow = new MenuCommand(ShowGenericToolWindow, genericId);
-                mcs.AddCommand(genericWindow);
-
-                //submit assignment command
-                CommandID submitCommand = new CommandID(CommonGuidList.guidOSBIDE_OsbideToolsMenuCmdSet, (int)CommonPkgCmdIDList.cmdidOsbideSubmitAssignmentCommand);
-                MenuCommand submitMenuItem = new MenuCommand(SubmitAssignmentCallback, submitCommand);
-                mcs.AddCommand(submitMenuItem);
-
-                //ask the professor window 
-                //(commented out for Fall 2013 release at instructor request)
-                /*
-                CommandID askProfessorWindowId = new CommandID(GuidList.guidOSBIDE_VSPackageCmdSet, (int)PkgCmdIDList.cmdidOsbideAskTheProfessor);
-                MenuCommand menuAskProfessorWin = new MenuCommand(ShowAskProfessorTool, askProfessorWindowId);
-                mcs.AddCommand(menuAskProfessorWin);
-                 * */
-
+                
                 // -- Set an event listener for shell property changes
                 var shellService = GetService(typeof(SVsShell)) as IVsShell;
                 if (shellService != null)
@@ -201,23 +148,6 @@ namespace OSBIDE.Plugins.VS2012
                     ErrorHandler.ThrowOnFailure(shellService.
                       AdviseShellPropertyChanges(this, out _EventSinkCookie));
                 }
-
-            }
-
-            //add right-click context menu to the VS Error List
-            DTE2 dte = (DTE2)this.GetService(typeof(SDTE));
-            if (dte != null)
-            {
-                CommandBars cmdBars = (CommandBars)dte.CommandBars;
-                CommandBar errorListBar = cmdBars[10];
-
-                CommandBarControl osbideControl = errorListBar.Controls.Add(MsoControlType.msoControlButton,
-                                                                      System.Reflection.Missing.Value,
-                                                                      System.Reflection.Missing.Value, 1, true);
-                // Set the caption of the submenuitem
-                osbideControl.Caption = "View Error in OSBIDE";
-                _osbideErrorListEvent = (EnvDTE.CommandBarEvents)dte.Events.get_CommandBarEvents(osbideControl);
-                _osbideErrorListEvent.Click += osbideCommandBarEvent_Click;
             }
 
             //create our web service
@@ -403,8 +333,6 @@ namespace OSBIDE.Plugins.VS2012
             if (_isOsbideUpToDate == true && _hasStartupErrors == false)
             {
                 _client.StartSending();
-                ShowActivityFeedTool(this, EventArgs.Empty);
-                _webServiceClient.GetMostRecentWhatsNewItemAsync();
             }
         }
 

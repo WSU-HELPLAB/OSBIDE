@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library.ServiceClien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Plugins.Base", "Source\OSBIDE.Plugins.Base\OSBIDE.Plugins.Base.csproj", "{EBDD4BD1-66A0-4CB5-B9FA-416A3B67A8A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache.Signed", "..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj", "{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Plugins.VS2012", "Source\OSBIDE.Plugins.VS2012\OSBIDE.Plugins.VS2012.csproj", "{169D5768-DD74-497D-93FF-E7DA5B7237AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache.Signed", "..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj", "{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -33,15 +33,15 @@ Global
 		SccAuxPath2 = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath2 = Source\\OSBIDE.Library.ServiceClient
 		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccProjectUniqueName3 = ..\\..\\fc\\Main\\Source\\FileCache.Signed\\FileCache.Signed.csproj
-		SccProjectName3 = ../../fc/Main/Source/FileCache.Signed
+		SccProjectUniqueName3 = Source\\OSBIDE.Plugins.VS2012\\OSBIDE.Plugins.VS2012.csproj
+		SccProjectName3 = Source/OSBIDE.Plugins.VS2012
 		SccAuxPath3 = https://tfs.codeplex.com/tfs/tfs25
-		SccLocalPath3 = ..\\..\\fc\\Main\\Source\\FileCache.Signed
+		SccLocalPath3 = Source\\OSBIDE.Plugins.VS2012
 		SccProvider3 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccProjectUniqueName4 = Source\\OSBIDE.Plugins.VS2012\\OSBIDE.Plugins.VS2012.csproj
-		SccProjectName4 = Source/OSBIDE.Plugins.VS2012
+		SccProjectUniqueName4 = ..\\..\\..\\fc\\Main\\Source\\FileCache.Signed\\FileCache.Signed.csproj
+		SccProjectName4 = ../../../fc/Main/Source/FileCache.Signed
 		SccAuxPath4 = https://tfs.codeplex.com/tfs/tfs25
-		SccLocalPath4 = Source\\OSBIDE.Plugins.VS2012
+		SccLocalPath4 = ..\\..\\..\\fc\\Main\\Source\\FileCache.Signed
 		SccProvider4 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,18 +79,18 @@ Global
 		{EBDD4BD1-66A0-4CB5-B9FA-416A3B67A8A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBDD4BD1-66A0-4CB5-B9FA-416A3B67A8A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EBDD4BD1-66A0-4CB5-B9FA-416A3B67A8A9}.Release|x86.ActiveCfg = Release|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|x86.ActiveCfg = Release|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{169D5768-DD74-497D-93FF-E7DA5B7237AD}.Release|x86.ActiveCfg = Release|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BAF5DCF-5DE1-4806-B7E3-7EF0894A09E6}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
