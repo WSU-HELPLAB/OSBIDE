@@ -282,6 +282,49 @@ namespace OSBIDE.Data.SQLDatabase
             }
         }
 
+        public static string GetCSV(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale)
+        {
+            var csvText = new StringBuilder();
+            var chartData = TimelineChartDataProc.Get(dateFrom, dateTo, userIds, timescale, timeout, grayscale);
+
+            chartData.ForEach(x =>
+            {
+                csvText.Append(x.title);
+
+                var i = 0;
+                var j = 0;
+                while (i < x.measures.Count || j < x.markers.Count)
+                {
+                    if (i >= x.measures.Count)
+                    {
+                        csvText.AppendFormat(",{0},{1}", x.markers[j].Name, x.markers[j].EventTimeDisplayText);
+                        j++;
+                    }
+                    else if (j >= x.markers.Count)
+                    {
+                        csvText.AppendFormat(",{0},{1},{2}", x.measures[i].Name, x.measures[i].StartTimeDisplayText, x.measures[i].EndTimeDisplayText);
+                        i++;
+                    }
+                    else
+                    {
+                        if (x.markers[j].Position < x.measures[i].StartPoint)
+                        {
+                            csvText.AppendFormat(",{0},{1}", x.markers[j].Name, x.markers[j].EventTimeDisplayText);
+                            j++;
+                        }
+                        else
+                        {
+                            csvText.AppendFormat(",{0},{1},{2}", x.measures[i].Name, x.measures[i].StartTimeDisplayText, x.measures[i].EndTimeDisplayText);
+                            i++;
+                        }
+                    }
+                }
+                csvText.AppendFormat("{0}", Environment.NewLine);
+            });
+
+            return csvText.ToString();
+        }
+
         private static ProgrammingState GetNextStateForDebugEvent(TimelineChartData userData, ProgrammingState prevStateName, int executionAction)
         {
             var nextStateName = prevStateName;
