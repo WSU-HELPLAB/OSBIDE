@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 
 using OSBIDE.Data.NoSQLStorage;
-using System.Text.RegularExpressions;
-using OSBIDE.Library.Models;
 
 namespace OSBIDE.Data.DomainObjects
 {
@@ -37,23 +35,6 @@ namespace OSBIDE.Data.DomainObjects
             }
         }
 
-        public static IEnumerable<PassiveSocialEvent> GetPassiveSocialActivities(int schoolId)
-        {
-            using (var storage = new ActionRequestLogStorage())
-            {
-                var logIdOffset = ("singleLogId=").Length;
-                var storeResults = storage.Select(schoolId.ToString(CultureInfo.InstalledUICulture)).ToList();
-                return storeResults
-                       .Where(log => Regex.IsMatch(log.ActionParameters, @"^(?i)singleLogId=[1-9][0-9]*\|\|\|$"))
-                       .Select(log => new PassiveSocialEvent
-                       {
-                           EventLogId = Convert.ToInt32(log.ActionParameters.Substring(logIdOffset, log.ActionParameters.Length - logIdOffset - 3)),
-                           UserId = Convert.ToInt32(log.RowKey.Split('_')[0]),
-                           EventDate = log.AccessDate,
-                       });
-            }
-        }
-
         public static IEnumerable<ActionRequestLog> GetActionRequests(int schoolId, int studentId)
         {
             using (var storage = new ActionRequestLogStorage())
@@ -70,6 +51,14 @@ namespace OSBIDE.Data.DomainObjects
                            ActionParameters = log.ActionParameters,
                            IpAddress = log.IpAddress,
                        });
+            }
+        }
+
+        internal static IEnumerable<ActionRequestLogEntry> GetPassiveSocialActivities(string tableName, int schoolId)
+        {
+            using (var storage = new ActionRequestLogStorage())
+            {
+                return storage.Select(tableName, schoolId.ToString(CultureInfo.InstalledUICulture)).ToList();
             }
         }
     }

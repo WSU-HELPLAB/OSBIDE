@@ -48,7 +48,14 @@ where
 (  ControllerName='Assignment' and ActionName='DownloadStudentAssignment'
 	or ControllerName='BuildEvent' and ActionName='Diff'
 	or ControllerName='Course' and (ActionName='Details' or ActionName='Index' or ActionName='MakeDefault' or ActionName='Search')
-	or ControllerName='Feed' and (ActionName='ApplyFeedFilter' or ActionName='Details' or ActionName='FollowPost' or ActionName='GetComments' or ActionName='Index' or ActionName='MarkCommentHelpful' or ActionName='OldFeedItems' or ActionName='UnfollowPost')
+	or ControllerName='Feed' and (ActionName='ApplyFeedFilter'
+									or ActionName='Details'
+									or ActionName='FollowPost'
+									or ActionName='GetComments' and ActionParameters like '%singleLogId%' and ActionParameters != 'singleLogId=[null]|||'
+									or ActionName='Index'
+									or ActionName='MarkCommentHelpful'
+									or ActionName='OldFeedItems'
+									or ActionName='UnfollowPost')
 	or ControllerName='File' and (ActionName='GetAssignmentAttachment' or ActionName='GetCourseDocument')
 	or ControllerName='Profile' and (ActionName='Edit' or ActionName='Index')
 )

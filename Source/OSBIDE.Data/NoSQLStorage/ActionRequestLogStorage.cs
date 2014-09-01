@@ -4,9 +4,9 @@ using System.Configuration;
 
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.WindowsAzure.Storage.Auth;
-using OSBIDE.Library.Models;
+
 using OSBIDE.Data.SQLDatabase.Edmx;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Data.NoSQLStorage
 {
@@ -38,18 +38,15 @@ namespace OSBIDE.Data.NoSQLStorage
         /// <summary>
         /// get all url request history for the student
         /// </summary>
+        /// <param name="tableName"></param>
         /// <param name="partitionKey"></param>
-        /// <param name="rowKey"></param>
         /// <returns></returns>
-        public IEnumerable<ActionRequestLogEntry> Select(string partitionKey, string rowKey)
+        public IEnumerable<ActionRequestLogEntry> Select(string tableName, string partitionKey)
         {
             var query = new TableQuery<ActionRequestLogEntry>()
-                            .Where(TableQuery.CombineFilters(
-                                            TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey),
-                                            TableOperators.And,
-                                            TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThan, rowKey)));
+                            .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey));
 
-            return GetTableReference().ExecuteQuery(query);
+            return GetTableReference(tableName).ExecuteQuery(query);
         }
 
         /// <summary>
@@ -158,15 +155,16 @@ namespace OSBIDE.Data.NoSQLStorage
 
         public static CloudTable GetTableReference()
         {
+            return GetTableReference(GetTableName(DateTime.Today));
+        }
+
+        public static CloudTable GetTableReference(string tableName)
+        {
             try
             {
-                var configKey = ConfigurationManager.AppSettings["StorageConnectionString"].Split('|');
-                var accountName = configKey[0];
-                var accountKey = configKey[1];
-                var creds = new StorageCredentials(accountName, accountKey);
-                var account = new CloudStorageAccount(creds, useHttps: true);
-                var client = account.CreateCloudTableClient();
-                var table = client.GetTableReference(GetTableName(DateTime.Today));
+                var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
+                var tableClient = storageAccount.CreateCloudTableClient();
+                var table = tableClient.GetTableReference(tableName);
                 if (table.CreateIfNotExists())
                 {
                     // log a record in PassiveSocialEventProcessLog table
@@ -189,7 +187,7 @@ namespace OSBIDE.Data.NoSQLStorage
 
         public static string GetTableName(DateTime dateTime)
         {
-            return string.Format("ActionRequestLogEntity_{0}_{1}", dateTime.Year, dateTime.Month);
+            return string.Format("ActionRequestLogEntity{0}{1}", dateTime.Year, dateTime.Month);
         }
 
         public void LogErrorMessage(ActionRequestLogEntry entity, Exception ex)
