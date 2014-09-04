@@ -252,13 +252,19 @@ namespace OSBIDE.Web.Services
                 //log the last activity date
                 LogUserTransaction(authUser);
 
-                EventLog submittedLog = SubmitLog(assignmentLog, authUser);
-                if (submittedLog != null)
-                {
-                    result = submittedLog.Id;
-                }
+                result = SubmitAssignment(assignmentId, assignmentLog, authUser);
             }
             return result;
+        }
+
+        public int SubmitAssignment(int assignmentId, EventLog assignmentLog, OsbideUser currentUser)
+        {
+            EventLog submittedLog = SubmitLog(assignmentLog, currentUser);
+            if (submittedLog != null)
+            {
+                return submittedLog.Id;
+            }
+            return -1;
         }
 
         /// <summary>
