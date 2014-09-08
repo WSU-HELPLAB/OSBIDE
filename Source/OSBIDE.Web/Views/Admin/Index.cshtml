@@ -101,10 +101,42 @@
 <section data-type="doc-utils">
 
     <div class="row">
+        <div class="col-xs-2">
+        </div>
+        <div class="col-xs-4">
+            <h2>Data Analytics Utils</h2>
+        </div>
+    </div>
+    <div class="row">
         <span class="col-xs-2"></span>
         <div class="col-xs-8">
-            <a class="row" href="@Url.Content("~/Analytics/RunDocUtils")">Run Doc Util</a>
-            <a class="row" href="@Url.Content("~/DataVisualization/ProcessAzureTableStorage")">Process Azure Table Storage</a>
+            <ul>
+                <li>
+                    <a class="row" href="@Url.Content("~/Analytics/RunDocUtils")">Run Doc Util</a>
+                    <p>
+                        Click on this command to perform precalculation on
+                        NumberOfInserted,NumberOfModified,NumberOfDeleted,ModifiedLines
+                        data fields in OSBIDE.dbo.BuildDocuments table
+                        before running Watwin algorithm
+                    </p>
+                </li>
+                <li>
+                    <a class="row" href="@Url.Content("~/DataVisualization/ProcessAzureTableStorage")">Process Azure Table Storage</a>
+                    <p>
+                        Click on this command to import passive social events from
+                        Azure storage table to OSBIDE.dbo.PassiveSocialEvents table
+                        before running data visualization with the latest passive social events
+                    </p>
+                </li>
+                <li>
+                    <a class="row" href="@Url.Content("~/DataVisualization/UpdateActiveSocialEvents")">Update Active Social Events</a>
+                    <p>
+                        Click on this command to update ActiveSocialEvents table with the latest social events
+                        including precalculated two-letter event code
+                        before running data visualization
+                    </p>
+                </li>
+            </ul>
             <div class="row">
                 <span class="col-xs-1"></span><img data-type="spinner" src="@Url.Content("~/Content/icons/spinner.gif")" width="50" height="50" />
             </div>

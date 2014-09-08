@@ -250,23 +250,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetWatwinScoringErrorTypeData_Result>("GetWatwinScoringErrorTypeData", buildIdsParameter);
         }
     
-        public virtual ObjectResult<GetStateMachineEvents_Result> GetStateMachineEvents(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string studentIds)
-        {
-            var dateFromParameter = dateFrom.HasValue ?
-                new ObjectParameter("dateFrom", dateFrom) :
-                new ObjectParameter("dateFrom", typeof(System.DateTime));
-    
-            var dateToParameter = dateTo.HasValue ?
-                new ObjectParameter("dateTo", dateTo) :
-                new ObjectParameter("dateTo", typeof(System.DateTime));
-    
-            var studentIdsParameter = studentIds != null ?
-                new ObjectParameter("studentIds", studentIds) :
-                new ObjectParameter("studentIds", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStateMachineEvents_Result>("GetStateMachineEvents", dateFromParameter, dateToParameter, studentIdsParameter);
-        }
-    
         public virtual int InsertPostTags(Nullable<int> postId, string usertags, string hashtags)
         {
             var postIdParameter = postId.HasValue ?
@@ -396,6 +379,45 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("processedRecordCounts", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdatePassiveSocialEventProcessLog", idParameter, destTableNameParameter, completedParameter, processedRecordCountsParameter);
+        }
+    
+        public virtual ObjectResult<GetActiveSocialEventProcessInfo_Result> GetActiveSocialEventProcessInfo()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetActiveSocialEventProcessInfo_Result>("GetActiveSocialEventProcessInfo");
+        }
+    
+        public virtual ObjectResult<GetStateMachineEvents_Result> GetPrecalculatedStateMachineEvents(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string studentIds)
+        {
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var studentIdsParameter = studentIds != null ?
+                new ObjectParameter("studentIds", studentIds) :
+                new ObjectParameter("studentIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStateMachineEvents_Result>("GetPrecalculatedStateMachineEvents", dateFromParameter, dateToParameter, studentIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetStateMachineEvents_Result> GetStateMachineEvents(Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, string studentIds)
+        {
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var studentIdsParameter = studentIds != null ?
+                new ObjectParameter("studentIds", studentIds) :
+                new ObjectParameter("studentIds", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStateMachineEvents_Result>("GetStateMachineEvents", dateFromParameter, dateToParameter, studentIdsParameter);
         }
     }
 }

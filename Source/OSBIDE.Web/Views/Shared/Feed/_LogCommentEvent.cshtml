@@ -1,10 +1,11 @@
-﻿@using OSBIDE.Library.Events
+﻿@using OSBIDE.Data.DomainObjects
+@using OSBIDE.Library.Events
 @using OSBIDE.Web.Models.Queries
+
 @model OSBIDE.Web.Models.AggregateFeedItem  
 @{
     LogCommentEvent comment = Model.Items.First().Event as LogCommentEvent;
     Model.Items.First().LogId = comment.SourceEventLogId;
-    IOsbideEvent evt = EventFactory.FromName(comment.SourceEventLog.LogType);
 } 
 @Model.Creator.FirstName commented on
 @if (Model.Creator.Id == comment.SourceEventLog.SenderId)
@@ -27,8 +28,7 @@
 else
 {
     //anonymize IDE events
-    bool isIdeEvent = ActivityFeedQuery.GetIdeEvents().Where(e => e.EventName.CompareTo(comment.SourceEventLog.LogType) == 0).Count() > 0;
-    if(isIdeEvent)
+    if (ActivityFeedQuery.GetIdeEvents().Any(e => (int)e == comment.SourceEventLog.EventTypeId))
     {
         <text>a student's</text>
     }
@@ -37,6 +37,6 @@ else
         <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>   
     }
 }
-@string.Format("{0}:", evt.PrettyName.ToLower())
+@string.Format("{0}:", Enum<EventTypes>.NameToDisplayText(comment.SourceEventLog.LogType).ToLower())
 <br />
 @comment.Content

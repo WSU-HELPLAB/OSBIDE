@@ -331,6 +331,7 @@ namespace OSBIDE.Web.Services
             log.Sender = null;
             log.SenderId = user.Id;
             log.DateReceived = DateTime.UtcNow;
+            log.EventTypeId = Convert.ToInt32(Enum.Parse(typeof(EventTypes), log.LogType));
 
             //insert into the DB
             Db.EventLogs.Add(log);

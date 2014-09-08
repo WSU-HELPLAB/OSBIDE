@@ -11,7 +11,7 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public class TimelineChartDataProc
     {
-        public static List<TimelineChartData> Get(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale)
+        public static List<TimelineChartData> Get(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale, bool? realtime)
         {
             // need a min DateTime value to avoid SQL server param out of range
             var unspecifiedDate = new DateTime(2000, 1, 1);
@@ -23,7 +23,10 @@ namespace OSBIDE.Data.SQLDatabase
             using (var context = new OsbideProcs())
             {
                 // get raw data from database and sort by user and event time
-                var rawR = (from e in context.GetStateMachineEvents(timeFrom, timeTo, string.Join(",", userIds))
+                var rawR = realtime.HasValue && realtime.Value == true
+                         ? (from e in context.GetStateMachineEvents(timeFrom, timeTo, string.Join(",", userIds))
+                           select e).ToList().OrderBy(x => x.SenderId).ThenBy(x => x.EventDate)
+                         : (from e in context.GetPrecalculatedStateMachineEvents(timeFrom, timeTo, string.Join(",", userIds))
                             select e).ToList().OrderBy(x => x.SenderId).ThenBy(x => x.EventDate);
 
                 // set the actual data range
@@ -186,9 +189,9 @@ namespace OSBIDE.Data.SQLDatabase
                                             ? TimelineStateDictionaries.NextStateForBuildWithError[prevStateName]
                                             : TimelineStateDictionaries.NextStateForBuildWithoutError[prevStateName];
                         }
-                        else if (string.Compare(r.LogType, "DebugEvent", true) == 0 && r.ExecutionAction.HasValue)
+                        else if (string.Compare(r.LogType, "DebugEvent", true) == 0 && r.ExecutionActionId.HasValue)
                         {
-                            nextStateName = r.ExecutionAction == (int)DebugActions.StartWithoutDebugging
+                            nextStateName = r.ExecutionActionId == (int)DebugActions.StartWithoutDebugging
                                             ? TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName]
                                             : TimelineStateDictionaries.NextStateForDebug[prevStateName];
                         }
@@ -282,10 +285,10 @@ namespace OSBIDE.Data.SQLDatabase
             }
         }
 
-        public static string GetCSV(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale)
+        public static string GetCSV(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale, bool? realtime)
         {
             var csvText = new StringBuilder();
-            var chartData = TimelineChartDataProc.Get(dateFrom, dateTo, userIds, timescale, timeout, grayscale);
+            var chartData = TimelineChartDataProc.Get(dateFrom, dateTo, userIds, timescale, timeout, grayscale, realtime);
 
             chartData.ForEach(x =>
             {

@@ -29,7 +29,8 @@
                 var val = obj.Name;
                 items.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
             });
-            $(".trends-container ul").children().remove().end().append(items.join(""));
+            $(".trends-container ul").children().remove().end().append(items.join("")).fadeIn();
+            $(".trends-container").fadeIn();
         }
     });
 
@@ -44,6 +45,7 @@
                 items.push("<li><a href='/Profile/Index/" + obj.UserId + "?component=UserProfile'>" + obj.FirstName + " " + obj.LastName + "</a> mentioned you in a <a href='/Feed/Details/" + obj.EventLogId + "?component=FeedDetails'>post</a></li>");
             });
             $(".notifications-container ul").children().remove().end().append(items.join(""));
+            $(".notifications-container").fadeIn();
         }
     });
 

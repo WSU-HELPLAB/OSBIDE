@@ -102,12 +102,16 @@
     <Compile Include="DomainObjects\StudentDemographicInfo.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogEntry.cs" />
     <Compile Include="NoSQLStorage\ActionRequestLogStorage.cs" />
+    <Compile Include="SQLDatabase\ActiveSocialEventUtilProc.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoring.cs" />
     <Compile Include="SQLDatabase\DataAnalytics\WatwinScoring\WatwinScoringAnalytics.cs" />
     <Compile Include="SQLDatabase\Edmx\FeedPostHashtags.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\FeedPostUserTags.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetActiveSocialEventProcessInfo_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetBuildErrorMessages_Result.cs">
@@ -158,16 +162,7 @@
     <Compile Include="SQLDatabase\Edmx\GetCourseLookup_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetCutCopyPasteEvents_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetDebugEvents_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetDeliverableLookup_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetEditorActivityEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetErrorFixTimeStats_Result.cs">
@@ -209,9 +204,6 @@
     <Compile Include="SQLDatabase\Edmx\GetRecentCompileErrors_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetSaveEvents_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetSubmitEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -250,6 +242,7 @@
     <Compile Include="SQLDatabase\ProcedureDataProc.cs" />
     <Compile Include="SQLDatabase\RecentErrorProc.cs" />
     <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
+    <Compile Include="SQLDatabase\SQLTemplateUpdateActiveSocialEvents.cs" />
     <Compile Include="SQLDatabase\SQLTemplateUpdateBuildDocuments.cs" />
     <Compile Include="SQLDatabase\TimelineChartDataProc.cs" />
     <Compile Include="SQLDatabase\TimelineStateDictionaries.cs" />
@@ -282,6 +275,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="SQLDatabase\Scripts\AddColumnsToBuildDocumentsTable.sql" />
+    <Content Include="SQLDatabase\Scripts\AlterEventLogs.sql" />
+    <Content Include="SQLDatabase\Scripts\CreateActiveSocialEventsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateErrorFixTimeStatsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateHashtagTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreatePassiveSocialEventLogTable.sql" />
@@ -307,6 +302,7 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetNotifications].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEventsCount].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEvents].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetPrecalculatedStateMachineEvents].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetStateMachineEvents].sql" />

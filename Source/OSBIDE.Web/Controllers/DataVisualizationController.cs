@@ -26,21 +26,21 @@ namespace OSBIDE.Web.Controllers
             return View("~/Views/Analytics/DataVisualization.cshtml", analytics.VisualizationParams);
         }
 
-        public ActionResult GetData(int? timeScale, DateTime? timeFrom, DateTime? timeTo, int? timeout, bool grayscale)
+        public ActionResult GetData(int? timeScale, DateTime? timeFrom, DateTime? timeTo, int? timeout, bool grayscale, bool? realtime)
         {
             var analytics = UpdateSession(timeScale, timeFrom, timeTo, timeout, grayscale);
 
-            var chartData = TimelineChartDataProc.Get(timeFrom, timeTo, analytics.SelectedDataItems, analytics.VisualizationParams.TimeScale, timeout, grayscale);
+            var chartData = TimelineChartDataProc.Get(timeFrom, timeTo, analytics.SelectedDataItems, analytics.VisualizationParams.TimeScale, timeout, grayscale, realtime);
             var jsonResult = Json(chartData, JsonRequestBehavior.AllowGet);
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
 
-        public ActionResult GetCSVData(int? scaleSetting, DateTime? timeFrom, DateTime? timeTo, int? timeout)
+        public ActionResult GetCSVData(int? scaleSetting, DateTime? timeFrom, DateTime? timeTo, int? timeout, bool? realtime)
         {
             var analytics = UpdateSession(scaleSetting, timeFrom, timeTo, timeout, true);
 
-            var chartCsvData = TimelineChartDataProc.GetCSV(timeFrom, timeTo, analytics.SelectedDataItems, analytics.VisualizationParams.TimeScale, timeout, analytics.VisualizationParams.GrayScale);
+            var chartCsvData = TimelineChartDataProc.GetCSV(timeFrom, timeTo, analytics.SelectedDataItems, analytics.VisualizationParams.TimeScale, timeout, analytics.VisualizationParams.GrayScale, realtime);
             return File(new System.Text.UTF8Encoding().GetBytes(chartCsvData), "text/csv", "timeline.csv");
         }
 
@@ -60,6 +60,11 @@ namespace OSBIDE.Web.Controllers
         public ActionResult ProcessAzureTableStorage()
         {
             return Json(PassiveSocialEventUtilProc.Run(CurrentUser.SchoolId), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateActiveSocialEvents()
+        {
+            return Json(ActiveSocialEventUtilProc.Run(), JsonRequestBehavior.AllowGet);
         }
 
         private static byte[] GetBytes(string str)

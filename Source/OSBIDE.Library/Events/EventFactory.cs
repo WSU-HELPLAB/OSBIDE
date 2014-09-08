@@ -184,59 +184,5 @@ namespace OSBIDE.Library.Events
             }
             return zipStream.ToArray();
         }
-
-        public static IOsbideEvent FromName(string name)
-        {
-            IOsbideEvent evt = null;
-            if (name == AskForHelpEvent.Name)
-            {
-                evt = new AskForHelpEvent();
-            }
-            else if (name == BuildEvent.Name)
-            {
-                evt = new BuildEvent();
-            }
-            else if (name == CutCopyPasteEvent.Name)
-            {
-                evt = new CutCopyPasteEvent();
-            }
-            else if (name == DebugEvent.Name)
-            {
-                evt = new DebugEvent();
-            }
-            else if (name == EditorActivityEvent.Name)
-            {
-                evt = new EditorActivityEvent();
-            }
-            else if (name == ExceptionEvent.Name)
-            {
-                evt = new ExceptionEvent();
-            }
-            else if (name == FeedPostEvent.Name)
-            {
-                evt = new FeedPostEvent();
-            }
-            else if (name == HelpfulMarkGivenEvent.Name)
-            {
-                evt = new HelpfulMarkGivenEvent();
-            }
-            else if (name == LogCommentEvent.Name)
-            {
-                evt = new LogCommentEvent();
-            }
-            else if (name == SaveEvent.Name)
-            {
-                evt = new SaveEvent();
-            }
-            else if (name == SolutionDownloadEvent.Name)
-            {
-                evt = new SolutionDownloadEvent();
-            }
-            else if (name == SubmitEvent.Name)
-            {
-                evt = new SubmitEvent();
-            }
-            return evt;
-        }
     }
 }

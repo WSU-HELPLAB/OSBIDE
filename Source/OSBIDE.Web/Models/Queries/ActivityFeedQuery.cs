@@ -11,7 +11,7 @@ namespace OSBIDE.Web.Models.Queries
 {
     public class ActivityFeedQuery : IOsbideQuery<FeedItem>
     {
-        private readonly List<IOsbideEvent> _eventSelectors = new List<IOsbideEvent>();
+        private readonly List<EventTypes> _eventSelectors = new List<EventTypes>();
         protected List<OsbideUser> SubscriptionSubjects = new List<OsbideUser>();
         protected readonly List<int> EventIds = new List<int>();
 
@@ -78,15 +78,15 @@ namespace OSBIDE.Web.Models.Queries
         /// returns a lits of all social events in OSBLE
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<IOsbideEvent> GetSocialEvents()
+        public static IEnumerable<EventTypes> GetSocialEvents()
         {
-            return new List<IOsbideEvent>
+            return new List<EventTypes>
             {
-                new FeedPostEvent(),
-                new AskForHelpEvent(),
-                new LogCommentEvent(),
-                new HelpfulMarkGivenEvent(),
-                new SubmitEvent(),
+                EventTypes.FeedPostEvent,
+                EventTypes.AskForHelpEvent,
+                EventTypes.LogCommentEvent,
+                EventTypes.HelpfulMarkGivenEvent,
+                EventTypes.SubmitEvent,
             };
         }
 
@@ -94,12 +94,12 @@ namespace OSBIDE.Web.Models.Queries
         /// returns a list of IDE-based events in OSBLE
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<IOsbideEvent> GetIdeEvents()
+        public static IEnumerable<EventTypes> GetIdeEvents()
         {
-            return new List<IOsbideEvent>
+            return new List<EventTypes>
             {
-                new BuildEvent(),
-                new ExceptionEvent(),
+                EventTypes.BuildEvent,
+                EventTypes.ExceptionEvent,
             };
         }
 
@@ -107,7 +107,7 @@ namespace OSBIDE.Web.Models.Queries
         /// returns a list of all possible events that a user can subscribe to
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<IOsbideEvent> GetAllEvents()
+        public static IEnumerable<EventTypes> GetAllEvents()
         {
             return GetIdeEvents().Concat(GetSocialEvents());
         }
@@ -116,9 +116,9 @@ namespace OSBIDE.Web.Models.Queries
         /// add user selected event types
         /// </summary>
         /// <param name="evt"></param>
-        public void AddEventType(IOsbideEvent evt)
+        public void AddEventType(EventTypes evt)
         {
-            if (_eventSelectors.All(e => String.Compare(e.EventName, evt.EventName, StringComparison.OrdinalIgnoreCase) != 0))
+            if (_eventSelectors.All(e => e != evt))
             {
                 _eventSelectors.Add(evt);
             }
@@ -127,7 +127,7 @@ namespace OSBIDE.Web.Models.Queries
         /// <summary>
         /// get user selected event types
         /// </summary>
-        public List<IOsbideEvent> ActiveEvents
+        public List<EventTypes> ActiveEvents
         {
             get
             {
@@ -182,7 +182,7 @@ namespace OSBIDE.Web.Models.Queries
             return EventLogsProc.GetActivityFeeds( StartDate
                                     , EndDate
                                     , EventIds.Select(eid => (int)eid).ToList()
-                                    , _eventSelectors.Select(e => e.EventName)
+                                    , _eventSelectors.Select(e => (int)e)
                                     , CourseFilter != null && CourseFilter.Id > 0 ? CourseFilter.Id : 0
                                     , (int)CourseRoleFilter
                                     , CommentFilter

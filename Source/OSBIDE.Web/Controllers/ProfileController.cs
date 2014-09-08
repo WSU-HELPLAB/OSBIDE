@@ -47,7 +47,7 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //Only show social events
-                foreach (IOsbideEvent evt in ActivityFeedQuery.GetSocialEvents())
+                foreach (var evt in ActivityFeedQuery.GetSocialEvents())
                 {
                     query.AddEventType(evt);
                     subscriptionsQuery.AddEventType(evt);

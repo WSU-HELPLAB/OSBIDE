@@ -117,7 +117,7 @@ namespace OSBIDE.Web.Controllers
                     vm.LastPollDate = DateTime.MinValue.AddDays(2);
                 }
                 vm.Feed = aggregateFeed;
-                vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.PrettyName).ToList();
+                vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.ToString()).ToList();
                 vm.UserEventFilterOptions = query.ActiveEvents;
                 vm.ErrorTypes = Db.ErrorTypes.Distinct().ToList();
                 vm.SelectedErrorType = new ErrorType();
@@ -218,12 +218,12 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last feed item received by the client</param>
         /// <returns></returns>
-        public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1, string keyword = "")
+        public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1, string keyword = "", int hash = 0)
         {
             //return View("AjaxFeed", new List<AggregateFeedItem>()); 
 
             var query = new ActivityFeedQuery();
-            query.CommentFilter = keyword;
+            query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
             if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
@@ -686,8 +686,8 @@ namespace OSBIDE.Web.Controllers
                         string[] pieces = key.Split('_');
                         if (pieces.Length == 2)
                         {
-                            IOsbideEvent evt = EventFactory.FromName(pieces[1]);
-                            if (evt != null)
+                            EventTypes evt;
+                            if (Enum.TryParse<EventTypes>(pieces[1], true, out evt))
                             {
                                 feedSetting.SetSetting(evt, true);
                             }
@@ -744,7 +744,7 @@ namespace OSBIDE.Web.Controllers
             UserFeedSetting feedSettings = _userSettings;
             if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
-                foreach (IOsbideEvent evt in ActivityFeedQuery.GetAllEvents())
+                foreach (var evt in ActivityFeedQuery.GetAllEvents())
                 {
                     query.AddEventType(evt);
                 }

@@ -18,7 +18,7 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
         public string SolutionName { get; set; }
         public string LogType { get; set; }
         public Nullable<int> BuildErrorLogId { get; set; }
-        public Nullable<int> ExecutionAction { get; set; }
+        public Nullable<int> ExecutionActionId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int InstitutionId { get; set; }

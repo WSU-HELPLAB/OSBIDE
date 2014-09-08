@@ -13,8 +13,8 @@ namespace OSBIDE.Web.Models.ViewModels
         public DateTime LastPollDate { get; set; }
         public int LastLogId { get; set; }
         public int SingleUserId { get; set; }
-        public List<IOsbideEvent> EventFilterOptions { get; set; }
-        public List<IOsbideEvent> UserEventFilterOptions { get; set; }
+        public List<EventTypes> EventFilterOptions { get; set; }
+        public List<EventTypes> UserEventFilterOptions { get; set; }
         public List<ErrorType> ErrorTypes { get; set; }
         public List<Course> Courses { get; set; }
         public List<CourseRole> CourseRoles { get; set; }
@@ -31,8 +31,8 @@ namespace OSBIDE.Web.Models.ViewModels
             SingleUserId = -1;
             LastLogId = -1;
             LastPollDate = DateTime.UtcNow;
-            EventFilterOptions = new List<IOsbideEvent>();
-            UserEventFilterOptions = new List<IOsbideEvent>();
+            EventFilterOptions = new List<EventTypes>();
+            UserEventFilterOptions = new List<EventTypes>();
             SelectedErrorType = new ErrorType();
             RecentUserErrors = new List<string>();
             RecentClassErrors = new List<UserBuildErrorsByType>();

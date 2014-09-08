@@ -171,6 +171,7 @@
     <Compile Include="Events\AskForHelpEvent.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
+    <Compile Include="Events\EventType.cs" />
     <Compile Include="Events\FeedPostEvent.cs" />
     <Compile Include="Events\HelpfulMarkGivenEvent.cs" />
     <Compile Include="Events\LogCommentEvent.cs" />

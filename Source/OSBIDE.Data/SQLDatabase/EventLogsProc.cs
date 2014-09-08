@@ -12,7 +12,7 @@ namespace OSBIDE.Data.SQLDatabase
     public static class EventLogsProc
     {
         public static IEnumerable<FeedItem> GetActivityFeeds(DateTime dateReceivedMin, DateTime dateReceivedMax,
-            IEnumerable<int> logIds, IEnumerable<string> eventTypes,
+            IEnumerable<int> logIds, IEnumerable<int> eventTypes,
             int? courseId, int? roleId, string commentFilter,
             IEnumerable<int> senderIds, int? minLogId, int? maxLogId, int offsetN, int? topN)
         {
@@ -20,7 +20,7 @@ namespace OSBIDE.Data.SQLDatabase
             {
                 var c = commentFilter.Length > 0 ? string.Format("%{0}%", commentFilter) : string.Empty;
                 var l = string.Join(",", logIds.Where(i => i > 0).ToArray());
-                var t = eventTypes.Count() > 0 ? string.Format("'{0}'", string.Join("','", eventTypes.Where(i => !string.IsNullOrWhiteSpace(i)).ToArray())) : string.Empty;
+                var t = eventTypes.Count() > 0 ? string.Format("{0}", string.Join(",", eventTypes)) : string.Empty;
                 var s = string.Join(",", senderIds.Where(i => i > 0).ToArray());
 
                 return ReadResults(context.GetActivityFeeds(dateReceivedMin, dateReceivedMax, l, t, courseId, roleId, c, s, minLogId, maxLogId, offsetN, topN));
@@ -127,66 +127,8 @@ namespace OSBIDE.Data.SQLDatabase
                                                               CriticalErrorNames = e.Select(c=>c.CriticalErrorName).ToList()
                                                           }));
 
-            #region the placeholder for the events that may be included later
-
-            // these three events are not activity feed events and they are the placeholders in both sproc and here
-
-            // the 8th result set, CutCopyPasteEvent
-            var cutcopypasteR = buildR.GetNextResult<GetCutCopyPasteEvents_Result>();
-            //osbideEvents.AddRange(cutcopypasteR.Select(e => new CutCopyPasteEvent
-            //                                              {
-            //                                                  EventDate = e.EventDate,
-            //                                                  EventLog = new EventLog
-            //                                                                 {
-            //                                                                     Id = e.EventLogId,
-            //                                                                     LogType = "CutCopyPasteEvent"
-            //                                                                 },
-            //                                                  EventLogId = e.EventLogId,
-            //                                                  Id = e.Id,
-            //                                                  SolutionName = e.SolutionName,
-            //                                                  Content = e.Content,
-            //                                                  DocumentName = e.DocumentName,
-            //                                                  EventAction = e.EventAction
-            //                                              }));
-
-            // the 9th result set, DebugEvent
-            var debugR = cutcopypasteR.GetNextResult<GetDebugEvents_Result>();
-            //osbideEvents.AddRange(debugR.Select(e => new DebugEvent
-            //                                              {
-            //                                                  EventDate = e.EventDate,
-            //                                                  EventLog = new EventLog
-            //                                                                 {
-            //                                                                     Id = e.EventLogId,
-            //                                                                     LogType = "DebugEvent"
-            //                                                                 },
-            //                                                  EventLogId = e.EventLogId,
-            //                                                  Id = e.Id,
-            //                                                  SolutionName = e.SolutionName,
-            //                                                  DebugOutput = e.DebugOutput,
-            //                                                  DocumentName = e.DocumentName,
-            //                                                  ExecutionAction = e.ExecutionAction,
-            //                                                  LineNumber = e.LineNumber
-            //                                              }));
-
-            // the 10th result set, EditorActivityEvent
-            var editoractivityR = debugR.GetNextResult<GetEditorActivityEvents_Result>();
-            //osbideEvents.AddRange(editoractivityR.Select(e => new EditorActivityEvent
-            //                                              {
-            //                                                  EventDate = e.EventDate,
-            //                                                  EventLog = new EventLog
-            //                                                                 {
-            //                                                                     Id = e.EventLogId,
-            //                                                                     LogType = "EditorActivityEvent"
-            //                                                                 },
-            //                                                  EventLogId = e.EventLogId,
-            //                                                  Id = e.Id,
-            //                                                  SolutionName = e.SolutionName
-            //                                              }));
-
-            #endregion
-
-            // the 11th result set, ExceptionEvent
-            var exceptionR = editoractivityR.GetNextResult<GetExceptionEvents_Result>();
+            // the 8th result set, ExceptionEvent
+            var exceptionR = buildR.GetNextResult<GetExceptionEvents_Result>();
             osbideEvents.AddRange(exceptionR.Select(e => new ExceptionEvent
                                                           {
                                                               EventDate = e.EventDate,
@@ -208,7 +150,7 @@ namespace OSBIDE.Data.SQLDatabase
                                                               LineNumber = e.LineNumber
                                                           }));
 
-            // the 12th result set, FeedPostEvent
+            // the 9th result set, FeedPostEvent
             var feedpostR = exceptionR.GetNextResult<GetFeedPostEvents_Result>();
             osbideEvents.AddRange(feedpostR.Select(e => new FeedPostEvent
                                                           {
@@ -224,7 +166,7 @@ namespace OSBIDE.Data.SQLDatabase
                                                               Comment = e.Comment
                                                           }));
 
-            // the 13th result set, HelpfulMarkGivenEvent
+            // the 10th result set, HelpfulMarkGivenEvent
             var helpfulmarkR = feedpostR.GetNextResult<GetHelpfulMarkGivenEvents_Result>();
             //var test = helpfulmarkR.ToList();
             osbideEvents.AddRange(helpfulmarkR.Select(e => new HelpfulMarkGivenEvent
@@ -241,7 +183,7 @@ namespace OSBIDE.Data.SQLDatabase
                                                               LogCommentEventId = e.LogCommentEventId
                                                           }));
 
-            // the 14th result set, LogCommentEvent
+            // the 11th result set, LogCommentEvent
             var logcommentR = helpfulmarkR.GetNextResult<GetLogCommentEvents_Result>();
             osbideEvents.AddRange(logcommentR.Select(e => new LogCommentEvent
                                                           {
@@ -258,29 +200,8 @@ namespace OSBIDE.Data.SQLDatabase
                                                               SourceEventLogId = e.SourceEventLogId
                                                           }));
 
-            #region the placeholder for the events that may be included later
-
-            // this is another event that not belongs to the feed category
-
-            // the 15th result set, SaveEvent
-            var saveR = logcommentR.GetNextResult<GetSaveEvents_Result>();
-            //osbideEvents.AddRange(saveR.Select(e => new SaveEvent
-            //                                              {
-            //                                                  EventDate = e.EventDate,
-            //                                                  EventLog = new EventLog
-            //                                                                 {
-            //                                                                     Id = e.EventLogId,
-            //                                                                     LogType = "SaveEvent"
-            //                                                                 },
-            //                                                  EventLogId = e.EventLogId,
-            //                                                  Id = e.Id,
-            //                                                  SolutionName = e.SolutionName
-            //                                              }));
-
-            #endregion
-
-            // the 16th result set, SubmitEvent
-            var submitR = saveR.GetNextResult<GetSubmitEvents_Result>();
+            // the 12th result set, SubmitEvent
+            var submitR = logcommentR.GetNextResult<GetSubmitEvents_Result>();
             osbideEvents.AddRange(submitR.Select(e => new SubmitEvent
                                                           {
                                                               EventDate = e.EventDate,

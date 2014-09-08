@@ -61,6 +61,14 @@ where
 )
 
 
+
+if exists(select 1 from sys.indexes where name='IX_VisualizationQuery_PassiveSocialEvents_UserId' and object_id=object_id('PassiveSocialEvents'))
+	drop index [IX_VisualizationQuery_PassiveSocialEvents_UserId] on [dbo].[PassiveSocialEvents]
+
+create nonclustered index [IX_VisualizationQuery_PassiveSocialEvents_UserId] on [dbo].[PassiveSocialEvents]([UserId] asc)
+include ([EventCode], [AccessDate])
+
+
 --exec [dbo].[GetStateMachineEvents] @dateFrom='2014-01-15 12:00:00',@dateTo='2014-01-31 12:00:00',@studentIds='68,95,157'
 
 
