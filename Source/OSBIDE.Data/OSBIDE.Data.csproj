@@ -278,6 +278,7 @@
     <Content Include="SQLDatabase\Scripts\AlterEventLogs.sql" />
     <Content Include="SQLDatabase\Scripts\CreateActiveSocialEventsTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateErrorFixTimeStatsTable.sql" />
+    <Content Include="SQLDatabase\Scripts\CreateEventTypesTableWithLookupValues.sql" />
     <Content Include="SQLDatabase\Scripts\CreateHashtagTables.sql" />
     <Content Include="SQLDatabase\Scripts\CreatePassiveSocialEventLogTable.sql" />
     <Content Include="SQLDatabase\Scripts\CreateImportTables.sql" />
