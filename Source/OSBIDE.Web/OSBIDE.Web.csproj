@@ -459,6 +459,7 @@
     <Content Include="Views\Gradebook\Index.cshtml" />
     <Content Include="Views\Error\GenericError.cshtml" />
     <Content Include="Views\Admin\Anonymize.cshtml" />
+    <Content Include="Views\Course\SubmitAssignmentFile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

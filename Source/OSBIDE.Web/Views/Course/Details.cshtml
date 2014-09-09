@@ -12,6 +12,7 @@
     bool isCoordinator = Model.Coordinators.Contains(Model.CurrentUser);
     int assignmentCounter = 0;
 }
+
 @section Scripts
 {
     <script type="text/javascript">
@@ -169,10 +170,8 @@
     </script>
 
     <style type="text/css">
-
-        article
-        {
-            padding-bottom:15px;
+        article {
+            padding-bottom: 15px;
         }
 
         .assignments-table {
@@ -267,6 +266,8 @@
         <table class="assignments-table">
             <thead>
                 <tr>
+                    
+                    <th></th>                    
                     <th></th>
                     <th>Name</th>
                     <th>Release Date</th>
@@ -279,11 +280,31 @@
                 {
                     string altStyle = "";
                     assignmentCounter++;
+                    string assignmentIdName = "submitted_" + assignment.Id;
+                    string assignmentIdLink = "submitLink_" + assignment.Id;
+
                     if (assignmentCounter % 2 == 0)
                     {
                         altStyle = "alt-row";
                     }
                     <tr class="@altStyle">
+                        <td>
+                            @if (isCoordinator == false)
+                            {
+                                //check for flag to allow students to submit via the website
+                                if (assignment.AllowWebSubmit)
+                                {
+                                    <a id="@assignmentIdLink" class="submit-assignment-file-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("SubmitAssignmentFile", new { id = assignment.Id })"><img src="~/Content/icons/add_up.png" alt="submit files" title="submit files" />Submit Assignment</a>
+                                }
+                            }
+                            else
+                            {
+                                if (assignment.AllowWebSubmit)
+                                {
+                                    <span>(Web Submit)</span>
+                                }
+                            }
+                        </td>
                         <td>
                             @if (isCoordinator == true)
                             {
@@ -378,7 +399,7 @@
                 <li style="clear:both; padding: 5px;">
                     <img src="@Url.Action("Picture", "Profile", new { id = cur.UserId, size = 32 })" title="profile image" alt="profile image" style="float:left;" />
                     <div style="padding-left:40px;">
-                         @Html.ActionLink(cur.User.FirstAndLastName, "Index", "Profile", new { id = cur.UserId, component = OsbideVsComponent.UserProfile }, new { })
+                        @Html.ActionLink(cur.User.FirstAndLastName, "Index", "Profile", new { id = cur.UserId, component = OsbideVsComponent.UserProfile }, new { })
                     </div>
                 </li>
             }
