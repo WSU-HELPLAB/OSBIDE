@@ -31,3 +31,21 @@
        @date.ToString("MMMM d, yyyy")
    }
 }
+
+@helper LatestSubmissionTime(int assignmentId, int currentUserId)
+{
+    using (OSBIDE.Web.Controllers.AssignmentController assignmentController = new OSBIDE.Web.Controllers.AssignmentController())
+    {
+        DateTime lastSubmitted = assignmentController.LatestSubmissionTime(assignmentId, currentUserId);
+        if (lastSubmitted.Year > 1)
+        {   
+            <br />
+            <time class="utc-time"
+                    datetime="@Helpers.DateAsUnixTime(lastSubmitted)"
+                    data-original-date="@Helpers.RawDate(lastSubmitted)"
+                    data-date-format="MM/DD/YYYY hh:mm A">
+                @lastSubmitted.ToString("MM/dd @ hh:mmtt") (UTC)
+            </time>            
+        }
+    }
+}

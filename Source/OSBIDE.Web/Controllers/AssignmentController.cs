@@ -22,12 +22,12 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Index(int assignmentId = -1)
         {
             Assignment currentAssignment = Db.Assignments.Where(a => a.Id == assignmentId).FirstOrDefault();
-            if(currentAssignment == null)
+            if (currentAssignment == null)
             {
                 return RedirectToAction("Index", "Feed");
             }
             List<Assignment> allAssignments = Db.Assignments.Where(a => a.CourseId == currentAssignment.CourseId).ToList();
-            
+
             //build the view model and return
             AssignmentsViewModel vm = new AssignmentsViewModel();
             vm.Assignments = allAssignments;
@@ -82,7 +82,7 @@ namespace OSBIDE.Web.Controllers
             }
 
             string assignmentName = "Unknown";
-            if(submits.Count > 0)
+            if (submits.Count > 0)
             {
                 assignmentName = submits.FirstOrDefault().Assignment.Name;
             }
@@ -93,7 +93,7 @@ namespace OSBIDE.Web.Controllers
         {
             //students can only download their own work
             SubmitEvent submit = Db.SubmitEvents.Where(s => s.EventLogId == id).FirstOrDefault();
-            if(submit != null && submit.EventLog.SenderId == CurrentUser.Id)
+            if (submit != null && submit.EventLog.SenderId == CurrentUser.Id)
             {
                 return DownloadSingle(id);
             }
@@ -156,6 +156,28 @@ namespace OSBIDE.Web.Controllers
             //order by last name
             submits = submits.OrderBy(s => s.EventLog.Sender.FullName).ToList();
             return submits;
+        }
+
+        //
+        // Get latest submission time (if any)
+        public DateTime LatestSubmissionTime(int assignmentId, int currentUserId)
+        {
+            //get the newest submit event for this assignment and user
+            SubmitEvent submitEvent = Db.SubmitEvents
+                                        .Where(se => se.AssignmentId == assignmentId)
+                                        .Where(s => s.EventLog.SenderId == currentUserId)
+                                        .OrderByDescending(se => se.EventLog.DateReceived)
+                                        .FirstOrDefault();
+
+            if (submitEvent != null)
+            {
+                return submitEvent.EventLog.DateReceived;                
+            }
+            else
+            {
+                //return default date value
+                return new DateTime();
+            }
         }
 
     }

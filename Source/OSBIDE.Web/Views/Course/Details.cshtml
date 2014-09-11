@@ -167,6 +167,7 @@
                 $('#select-course-form').submit();
             });
         });
+        
     </script>
 
     <style type="text/css">
@@ -267,7 +268,7 @@
             <thead>
                 <tr>
                     
-                    <th></th>                    
+                    <th>Last Submitted</th>                    
                     <th></th>
                     <th>Name</th>
                     <th>Release Date</th>
@@ -279,8 +280,7 @@
                 @foreach (Assignment assignment in Model.Assignments)
                 {
                     string altStyle = "";
-                    assignmentCounter++;
-                    string assignmentIdName = "submitted_" + assignment.Id;
+                    assignmentCounter++;                    
                     string assignmentIdLink = "submitLink_" + assignment.Id;
 
                     if (assignmentCounter % 2 == 0)
@@ -288,14 +288,17 @@
                         altStyle = "alt-row";
                     }
                     <tr class="@altStyle">
-                        <td>
+                        <td style="text-align:center;">
                             @if (isCoordinator == false)
                             {
                                 //check for flag to allow students to submit via the website
                                 if (assignment.AllowWebSubmit)
                                 {
                                     <a id="@assignmentIdLink" class="submit-assignment-file-link" data-id="@assignment.Id" data-name="@assignment.Name" href="@Url.Action("SubmitAssignmentFile", new { id = assignment.Id })"><img src="~/Content/icons/add_up.png" alt="submit files" title="submit files" />Submit Assignment</a>
-                                }
+                                }    
+                                
+                                @Helpers.LatestSubmissionTime(assignment.Id, Model.CurrentUser.Id)
+                                
                             }
                             else
                             {
