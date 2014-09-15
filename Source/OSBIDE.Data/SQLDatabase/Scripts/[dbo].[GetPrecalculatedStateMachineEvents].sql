@@ -3,7 +3,7 @@
 -- sproc [GetPrecalculatedStateMachineEvents]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-alter procedure [dbo].[GetPrecalculatedStateMachineEvents]
+create procedure [dbo].[GetPrecalculatedStateMachineEvents]
 
 	 @dateFrom DateTime
 	,@dateTo DateTime
@@ -27,7 +27,7 @@ begin
 		or @dateTo<@minDate and l.EventDate>=@dateFrom
 		or @dateFrom<@minDate and @dateTo<@minDate
 
-	--union all
+	union all
 	select SenderId=e.UserId, EventDate=e.AccessDate,
 	SolutionName=null, LogType='PassiveSocialEvent', BuildErrorLogId=null,ExecutionAction='',
 	u.FirstName, u.LastName, u.InstitutionId, MarkerType=e.EventCode

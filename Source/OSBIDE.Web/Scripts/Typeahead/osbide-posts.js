@@ -18,36 +18,7 @@
         }
     });
 
-    //populate trends
-    $.getJSON("/Feed/GetTrends", function (data) {
-        if (data.length == 0) {
-            $(".trends-container").hide();
-        }
-        else {
-            var items = [];
-            $.each(data, function (idx, obj) {
-                var val = obj.Name;
-                items.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
-            });
-            $(".trends-container ul").children().remove().end().append(items.join("")).fadeIn();
-            $(".trends-container").fadeIn();
-        }
-    });
-
-    //populate notifications
-    $.getJSON("/Feed/GetNotifications", function (data) {
-        if (data.length == 0) {
-            $(".notifications-container").hide();
-        }
-        else {
-            var items = [];
-            $.each(data, function (idx, obj) {
-                items.push("<li><a href='/Profile/Index/" + obj.UserId + "?component=UserProfile'>" + obj.FirstName + " " + obj.LastName + "</a> mentioned you in a <a href='/Feed/Details/" + obj.EventLogId + "?component=FeedDetails'>post</a></li>");
-            });
-            $(".notifications-container ul").children().remove().end().append(items.join(""));
-            $(".notifications-container").fadeIn();
-        }
-    });
+    TrendingNotifications.checkForUpdates();
 
     //feedpost keyword filter
     setKeywordSectionVisibility();
@@ -71,7 +42,7 @@
         search: function (term, callback) {
             userHandle = term.substring(0, 1) == "@";
             term = term.substring(1);
-            $.getJSON('/Feed/GetHashTags', { query: term, isHandle: userHandle})
+            $.getJSON('/Feed/GetHashTags', { query: term, isHandle: userHandle })
               .done(function (resp) {
                   callback($.map(resp, function (mention) {
                       return mention.indexOf(term) === 0 ? mention : null;
@@ -84,7 +55,7 @@
         },
         index: 1,
         replace: function (mention) {
-            if(userHandle)
+            if (userHandle)
                 return '@' + mention + ' ';
             return '#' + mention + ' ';
 
@@ -108,4 +79,47 @@ function setKeywordSectionVisibility() {
     else {
         $keywordSection.slideUp();
     }
+}
+
+
+
+if (typeof (TrendingNotifications) == "undefined") {
+    var TrendingNotifications = {
+        checkForUpdates: function () {
+
+            //populate trends
+            $.getJSON("/Feed/GetTrendingNotifications", function (data) {
+                if (data.length > 0) {
+                    var hashitems = [], mentionitems = [];
+                    $.each(data, function (idx, obj) {
+                        if (obj.HashtagId != null) {
+                            var val = obj.Hashtag;
+                            hashitems.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
+                        }
+                        else if (obj.UserId != null) {
+                            mentionitems.push("<li><a href='/Profile/Index/" + obj.UserId + "?component=UserProfile'>" + obj.FirstName + " " + obj.LastName + "</a> mentioned you in a <a href='/Feed/Details/" + obj.EventLogId + "?component=FeedDetails'>post</a></li>");
+                        }
+                    });
+
+                    if (hashitems.length == 0) {
+                        $(".trends-container").hide();
+                    }
+                    else {
+                        $(".trends-container ul").children().remove().end().append(hashitems.join("")).fadeIn();
+                        $(".trends-container").fadeIn();
+                    }
+
+                    if (mentionitems.length == 0) {
+                        $(".notifications-container").hide();
+                    }
+                    else {
+                        $(".notifications-container ul").children().remove().end().append(mentionitems.join(""));
+                        $(".notifications-container").fadeIn();
+                    }
+                }
+
+                setTimeout(TrendingNotifications.checkForUpdates, 30000);
+            });
+        }
+    };
 }

@@ -11,9 +11,14 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
 {
     using System;
     
-    public partial class GetTrends_Result
+    public partial class GetTrendsAndNotifications_Result
     {
-        public int HashtagId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public Nullable<int> EventLogId { get; set; }
+        public Nullable<bool> Viewed { get; set; }
+        public Nullable<int> UserId { get; set; }
+        public Nullable<int> HashtagId { get; set; }
         public string Hashtag { get; set; }
         public Nullable<int> Counts { get; set; }
     }

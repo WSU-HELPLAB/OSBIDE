@@ -120,9 +120,6 @@
     <Compile Include="SQLDatabase\Edmx\GetHashtags_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetNotifications_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetPassiveSocialEventProcessLog_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
@@ -132,7 +129,7 @@
     <Compile Include="SQLDatabase\Edmx\GetStateMachineEvents_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetTrends_Result.cs">
+    <Compile Include="SQLDatabase\Edmx\GetTrendsAndNotifications_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\HashTags.cs">
@@ -300,14 +297,12 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorQuotientSessionData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetHashtags].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetLookups].sql" />
-    <Content Include="SQLDatabase\Scripts\[dbo].[GetNotifications].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEventsCount].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetPassiveSocialEvents].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetPrecalculatedStateMachineEvents].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetStateMachineEvents].sql" />
-    <Content Include="SQLDatabase\Scripts\[dbo].[GetTrends].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetWatwinScoringErrorTypeData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[InsertPostTags].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[MarkRead].sql" />

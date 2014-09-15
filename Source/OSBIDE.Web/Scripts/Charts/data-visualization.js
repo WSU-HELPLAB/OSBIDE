@@ -241,7 +241,7 @@ if (typeof (Chart) == "undefined") {
                     var wid = len * scale;
 
                     // instantiate svg drawing instance
-                    var width = $(window).width() * 2 / 3, height = 60;
+                    var width = $(window).width() * 2 / 3, height = 65;
                     var margin = { top: 0, right: 100, bottom: 10, left: 0 },
                         width = width - margin.left - margin.right,
                         height = height - margin.top - margin.bottom;

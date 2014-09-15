@@ -16,26 +16,21 @@ namespace OSBIDE.Data.SQLDatabase
             }
         }
 
-        public static List<Tag> GetTrends(int topN)
+        public static List<TrendAndNotification> GetTrendAndNotification(int userId, int topN, bool getAll)
         {
             using (var context = new OsbideProcs())
             {
-                return context.GetTrends(topN).Select(t => new Tag { Id = t.HashtagId, Name = t.Hashtag, IsHandle = false }).ToList();
-            }
-        }
-
-        public static List<Notification> GetNotifications(int userId, int topN, bool getAll)
-        {
-            using (var context = new OsbideProcs())
-            {
-                return context.GetNotifications(userId, topN, getAll)
-                                .Select(t => new Notification
+                return context.GetTrendsAndNotifications(userId, topN, getAll)
+                                .Select(t => new TrendAndNotification
                                 {
                                     FirstName = t.FirstName,
                                     LastName = t.LastName,
                                     Viewed = t.Viewed,
                                     UserId = t.UserId,
-                                    EventLogId = t.EventLogId
+                                    EventLogId = t.EventLogId,
+                                    HashtagId =t.HashtagId,
+                                    Hashtag=t.Hashtag,
+                                    HashtagCounts=t.Counts,
                                 })
                                 .ToList();
             }

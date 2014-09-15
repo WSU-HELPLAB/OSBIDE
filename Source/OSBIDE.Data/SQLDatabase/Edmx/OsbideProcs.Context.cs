@@ -303,32 +303,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetHashtags_Result>("GetHashtags", tagParameter, ishandleParameter);
         }
     
-        public virtual ObjectResult<GetTrends_Result> GetTrends(Nullable<int> num)
-        {
-            var numParameter = num.HasValue ?
-                new ObjectParameter("num", num) :
-                new ObjectParameter("num", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTrends_Result>("GetTrends", numParameter);
-        }
-    
-        public virtual ObjectResult<GetNotifications_Result> GetNotifications(Nullable<int> user, Nullable<int> num, Nullable<bool> getAll)
-        {
-            var userParameter = user.HasValue ?
-                new ObjectParameter("user", user) :
-                new ObjectParameter("user", typeof(int));
-    
-            var numParameter = num.HasValue ?
-                new ObjectParameter("num", num) :
-                new ObjectParameter("num", typeof(int));
-    
-            var getAllParameter = getAll.HasValue ?
-                new ObjectParameter("getAll", getAll) :
-                new ObjectParameter("getAll", typeof(bool));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetNotifications_Result>("GetNotifications", userParameter, numParameter, getAllParameter);
-        }
-    
         public virtual int MarkRead(Nullable<int> postId, Nullable<int> user, Nullable<bool> read)
         {
             var postIdParameter = postId.HasValue ?
@@ -418,6 +392,23 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("studentIds", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetStateMachineEvents_Result>("GetStateMachineEvents", dateFromParameter, dateToParameter, studentIdsParameter);
+        }
+    
+        public virtual ObjectResult<GetTrendsAndNotifications_Result> GetTrendsAndNotifications(Nullable<int> user, Nullable<int> num, Nullable<bool> getAll)
+        {
+            var userParameter = user.HasValue ?
+                new ObjectParameter("user", user) :
+                new ObjectParameter("user", typeof(int));
+    
+            var numParameter = num.HasValue ?
+                new ObjectParameter("num", num) :
+                new ObjectParameter("num", typeof(int));
+    
+            var getAllParameter = getAll.HasValue ?
+                new ObjectParameter("getAll", getAll) :
+                new ObjectParameter("getAll", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTrendsAndNotifications_Result>("GetTrendsAndNotifications", userParameter, numParameter, getAllParameter);
         }
     }
 }

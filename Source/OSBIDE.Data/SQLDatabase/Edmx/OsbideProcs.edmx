@@ -89,11 +89,6 @@
           <Parameter Name="tag" Type="varchar" Mode="In" />
           <Parameter Name="ishandle" Type="bit" Mode="In" />
         </Function>
-        <Function Name="GetNotifications" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="user" Type="int" Mode="In" />
-          <Parameter Name="num" Type="int" Mode="In" />
-          <Parameter Name="getAll" Type="bit" Mode="In" />
-        </Function>
         <Function Name="GetPassiveSocialEventProcessLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetPassiveSocialEvents" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="skip" Type="int" Mode="In" />
@@ -127,8 +122,10 @@
           <Parameter Name="dateTo" Type="datetime" Mode="In" />
           <Parameter Name="studentIds" Type="varchar(max)" Mode="In" />
         </Function>
-        <Function Name="GetTrends" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+        <Function Name="GetTrendsAndNotifications" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="user" Type="int" Mode="In" />
           <Parameter Name="num" Type="int" Mode="In" />
+          <Parameter Name="getAll" Type="bit" Mode="In" />
         </Function>
         <Function Name="GetWatwinScoringErrorTypeData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
@@ -261,14 +258,6 @@
             <Parameter Name="tag" Mode="In" Type="String" />
             <Parameter Name="ishandle" Mode="In" Type="Boolean" />
           </FunctionImport>
-          <FunctionImport Name="GetTrends" ReturnType="Collection(OSBIDE.HybridModel.GetTrends_Result)">
-          <Parameter Name="num" Mode="In" Type="Int32" />
-          </FunctionImport>
-          <FunctionImport Name="GetNotifications" ReturnType="Collection(OSBIDE.HybridModel.GetNotifications_Result)">
-            <Parameter Name="user" Mode="In" Type="Int32" />
-            <Parameter Name="num" Mode="In" Type="Int32" />
-            <Parameter Name="getAll" Mode="In" Type="Boolean" />
-          </FunctionImport>
           <FunctionImport Name="MarkRead">
             <Parameter Name="PostId" Mode="In" Type="Int32" />
             <Parameter Name="User" Mode="In" Type="Int32" />
@@ -294,6 +283,11 @@
             <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
             <Parameter Name="dateTo" Mode="In" Type="DateTime" />
             <Parameter Name="studentIds" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetTrendsAndNotifications" ReturnType="Collection(OSBIDE.HybridModel.GetTrendsAndNotifications_Result)">
+            <Parameter Name="user" Mode="In" Type="Int32" />
+            <Parameter Name="num" Mode="In" Type="Int32" />
+            <Parameter Name="getAll" Mode="In" Type="Boolean" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -533,18 +527,6 @@
           <Property Type="String" Name="Tag" Nullable="false" />
           <Property Type="Boolean" Name="IsHandle" Nullable="false" />
         </ComplexType>
-        <ComplexType Name="GetTrends_Result">
-          <Property Type="Int32" Name="HashtagId" Nullable="false" />
-          <Property Type="String" Name="Hashtag" Nullable="false" MaxLength="800" />
-          <Property Type="Int32" Name="Counts" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="GetNotifications_Result">
-          <Property Type="String" Name="FirstName" Nullable="false" />
-          <Property Type="String" Name="LastName" Nullable="false" />
-          <Property Type="Int32" Name="EventLogId" Nullable="false" />
-          <Property Type="Boolean" Name="Viewed" Nullable="false" />
-          <Property Type="Int32" Name="UserId" Nullable="false" />
-        </ComplexType>
         <ComplexType Name="GetPassiveSocialEventProcessLog_Result">
           <Property Type="Int32" Name="Id" Nullable="false" />
           <Property Type="String" Name="SourceTableName" Nullable="false" MaxLength="256" />
@@ -566,6 +548,16 @@
           <Property Type="String" Name="LastName" Nullable="false" />
           <Property Type="Int32" Name="InstitutionId" Nullable="false" />
           <Property Type="String" Name="MarkerType" Nullable="true" MaxLength="8" />
+        </ComplexType>
+        <ComplexType Name="GetTrendsAndNotifications_Result">
+          <Property Type="String" Name="FirstName" Nullable="true" />
+          <Property Type="String" Name="LastName" Nullable="true" />
+          <Property Type="Int32" Name="EventLogId" Nullable="true" />
+          <Property Type="Boolean" Name="Viewed" Nullable="true" />
+          <Property Type="Int32" Name="UserId" Nullable="true" />
+          <Property Type="Int32" Name="HashtagId" Nullable="true" />
+          <Property Type="String" Name="Hashtag" Nullable="true" MaxLength="800" />
+          <Property Type="Int32" Name="Counts" Nullable="true" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -885,26 +877,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetTrends" FunctionName="OSBIDE.HybridModel.Store.GetTrends">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetTrends_Result">
-                <ScalarProperty Name="HashtagId" ColumnName="HashtagId" />
-                <ScalarProperty Name="Hashtag" ColumnName="Hashtag" />
-                <ScalarProperty Name="Counts" ColumnName="Counts" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetNotifications" FunctionName="OSBIDE.HybridModel.Store.GetNotifications">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetNotifications_Result">
-                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="LastName" ColumnName="LastName" />
-                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
-                <ScalarProperty Name="Viewed" ColumnName="Viewed" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="MarkRead" FunctionName="OSBIDE.HybridModel.Store.MarkRead" />
           <FunctionImportMapping FunctionImportName="GetPassiveSocialEventProcessLog" FunctionName="OSBIDE.HybridModel.Store.GetPassiveSocialEventProcessLog">
             <ResultMapping>
@@ -954,6 +926,20 @@
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="InstitutionId" ColumnName="InstitutionId" />
                 <ScalarProperty Name="MarkerType" ColumnName="MarkerType" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetTrendsAndNotifications" FunctionName="OSBIDE.HybridModel.Store.GetTrendsAndNotifications">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetTrendsAndNotifications_Result">
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="EventLogId" ColumnName="EventLogId" />
+                <ScalarProperty Name="Viewed" ColumnName="Viewed" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="HashtagId" ColumnName="HashtagId" />
+                <ScalarProperty Name="Hashtag" ColumnName="Hashtag" />
+                <ScalarProperty Name="Counts" ColumnName="Counts" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

@@ -39,14 +39,9 @@ namespace OSBIDE.Web.Controllers
             return Json(GetHashtagsProc.Run(string.Format("%{0}%", tag), isHandle).Select(t=>t.Name).ToArray(), JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetTrends()
+        public ActionResult GetTrendingNotifications()
         {
-            return Json(GetHashtagsProc.GetTrends(10), JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult GetNotifications()
-        {
-            return Json(GetHashtagsProc.GetNotifications(CurrentUser.Id, 10, false), JsonRequestBehavior.AllowGet);
+            return Json(GetHashtagsProc.GetTrendAndNotification(CurrentUser.Id, 10, false), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -387,11 +382,12 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the first feed item received by the client.</param>
         /// <returns></returns>
-        public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1)
+        public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1, string keyword = "", int hash = 0)
         {
             try
             {
                 var query = new ActivityFeedQuery();
+                query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
                 if (errorType > 0)
                 {
                     query = new BuildErrorQuery(Db);
