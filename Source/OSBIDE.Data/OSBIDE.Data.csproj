@@ -303,6 +303,7 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetProcedureData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetRecentCompileErrors].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetStateMachineEvents].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetTrendsAndNotifications].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetWatwinScoringErrorTypeData].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[InsertPostTags].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[MarkRead].sql" />
