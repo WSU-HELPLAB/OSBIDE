@@ -95,7 +95,16 @@ if (typeof (FileManager) == "undefined") {
 
         updateCourseDependencies: function(){
 
-            var url = $("#rootUrl").val() + "Admin/GetCourseDeliverables?courseId=" + $("#CourseId").val();
+            var url = $("#rootUrl").val() + "Analytics/GetCourseDeliverables?courseId=" + $("#CourseId").val();
+            var dateFrom = $("#DateFrom").val();
+            if (dateFrom.length > 0) {
+                url = url + "&dateFrom=" + (new Date(dateFrom)).yyyymmdd();
+            }
+            var dateTo = $("#DateTo").val();
+            if (dateTo.length > 0) {
+                url = url + "&dateTo=" + (new Date(dateTo)).yyyymmdd();
+            }
+
             $.getJSON(url, function (data) {
 
                 var items = "<option>Any</option>";
@@ -140,3 +149,10 @@ if (typeof (FileManager) == "undefined") {
         }
     };
 }
+
+Date.prototype.yyyymmdd = function () {
+    var yyyy = this.getFullYear().toString();
+    var mm = (this.getMonth() + 1).toString();
+    var dd = this.getDate().toString();
+    return yyyy + "-" + (mm[1] ? mm : "0" + mm[0]) + "-" + (dd[1] ? dd : "0" + dd[0]);
+};

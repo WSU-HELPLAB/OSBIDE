@@ -26,6 +26,11 @@ namespace OSBIDE.Web.Controllers
             return View("Criteria", analytics.Criteria);
         }
 
+        public ActionResult GetCourseDeliverables(int courseId, DateTime? dateFrom, DateTime? dateTo)
+        {
+            return Json(CriteriaLookupsProc.GetDeliverables(courseId, dateFrom, dateTo), JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult RunDocUtils()
         {
             return Json(DocUtil.Run(CurrentUser.Id), JsonRequestBehavior.AllowGet);

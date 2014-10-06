@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using OSBIDE.Data.DomainObjects;
@@ -33,11 +34,13 @@ namespace OSBIDE.Data.SQLDatabase
                 return courses;
             }
         }
-        public static List<string> GetDeliverables(int courseId)
+        public static List<string> GetDeliverables(int courseId, DateTime? dateFrom = null, DateTime? dateTo = null)
         {
             using (var context = new OsbideProcs())
             {
-                return (from d in context.GetDeliverableLookup(courseId) select d.Deliverable).ToList();
+                if (!dateFrom.HasValue) dateFrom = new DateTime(2010, 1, 1);
+                if (!dateTo.HasValue) dateTo = DateTime.Today.AddDays(1);
+                return (from d in context.GetDeliverableLookup(courseId, dateFrom, dateTo) select d).ToList();
             }
         }
         public static List<GenderLookup> GetGenders()

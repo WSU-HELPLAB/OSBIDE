@@ -108,11 +108,11 @@ begin
 		from #temp
 	else
 	begin
-		declare @sql nvarchar(2000)
-		set @sql =N'insert into #ret select UserId, InstitutionId, FirstName, LastName, Age, Gender, Ethnicity, Deliverable, Grade, LastActivity'
-		set @sql+=N',Prefix, CourseNumber, Season, [Year]=cast([Year] as varchar(4))'
-		set @sql+=N' from #temp where firstName like ''%' + @nameToken + '%'' or LastName like ''%' + @nameToken + '%'''
-		execute sp_executesql @sql
+		set @nameToken='%' + @nameToken + '%'
+		insert into #ret
+		select UserId, InstitutionId, FirstName, LastName, Age, Gender, Ethnicity, Deliverable, Grade, LastActivity
+			  ,Prefix, CourseNumber, Season, [Year]=cast([Year] as varchar(4))
+		from #temp where firstName like @nameToken or LastName like @nameToken
 	end
 
 	select UserId, InstitutionId, FirstName , LastName, Age, Gender, Ethnicity, Deliverable, Grade, LastActivity,Prefix, CourseNumber, Season, [Year]

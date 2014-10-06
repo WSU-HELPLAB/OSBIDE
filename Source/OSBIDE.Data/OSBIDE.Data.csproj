@@ -159,9 +159,6 @@
     <Compile Include="SQLDatabase\Edmx\GetCourseLookup_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
-    <Compile Include="SQLDatabase\Edmx\GetDeliverableLookup_Result.cs">
-      <DependentUpon>OsbideProcs.tt</DependentUpon>
-    </Compile>
     <Compile Include="SQLDatabase\Edmx\GetErrorFixTimeStats_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>

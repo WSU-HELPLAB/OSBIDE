@@ -32,15 +32,19 @@ go
 
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetDeliverableLookup]
+alter procedure [dbo].[GetDeliverableLookup]
 
 	 @courseId int
+	,@dateFrom datetime
+	,@dateTo datetime
 as
 begin
 
 	set nocount on;
 
-	select Deliverable=Name from [dbo].[Assignments] with (nolock) where CourseId=@courseId and IsDeleted=0
+	select Deliverable=Name
+	from [dbo].[Assignments] with (nolock)
+	where CourseId=@courseId and IsDeleted=0 and ReleaseDate > @dateFrom and ReleaseDate <= @dateTo
 
 end
 go

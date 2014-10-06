@@ -218,15 +218,6 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorQuotientDocumentData_Result>("GetErrorQuotientDocumentData", buildIdsParameter);
         }
     
-        public virtual ObjectResult<GetDeliverableLookup_Result> GetDeliverableLookup(Nullable<int> courseId)
-        {
-            var courseIdParameter = courseId.HasValue ?
-                new ObjectParameter("courseId", courseId) :
-                new ObjectParameter("courseId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetDeliverableLookup_Result>("GetDeliverableLookup", courseIdParameter);
-        }
-    
         public virtual ObjectResult<GetErrorFixTimeStats_Result> GetErrorFixTimeStats()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetErrorFixTimeStats_Result>("GetErrorFixTimeStats");
@@ -409,6 +400,23 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
                 new ObjectParameter("getAll", typeof(bool));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTrendsAndNotifications_Result>("GetTrendsAndNotifications", userParameter, numParameter, getAllParameter);
+        }
+    
+        public virtual ObjectResult<string> GetDeliverableLookup(Nullable<int> courseId, Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo)
+        {
+            var courseIdParameter = courseId.HasValue ?
+                new ObjectParameter("courseId", courseId) :
+                new ObjectParameter("courseId", typeof(int));
+    
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetDeliverableLookup", courseIdParameter, dateFromParameter, dateToParameter);
         }
     }
 }

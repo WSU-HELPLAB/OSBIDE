@@ -72,6 +72,8 @@
         <Function Name="GetCourseLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetDeliverableLookup" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="courseId" Type="int" Mode="In" />
+          <Parameter Name="dateFrom" Type="datetime" Mode="In" />
+          <Parameter Name="dateTo" Type="datetime" Mode="In" />
         </Function>
         <Function Name="GetErrorFixTimeStats" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetErrorQuotientDocumentData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -226,9 +228,6 @@
           <FunctionImport Name="GetErrorQuotientDocumentData" ReturnType="Collection(OSBIDE.HybridModel.GetErrorQuotientDocumentData_Result)">
           <Parameter Name="buildIds" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="GetDeliverableLookup" ReturnType="Collection(OSBIDE.HybridModel.GetDeliverableLookup_Result)">
-          <Parameter Name="courseId" Mode="In" Type="Int32" />
-          </FunctionImport>
           <FunctionImport Name="GetErrorFixTimeStats" ReturnType="Collection(OSBIDE.HybridModel.GetErrorFixTimeStats_Result)" />
           <FunctionImport Name="GetBuildErrorMessages" ReturnType="Collection(OSBIDE.HybridModel.GetBuildErrorMessages_Result)">
           <Parameter Name="buildIds" Mode="In" Type="String" />
@@ -288,6 +287,11 @@
             <Parameter Name="user" Mode="In" Type="Int32" />
             <Parameter Name="num" Mode="In" Type="Int32" />
             <Parameter Name="getAll" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="GetDeliverableLookup" ReturnType="Collection(String)">
+            <Parameter Name="courseId" Mode="In" Type="Int32" />
+            <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
+            <Parameter Name="dateTo" Mode="In" Type="DateTime" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -458,9 +462,6 @@
           <Property Type="String" Name="FileName" Nullable="false" />
           <Property Type="Int32" Name="NumberOfModified" Nullable="true" />
           <Property Type="String" Name="ModifiedLines" Nullable="true" />
-        </ComplexType>
-        <ComplexType Name="GetDeliverableLookup_Result">
-          <Property Type="String" Name="Deliverable" Nullable="false" />
         </ComplexType>
         <ComplexType Name="GetErrorFixTimeStats_Result">
           <Property Type="Int32" Name="ErrorTypeId" Nullable="false" />
@@ -795,13 +796,6 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetDeliverableLookup" FunctionName="OSBIDE.HybridModel.Store.GetDeliverableLookup">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetDeliverableLookup_Result">
-                <ScalarProperty Name="Deliverable" ColumnName="Deliverable" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="GetErrorFixTimeStats" FunctionName="OSBIDE.HybridModel.Store.GetErrorFixTimeStats">
             <ResultMapping>
               <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetErrorFixTimeStats_Result">
@@ -943,6 +937,7 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="GetDeliverableLookup" FunctionName="OSBIDE.HybridModel.Store.GetDeliverableLookup" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
