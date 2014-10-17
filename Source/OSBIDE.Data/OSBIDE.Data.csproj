@@ -283,6 +283,7 @@
     <Content Include="SQLDatabase\Scripts\fnSplit.sql" />
     <Content Include="SQLDatabase\Scripts\ParsePassiveSocialEvents.sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActionReqestsCount].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetActiveSocialEventProcessInfo].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildErrorMessages].sql" />
