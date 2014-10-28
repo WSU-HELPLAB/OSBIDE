@@ -11,6 +11,10 @@ namespace OSBIDE.Data.SQLDatabase
 {
     public class TimelineChartDataProc
     {
+        private const string EVENT_FORMAT = ",{0};{1}";
+        private const string ACTIVITY_FORMAT = ",{0};{1};{2}";
+        private const string TIME_FORMAT = "MM/dd/yy hh:mm:ss";
+
         public static List<TimelineChartData> Get(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale, bool? realtime)
         {
             // need a min DateTime value to avoid SQL server param out of range
@@ -292,7 +296,7 @@ namespace OSBIDE.Data.SQLDatabase
 
             chartData.ForEach(x =>
             {
-                csvText.Append(x.title);
+                csvText.Append(x.UserId);
 
                 var i = 0;
                 var j = 0;
@@ -300,24 +304,24 @@ namespace OSBIDE.Data.SQLDatabase
                 {
                     if (i >= x.measures.Count)
                     {
-                        csvText.AppendFormat(",{0},{1}", x.markers[j].Name, x.markers[j].EventTimeDisplayText);
+                        csvText.AppendFormat(EVENT_FORMAT, x.markers[j].Name, x.markers[j].EventTime.ToString(TIME_FORMAT));
                         j++;
                     }
                     else if (j >= x.markers.Count)
                     {
-                        csvText.AppendFormat(",{0},{1},{2}", x.measures[i].Name, x.measures[i].StartTimeDisplayText, x.measures[i].EndTimeDisplayText);
+                        csvText.AppendFormat(ACTIVITY_FORMAT, x.measures[i].Name, x.measures[i].StartTime.ToString(TIME_FORMAT), x.measures[i].EndTime.ToString(TIME_FORMAT));
                         i++;
                     }
                     else
                     {
                         if (x.markers[j].Position < x.measures[i].StartPoint)
                         {
-                            csvText.AppendFormat(",{0},{1}", x.markers[j].Name, x.markers[j].EventTimeDisplayText);
+                            csvText.AppendFormat(EVENT_FORMAT, x.markers[j].Name, x.markers[j].EventTime.ToString(TIME_FORMAT));
                             j++;
                         }
                         else
                         {
-                            csvText.AppendFormat(",{0},{1},{2}", x.measures[i].Name, x.measures[i].StartTimeDisplayText, x.measures[i].EndTimeDisplayText);
+                            csvText.AppendFormat(ACTIVITY_FORMAT, x.measures[i].Name, x.measures[i].StartTime.ToString(TIME_FORMAT), x.measures[i].EndTime.ToString(TIME_FORMAT));
                             i++;
                         }
                     }
