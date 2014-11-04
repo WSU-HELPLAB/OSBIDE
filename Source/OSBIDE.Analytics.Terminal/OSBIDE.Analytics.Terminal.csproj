@@ -49,11 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\TimelineState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\Comment.cs" />
     <Compile Include="ViewModels\CommentMetricsViewModel.cs" />
+    <Compile Include="ViewModels\TimelineAnalysisViewModel.cs" />
     <Compile Include="Views\CommentMetricsView.cs" />
+    <Compile Include="Views\TimelineAnalysisView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

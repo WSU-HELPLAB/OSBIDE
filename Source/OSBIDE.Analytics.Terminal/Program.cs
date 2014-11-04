@@ -10,7 +10,7 @@ namespace OSBIDE.Analytics.Terminal
 {
     class Program
     {
-        private enum MenuOption { CommentMetrics = 1, Exit }
+        private enum MenuOption { CommentMetrics = 1, TimelineAnalysis, Exit }
         static void Main(string[] args)
         {
 
@@ -19,6 +19,7 @@ namespace OSBIDE.Analytics.Terminal
             {
                 Console.WriteLine("*** OSBIDE Analytics ***");
                 Console.WriteLine((int)MenuOption.CommentMetrics + ". Run comment metrics");
+                Console.WriteLine((int)MenuOption.TimelineAnalysis + ". Run timeline analysis");
                 Console.WriteLine((int)MenuOption.Exit + ". Exit");
                 Console.Write(">> ");
 
@@ -35,6 +36,10 @@ namespace OSBIDE.Analytics.Terminal
                         case MenuOption.CommentMetrics:
                             CommentMetricsView view = new CommentMetricsView();
                             view.Run();
+                            break;
+                        case MenuOption.TimelineAnalysis:
+                            TimelineAnalysisView tav = new TimelineAnalysisView();
+                            tav.Run();
                             break;
                         case MenuOption.Exit:
                             Console.WriteLine("Exiting program.");
