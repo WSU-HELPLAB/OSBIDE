@@ -43,6 +43,10 @@ namespace OSBIDE.Data.SQLDatabase
                 var chartData = new List<TimelineChartData>();
                 var currentSolution = string.Empty;
                 var prevStateName = ProgrammingState.edit_syn_u_sem_u;
+
+                // previous build error is used for figuring out the next state of start without debugging event
+                var lastBuildErrorLogId = rawR.First().BuildErrorLogId;
+
                 foreach (var r in rawR)
                 {
                     // processing the flat events and compose a list of programming states for each user
@@ -118,6 +122,9 @@ namespace OSBIDE.Data.SQLDatabase
                         chartData.Add(userData);
 
                         #endregion
+
+                        // reset for a new user
+                        lastBuildErrorLogId = null;
                     }
 
                     // is this a social event?
@@ -192,16 +199,22 @@ namespace OSBIDE.Data.SQLDatabase
                             nextStateName = r.BuildErrorLogId.HasValue
                                             ? TimelineStateDictionaries.NextStateForBuildWithError[prevStateName]
                                             : TimelineStateDictionaries.NextStateForBuildWithoutError[prevStateName];
+
+                            lastBuildErrorLogId = r.BuildErrorLogId.HasValue ? (int?)r.BuildErrorLogId.Value : null;
                         }
                         else if (string.Compare(r.LogType, "DebugEvent", true) == 0 && r.ExecutionActionId.HasValue)
                         {
-                            nextStateName = r.ExecutionActionId == (int)DebugActions.StartWithoutDebugging
-                                            ? TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName]
-                                            : TimelineStateDictionaries.NextStateForDebug[prevStateName];
+                            nextStateName = GetNextStateForDebugEvent(userData, prevStateName, r.ExecutionActionId.Value, lastBuildErrorLogId);
+
+                            // the next event's previous event (this one) is not a build event
+                            lastBuildErrorLogId = null;
                         }
                         else if (string.Compare(r.LogType, "ExceptionEvent", true) == 0 && (prevStateName == ProgrammingState.debug_sem_u || prevStateName == ProgrammingState.idle))
                         {
                             nextStateName = TimelineStateDictionaries.NextStateForExceptionEvent[prevStateName];
+
+                            // the next event's previous event (this one) is not a build event
+                            lastBuildErrorLogId = null;
                         }
                         else if (TimelineStateDictionaries.EditorEvents.Any(x => string.Compare(x, r.LogType, true) == 0))
                         {
@@ -332,7 +345,7 @@ namespace OSBIDE.Data.SQLDatabase
             return csvText.ToString();
         }
 
-        private static ProgrammingState GetNextStateForDebugEvent(TimelineChartData userData, ProgrammingState prevStateName, int executionAction)
+        private static ProgrammingState GetNextStateForDebugEvent(TimelineChartData userData, ProgrammingState prevStateName, int executionAction, int? prevBuildErrorLogId)
         {
             var nextStateName = prevStateName;
 
@@ -351,7 +364,14 @@ namespace OSBIDE.Data.SQLDatabase
             }
             else if (executionAction == (int)DebugActions.StartWithoutDebugging)
             {
-                nextStateName = TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName];
+                if (prevBuildErrorLogId.HasValue)
+                {
+                    nextStateName = ProgrammingState.run_last_success;
+                }
+                else
+                {
+                    nextStateName = TimelineStateDictionaries.NextStateForStartWithoutDebugging[prevStateName];
+                }
             }
             else
             {
