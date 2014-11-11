@@ -13,7 +13,7 @@ namespace OSBIDE.Data.SQLDatabase
     {
         private const string EVENT_FORMAT = ",{0};{1}";
         private const string ACTIVITY_FORMAT = ",{0};{1};{2}";
-        private const string TIME_FORMAT = "MM/dd/yy hh:mm:ss";
+        private const string TIME_FORMAT = "MM/dd/yy HH:mm:ss";
 
         public static List<TimelineChartData> Get(DateTime? dateFrom, DateTime? dateTo, IEnumerable<int> userIds, TimeScale timescale, int? timeout, bool grayscale, bool? realtime)
         {
