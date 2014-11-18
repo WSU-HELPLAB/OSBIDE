@@ -1,5 +1,6 @@
 ﻿using OSBIDE.Analytics.Terminal.Models;
 using OSBIDE.Analytics.Terminal.ViewModels;
+using OSBIDE.Library.CSV;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,18 +12,69 @@ namespace OSBIDE.Analytics.Terminal.Views
 {
     class TimelineAnalysisView
     {
-        private enum MenuOption { ChangeDirectory = 1, ListFiles, AnalyzeFile, Exit }
-      
+        private enum MenuOption { ChangeDirectory = 1, ListFiles, LoadFile, AppendFile, LoadGrades, NormalizeProgrammingStates, WriteToFile, Exit }
+
+        private TimelineAnalysisViewModel Vm { get; set; }
+
+        public TimelineAnalysisView()
+        {
+            Vm = new TimelineAnalysisViewModel();
+        }
+
+        private string GetFile()
+        {
+            int counter = 1;
+
+            //enumerate files in working directory
+            List<string> files = Directory.EnumerateFiles(".", "*.csv").ToList();
+            foreach (string file in files)
+            {
+                Console.WriteLine("{0}. {1}", counter, file);
+                counter++;
+            }
+            Console.Write(">> ");
+            int fileToRead = -1;
+            string user_input = Console.ReadLine();
+            Int32.TryParse(user_input, out fileToRead);
+
+            //ensure valid selection
+            if (fileToRead > 0 && fileToRead < counter)
+            {
+                return files[fileToRead - 1];
+            }
+            return "";
+        }
+
+        private void LoadFile()
+        {
+            string file = GetFile();
+            if(file.Length > 0)
+            {
+                Vm.LoadTimeline(file);
+            }
+        }
+
+        private void AppendFile()
+        {
+            string file = GetFile();
+            if (file.Length > 0)
+            {
+                Vm.AppendTimeline(file);
+            } 
+        }
+
         public void Run()
         {
             int userChoice = 0;
             while (userChoice != (int)MenuOption.Exit)
             {
-                TimelineAnalysisViewModel vm = new TimelineAnalysisViewModel();
-
                 Console.WriteLine((int)MenuOption.ChangeDirectory + ". Change working directory");
                 Console.WriteLine((int)MenuOption.ListFiles + ". List all files in current directory");
-                Console.WriteLine((int)MenuOption.AnalyzeFile + ". Analyze file");
+                Console.WriteLine((int)MenuOption.LoadFile + ". Load file (clears existing timeline data)");
+                Console.WriteLine((int)MenuOption.AppendFile + ". Append data to existing timeline data");
+                Console.WriteLine((int)MenuOption.LoadGrades + ". Attach grade data to students");
+                Console.WriteLine((int)MenuOption.NormalizeProgrammingStates + ". Normalize programming states");
+                Console.WriteLine((int)MenuOption.WriteToFile + ". Write results to CSV");
                 Console.WriteLine((int)MenuOption.Exit + ". Exit");
                 Console.Write(">> ");
                 string rawInput = Console.ReadLine();
@@ -41,27 +93,26 @@ namespace OSBIDE.Analytics.Terminal.Views
                         case MenuOption.ListFiles:
                             Console.WriteLine("Feature not implemented.");
                             break;
-                        case MenuOption.AnalyzeFile:
-                            int counter = 1;
-
-                            //enumerate files in working directory
-                            List<string> files = Directory.EnumerateFiles(".", "*.csv").ToList();
-                            foreach(string file in files)
-                            {
-                                Console.WriteLine("{0}. {1}", counter, file);
-                                counter++;
-                            }
-                            Console.Write(">> ");
-                            int fileToRead = -1;
-                            string user_input = Console.ReadLine();
-                            Int32.TryParse(user_input, out fileToRead);
-
-                            //ensure valid selection
-                            if(fileToRead > 0 && fileToRead < counter)
-                            {
-                                Dictionary<int, List<TimelineState>> states = vm.ParseTimeline(files[fileToRead - 1]);
-                            }
-
+                        case MenuOption.LoadFile:
+                            LoadFile();
+                            Console.WriteLine("File load complete.");
+                            break;
+                        case MenuOption.AppendFile:
+                            AppendFile();
+                            Console.WriteLine("File appended.");
+                            break;
+                        case MenuOption.LoadGrades:
+                            Vm.AttachGrades();
+                            Console.WriteLine("Grades attached.");
+                            break;
+                        case MenuOption.NormalizeProgrammingStates:
+                            Vm.NormalizeProgrammingStates();
+                            Console.WriteLine("States normalized.");
+                            break;
+                        case MenuOption.WriteToFile:
+                            Console.Write("Enter destination file: ");
+                            rawInput = Console.ReadLine();
+                            Vm.WriteToCsv(rawInput);
                             break;
                         case MenuOption.Exit:
                             Console.WriteLine("Returning to main menu.");

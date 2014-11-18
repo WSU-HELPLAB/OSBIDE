@@ -63,6 +63,7 @@ namespace OSBIDE.Library.Models
         public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
         public DbSet<HelpfulMarkGivenEvent> HelpfulMarkGivenEvents { get; set; }
         public DbSet<Syllable> Syllables { get; set; }
+        public DbSet<StudentGrade> StudentGrades { get; set; }
 
         public OsbideContext()
             : base()

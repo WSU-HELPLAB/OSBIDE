@@ -217,6 +217,7 @@
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />
     <Compile Include="Models\SocialActivityLog.cs" />
+    <Compile Include="Models\StudentGrade.cs" />
     <Compile Include="Models\Syllable.cs" />
     <Compile Include="Models\UserFeedSetting.cs" />
     <Compile Include="Models\UserScore.cs" />
