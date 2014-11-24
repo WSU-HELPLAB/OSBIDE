@@ -65,7 +65,7 @@
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
@@ -133,6 +133,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -170,6 +171,7 @@
     <Compile Include="Events\AskForHelpEvent.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
+    <Compile Include="Events\EventType.cs" />
     <Compile Include="Events\FeedPostEvent.cs" />
     <Compile Include="Events\HelpfulMarkGivenEvent.cs" />
     <Compile Include="Events\LogCommentEvent.cs" />
@@ -213,6 +215,7 @@
     <Compile Include="Models\EventLogSubscription.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\OsbideContextIfNotExistsInitializer.cs" />
+    <Compile Include="Models\PassiveSocialEvent.cs" />
     <Compile Include="Models\PrivateQuestion.cs" />
     <Compile Include="Models\ProfileImage.cs" />
     <Compile Include="Models\ServerLog.cs" />
@@ -250,7 +253,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Events.cd" />
     <None Include="library key.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
@@ -259,7 +261,9 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

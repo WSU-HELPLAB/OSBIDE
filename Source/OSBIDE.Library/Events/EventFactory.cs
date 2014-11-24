@@ -13,7 +13,7 @@ using System.Windows;
 
 namespace OSBIDE.Library.Events
 {
-    public enum DebugActions { Start, StepOver, StepInto, StepOut, StopDebugging, StartWithoutDebugging };
+    public enum DebugActions { Undefined=-1, Start=0, StepOver=1, StepInto=2, StepOut=3, StopDebugging=4, StartWithoutDebugging=5 };
     public enum CutCopyPasteActions { Cut, Copy, Paste };
     public class EventFactory
     {
@@ -183,60 +183,6 @@ namespace OSBIDE.Library.Events
                 zipStream.Position = 0;
             }
             return zipStream.ToArray();
-        }
-
-        public static IOsbideEvent FromName(string name)
-        {
-            IOsbideEvent evt = null;
-            if (name == AskForHelpEvent.Name)
-            {
-                evt = new AskForHelpEvent();
-            }
-            else if (name == BuildEvent.Name)
-            {
-                evt = new BuildEvent();
-            }
-            else if (name == CutCopyPasteEvent.Name)
-            {
-                evt = new CutCopyPasteEvent();
-            }
-            else if (name == DebugEvent.Name)
-            {
-                evt = new DebugEvent();
-            }
-            else if (name == EditorActivityEvent.Name)
-            {
-                evt = new EditorActivityEvent();
-            }
-            else if (name == ExceptionEvent.Name)
-            {
-                evt = new ExceptionEvent();
-            }
-            else if (name == FeedPostEvent.Name)
-            {
-                evt = new FeedPostEvent();
-            }
-            else if (name == HelpfulMarkGivenEvent.Name)
-            {
-                evt = new HelpfulMarkGivenEvent();
-            }
-            else if (name == LogCommentEvent.Name)
-            {
-                evt = new LogCommentEvent();
-            }
-            else if (name == SaveEvent.Name)
-            {
-                evt = new SaveEvent();
-            }
-            else if (name == SolutionDownloadEvent.Name)
-            {
-                evt = new SolutionDownloadEvent();
-            }
-            else if (name == SubmitEvent.Name)
-            {
-                evt = new SubmitEvent();
-            }
-            return evt;
         }
     }
 }

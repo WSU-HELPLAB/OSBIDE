@@ -82,7 +82,7 @@ namespace OSBIDE.Web.Controllers
             }
             if (needsScoreUpdate == true)
             {
-                UpdateUserScores();
+                //UpdateUserScores();
                 GlobalCache["lastScoreUpdate"] = DateTime.UtcNow;
             }
 

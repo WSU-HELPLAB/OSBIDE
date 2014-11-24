@@ -1,16 +1,18 @@
-﻿using System.Globalization;
-using OSBIDE.Library.CSV;
-using OSBIDE.Library.Events;
-using OSBIDE.Library.Models;
-using OSBIDE.Web.Models.Attributes;
-using OSBIDE.Web.Models.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+
 using OSBIDE.Data.DomainObjects;
-using OSBIDE.Web.Models.FileSystem;
+using OSBIDE.Data.SQLDatabase;
+using OSBIDE.Library.CSV;
+using OSBIDE.Library.Events;
+using OSBIDE.Library.Models;
+using OSBIDE.Web.Models;
+using OSBIDE.Web.Models.Attributes;
+using OSBIDE.Web.Models.ViewModels;
+
 namespace OSBIDE.Web.Controllers
 {
     [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
@@ -23,47 +25,6 @@ namespace OSBIDE.Web.Controllers
         {
             return View();
         }
-
-        //[DenyAccess]
-        [AllowAccess(SystemRole.Admin)]
-        public ActionResult Anonymize()
-        {
-            return View();
-        }
-
-        //[DenyAccess]
-        [AllowAccess(SystemRole.Admin)]
-        [HttpPost]
-        public ActionResult Anonymize(string vm)
-        {
-            FileSystem fs = new FileSystem();
-            FileCollection fc = fs.File(f => f.Contains("Names"));
-            if(fc.Count == 2)
-            {
-                string[] delimiter = {"\r\n"};
-                IDictionary<string, byte[]> fileBits = fc.ToBytes();
-                List<string> firstNames = System.Text.Encoding.Default.GetString(fileBits["FirstNames.txt"]).Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
-                List<string> lastNames = System.Text.Encoding.Default.GetString(fileBits["LastNames.txt"]).Split(delimiter, StringSplitOptions.RemoveEmptyEntries).ToList();
-                Random rng = new Random();
-                List<OsbideUser> users = Db.Users.ToList();
-                foreach(OsbideUser user in users)
-                {
-                    string firstName = firstNames[rng.Next(0, firstNames.Count - 1)];
-                    string lastName = lastNames[rng.Next(0, lastNames.Count - 1)];
-
-                    //convert "ADAM" to "Adam"
-                    firstName = firstName.First().ToString().ToUpper() + firstName.Substring(1).ToLower();
-                    lastName = lastName.First().ToString().ToUpper() + lastName.Substring(1).ToLower();
-
-                    user.FirstName = firstName;
-                    user.LastName = lastName;
-                }
-
-                Db.SaveChanges();
-            }
-            return View();
-        }
-
 
         public ActionResult DailyActivity(int? SelectedStudentId, DateTime? SelectedDate)
         {
@@ -86,7 +47,7 @@ namespace OSBIDE.Web.Controllers
                 }
 
                 //pull request logs from azure storage
-                var requestLogs = DomainObjectHelpers.GetAccountRequest(1, vm.SelectedStudentId)
+                var requestLogs = DomainObjectHelpers.GetActionRequests(1, vm.SelectedStudentId)
                                         .Where(l => l.CreatorId == vm.SelectedStudentId)
                                         .Where(l => l.AccessDate > vm.SelectedDate)
                                         .Where(l => l.AccessDate < tomorrow)
@@ -113,22 +74,75 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
+        public ActionResult GetCourseDeliverables(int courseId)
+        {
+            return Json(CriteriaLookupsProc.GetDeliverables(courseId), JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
-        public ActionResult UploadRoster(HttpPostedFileBase file)
+        public ActionResult UploadRoster(AdminDataImport dataImport)
         {
             ViewBag.UploadResult = true;
-            List<List<string>> csvList = new List<List<string>>();
-            try
+
+            if (Request.Files.Count > 0 && Request.Files[0].ContentLength > 0)
             {
-                using (CsvReader reader = new CsvReader(file.InputStream))
+                try
                 {
-                    csvList = reader.Parse();
+                    var fileExtension = System.IO.Path.GetExtension(dataImport.File.FileName);
+                    if (dataImport.Schema != FileUploadSchema.CSV.ToString())
+                    {
+                        ProcessExcel(dataImport, fileExtension);
+                    }
+                    else
+                    {
+                        ProcessCSV(dataImport.File);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.UploadResult = false;
+                    ViewBag.ErrorMessage = ex.Message;
                 }
             }
-            catch (Exception)
+
+            return View("Index");
+        }
+
+        private void ProcessExcel(AdminDataImport dataImport, string fileExtension)
+        {
+            var postedFile = Request.Files[0];
+            var filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, System.IO.Path.GetFileName(postedFile.FileName));
+            if (System.IO.File.Exists(filePath))
             {
-                ViewBag.UploadResult = false;
-                return View("Index");
+
+                System.IO.File.Delete(filePath);
+            }
+            postedFile.SaveAs(filePath);
+
+            if (dataImport.Schema == FileUploadSchema.Grade.ToString())
+            {
+                ExcelImport.UploadGrades(filePath
+                                         , fileExtension
+                                         , dataImport.CourseId
+                                         , dataImport.Deliverable
+                                         , CurrentUser.Id);
+            }
+            else
+            {
+                ExcelImport.UploadSurveys(filePath
+                                         , fileExtension
+                                         , dataImport.CourseId
+                                         , CurrentUser.Id);
+            }
+        }
+
+        private void ProcessCSV(HttpPostedFileBase file)
+        {
+            List<List<string>> csvList = new List<List<string>>();
+
+            using (CsvReader reader = new CsvReader(file.InputStream))
+            {
+                csvList = reader.Parse();
             }
 
             //Process of creating automatic user subscriptions:
@@ -201,16 +215,7 @@ namespace OSBIDE.Web.Controllers
             }
 
             //save any DB changes
-            try
-            {
-                Db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                ViewBag.UploadResult = false;
-            }
-
-            return View("Index");
+            Db.SaveChanges();
         }
     }
 }

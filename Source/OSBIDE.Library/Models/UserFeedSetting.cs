@@ -70,33 +70,35 @@ namespace OSBIDE.Library.Models
             return result == (int)setting;
         }
 
-        public static IOsbideEvent FeedOptionToOsbideEvent(EventFilterSetting option)
+        public static EventTypes FeedOptionToOsbideEvent(EventFilterSetting option)
         {
-            IOsbideEvent evt = null;
+            var evt = EventTypes.Unknown;
+
             switch (option)
             {
                 case EventFilterSetting.AskForHelpEvent:
-                    evt = new AskForHelpEvent();
+                    evt = EventTypes.AskForHelpEvent;
                     break;
                 case EventFilterSetting.BuildEvent:
-                    evt = new BuildEvent();
+                    evt = EventTypes.BuildEvent;
                     break;
                 case EventFilterSetting.ExceptionEvent:
-                    evt = new ExceptionEvent();
+                    evt = EventTypes.ExceptionEvent;
                     break;
                 case EventFilterSetting.FeedPostEvent:
-                    evt = new FeedPostEvent();
+                    evt = EventTypes.FeedPostEvent;
                     break;
                 case EventFilterSetting.SubmitEvent:
-                    evt = new SubmitEvent();
+                    evt = EventTypes.SubmitEvent;
                     break;
                 case EventFilterSetting.HelpfulMarkGivenEvent:
-                    evt = new HelpfulMarkGivenEvent();
+                    evt = EventTypes.HelpfulMarkGivenEvent;
                     break;
                 case EventFilterSetting.LogCommentEvent:
-                    evt = new LogCommentEvent();
+                    evt = EventTypes.LogCommentEvent;
                     break;
             }
+
             return evt;
         }
 
@@ -117,68 +119,68 @@ namespace OSBIDE.Library.Models
             }
         }
 
-        public bool HasSetting(IOsbideEvent evt)
+        public bool HasSetting(EventTypes evt)
         {
             EventFilterSetting option = EventFilterSetting.NULL;
-            if (evt.EventName == AskForHelpEvent.Name)
+            if (evt == EventTypes.AskForHelpEvent)
             {
                 option = EventFilterSetting.AskForHelpEvent;
             }
-            else if (evt.EventName == BuildEvent.Name)
+            else if (evt == EventTypes.BuildEvent)
             {
                 option = EventFilterSetting.BuildEvent;
             }
-            else if (evt.EventName == ExceptionEvent.Name)
+            else if (evt == EventTypes.ExceptionEvent)
             {
                 option = EventFilterSetting.ExceptionEvent;
             }
-            else if (evt.EventName == FeedPostEvent.Name)
+            else if (evt == EventTypes.FeedPostEvent)
             {
                 option = EventFilterSetting.FeedPostEvent;
             }
-            else if (evt.EventName == HelpfulMarkGivenEvent.Name)
+            else if (evt == EventTypes.HelpfulMarkGivenEvent)
             {
                 option = EventFilterSetting.HelpfulMarkGivenEvent;
             }
-            else if (evt.EventName == LogCommentEvent.Name)
+            else if (evt == EventTypes.LogCommentEvent)
             {
                 option = EventFilterSetting.LogCommentEvent;
             }
-            else if (evt.EventName == SubmitEvent.Name)
+            else if (evt == EventTypes.SubmitEvent)
             {
                 option = EventFilterSetting.SubmitEvent;
             }
             return HasSetting(option);
         }
 
-        public void SetSetting(IOsbideEvent evt, bool value)
+        public void SetSetting(EventTypes evt, bool value)
         {
             EventFilterSetting option = EventFilterSetting.NULL;
-            if (evt.EventName == AskForHelpEvent.Name)
+            if (evt == EventTypes.AskForHelpEvent)
             {
                 option = EventFilterSetting.AskForHelpEvent;
             }
-            else if (evt.EventName == BuildEvent.Name)
+            else if (evt == EventTypes.BuildEvent)
             {
                 option = EventFilterSetting.BuildEvent;
             }
-            else if (evt.EventName == ExceptionEvent.Name)
+            else if (evt == EventTypes.ExceptionEvent)
             {
                 option = EventFilterSetting.ExceptionEvent;
             }
-            else if (evt.EventName == FeedPostEvent.Name)
+            else if (evt == EventTypes.FeedPostEvent)
             {
                 option = EventFilterSetting.FeedPostEvent;
             }
-            else if (evt.EventName == HelpfulMarkGivenEvent.Name)
+            else if (evt == EventTypes.HelpfulMarkGivenEvent)
             {
                 option = EventFilterSetting.HelpfulMarkGivenEvent;
             }
-            else if (evt.EventName == LogCommentEvent.Name)
+            else if (evt == EventTypes.LogCommentEvent)
             {
                 option = EventFilterSetting.LogCommentEvent;
             }
-            else if (evt.EventName == SubmitEvent.Name)
+            else if (evt == EventTypes.SubmitEvent)
             {
                 option = EventFilterSetting.SubmitEvent;
             }

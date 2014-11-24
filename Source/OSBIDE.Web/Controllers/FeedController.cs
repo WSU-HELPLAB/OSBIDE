@@ -33,18 +33,31 @@ namespace OSBIDE.Web.Controllers
                             .FirstOrDefault();
         }
 
+        public ActionResult GetHashTags(string query, bool isHandle = false)
+        {
+            var tag = isHandle ? query.TrimStart('@') : query.TrimStart('#');
+            return Json(GetHashtagsProc.Run(string.Format("%{0}%", tag), isHandle).Select(t=>t.Name).ToArray(), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetTrendingNotifications()
+        {
+            return Json(GetHashtagsProc.GetTrendAndNotification(CurrentUser.Id, 10, false), JsonRequestBehavior.AllowGet);
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id">The ID of the last event received by the user.  Used for AJAX updates</param>
         /// <returns></returns>
-        public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "")
+        public ActionResult Index(long timestamp = -1, int errorType = -1, string errorTypeStr = "", string keyword = "", int hash = 0)
         {
             //turned off for now.
             //return RedirectToAction("FeedDown", "Error");
             try
             {
                 var query = new ActivityFeedQuery();
+
+                query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
 
                 //Two ways that we can receive an error type: by name (errorTypeStr) or by ID (errorType).
                 //First, we check the string and see if we can match it to an ID number.  Then, we check
@@ -99,7 +112,7 @@ namespace OSBIDE.Web.Controllers
                     vm.LastPollDate = DateTime.MinValue.AddDays(2);
                 }
                 vm.Feed = aggregateFeed;
-                vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.PrettyName).ToList();
+                vm.EventFilterOptions = ActivityFeedQuery.GetAllEvents().OrderBy(e => e.ToString()).ToList();
                 vm.UserEventFilterOptions = query.ActiveEvents;
                 vm.ErrorTypes = Db.ErrorTypes.Distinct().ToList();
                 vm.SelectedErrorType = new ErrorType();
@@ -125,6 +138,7 @@ namespace OSBIDE.Web.Controllers
 
                 //build the "you and 5 others got this error"-type messages
                 BuildEventRelations(vm, feedItems);
+                vm.Keyword = keyword;
 
                 return View(vm);
             }
@@ -132,7 +146,7 @@ namespace OSBIDE.Web.Controllers
             {
                 LogErrorMessage(ex);
 
-                return RedirectToAction("GenericError", "Error", new { message = ex.Message });
+                return RedirectToAction("FeedDown", "Error");
             }
         }
 
@@ -199,11 +213,12 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the last feed item received by the client</param>
         /// <returns></returns>
-        public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1)
+        public ActionResult RecentFeedItems(int id, int userId = -1, int errorType = -1, string keyword = "", int hash = 0)
         {
             //return View("AjaxFeed", new List<AggregateFeedItem>()); 
 
             var query = new ActivityFeedQuery();
+            query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
             if (errorType > 0)
             {
                 query = new BuildErrorQuery(Db);
@@ -367,11 +382,12 @@ namespace OSBIDE.Web.Controllers
         /// </summary>
         /// <param name="id">The ID of the first feed item received by the client.</param>
         /// <returns></returns>
-        public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1)
+        public ActionResult OldFeedItems(int id, int count, int userId, int errorType = -1, string keyword = "", int hash = 0)
         {
             try
             {
                 var query = new ActivityFeedQuery();
+                query.CommentFilter = hash == 0 ? keyword : "#" + keyword;
                 if (errorType > 0)
                 {
                     query = new BuildErrorQuery(Db);
@@ -432,6 +448,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     //if we've received a log comment event or a helpful mark event, we have to reroute to the original event
                     EventLog log = Db.EventLogs.Where(e => e.Id == idAsInt).FirstOrDefault();
+                    MarkReadProc.Update(idAsInt, CurrentUser.Id , true);
                     if (log != null)
                     {
                         if (log.LogType == LogCommentEvent.Name)
@@ -472,32 +489,6 @@ namespace OSBIDE.Web.Controllers
                 {
                     vm.IsSubscribed = true;
                 }
-
-                //AC quick hack: The current GetActivityFeeds sproc doesn't pull everything that we need for build and debug
-                //events. As a hack, we can inject them right here if necessary.
-                if(vm.FeedItem.FeedItemType == BuildEvent.Name)
-                {
-                    List<int> buildIds = vm.FeedItem.Items.Select(i => i.EventId).ToList();
-                    List<BuildEvent> buildEvents = (from evt in Db.BuildEvents
-                                                    where buildIds.Contains(evt.Id)
-                                                    select evt).ToList();
-                    for(int i = 0; i < vm.FeedItem.Items.Count; i++)
-                    {
-                        vm.FeedItem.Items[i].Event = buildEvents[i];
-                    }
-                }
-                else if(vm.FeedItem.FeedItemType == ExceptionEvent.Name)
-                {
-                    List<int> debugIds = vm.FeedItem.Items.Select(i => i.EventId).ToList();
-                    List<ExceptionEvent> debugEvents = (from evt in Db.ExceptionEvents
-                                                    where debugIds.Contains(evt.Id)
-                                                    select evt).ToList();
-                    for (int i = 0; i < vm.FeedItem.Items.Count; i++)
-                    {
-                        vm.FeedItem.Items[i].Event = debugEvents[i];
-                    }
-                }
-
                 return View(vm);
             }
             catch (Exception ex)
@@ -604,10 +595,14 @@ namespace OSBIDE.Web.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult PostFeedComment(string comment)
+        public ActionResult PostFeedComment(FormCollection formCollection)
         {
             try
             {
+                var comment = formCollection["comment"];
+                if (string.IsNullOrWhiteSpace(comment)) return RedirectToAction("Index");
+
+                comment = comment.TrimStart(',');
                 OsbideWebService client = new OsbideWebService();
                 Authentication auth = new Authentication();
                 string key = auth.GetAuthenticationKey();
@@ -657,16 +652,11 @@ namespace OSBIDE.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult ApplyFeedFilter()
+        public ActionResult ApplyFeedFilter(FormCollection formCollection)
         {
-            string errorType = "";
             try
             {
-                if (Request.Form.AllKeys.Contains("error-type"))
-                {
-                    errorType = Request.Form["error-type"];
-                }
-
+                // update user settings in database
                 UserFeedSetting feedSetting = _userSettings;
                 if (feedSetting == null)
                 {
@@ -692,8 +682,8 @@ namespace OSBIDE.Web.Controllers
                         string[] pieces = key.Split('_');
                         if (pieces.Length == 2)
                         {
-                            IOsbideEvent evt = EventFactory.FromName(pieces[1]);
-                            if (evt != null)
+                            EventTypes evt;
+                            if (Enum.TryParse<EventTypes>(pieces[1], true, out evt))
                             {
                                 feedSetting.SetSetting(evt, true);
                             }
@@ -719,12 +709,19 @@ namespace OSBIDE.Web.Controllers
 
                 //save changes
                 Db.SaveChanges();
+
+                //apply filter reload page
+                var errorType = Request.Form.AllKeys.Contains("error-type") ? Request.Form["error-type"] : string.Empty;
+                var keyword = ((EventFilterSetting)feedSetting.EventFilterSettings & EventFilterSetting.FeedPostEvent) == EventFilterSetting.FeedPostEvent
+                                && Request.Form.AllKeys.Contains("keyword") ? Request.Form["keyword"] : string.Empty;
+
+                return RedirectToAction("Index", new { errorType = errorType, keyword = keyword });
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+                return RedirectToAction("FeedDown", "Error");
             }
-            return RedirectToAction("Index", new { errorType = errorType });
         }
 
         /// <summary>
@@ -743,7 +740,7 @@ namespace OSBIDE.Web.Controllers
             UserFeedSetting feedSettings = _userSettings;
             if (feedSettings == null || feedSettings.ActiveSettings.Count == 0)
             {
-                foreach (IOsbideEvent evt in ActivityFeedQuery.GetAllEvents())
+                foreach (var evt in ActivityFeedQuery.GetAllEvents())
                 {
                     query.AddEventType(evt);
                 }

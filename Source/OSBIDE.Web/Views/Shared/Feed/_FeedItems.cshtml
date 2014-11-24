@@ -48,9 +48,7 @@
             <img src="@Url.Action("Picture", "Profile", new { id = item.Creator.Id, size = 64 })" height="64" width="64" title="profile image" alt="profile image" />
             @if (item.HelpfulMarks > 0)
             {
-                //AC: presently, this appears to record the number of comments, not helpful marks
-                //TODO: fix item.HelpfulMarks
-                <!--<span class="helpful-marks">+@item.HelpfulMarks</span>-->
+                @:<span class="helpful-marks">+@item.HelpfulMarks</span>
             }
             @if (isSubscribed)
             {
@@ -96,7 +94,7 @@
                  data-bind="foreach: Comments">
                 <section class="log-comment-single">
                     <div class="log-comment-profile-picture">
-                        <img src="@Url.Action("Picture", "Profile", new { id = -1, size = 48 })" title="profile image" alt="profile image" style="float:left;" data-bind="attr { src: ProfileUrl }">
+                        <img src="@Url.Action("Picture", "Profile", new { id = -1, size = 48 })" title="profile image" alt="profile image" style="float:left;" data-bind="attr: { src: ProfileUrl }">
                     </div>
                     <div class="log-comment-content">
                         <h1 data-bind="text: FirstAndLastName"></h1>
@@ -111,7 +109,7 @@
                         </p>
                     </div>
                     <div data-bind="if: DisplayHelpfulMarkLink">
-                        <a data-bind="attr { href: MarkHelpfulUrl }">mark as helpful</a>
+                        <a data-bind="attr: { href: MarkHelpfulUrl }">mark as helpful</a>
                     </div>
                     <div class="helpful-marks" style="clear: both;" data-bind="if: MarkHelpfulCount > 0">
                         <span data-bind="text: HelpfulMarkCount"></span>
