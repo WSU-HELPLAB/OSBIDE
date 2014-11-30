@@ -1,9 +1,10 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
 -- sproc [GetHashtags]
 -------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------
-create procedure [dbo].[GetHashtags]
+alter procedure [dbo].[GetHashtags]
 
 	 @tag varchar(800)
 	,@ishandle bit
@@ -13,8 +14,14 @@ begin
 	set nocount on;
 
 	if @ishandle=1
-		select Id, Tag=[FirstName]+[LastName], IsHandle=cast(1 as bit) from [dbo].[OsbideUsers] where [FirstName]+[LastName] like @tag
+		select Id, Tag=[FirstName]+[LastName], IsHandle=cast(1 as bit) from [dbo].[OsbideUsers]
+		where [FirstName]+[LastName] like @tag
+		order by Tag
 	else
-		select Id, Tag=Content, IsHandle=cast(0 as bit) from [dbo].[HashTags] where [Content] like @tag
+		select Id, Tag=Content, IsHandle=cast(0 as bit) from [dbo].[HashTags]
+		where [Content] like @tag
+		order by Tag
 
 end
+
+

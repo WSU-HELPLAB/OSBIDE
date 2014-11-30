@@ -42,10 +42,10 @@
         search: function (term, callback) {
             userHandle = term.substring(0, 1) == "@";
             term = term.substring(1);
-            $.getJSON('/Feed/GetHashTags', { query: term, isHandle: userHandle })
+            $.getJSON(document.location.origin + document.location.pathname + '/GetHashTags', { query: term, isHandle: userHandle })
               .done(function (resp) {
                   callback($.map(resp, function (mention) {
-                      return mention.indexOf(term) === 0 ? mention : null;
+                      return mention.toLowerCase().indexOf(term.toLowerCase()) === 0 ? mention : null;
                   }));
               })
               .fail(function () {
@@ -88,7 +88,7 @@ if (typeof (TrendingNotifications) == "undefined") {
         checkForUpdates: function () {
 
             //populate trends
-            $.getJSON("/Feed/GetTrendingNotifications", function (data) {
+            $.getJSON(document.location.origin + document.location.pathname + "/GetTrendingNotifications", function (data) {
                 if (data.length > 0) {
                     var hashitems = [], mentionitems = [];
                     $.each(data, function (idx, obj) {

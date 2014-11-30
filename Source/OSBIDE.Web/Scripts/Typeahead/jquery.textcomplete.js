@@ -238,7 +238,7 @@
         if (searchQuery.length) {
           term = searchQuery[1];
           if (suppress && this.term === term) {
-            return; // Ignore shift-key or something.
+              return; // Ignore shift-key or something.
           }
           this.term = term;
           this.search(searchQuery);
