@@ -94,10 +94,10 @@ if (typeof (TrendingNotifications) == "undefined") {
                     $.each(data, function (idx, obj) {
                         if (obj.HashtagId != null) {
                             var val = obj.Hashtag;
-                            hashitems.push("<li data-trend-name=='" + val + "'><a href='/Feed/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
+                            hashitems.push("<li data-trend-name=='" + val + "'><a href='" + document.location.origin + document.location.pathname + "/Index?keyword=" + val + "&hash=1'>" + "#" + val + "</a></li>");
                         }
                         else if (obj.UserId != null) {
-                            mentionitems.push("<li><a href='/Profile/Index/" + obj.UserId + "?component=UserProfile'>" + obj.FirstName + " " + obj.LastName + "</a> mentioned you in a <a href='/Feed/Details/" + obj.EventLogId + "?component=FeedDetails'>post</a></li>");
+                            mentionitems.push("<li><a href='" + document.location.origin + "/Profile/Index/" +obj.UserId + "?component=UserProfile'>" +obj.FirstName + " " +obj.LastName + "</a> mentioned you in a <a href='/Feed/Details/" +obj.EventLogId + "?component=FeedDetails'>post</a></li>");
                         }
                     });
 

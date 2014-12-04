@@ -41,7 +41,7 @@ namespace OSBIDE.Web.Controllers
 
         public ActionResult GetTrendingNotifications()
         {
-            return Json(GetHashtagsProc.GetTrendAndNotification(CurrentUser.Id, 10, false), JsonRequestBehavior.AllowGet);
+            return Json(GetHashtagsProc.GetTrendAndNotification(CurrentUser.Id, 10, true), JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

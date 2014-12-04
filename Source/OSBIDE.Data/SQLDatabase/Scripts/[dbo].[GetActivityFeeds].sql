@@ -49,10 +49,13 @@ begin
 		inner join [dbo].[OsbideUsers] u with (nolock) on u.Id=s.SenderId and cr.CourseId=u.DefaultCourseId and (u.DefaultCourseId=@CourseId or @CourseId=0)
 		left join (select buildErrors=count(BuildErrorTypeId), LogId from [dbo].[BuildErrors] with (nolock) group by LogId) be on s.Id=be.LogId
 		left join [dbo].[FeedPostEvents] fp on fp.EventLogId=s.Id and fp.Comment like @CommentFilter
-		left join ([dbo].[LogCommentEvents] lc inner join [dbo].[FeedPostEvents] lcfp on lcfp.EventLogId=lc.SourceEventLogId) on lc.EventLogId=s.Id and lcfp.Comment like @CommentFilter
+		left join ([dbo].[LogCommentEvents] lc
+						inner join [dbo].[FeedPostEvents] lcfp on lcfp.EventLogId=lc.SourceEventLogId and lcfp.Comment like @CommentFilter
+				  ) on lc.EventLogId=s.Id
 		left join ([dbo].[HelpfulMarkGivenEvents] hm
 					inner join [dbo].[LogCommentEvents] hmlc on hmlc.Id=hm.LogCommentEventId
-					inner join [dbo].[FeedPostEvents] hmlcfp on hmlcfp.EventLogId=hmlc.SourceEventLogId) on hm.EventLogId=s.Id and hmlcfp.Comment like @CommentFilter
+					inner join [dbo].[FeedPostEvents] hmlcfp on hmlcfp.EventLogId=hmlc.SourceEventLogId and hmlcfp.Comment like @CommentFilter
+				  ) on hm.EventLogId=s.Id
 		where (ef.EventTypeId=7 and fp.Id>0 or ef.EventTypeId=9 and lcfp.Id>0 or ef.EventTypeId=8 and hmlcfp.Id>0 or ef.EventTypeId not in (7,8,9))
 				and (ef.EventTypeId=2 and be.buildErrors>0 or ef.EventTypeId<>2)
 				and (len(@SenderIds)=0 or s.SenderId in (select Id from @senderIdFilter))
