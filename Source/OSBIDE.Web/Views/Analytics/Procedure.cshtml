@@ -87,8 +87,12 @@
 
                     $("#SelectedProcedureType").change(function () {
                         
-                        if ($(this).val() == "@ProcedureType.DataVisualization.ToString("d")") {
+                        var selected = $(this).val();
+                        if (selected == "@ProcedureType.DataVisualization.ToString("d")") {
                             window.location = "@Url.Content("~/DataVisualization/")";
+                        }
+                        else if (selected == "@ProcedureType.CalendarVisualization.ToString("d")") {
+                            window.location = "@Url.Content("~/CalendarVisualization/")";
                         }
                         else {
                             $("input[name='ActionSelector']").val("ChangeProcedure");

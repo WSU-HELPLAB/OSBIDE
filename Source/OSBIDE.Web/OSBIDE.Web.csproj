@@ -147,7 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\File\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -158,6 +157,7 @@
     <Compile Include="Controllers\AnalyticsController.cs" />
     <Compile Include="Controllers\AssignmentController.cs" />
     <Compile Include="Controllers\BuildEventController.cs" />
+    <Compile Include="Controllers\CalendarVisualizationController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\CourseController.cs" />
@@ -368,10 +368,10 @@
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestagingws - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
+    <Content Include="Scripts\Calendar\Calendar.js" />
+    <Content Include="Scripts\Calendar\TrendingCalendar.js" />
     <Content Include="Scripts\Charts\bullet.js" />
     <Content Include="Scripts\Charts\d3.js" />
     <Content Include="Scripts\Charts\data-visualization.js" />
@@ -507,6 +507,7 @@
     <Content Include="Views\Analytics\DataVisualization.cshtml" />
     <Content Include="Views\Analytics\DataVisualizationLegendDetails.cshtml" />
     <Content Include="Views\Analytics\DataVisualizationLegend.cshtml" />
+    <Content Include="Views\Analytics\CalendarVisualization.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">

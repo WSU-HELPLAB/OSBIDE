@@ -38,6 +38,7 @@ namespace OSBIDE.Data.DomainObjects
         ErrorQuotient = 1,
         WatwinScoring = 2,
         DataVisualization = 3,
+        CalendarVisualization = 4,
     }
     public enum ResultViewType
     {

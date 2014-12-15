@@ -78,7 +78,10 @@
   <ItemGroup>
     <Compile Include="DomainObjects\ActionRequestLog.cs" />
     <Compile Include="DomainObjects\AgeLookup.cs" />
+    <Compile Include="DomainObjects\DailyAggregations.cs" />
     <Compile Include="DomainObjects\Hashtag.cs" />
+    <Compile Include="DomainObjects\HourlyAggregations.cs" />
+    <Compile Include="DomainObjects\Measure.cs" />
     <Compile Include="DomainObjects\Notification.cs" />
     <Compile Include="DomainObjects\TimelineChartData.cs" />
     <Compile Include="DomainObjects\Comment.cs" />

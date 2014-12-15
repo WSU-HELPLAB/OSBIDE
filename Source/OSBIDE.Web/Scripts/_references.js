@@ -27,3 +27,5 @@
 /// <reference path="typeahead/jquery.textcomplete.js" />
 /// <reference path="typeahead/osbide-posts.js" />
 /// <reference path="typeahead/typeahead-0.10.4.js" />
+/// <reference path="calendar/calendar.js" />
+/// <reference path="calendar/trendingcalendar.js" />

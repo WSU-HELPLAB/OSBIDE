@@ -4,9 +4,12 @@ using System.Web.Mvc;
 using OSBIDE.Data.DomainObjects;
 using OSBIDE.Data.SQLDatabase;
 using OSBIDE.Web.Models.Analytics;
+using OSBIDE.Web.Models.Attributes;
+using OSBIDE.Library.Models;
 
 namespace OSBIDE.Web.Controllers
 {
+    [AllowAccess(SystemRole.Instructor, SystemRole.Admin)]
     public class DataVisualizationController : ControllerBase
     {
         //
