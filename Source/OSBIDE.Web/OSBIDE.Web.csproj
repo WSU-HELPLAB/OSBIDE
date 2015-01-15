@@ -239,6 +239,7 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Gradebook.css" />
     <Content Include="Content\icons\add_up.png" />
     <Content Include="Content\icons\anonymous.png" />
     <Content Include="Content\icons\chartsample.png" />

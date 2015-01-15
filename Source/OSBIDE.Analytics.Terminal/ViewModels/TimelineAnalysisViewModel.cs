@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Analytics.Terminal.ViewModels
 {
-    class TimelineAnalysisViewModel
+    public class TimelineAnalysisViewModel
     {
         public Dictionary<int, StudentTimeline> Timeline { get; set; }
 
@@ -144,7 +144,112 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             }
         }
 
-        public void WriteToCsv(string fileName)
+        /// <summary>
+        /// Builds transition counts for each loaded timeline
+        /// </summary>
+        public void ProcessTransitions()
+        {
+            foreach(StudentTimeline student in Timeline.Values)
+            {
+                student.AggregateTransitions();
+            }
+        }
+
+        /// <summary>
+        /// Returns all transitions present in the loaded timeline
+        /// </summary>
+        /// <returns></returns>
+        public List<KeyValuePair<string, string>> GetAllTransitions()
+        {
+            Dictionary<KeyValuePair<string, string>, int> transitions = new Dictionary<KeyValuePair<string, string>, int>();
+            foreach(StudentTimeline timeline in Timeline.Values)
+            {
+                foreach(var transition in timeline.Transitions)
+                {
+                    transitions[transition.Key] = 0;
+                }
+            }
+            return transitions.Keys.ToList();
+        }
+
+        /// <summary>
+        /// Writes transition counts to a CSV file
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void WriteTransitionsToCsv(string fileName)
+        {
+            //write results to file
+            CsvWriter writer = new CsvWriter();
+
+            //add header row
+            writer.AddToCurrentLine("User ID");
+            var query = from item  in GetAllTransitions()
+                        select new {
+                            Key = item.Key, 
+                            Value = item.Value, 
+                            AsString = string.Format("{0};{1}", item.Key, item.Value),
+                            Kvp = item
+                        };
+            var transitions = query.OrderBy(q => q.AsString).ToList();
+            foreach (var transition in transitions)
+            {
+                writer.AddToCurrentLine(transition.AsString);
+            }
+
+            //add grades if loaded
+            List<string> grades = GetAllGrades();
+            foreach (string grade in grades)
+            {
+                writer.AddToCurrentLine(grade);
+            }
+
+            writer.CreateNewRow();
+
+            //add data rows
+            foreach (var item in Timeline.Values)
+            {
+                writer.AddToCurrentLine(item.OsbideId.ToString());
+
+                //add state information
+                foreach (var transition in transitions)
+                {
+                    if(item.Transitions.ContainsKey(transition.Kvp) == true)
+                    {
+                        writer.AddToCurrentLine(item.Transitions[transition.Kvp].ToString());
+                    }
+                    else
+                    {
+                        writer.AddToCurrentLine("0");
+                    }
+                }
+
+                //add grade information
+                foreach (string grade in grades)
+                {
+                    if (item.Grades.ContainsKey(grade) == true)
+                    {
+                        writer.AddToCurrentLine(item.Grades[grade].ToString());
+                    }
+                    else
+                    {
+                        writer.AddToCurrentLine("0");
+                    }
+                }
+                writer.CreateNewRow();
+            }
+
+            //write to file
+            using (TextWriter tw = File.CreateText(fileName))
+            {
+                tw.Write(writer.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Writes time in state information to a CSV file
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void WriteTimeInStateToCsv(string fileName)
         {
             //write results to file
             CsvWriter writer = new CsvWriter();

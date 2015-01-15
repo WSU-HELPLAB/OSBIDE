@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OSBIDE.Analytics.Terminal.Models
 {
-    class TimelineState
+    public class TimelineState
     {
         public int UserId { get; set; }
         public bool IsSocialEvent { get; set; }

@@ -12,7 +12,18 @@ namespace OSBIDE.Analytics.Terminal.Views
 {
     class TimelineAnalysisView
     {
-        private enum MenuOption { ChangeDirectory = 1, ListFiles, LoadFile, AppendFile, LoadGrades, NormalizeProgrammingStates, WriteToFile, Exit }
+        private enum MenuOption { 
+            ChangeDirectory = 1, 
+            ListFiles, 
+            LoadFile, 
+            AppendFile, 
+            LoadGrades, 
+            NormalizeProgrammingStates, 
+            CountTransitions, 
+            WriteAggregateToFile, 
+            WriteTransitionsToFile,
+            Exit 
+        }
 
         private TimelineAnalysisViewModel Vm { get; set; }
 
@@ -74,7 +85,9 @@ namespace OSBIDE.Analytics.Terminal.Views
                 Console.WriteLine((int)MenuOption.AppendFile + ". Append data to existing timeline data");
                 Console.WriteLine((int)MenuOption.LoadGrades + ". Attach grade data to students");
                 Console.WriteLine((int)MenuOption.NormalizeProgrammingStates + ". Normalize programming states");
-                Console.WriteLine((int)MenuOption.WriteToFile + ". Write results to CSV");
+                Console.WriteLine((int)MenuOption.CountTransitions + ". Count transitions");
+                Console.WriteLine((int)MenuOption.WriteAggregateToFile + ". Write aggregate results to CSV");
+                Console.WriteLine((int)MenuOption.WriteTransitionsToFile + ". Write transition results to CSV");
                 Console.WriteLine((int)MenuOption.Exit + ". Exit");
                 Console.Write(">> ");
                 string rawInput = Console.ReadLine();
@@ -109,10 +122,19 @@ namespace OSBIDE.Analytics.Terminal.Views
                             Vm.NormalizeProgrammingStates();
                             Console.WriteLine("States normalized.");
                             break;
-                        case MenuOption.WriteToFile:
+                        case MenuOption.CountTransitions:
+                            Vm.ProcessTransitions();
+                            Console.WriteLine("Transitions counted.");
+                            break;
+                        case MenuOption.WriteAggregateToFile:
                             Console.Write("Enter destination file: ");
                             rawInput = Console.ReadLine();
-                            Vm.WriteToCsv(rawInput);
+                            Vm.WriteTimeInStateToCsv(rawInput);
+                            break;
+                        case MenuOption.WriteTransitionsToFile:
+                            Console.Write("Enter destination file: ");
+                            rawInput = Console.ReadLine();
+                            Vm.WriteTransitionsToCsv(rawInput);
                             break;
                         case MenuOption.Exit:
                             Console.WriteLine("Returning to main menu.");

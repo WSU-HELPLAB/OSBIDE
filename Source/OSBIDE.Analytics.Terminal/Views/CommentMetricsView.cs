@@ -9,7 +9,7 @@ namespace OSBIDE.Analytics.Terminal.Views
 {
     class CommentMetricsView
     {
-        private enum MenuOption { LoadFeedPosts = 1, LoadLogComments, LoadSyllables, CalculateMetrics, WriteToCsv, Exit }
+        private enum MenuOption { LoadFeedPosts = 1, LoadLogComments, LoadSyllables, CalculateMetrics, OrganizeIntoThreads, WriteToCsv, Exit }
         public void Run()
         {
             int userChoice = 0;
@@ -19,7 +19,8 @@ namespace OSBIDE.Analytics.Terminal.Views
                 Console.WriteLine((int)MenuOption.LoadFeedPosts + ". Load feed posts");
                 Console.WriteLine((int)MenuOption.LoadLogComments + ". Load log comments");
                 Console.WriteLine((int)MenuOption.LoadSyllables + ". Load syllables");
-                Console.WriteLine((int)MenuOption.CalculateMetrics + ". Perform calculations");
+                Console.WriteLine((int)MenuOption.CalculateMetrics + ". Perform metric calculations");
+                Console.WriteLine((int)MenuOption.OrganizeIntoThreads + ". Organize data into threaded conversation");
                 Console.WriteLine((int)MenuOption.WriteToCsv + ". Write results to CSV");
                 Console.WriteLine((int)MenuOption.Exit + ". Exit");
                 Console.Write(">> ");
@@ -49,8 +50,14 @@ namespace OSBIDE.Analytics.Terminal.Views
                             vm.AnalyzeComments();
                             Console.WriteLine("Calcluation complete...");
                             break;
+                        case MenuOption.OrganizeIntoThreads:
+                            vm.OrganizeComments();
+                            Console.WriteLine("Comments organized into threads...");
+                            break;
                         case MenuOption.WriteToCsv:
-                            Console.WriteLine("Not implemented.");
+                            Console.Write("Enter destination file: ");
+                            rawInput = Console.ReadLine();
+                            vm.WriteToCsv(rawInput);
                             break;
                         case MenuOption.Exit:
                             Console.WriteLine("Returning to main menu.");
