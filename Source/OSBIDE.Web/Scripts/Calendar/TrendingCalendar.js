@@ -36,10 +36,15 @@
               .html(function (d) {
 
                   var tips = [];
-                  $("[rect=" + (parseInt($(this).attr("id"))) + "]").each(function () {
-                      var tokens = $(this).find("title").first().text().split(": ");
-                      tips.push(tokens[0] + ": " + (parseInt(tokens[tokens.length - 1]) * 1.5).toFixed(0));
+                  //$("[rect=" + (parseInt($(this).attr("id"))) + "]").each(function () {
+                  //    var tokens = $(this).find("title").first().text().split(": ");
+                  //    tips.push(tokens[0] + ": " + (parseInt(tokens[tokens.length - 1]) * 1.5).toFixed(0));
+                  //})
+                  
+                  $.each(d.data, function (k, val) {
+                      tips.push(val.title + ": " + val.value + "<br/>min: " +val.min + "<br/>max: " + val.max);
                   })
+
 
                   if (tip.length > 0) return "<strong>" + tips.join("<br/>") + "</strong>";
               });
@@ -69,7 +74,7 @@
                                                                .text(function (d) { return daysOfTheWeek[d]; });
 
                 // get days, label days text, and set days background color to either active and inactive
-                var daysArray = getDays(cells, inputData.year, inputData.month, activeCellColorC, activeCellColorN, inactiveCellColor);
+                var daysArray = getDays(cells, inputData.year, inputData.month, activeCellColorC, activeCellColorN, inactiveCellColor, inputData.measures);
                 g.selectAll("rect").data(daysArray).style("fill", function (d) {
                     return d.color;
                 });
@@ -103,12 +108,17 @@
                     // chart data points and dynamic tooltips
                     var tooltipCellIds = [];
                     g.append("svg:g").selectAll("circle").data(measure.values).enter().append("svg:g").append("circle")
-                                     .attr("cx", function (d, i) { tooltipCellIds.push(cellPositions[i + cellOffset].id); return cellPositions[i + cellOffset].pos[0] + cellwidth / 2 + padding; })
-                                     .attr("cy", function (d, i) { return cellPositions[i + cellOffset].pos[1] + cellheight + headingHeight - y(d); })
+                                     .attr("cx", function (d, i) {
+
+                                         tooltipCellIds.push(cellPositions[i + cellOffset].id); return cellPositions[i + cellOffset].pos[0] + cellwidth / 2 + padding;
+                                     })
+                                     .attr("cy", function (d, i) {
+                                         return cellPositions[i + cellOffset].pos[1] + cellheight + headingHeight - y(d);
+                                     })
                                      .attr("r", function (d) { return 3.5; })
                                      .attr("rect", function (d, i) { return cellPositions[i + cellOffset].id })
                                      .style("fill", function (d) { return measure.color; })
-                                     .style("pointer-events", "all").append("title").text(function (d) { return measure.title + ": " + d; }); // tooltip
+                                     .style("pointer-events", "all").append("title").text(function (d) { return measure.title + ": " + d ; }); // tooltip
 
                     tooltipCellIds.forEach(function (entry) {
                         var rectSel = "rect[id='" + entry + "']";
@@ -200,7 +210,7 @@
         return trendingCalendar;
     };
 
-    function getDays(cells, year, month, activeCellColorC, activeCellColorN, inactiveCellColor) {
+    function getDays(cells, year, month, activeCellColorC, activeCellColorN, inactiveCellColor, measures) {
 
         var daysArray = [];
 
@@ -215,18 +225,33 @@
         }
 
         // days in the first display month
-        var daysInActiveMonth = new Date(year, month + 1, 0).getDate();
-        for (i = 1; i <= daysInActiveMonth; i++) {
-            daysArray.push({ year: year, month: month, day: i, color: activeCellColorC });
+        var daysInFirstMonth = new Date(year, month + 1, 0).getDate();
+
+        var minAndMax = getMinMax(measures);
+        for (i = 1; i <= daysInFirstMonth; i++) {
+            var dayData = [];
+            $.each(measures,function (k, data) {
+                if (data.startOnMonth == 0 && i >= data.startOnDate && i - data.startOnDate < data.values.length)
+                    dayData.push({ title: data.title, value: data.values[i - data.startOnDate], color: data.color, min: minAndMax[k].min, max: minAndMax[k].max });
+            });
+            daysArray.push({ year: year, month: month, day: i, color: activeCellColorC, data:dayData.slice(0) });
         }
 
         // days in the second display month
         var secDate = new Date(year, month + 1, 1);
         var secMonth = secDate.getMonth(),
             secYear = secDate.getFullYear();
-        daysInActiveMonth = new Date(month == 11 ? year + 1 : year, month + 2, 0).getDate();
-        for (i = 1; i <= daysInActiveMonth; i++) {
-            daysArray.push({ year: secYear, month: secMonth, day: i, color: activeCellColorN });
+        daysInSecMonth = new Date(month == 11 ? year + 1 : year, month + 2, 0).getDate();
+
+        for (i = 1; i <= daysInSecMonth; i++) {
+            var dayData = [];
+            $.each(measures, function (k, data) {
+                if (data.startOnMonth == 1 && i >= data.startOnDate && i - data.startOnDate < data.values.length)
+                    dayData.push({ title: data.title, value: data.values[i - data.startOnDate], color: data.color, min: minAndMax[k].min, max: minAndMax[k].max });
+                else if (i+daysInFirstMonth >= data.startOnDate && i+daysInFirstMonth - data.startOnDate < data.values.length)
+                    dayData.push({ title: data.title, value: data.values[i + daysInFirstMonth - data.startOnDate], color: data.color, min: minAndMax[k].min, max: minAndMax[k].max });
+            });
+            daysArray.push({ year: secYear, month: secMonth, day: i, color: activeCellColorN, data:dayData.slice(0) });
         }
 
         // days in the next month
@@ -239,6 +264,16 @@
         }
 
         return daysArray;
+    }
+
+    function getMinMax(measures) {
+        vals = []
+        $.each(measures, function (k, data) {
+            var min = Math.min.apply(null, data.values);
+            var max = Math.max.apply(null, data.values);
+            vals.push({ min: min, max: max });
+        })
+        return vals;
     }
 
     function getPositionOffset(year, month, monthOffset) {

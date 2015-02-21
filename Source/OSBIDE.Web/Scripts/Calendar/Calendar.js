@@ -213,7 +213,7 @@ function getMeasureColor(measure) {
     }
 }
 
-function getData(year, month, reload) {
+function getData(year, monthS, reload) {
 
     if (reload) {
 
@@ -255,7 +255,7 @@ function getData(year, month, reload) {
         });
     });
 
-    return [{ year: year, month: month, max: 150, measures: mm }];
+    return [{ year: year, month: monthS, max: 150, measures: mm }];
 }
 
 function getHourlyData(year, month, day, reload) {
