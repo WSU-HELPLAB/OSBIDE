@@ -1,19 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OSBIDE.Data.DomainObjects
 {
-    public class DailyAggregations
+    public class Aggregate
     {
-        public string Title { get;set; }
-        public string ColorCode { get;set; }
-        public DateTokens StartDate { get { return new DateTokens { Year = 2014, Month = 12, Day = 1 }; } }
-        public List<string> Events { get;set; }
-        public Dictionary<DateTokens, float> values { get; set; }
+        public int Month { get; set; }
+        public int Day { get; set; }
+        public int Value { get; set; }
     }
 
-    public class CanlendarModel
+    public class Activity
     {
-        public List<MeasureType> SelectedMeasureTypes { get; set; }
-        public List<DailyAggregations> SelectedMeasureValues { get; set; }
+        public int Month { get; set; }
+        public int Day { get; set; }
+        public string Name { get; set; }
+    }
+
+    /// <summary>
+    /// aggregates of a calendar day of a measure
+    /// </summary>
+    public class Measure
+    {
+        public string Title { get;set; }
+        public char DataPointShape { get;set; }
+        public string Color { get; set; }
+
+        public int FirstDataPointMonth { get; set; }
+        public int FirstDataPointDay { get; set; }
+        public int LastDataPointMonth { get; set; }
+        public int LastDataPointDay { get; set; }
+        public List<Aggregate> Aggregates { get; set; }
+
+        /// <summary>
+        /// min max avg of the measure
+        /// </summary>
+        public double Max { get; set; }
+        public double Min { get; set; }
+        public double Avg { get; set; }
+    }
+
+    public class DailyAggregations
+    {
+        public List<Measure> Measures { get; set; }
+        public List<Activity> Activities { get; set; }
     }
 }

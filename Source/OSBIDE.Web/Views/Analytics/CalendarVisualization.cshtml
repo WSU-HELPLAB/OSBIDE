@@ -1,4 +1,6 @@
-﻿@using OSBIDE.Web.Models.Analytics
+﻿@model OSBIDE.Web.Models.Analytics.CalendarSettings
+
+@using OSBIDE.Web.Models.Analytics
 @using OSBIDE.Data.DomainObjects
 
 
@@ -6,38 +8,44 @@
 
 <section data-tab="Analytics" id="calendar-section">
 
-    <div class="col-xs-4"></div>
+    <div class="col-xs-3"></div>
     <div data-wzstep="@WizardSteps.DataVisualization">
-        <h2>CptS 121 Calendar</h2>
 
-        @using (Html.BeginForm("GetMeasures", "Calendar", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("GetMeasures", "Calendar", FormMethod.Post, new { @class = "form-horizontal", role = "form", id="calendarSettings" }))
         {
+            var totalCheckStatus = Model.AggregateFunctionId == AggregateFunction.Total? "checked" : string.Empty;
+            var avgCheckStatus = Model.AggregateFunctionId == AggregateFunction.Avg ? "checked" : string.Empty;
+            
+            <div class="row">
+
+                <div class="col-xs-5">
+                    <h2>Calendar of @CriteriaLookups.Courses.Single(x=>x.CourseId==Model.CourseId).DisplayText</h2>
+                </div>
+
+                <div class="col-xs-3">
+                    <input type="radio" id="total" name="AggregationFunction" value="@AggregateFunction.Total" @totalCheckStatus /><label for="total">Total&nbsp;&nbsp;</label>
+                    <input type="radio" id="average" name="AggregationFunction" value="@AggregateFunction.Avg" @avgCheckStatus /><label for="average">Average</label>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-xs-2"></div>
-                <div class="col-xs-2">
-                    <h4>Programming Effort</h4>
-                    <div><input type="checkbox" id="numberOfLines" name="NumberOfLines" /><label for="numberOfLines">Lines of code written</label></div>
-                    <div><input type="checkbox" id="timeSpent" name="TimeSpent" /><label for="timeSpent">Time spent</label></div>
-                </div>
-                <div class="col-xs-2">
-                    <h4>Compilation Behavior</h4>
-                    <div><input type="checkbox" id="numberOfCompilations" name="NumberOfCompilations" /><label for="numberOfCompilations"># compilations</label></div>
-                    <div><input type="checkbox" id="errorQuotient" name="ErrorQuotient" /><label for="errorQuotient">Error quotient</label></div>
-                    <div><input type="checkbox" id="errorTypes" name="ErrorTypes" /><label for="errorTypes">Error types</label></div>
-                </div>
-                <div class="col-xs-2">
-                    <h4>Execution Behavior</h4>
-                    <div><input type="checkbox" id="numberOfExecutions" name="NumberOfExecutions" /><label for="numberOfExecutions"># executions</label></div>
-                    <div><input type="checkbox" id="runtimeErrorTypes" name="RuntimeErrorTypes" /><label for="runtimeErrorTypes">Runtime error types</label></div>
-                    <div><input type="checkbox" id="numberOfBreakpoints" name="NumberOfBreakpoints" /><label for="numberOfBreakpoints"># breakpoints set</label></div>
-                    <div><input type="checkbox" id="numberOfDebuggingSessions" name="NumberOfDebuggingSessions" /><label for="numberOfDebuggingSessions"># debugging sessions</label></div>
-                </div>
-                <div class="col-xs-2">
-                    <h4>Help Behavior</h4>
-                    <div><input type="checkbox" id="numberOfPosts" name="NumberOfPosts" /><label for="numberOfPosts"># posts</label></div>
-                    <div><input type="checkbox" id="runtimeOfReplies" name="RuntimeOfReplies" /><label for="runtimeOfReplies"># replies</label></div>
-                    <div><input type="checkbox" id="averageReplyTime" name="AverageReplyTime" /><label for="averageReplyTime">#Avg. reply time</label></div>
-                </div>
+
+                @foreach (var category in MeasureDefinitions.All.Keys)
+                {
+                    <div class="col-xs-2">
+                        <h4>@category.ToString().ToDisplayText()</h4>
+                        @foreach (var measure in MeasureDefinitions.All[category])
+                        {
+                            var checkedStatus = !string.IsNullOrWhiteSpace(Model.SelectedMeasures) && Model.SelectedMeasures.Split(',').Contains(measure.MeasureType.ToString("d")) ? "checked='checked'" : string.Empty;
+                            var aggregateFunction = measure.AggregateFunction.HasValue ? "agg-func=" + measure.AggregateFunction.Value + "" : string.Empty;
+                            <div>
+                                <input type="checkbox" @checkedStatus @aggregateFunction id="@measure.MeasureType.ToString()" name="SelectedMeasureTypes" value="@((int)measure.MeasureType)" data-color="@measure.Color"/>
+                                <label for="@measure.MeasureType.ToString()">@string.Format("{0} ({1})", measure.MeasureType.ToString().ToDisplayText(), measure.DataPointShape)</label>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         }
 
@@ -63,15 +71,13 @@
                         <div class="col-xs-5"><h4 id="currentDay">December 21, 2014</h4></div>
                         <div class="col-xs-3"><a href="javascript:">back to calendar view</a></div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-7">
-                            The chart is populated by randomly generated data based on the checkbox selections, they do not necessarily agree with the data on the calendar view.
-                            When both charts are populated by the real data, the data on the two views should agree.
-                        </div>
-                    </div>
                     <div id="hourlychart"></div>
                 </div>
             </div>
+        </div>
+        <div data-type="spinner">
+            <div class="col-xs-4"></div>
+            <img src="@Url.Content("~/Content/icons/loading.gif")" class="col-xs-1" />
         </div>
     </div>
 </section>

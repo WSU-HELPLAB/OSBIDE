@@ -65,6 +65,14 @@
         <Function Name="GetBuildErrorMessages" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="buildIds" Type="nvarchar(max)" Mode="In" />
         </Function>
+        <Function Name="GetCalendarMeasuresByDay" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="startDate" Type="date" Mode="In" />
+          <Parameter Name="endDate" Type="date" Mode="In" />
+          <Parameter Name="students" Type="varchar(max)" Mode="In" />
+          <Parameter Name="courseId" Type="int" Mode="In" />
+          <Parameter Name="measures" Type="varchar" Mode="In" />
+          <Parameter Name="isAvg" Type="bit" Mode="In" />
+        </Function>
         <Function Name="GetComments" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="EventLogIds" Type="nvarchar(max)" Mode="In" />
           <Parameter Name="CurrentUserId" Type="int" Mode="In" />
@@ -292,6 +300,14 @@
             <Parameter Name="courseId" Mode="In" Type="Int32" />
             <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
             <Parameter Name="dateTo" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="GetCalendarMeasuresByDay" ReturnType="Collection(OSBIDE.HybridModel.GetCalendarMeasuresByDay_Result)">
+            <Parameter Name="startDate" Mode="In" Type="DateTime" />
+            <Parameter Name="endDate" Mode="In" Type="DateTime" />
+            <Parameter Name="students" Mode="In" Type="String" />
+            <Parameter Name="courseId" Mode="In" Type="Int32" />
+            <Parameter Name="measures" Mode="In" Type="String" />
+            <Parameter Name="isAvg" Mode="In" Type="Boolean" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="GetEventLogs_Result">
@@ -559,6 +575,11 @@
           <Property Type="Int32" Name="HashtagId" Nullable="true" />
           <Property Type="String" Name="Hashtag" Nullable="true" MaxLength="800" />
           <Property Type="Int32" Name="Counts" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="GetCalendarMeasuresByDay_Result">
+          <Property Type="DateTime" Name="EventDay" Nullable="true" />
+          <Property Type="Int32" Name="Value" Nullable="true" />
+          <Property Type="String" Name="Measure" Nullable="true" MaxLength="200" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -938,6 +959,15 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="GetDeliverableLookup" FunctionName="OSBIDE.HybridModel.Store.GetDeliverableLookup" />
+          <FunctionImportMapping FunctionImportName="GetCalendarMeasuresByDay" FunctionName="OSBIDE.HybridModel.Store.GetCalendarMeasuresByDay">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="OSBIDE.HybridModel.GetCalendarMeasuresByDay_Result">
+                <ScalarProperty Name="EventDay" ColumnName="EventDay" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Measure" ColumnName="Measure" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -115,8 +115,17 @@ begin
 		from #temp where firstName like @nameToken or LastName like @nameToken
 	end
 
-	select UserId, InstitutionId, FirstName , LastName, Age, Gender, Ethnicity, Deliverable, Grade, LastActivity,Prefix, CourseNumber, Season, [Year]
-	from #ret
+	select UserId, InstitutionId, FirstName , LastName, Age, Gender, Ethnicity, Grade=100, LastActivity=max(LastActivity), Prefix, CourseNumber, Season, [Year],
+			Deliverable=stuff(
+				(select distinct ', ' + Deliverable + ':' + cast(Grade as varchar(20))
+					from #ret
+					where UserId=a.UserId and InstitutionId=a.InstitutionId
+						and FirstName=a.FirstName and LastName=a.LastName and Age=a.Age
+						and Gender=a.Gender and Ethnicity=a.Ethnicity
+						and Prefix=a.Prefix and CourseNumber=a.CourseNumber and Season=a.Season and [Year]=a.[Year]
+					for xml path ('')), 1, 1,'')
+	from #ret a
+	group by UserId, InstitutionId, FirstName , LastName, Age, Gender, Ethnicity, Prefix, CourseNumber, Season, [Year]
 
 end
 

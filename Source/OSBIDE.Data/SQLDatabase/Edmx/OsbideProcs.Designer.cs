@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Dev\Clients\WSU\OSBIDE\CodePlex\Main\Source\OSBIDE.Data\SQLDatabase\Edmx\OsbideProcs.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Dev\Clients\WSU\OSBIDE\CodePlex\Main - Trunk\Source\OSBIDE.Data\SQLDatabase\Edmx\OsbideProcs.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

@@ -418,5 +418,34 @@ namespace OSBIDE.Data.SQLDatabase.Edmx
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetDeliverableLookup", courseIdParameter, dateFromParameter, dateToParameter);
         }
+    
+        public virtual ObjectResult<GetCalendarMeasuresByDay_Result> GetCalendarMeasuresByDay(Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string students, Nullable<int> courseId, string measures, Nullable<bool> isAvg)
+        {
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("startDate", startDate) :
+                new ObjectParameter("startDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("endDate", endDate) :
+                new ObjectParameter("endDate", typeof(System.DateTime));
+    
+            var studentsParameter = students != null ?
+                new ObjectParameter("students", students) :
+                new ObjectParameter("students", typeof(string));
+    
+            var courseIdParameter = courseId.HasValue ?
+                new ObjectParameter("courseId", courseId) :
+                new ObjectParameter("courseId", typeof(int));
+    
+            var measuresParameter = measures != null ?
+                new ObjectParameter("measures", measures) :
+                new ObjectParameter("measures", typeof(string));
+    
+            var isAvgParameter = isAvg.HasValue ?
+                new ObjectParameter("isAvg", isAvg) :
+                new ObjectParameter("isAvg", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetCalendarMeasuresByDay_Result>("GetCalendarMeasuresByDay", startDateParameter, endDateParameter, studentsParameter, courseIdParameter, measuresParameter, isAvgParameter);
+        }
     }
 }

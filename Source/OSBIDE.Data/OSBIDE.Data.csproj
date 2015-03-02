@@ -81,7 +81,7 @@
     <Compile Include="DomainObjects\DailyAggregations.cs" />
     <Compile Include="DomainObjects\Hashtag.cs" />
     <Compile Include="DomainObjects\HourlyAggregations.cs" />
-    <Compile Include="DomainObjects\Measure.cs" />
+    <Compile Include="DomainObjects\MeasureDefinitions.cs" />
     <Compile Include="DomainObjects\Notification.cs" />
     <Compile Include="DomainObjects\TimelineChartData.cs" />
     <Compile Include="DomainObjects\Comment.cs" />
@@ -118,6 +118,9 @@
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetBuildErrorMessages_Result.cs">
+      <DependentUpon>OsbideProcs.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQLDatabase\Edmx\GetCalendarMeasuresByDay_Result.cs">
       <DependentUpon>OsbideProcs.tt</DependentUpon>
     </Compile>
     <Compile Include="SQLDatabase\Edmx\GetHashtags_Result.cs">
@@ -241,6 +244,7 @@
     <Compile Include="SQLDatabase\SQLTemplateSurveys.cs" />
     <Compile Include="SQLDatabase\SQLTemplateUpdateActiveSocialEvents.cs" />
     <Compile Include="SQLDatabase\SQLTemplateUpdateBuildDocuments.cs" />
+    <Compile Include="SQLDatabase\CalendarDataProc.cs" />
     <Compile Include="SQLDatabase\TimelineChartDataProc.cs" />
     <Compile Include="SQLDatabase\TimelineStateDictionaries.cs" />
   </ItemGroup>

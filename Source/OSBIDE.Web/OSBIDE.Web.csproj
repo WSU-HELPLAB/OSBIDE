@@ -175,6 +175,7 @@
     <Compile Include="Helpers\JsonSerializerExtensions.cs" />
     <Compile Include="Models\AdminDataImport.cs" />
     <Compile Include="Models\Analytics\Analytics.cs" />
+    <Compile Include="Models\Analytics\CalendarSettings.cs" />
     <Compile Include="Models\Analytics\CriteriaLookups.cs" />
     <Compile Include="Models\Analytics\ProcedureDataItem.cs" />
     <Compile Include="Models\Analytics\ProcedureResults.cs" />

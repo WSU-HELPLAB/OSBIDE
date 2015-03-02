@@ -62,6 +62,11 @@ namespace OSBIDE.Data.DomainObjects
         Class,
         Ethnicity,
     }
+    public enum AggregateFunction
+    {
+        Total,
+        Avg,
+    }
 
     public class EnumListItem
     {
@@ -75,11 +80,16 @@ namespace OSBIDE.Data.DomainObjects
             var enumListItems = new List<EnumListItem>();
             foreach (var e in Enum.GetValues(typeof(T)))
             {
-                enumListItems.Add(new EnumListItem { Value = (int)e, Text = NameToDisplayText(Enum.GetName(typeof(T), e)) });
+                enumListItems.Add(new EnumListItem { Value = (int)e, Text = (Enum.GetName(typeof(T), e)).ToDisplayText() });
             }
             return enumListItems;
         }
-        public static string NameToDisplayText(string name)
+    }
+
+    public static class NameExtension
+    {
+        private static List<string> LowerCaseWords = new List<string> { "Of", "To", "Per", "At", "In", "On" };
+        public static string ToDisplayText(this string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return string.Empty;
 
@@ -96,7 +106,13 @@ namespace OSBIDE.Data.DomainObjects
                 }
                 text.Append(name[idx]);
             }
-            return text.ToString();
+
+            var returnString = text.ToString();
+            LowerCaseWords.ForEach(x => {
+                returnString = returnString.Replace(string.Format(" {0} ", x), string.Format(" {0} ", x.ToLower()));
+            });
+
+            return returnString;
         }
     }
 }

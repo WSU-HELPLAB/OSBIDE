@@ -701,6 +701,22 @@ input[type="text"].typeahead {
 
 /* calendar */
 
+
+ div[data-wzstep="DataVisualization"] h2
+,div[data-wzstep="DataVisualization"] select {
+     display: inline-block;
+     width: auto;
+ }
+ div[data-wzstep="DataVisualization"] h2 {
+     position: relative;
+     top: 5px;
+ }
+ div[data-wzstep="DataVisualization"] div.category {
+     padding-right: 10px;
+     white-space: nowrap;
+     overflow-x: visible;
+ }
+
 #calendar-section path {
     stroke-width: 1;
     fill: none;
@@ -758,3 +774,4 @@ input[type="text"].typeahead {
     position: relative;
     top: 10px;
 }
+

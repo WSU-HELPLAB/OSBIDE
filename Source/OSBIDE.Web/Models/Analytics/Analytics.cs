@@ -17,6 +17,7 @@ namespace OSBIDE.Web.Models.Analytics
         public ProcedureSettings ProcedureSettings { get; set; }
         public ProcedureResults ProcedureResults { get; set; }
         public VisualizationParams VisualizationParams {get;set;}
+        public CalendarSettings CalendarSettings { get; set; }
 
         public static Analytics FromSession()
         {

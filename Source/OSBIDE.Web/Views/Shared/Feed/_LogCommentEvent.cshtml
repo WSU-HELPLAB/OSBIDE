@@ -37,6 +37,6 @@ else
         <text>@string.Format("{0}'s", comment.SourceEventLog.Sender.FirstName)</text>   
     }
 }
-@string.Format("{0}:", Enum<EventTypes>.NameToDisplayText(comment.SourceEventLog.LogType).ToLower())
+@string.Format("{0}:", comment.SourceEventLog.LogType.ToDisplayText().ToLower())
 <br />
 @comment.Content
