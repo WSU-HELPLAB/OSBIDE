@@ -294,6 +294,7 @@
     <Content Include="SQLDatabase\Scripts\[dbo].[GetActivityFeeds].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilBatch].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildErrorMessages].sql" />
+    <Content Include="SQLDatabase\Scripts\[dbo].[GetCalendarMeasuresByDay].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetErrorFixTimeStats].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetBuildDocUtilUsers].sql" />
     <Content Include="SQLDatabase\Scripts\[dbo].[GetComments].sql" />

@@ -32,7 +32,7 @@
 
             var tip = d3.tip()
               .attr("class", "d3-tip")
-              .offset([-10, 0])
+              .offset([10, 0])
               .html(function (d) {
 
                   var tips = [];
@@ -86,6 +86,8 @@
                 //g.selectAll("text[text-anchor]").remove();
                 g.selectAll("circle").remove();
                 g.selectAll("path").remove();
+
+                if (inputData.dailyAggregations == null) return;
 
                 // loop through measures to append data points and paths
                 for (var m = 0; m < inputData.dailyAggregations.measures.length; m++) {
@@ -232,7 +234,7 @@
 
     function combineCellPositionsWithDate(cellPositions, inputData, inactiveCellColor, activeCellColorC, activeCellColorN) {
 
-        var year = inputData.year, month = inputData.month, measures = inputData.dailyAggregations.measures;
+        var year = inputData.year, month = inputData.month, measures = inputData.dailyAggregations != null ? inputData.dailyAggregations.measures : null;
 
         // days in the previous month
         var prevDate = new Date(year, month, 0);
@@ -288,11 +290,12 @@
     function getAllDataPointsForDay(month, day, measures) {
 
         var dayData = [];
-        $.each(measures, function (i, m) {
-            if (cellInMeasureRange(month, day, m))
-                dayData.push({ title: m.title, value: getValueFor(m.aggregates, month, day), min: m.min, max: m.max });
-        });
-
+        if (measures != null) {
+            $.each(measures, function (i, m) {
+                if (cellInMeasureRange(month, day, m))
+                    dayData.push({ title: m.title, value: getValueFor(m.aggregates, month, day), min: m.min, max: m.max });
+            });
+        }
         return dayData;
     }
 
