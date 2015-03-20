@@ -36,9 +36,9 @@
               .html(function (d) {
 
                   var tips = [];
-                  $.each(d.data, function (k, val) {
-                      tips.push(val.title + ": " + val.value + "<br/>min: " +val.min + "<br/>max: " + val.max);
-                  })
+                $.each(d.data, function(k, val) {
+                    tips.push(val.title + ": " + val.value + "<br/>min: " + val.min + "<br/>max: " + val.max);
+                });
 
                   if (tips.length > 0) return "<strong>" + tips.join("<br/><br/>") + "</strong>";
               });
