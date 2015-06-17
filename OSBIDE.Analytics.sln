@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics", "Source\OSBIDE.Analytics\OSBIDE.Analytics.csproj", "{9061DC43-536C-47FE-A0E4-BEECE73B763B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Library", "Source\OSBIDE.Library\OSBIDE.Library.csproj", "{A38761C0-8F42-4C04-9DAA-05989B3971D0}"
@@ -9,9 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Controls", "Source\O
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics.Terminal", "Source\OSBIDE.Analytics.Terminal\OSBIDE.Analytics.Terminal.csproj", "{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\fc\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 2
+		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
 		SccProjectUniqueName0 = Source\\OSBIDE.Library\\OSBIDE.Library.csproj
@@ -24,6 +28,11 @@ Global
 		SccAuxPath1 = https://tfs.codeplex.com/tfs/tfs25
 		SccLocalPath1 = Source\\OSBIDE.Controls
 		SccProvider1 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccProjectUniqueName2 = ..\\..\\fc\\Main\\Source\\FileCache\\FileCache.csproj
+		SccProjectName2 = ../../fc/Main/Source/FileCache
+		SccAuxPath2 = https://tfs.codeplex.com/tfs/tfs25
+		SccLocalPath2 = ..\\..\\fc\\Main\\Source\\FileCache
+		SccProvider2 = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +82,15 @@ Global
 		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}.Release|x86.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.OSBIDE Deployment|Any CPU.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.OSBIDE Deployment|Any CPU.Build.0 = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.OSBIDE Deployment|x86.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

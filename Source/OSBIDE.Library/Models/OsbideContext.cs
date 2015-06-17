@@ -16,6 +16,7 @@ namespace OSBIDE.Library.Models
 {
     public class OsbideContext : DbContext
     {
+        public DbSet<CodedOsbideFeedItem> CodedOsbideFeedItems { get; set; }
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<EventLogData> EventLogData { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
@@ -40,7 +41,7 @@ namespace OSBIDE.Library.Models
         public DbSet<ChatRoomUser> ChatRoomUsers { get; set; }
         public DbSet<CommentActivityLog> CommentActivityLogs { get; set; }
         public DbSet<WhatsNewItem> WhatsNewItems { get; set; }
-
+        public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
         public DbSet<AskForHelpEvent> AskForHelpEvents { get; set; }
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<BuildEventBreakPoint> BuildEventBreakPoints { get; set; }

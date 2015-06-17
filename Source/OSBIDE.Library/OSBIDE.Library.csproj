@@ -179,10 +179,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="IdenticonRenderer.cs" />
+    <Compile Include="Models\ActionRequestLog.cs" />
     <Compile Include="Models\Assignment.cs" />
     <Compile Include="Models\BuildDocument.cs" />
     <Compile Include="Models\BuildError.cs" />
     <Compile Include="Models\ChatRoomUser.cs" />
+    <Compile Include="Models\CodedOsbideFeedItem.cs" />
     <Compile Include="Models\CourseRole.cs" />
     <Compile Include="Models\CourseUserRelationship.cs" />
     <Compile Include="Models\ErrorType.cs" />
