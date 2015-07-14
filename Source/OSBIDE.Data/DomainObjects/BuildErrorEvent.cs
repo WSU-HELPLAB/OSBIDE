@@ -25,6 +25,11 @@ namespace OSBIDE.Data.DomainObjects
         public string FileName { get; set; }
         public int NumberOfModified { get; set; }
         public List<int> ModifiedLines { get; set; }
+        public ErrorDocumentInfo()
+        {
+            NumberOfModified = 0;
+            ModifiedLines = new List<int>();
+        }
     }
     public class ErrorTypeDetails
     {

@@ -78,8 +78,8 @@ namespace OSBIDE.Data.SQLDatabase
                                           Line = d.Line,
                                           Column = d.Column,
                                           FileName = d.FileName,
-                                          NumberOfModified = d.NumberOfModified.HasValue ? d.NumberOfModified.Value : 0,
-                                          ModifiedLines = d.ModifiedLines.Length > 0 ? d.ModifiedLines.Split(',').Select(l => Convert.ToInt32(l)).ToList() : null
+                                          NumberOfModified = d.NumberOfModified != null && d.NumberOfModified.HasValue ? d.NumberOfModified.Value : 0,
+                                          ModifiedLines = d.ModifiedLines != null && d.ModifiedLines.Length > 0 ? d.ModifiedLines.Split(',').Select(l => Convert.ToInt32(l)).ToList() : null
                                       })
                                       .ToList();
                     if (ed.Count > 0)

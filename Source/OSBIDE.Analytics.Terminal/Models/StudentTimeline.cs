@@ -12,12 +12,17 @@ namespace OSBIDE.Analytics.Terminal.Models
         public int StudentId { get; set; }
         public Dictionary<KeyValuePair<string, string>, int> Transitions { get; set; }
         public List<TimelineState> RawStates { get; set; }
+        public List<int> MarkovSequence { get; set; }
+        public List<List<int>> FilteredMarkovSequence { get; set; }
+
         public Dictionary<string, double> Grades { get; set; }
         private Dictionary<string, TimelineState> _aggregateStates { get; set; }
 
         public StudentTimeline()
         {
+            FilteredMarkovSequence = new List<List<int>>();
             RawStates = new List<TimelineState>();
+            MarkovSequence = new List<int>();
             Grades = new Dictionary<string, double>();
             _aggregateStates = new Dictionary<string, TimelineState>();
             Transitions = new Dictionary<KeyValuePair<string, string>, int>();

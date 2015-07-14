@@ -1,4 +1,6 @@
-﻿using OSBIDE.Analytics.Terminal.Models;
+﻿using Accord.Statistics.Models.Markov;
+using Accord.Statistics.Models.Markov.Learning;
+using OSBIDE.Analytics.Terminal.Models;
 using OSBIDE.Library.CSV;
 using OSBIDE.Library.Models;
 using System;
@@ -12,6 +14,24 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
 {
     public class TimelineAnalysisViewModel
     {
+        /*programming states: 
+            * ?? - Unknown
+            * Y? - SynYSemU
+            * YN - SynYSemN
+            * N? - SynNSemU
+            * NN - SynNSemN
+            * D? - Debugging SemU
+            * DN - Debugging SemN
+            * RN - Run SemU
+            * R? - Run SemN
+            * R/ - Run SynNSemU
+            * 
+            */
+        //                                       0     1      2    3     4     5     6     7     8     9
+        private string[] _intersting_states = { "??", "Y?", "YN", "N?", "NN", "D?", "DN", "RN", "R?", "R/" };
+
+        private HiddenMarkovModel _model;
+
         public Dictionary<int, StudentTimeline> Timeline { get; set; }
 
         private OsbideContext _db { get; set; }
@@ -28,10 +48,10 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         /// <returns></returns>
         public List<string> GetAllStates()
         {
-            Dictionary<string, string> allStates = new Dictionary<string,string>();
-            foreach(var user in Timeline)
+            Dictionary<string, string> allStates = new Dictionary<string, string>();
+            foreach (var user in Timeline)
             {
-                foreach(var state in user.Value.RawStates)
+                foreach (var state in user.Value.RawStates)
                 {
                     allStates[state.State] = state.State;
                 }
@@ -47,10 +67,10 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         /// <returns></returns>
         public List<string> GetAllGrades()
         {
-            Dictionary<string, string> allGrades = new Dictionary<string,string>();
+            Dictionary<string, string> allGrades = new Dictionary<string, string>();
             foreach (var user in Timeline.Values)
-            { 
-                foreach(var grade in user.Grades)
+            {
+                foreach (var grade in user.Grades)
                 {
                     allGrades[grade.Key] = grade.Key;
                 }
@@ -58,6 +78,42 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             List<string> result = allGrades.Keys.ToList();
             result.Sort();
             return result;
+        }
+
+        /// <summary>
+        /// Removes students from timeline if they fail to be within a certain range for a given grading cateogry
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="minScore"></param>
+        /// <param name="maxScore"></param>
+        public int FilterByGrade(string category, double minScore, double maxScore)
+        {
+            Dictionary<int, int> keysToRemove = new Dictionary<int, int>();
+            foreach(var kvp in Timeline)
+            {
+                var user = kvp.Value;
+
+                //not having grading category immediately flags user for removal
+                if(user.Grades.ContainsKey(category))
+                {
+                    //is the user's score not within bounds?
+                    if(user.Grades[category] < minScore || user.Grades[category] > maxScore)
+                    {
+                        keysToRemove[kvp.Key] = kvp.Key;
+                    }
+                }
+                else
+                {
+                    keysToRemove[kvp.Key] = kvp.Key;
+                }
+            }
+
+            //with keys known, remove from loade users
+            foreach(int key in keysToRemove.Keys)
+            {
+                Timeline.Remove(key);
+            }
+            return keysToRemove.Count;
         }
 
         /// <summary>
@@ -69,14 +125,15 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             var query = from user in _db.Users
                         join grade in _db.StudentGrades on user.InstitutionId equals grade.StudentId
                         where Timeline.Keys.Contains(user.Id)
+                        && grade.CourseId == 3 //may need to comment out in order to get correct grade data
                         select new { UserId = user.Id, StudentId = user.InstitutionId, Deliverable = grade.Deliverable, Grade = grade.Grade };
 
             //add to timeline students
-            foreach(var item in query)
+            foreach (var item in query)
             {
-                if(Timeline.ContainsKey(item.UserId) == true)
+                if (Timeline.ContainsKey(item.UserId) == true)
                 {
-                    if(Timeline[item.UserId].Grades.ContainsKey(item.Deliverable) == false)
+                    if (Timeline[item.UserId].Grades.ContainsKey(item.Deliverable) == false)
                     {
                         Timeline[item.UserId].Grades.Add(item.Deliverable, item.Grade);
                     }
@@ -85,30 +142,185 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             }
         }
 
+        /// <summary>
+        /// Helper method used in some of the Markov functions
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, int> GetInterestingStatesAsDictionary()
+        {
+            Dictionary<string, int> interestingStates = new Dictionary<string, int>();
+            for (int i = 0; i < _intersting_states.Length; i++)
+            {
+                interestingStates.Add(_intersting_states[i], i);
+            }
+
+            //for markov models, we use inactivity as an interesting state
+            interestingStates.Add("--", interestingStates.Keys.Count);
+            return interestingStates;
+        }
+
+        /// <summary>
+        /// Converts each student timeline into a numerical sequence suitable for machine learning
+        /// </summary>
+        public void BuildDefaultMarkovStates()
+        {
+            //convert interesting states array into dictionary for faster lookup in algorithm
+            Dictionary<string, int> interestingStates = GetInterestingStatesAsDictionary();
+
+            foreach (StudentTimeline timeline in Timeline.Values)
+            {
+                //clear existing markov state list
+                timeline.MarkovSequence = new List<int>();
+
+                //It is possible for other events to interrupt IDE events.  E.g. A social event occurs during
+                //the ?? stage.  We use this variable to track whether or not the previous state is connected
+                //to the current state, which should prevent self-cycling between the same event.
+                int previousState = -1;
+
+                //convert timeline state to integer markov representation
+                foreach (TimelineState state in timeline.RawStates)
+                {
+                    //only add "interesting" states (programming states)
+                    if (interestingStates.ContainsKey(state.State) == true)
+                    {
+                        //prevent transitioning between the same event
+                        if(interestingStates[state.State] != previousState)
+                        {
+                            timeline.MarkovSequence.Add(interestingStates[state.State]);
+                            previousState = interestingStates[state.State];
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a dictionary of all transitions of the supplied length for all loaded data
+        /// </summary>
+        /// <param name="transitionLength"></param>
+        public Dictionary<string, int> GetAllTransitionCombinations(int transitionLength)
+        {
+            Dictionary<string, int> transitions = new Dictionary<string, int>();
+            foreach (StudentTimeline timeline in Timeline.Values)
+            {
+                //starting at the first sequence, figure out all possible sequences for each student
+                for (int i = 0; i + (transitionLength - 1) < timeline.MarkovSequence.Count; i++)
+                {
+                    List<int> transitionList = new List<int>();
+                    for (int j = i; j < i + transitionLength; j++)
+                    {
+                        transitionList.Add(timeline.MarkovSequence[j]);
+                    }
+                    string transition = String.Join("_", transitionList);
+
+                    //do we have this transition?
+                    if(transitions.ContainsKey(transition) == false)
+                    {
+                        //if not, create a new space for it
+                        transitions[transition] = 0;
+                    }
+                    transitions[transition]++;
+                }
+            }
+            return transitions;
+        }
+
+        /// <summary>
+        /// Returns a dictionary of all transition sequences capped by 
+        /// periods of inactivity (idle; --)
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, int> GetIdleTransitionSequence()
+        {
+            Dictionary<string, int> transitions = new Dictionary<string, int>();
+            Dictionary<string, int> interestingStates = GetInterestingStatesAsDictionary();
+            foreach (StudentTimeline timeline in Timeline.Values)
+            {
+                //clear out existing filtered markov sequence
+                timeline.FilteredMarkovSequence = new List<List<int>>();
+
+                //holds action sequence
+                List<int> currentActionSeqeunce = new List<int>();
+
+                //always start action sequence with idle
+                currentActionSeqeunce.Add(interestingStates["--"]);
+
+                //run through all markov states
+                foreach(int state in timeline.MarkovSequence)
+                {
+                    //push current state onto current action sequence
+                    currentActionSeqeunce.Add(state);
+
+                    //end of sequence detected?
+                    if(state == interestingStates["--"])
+                    {
+                        //convert current action sequence to string, add to final dictionary
+                        string transition = String.Join("_", currentActionSeqeunce);
+                        if(transitions.ContainsKey(transition) == false)
+                        {
+                            transitions[transition] = 0;
+                        }
+                        transitions[transition]++;
+
+                        //also add to current markov filtration set for current user
+                        timeline.FilteredMarkovSequence.Add(currentActionSeqeunce);
+
+                        currentActionSeqeunce = new List<int>();
+                        currentActionSeqeunce.Add(interestingStates["--"]);
+                    }
+                }
+            }
+            return transitions;
+        }
+
+        public void BuildMarkovModel(List<List<int>> dataset)
+        {
+            Dictionary<string, int> interestingStates = GetInterestingStatesAsDictionary();
+
+            //create new model
+            _model = new HiddenMarkovModel(states: Timeline.Count, symbols: interestingStates.Count);
+
+            //teach model
+            BaumWelchLearning teacher = new BaumWelchLearning(_model);
+            
+            //convert timeline into 2D int array
+            int[][] data = dataset.Select(a => a.ToArray()).ToArray();
+            teacher.Run(data);
+        }
+
+        /// <summary>
+        /// Returns a dictionary of Markov probabilities for all supplied sequences
+        /// </summary>
+        /// <param name="sequences"></param>
+        /// <returns></returns>
+        public Dictionary<string, double> GetMarkovProbabilities(List<string> sequences)
+        {
+            Dictionary<string, double> probabilities = new Dictionary<string, double>();
+
+            //determine probability for each sequence
+            foreach(string sequence in sequences)
+            {
+                //each sequence is in the form "#-#-#...-#".  We need to conver this into an array of
+                //integers for use in the markov model
+                int[] sequenceNumbers = sequence.Split('_').Select(m => Convert.ToInt32(m)).ToArray();
+
+                //store probability in dictionary for use elsewhere
+                probabilities[sequence] = Math.Exp(_model.Evaluate(sequenceNumbers));
+            }
+
+            return probabilities;
+        }
+
         //adds normalized programming state metrics to each user
         public void NormalizeProgrammingStates()
         {
-            /*programming states: 
-             * ?? - Unknown
-             * Y? - SynYSemU
-             * YN - SynYSemN
-             * N? - SynNSemU
-             * NN - SynNSemN
-             * D? - Debugging SemU
-             * DN - Debugging SemN
-             * RN - Run SemU
-             * R? - Run SemN
-             * R/ - Run SynNSemU
-             * 
-             * Algorithm: sum states total time, normalize based on total time spent in each state
-             */
-            string[] intersting_states = {"??", "Y?", "YN", "N?", "NN", "D?", "DN", "RN", "R?", "R/"};
-            foreach(StudentTimeline timeline in Timeline.Values)
+            //Algorithm: sum states total time, normalize based on total time spent in each state
+            foreach (StudentTimeline timeline in Timeline.Values)
             {
                 TimeSpan total_time = new TimeSpan(0, 0, 0);
 
                 //pass #1: find total time
-                foreach(string state in intersting_states)
+                foreach (string state in _intersting_states)
                 {
                     TimelineState aggregate = timeline.GetAggregateState(state);
                     total_time += aggregate.TimeInState;
@@ -126,18 +338,18 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                 timeline.RawStates.Add(totalState);
 
                 //pass #2: normalize
-                foreach(string state in intersting_states)
+                foreach (string state in _intersting_states)
                 {
                     string normilzedKey = string.Format("normalized_{0}", state);
                     TimelineState aggregate = timeline.GetAggregateState(state);
                     TimelineState normalizedState = new TimelineState()
                     {
                         State = normilzedKey,
-                        NormalizedTimeInState = (aggregate.TimeInState.TotalSeconds / total_time.TotalSeconds)*100,
+                        NormalizedTimeInState = (aggregate.TimeInState.TotalSeconds / total_time.TotalSeconds) * 100,
                     };
 
                     //add back to student
-                    timeline.GetAggregateState(normilzedKey).NormalizedTimeInState =  normalizedState.NormalizedTimeInState;
+                    timeline.GetAggregateState(normilzedKey).NormalizedTimeInState = normalizedState.NormalizedTimeInState;
                     timeline.RawStates.Add(normalizedState);
                 }
 
@@ -149,7 +361,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         /// </summary>
         public void ProcessTransitions()
         {
-            foreach(StudentTimeline student in Timeline.Values)
+            foreach (StudentTimeline student in Timeline.Values)
             {
                 student.AggregateTransitions();
             }
@@ -162,9 +374,9 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         public List<KeyValuePair<string, string>> GetAllTransitions()
         {
             Dictionary<KeyValuePair<string, string>, int> transitions = new Dictionary<KeyValuePair<string, string>, int>();
-            foreach(StudentTimeline timeline in Timeline.Values)
+            foreach (StudentTimeline timeline in Timeline.Values)
             {
-                foreach(var transition in timeline.Transitions)
+                foreach (var transition in timeline.Transitions)
                 {
                     transitions[transition.Key] = 0;
                 }
@@ -183,10 +395,11 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
 
             //add header row
             writer.AddToCurrentLine("User ID");
-            var query = from item  in GetAllTransitions()
-                        select new {
-                            Key = item.Key, 
-                            Value = item.Value, 
+            var query = from item in GetAllTransitions()
+                        select new
+                        {
+                            Key = item.Key,
+                            Value = item.Value,
                             AsString = string.Format("{0};{1}", item.Key, item.Value),
                             Kvp = item
                         };
@@ -213,7 +426,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                 //add state information
                 foreach (var transition in transitions)
                 {
-                    if(item.Transitions.ContainsKey(transition.Kvp) == true)
+                    if (item.Transitions.ContainsKey(transition.Kvp) == true)
                     {
                         writer.AddToCurrentLine(item.Transitions[transition.Kvp].ToString());
                     }
@@ -264,7 +477,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
 
             //add grades if loaded
             List<string> grades = GetAllGrades();
-            foreach(string grade in grades)
+            foreach (string grade in grades)
             {
                 writer.AddToCurrentLine(grade);
             }
@@ -281,7 +494,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                 {
                     //normalized states will use the "NormalizedTimeInState" property.
                     //non-normalized states will use the "MillisecondsInState" property.
-                    if(item.GetAggregateState(state).NormalizedTimeInState > 0)
+                    if (item.GetAggregateState(state).NormalizedTimeInState > 0)
                     {
                         writer.AddToCurrentLine(item.GetAggregateState(state).NormalizedTimeInState.ToString("0.0000000"));
                     }
@@ -289,13 +502,13 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     {
                         writer.AddToCurrentLine(item.GetAggregateState(state).TimeInState.TotalSeconds.ToString());
                     }
-                    
+
                 }
 
                 //add grade information
                 foreach (string grade in grades)
                 {
-                    if(item.Grades.ContainsKey(grade) == true)
+                    if (item.Grades.ContainsKey(grade) == true)
                     {
                         writer.AddToCurrentLine(item.Grades[grade].ToString());
                     }
@@ -303,6 +516,43 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     {
                         writer.AddToCurrentLine("0");
                     }
+                }
+                writer.CreateNewRow();
+            }
+
+            //write to file
+            using (TextWriter tw = File.CreateText(fileName))
+            {
+                tw.Write(writer.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Writes the loaded timeline information to a CSV.  The format of the CSV file
+        /// should match so that it could be read by ParseTimeline()
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void WriteLoadedDataToCsv(string fileName)
+        {
+            CsvWriter writer = new CsvWriter();
+            foreach(var user in Timeline.Values)
+            {
+                //first column is user id
+                writer.AddToCurrentLine(user.OsbideId);
+
+                //all other rows are state transitions
+                foreach(TimelineState state in user.RawStates)
+                {
+                    string stateAsString = "";
+                    if(state.IsSocialEvent)
+                    {
+                        stateAsString = string.Format("{0};{1}", state.State, state.StartTime);
+                    }
+                    else
+                    {
+                        stateAsString = string.Format("{0};{1};{2}", state.State, state.StartTime, state.EndTime);
+                    }
+                    writer.AddToCurrentLine(stateAsString);
                 }
                 writer.CreateNewRow();
             }
@@ -331,7 +581,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                 int userId = -1;
                 Int32.TryParse(pieces[0], out userId);
 
-                if(userStates.ContainsKey(userId) == false)
+                if (userStates.ContainsKey(userId) == false)
                 {
                     userStates.Add(userId, new StudentTimeline());
                 }
@@ -354,7 +604,6 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     DateTime tempDate = DateTime.MinValue;
                     DateTime.TryParse(parts[1], out tempDate);
                     currentState.StartTime = tempDate;
-
 
                     //two items = social event
                     if (parts.Length == 2)
@@ -385,7 +634,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         /// <param name="fileName"></param>
         public void LoadTimeline(string fileName)
         {
-            Timeline = ParseTimeline(fileName, new Dictionary<int,StudentTimeline>());
+            Timeline = ParseTimeline(fileName, new Dictionary<int, StudentTimeline>());
         }
 
         /// <summary>

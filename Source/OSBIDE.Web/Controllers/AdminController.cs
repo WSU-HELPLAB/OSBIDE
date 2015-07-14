@@ -52,7 +52,7 @@ namespace OSBIDE.Web.Controllers
                                         .Where(l => l.AccessDate > vm.SelectedDate)
                                         .Where(l => l.AccessDate < tomorrow)
                                         .ToList();
-                foreach (ActionRequestLog log in requestLogs)
+                foreach (OSBIDE.Data.DomainObjects.ActionRequestLog log in requestLogs)
                 {
                     vm.ActivityItems.Add(log.AccessDate, log);
                 }

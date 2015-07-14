@@ -27,6 +27,24 @@ namespace OSBIDE.Library.CSV
         }
 
         /// <summary>
+        /// Adds a new cell to the current row
+        /// </summary>
+        /// <param name="content"></param>
+        public void AddToCurrentLine(int content)
+        {
+            lines.Last().Add(content.ToString());
+        }
+
+        /// <summary>
+        /// Adds a new cell to the current row
+        /// </summary>
+        /// <param name="content"></param>
+        public void AddToCurrentLine(double content)
+        {
+            lines.Last().Add(content.ToString());
+        }
+
+        /// <summary>
         /// Will skip down to the next row in the CSV file.  
         /// This will cause all future default-writes (e.g. <see cref="AddToCurrentLine"/>)
         /// to write to this new line.

@@ -97,6 +97,91 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             _syllables = _db.Syllables.ToDictionary(m => m.Word, m => m.SyllableCount);
         }
 
+        public Dictionary<int, int> CalculateSocialRole(DateTime startingDate, DateTime endingDate)
+        {
+
+            //organize comments by user and by date
+            Dictionary<int, Dictionary<DateTime, List<Comment>>> userPostsByDate = new Dictionary<int, Dictionary<DateTime, List<Comment>>>();
+            foreach(Comment comment in _loadedComments)
+            {
+                if(userPostsByDate.ContainsKey(comment.UserId) == false)
+                {
+                    userPostsByDate.Add(comment.UserId, new Dictionary<DateTime, List<Comment>>());
+                }
+                if(userPostsByDate[comment.UserId].ContainsKey(comment.DateReceived) == false)
+                {
+                    userPostsByDate[comment.UserId].Add(comment.DateReceived, new List<Comment>());
+                }
+                userPostsByDate[comment.UserId][comment.DateReceived].Add(comment);
+            }
+
+            //having organized comments by user/date, now figure out the number of posts made during
+            //the supplied DateTime parameters
+            Dictionary<int, int> userPosts = new Dictionary<int, int>();
+            Dictionary<int, int> userReplies = new Dictionary<int, int>();
+            foreach(int userId in userPostsByDate.Keys)
+            {
+                if(userPosts.ContainsKey(userId) == false)
+                {
+                    userPosts.Add(userId, 0);
+                    userReplies.Add(userId, 0);
+                }
+                foreach(DateTime postDate in userPostsByDate[userId].Keys)
+                {
+                    if(postDate >= startingDate && postDate <= endingDate)
+                    {
+                        foreach(Comment comment in userPostsByDate[userId][postDate])
+                        {
+                            if(comment.CommentType == CommentType.FeedPost)
+                            {
+                                userPosts[userId]++;
+                            }
+                            else
+                            {
+                                userReplies[userId]++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //lastly, calculate social role
+            Dictionary<int, int> socialRoles = new Dictionary<int, int>();
+            foreach(int userId in userPosts.Keys)
+            {
+                //>= 2 posts and replies is role level 4
+                if(userPosts[userId] >= 2 && userReplies[userId] >= 2)
+                {
+                    socialRoles.Add(userId, 4);
+                }
+
+                // 2 or more posts and fewer than 2 replies is role level 3
+                else if(userPosts[userId] >= 2 && userReplies[userId] < 2)
+                {
+                    socialRoles.Add(userId, 3);
+                }
+
+                // similarly, less than 2 posta and two or more replies is level 3
+                else if(userPosts[userId] < 2 && userReplies[userId] >= 2)
+                {
+                    socialRoles.Add(userId, 3);
+                }
+
+                //any sort of activity is post level 2
+                else if(userPosts[userId] > 0 || userReplies[userId] > 0)
+                {
+                    socialRoles.Add(userId, 2);
+                }
+
+                //no activity is role 1, however I don't think that this will actually ever hit
+                else
+                {
+                    socialRoles.Add(userId, 1);
+                }
+            }
+            return socialRoles;
+        }
+
         /// <summary>
         /// Calculates word metrics for all loaded comments
         /// </summary>
@@ -173,7 +258,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         {
             //TODO: allow custom timespan inputs
             DateTime startDate = new DateTime(2014, 01, 01);
-            DateTime endDate = new DateTime(2014, 05, 15);
+            DateTime endDate = new DateTime(2015, 01, 01);
 
             var query = from user in _db.Users
                         join log in _db.EventLogs on user.Id equals log.SenderId
@@ -206,7 +291,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         {
             //TODO: allow custom timespan inputs
             DateTime startDate = new DateTime(2014, 01, 01);
-            DateTime endDate = new DateTime(2014, 05, 15);
+            DateTime endDate = new DateTime(2015, 01, 01);
 
             var query = from user in _db.Users
                         join log in _db.EventLogs on user.Id equals log.SenderId
