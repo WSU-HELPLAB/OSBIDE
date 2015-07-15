@@ -62,8 +62,14 @@ namespace OSBIDE.Analytics.Terminal.Views
             }
 
             //step 2: construct markov model
-            vm.BuildMarkovModel(trainingSequence);
+            //vm.BuildMarkovModel(trainingSequence);
         }
+
+        /*
+         * What I want to do:
+         *  For each assignment:
+         *      figure out common se
+         * */
 
         /// <summary>
         /// Processes currently loaded data through the currently loaded markov model
@@ -75,7 +81,7 @@ namespace OSBIDE.Analytics.Terminal.Views
             CsvWriter writer = new CsvWriter();
 
             Dictionary<string, int> idleSequences = vm.GetIdleTransitionSequence();
-            Dictionary<string, double> probabilities = vm.GetMarkovProbabilities(idleSequences.Keys.ToList());
+            Dictionary<string, double> probabilities = new Dictionary<string, double>();// vm.GetMarkovProbabilities(idleSequences.Keys.ToList());
             writer = new CsvWriter();
             foreach (KeyValuePair<string, double> kvp in probabilities)
             {
@@ -88,8 +94,7 @@ namespace OSBIDE.Analytics.Terminal.Views
                 tw.Write(writer.ToString());
             }
             
-            /*
-            Dictionary<string,int> idleSequences = vm.GetIdleTransitionSequence();
+            
             Console.WriteLine("Processing idle sequences...");
             foreach (KeyValuePair<string, int> kvp in idleSequences)
             {
@@ -165,7 +170,7 @@ namespace OSBIDE.Analytics.Terminal.Views
             int category = -1;
             double maxScore = 200;
             double minScore = 0;
-            if(Int32.TryParse(categoryStr, out category))
+            if(Int32.TryParse(categoryStr, out category) && category > -1)
             {
                 if(Double.TryParse(maxScoreStr, out maxScore) == false)
                 {

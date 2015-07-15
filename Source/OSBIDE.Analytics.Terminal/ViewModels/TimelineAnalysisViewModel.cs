@@ -155,7 +155,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             }
 
             //for markov models, we use inactivity as an interesting state
-            interestingStates.Add("--", interestingStates.Keys.Count);
+            //interestingStates.Add("--", interestingStates.Keys.Count);
             return interestingStates;
         }
 
