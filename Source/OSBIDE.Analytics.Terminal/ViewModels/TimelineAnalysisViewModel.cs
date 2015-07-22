@@ -155,7 +155,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             }
 
             //for markov models, we use inactivity as an interesting state
-            //interestingStates.Add("--", interestingStates.Keys.Count);
+            interestingStates.Add("--", interestingStates.Keys.Count);
             return interestingStates;
         }
 
@@ -171,6 +171,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             {
                 //clear existing markov state list
                 timeline.MarkovSequence = new List<int>();
+                timeline.MarkovStates = new List<TimelineState>();
 
                 //It is possible for other events to interrupt IDE events.  E.g. A social event occurs during
                 //the ?? stage.  We use this variable to track whether or not the previous state is connected
@@ -184,9 +185,10 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     if (interestingStates.ContainsKey(state.State) == true)
                     {
                         //prevent transitioning between the same event
-                        if(interestingStates[state.State] != previousState)
+                        if(interestingStates[state.State] != previousState) //depending on analysis, might want to turn this off
                         {
                             timeline.MarkovSequence.Add(interestingStates[state.State]);
+                            timeline.MarkovStates.Add(state);
                             previousState = interestingStates[state.State];
                         }
                     }
@@ -219,7 +221,13 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                         //if not, create a new space for it
                         transitions[transition] = 0;
                     }
+                    if(timeline.TransitionCounts.ContainsKey(transition) == false)
+                    {
+                        //also add data for student
+                        timeline.TransitionCounts[transition] = 0;
+                    }
                     transitions[transition]++;
+                    timeline.TransitionCounts[transition]++;
                 }
             }
             return transitions;

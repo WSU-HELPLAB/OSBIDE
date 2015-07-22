@@ -11,8 +11,10 @@ namespace OSBIDE.Analytics.Terminal.Models
         public int OsbideId { get; set; }
         public int StudentId { get; set; }
         public Dictionary<KeyValuePair<string, string>, int> Transitions { get; set; }
+        public Dictionary<string, int> TransitionCounts { get; set; }
         public List<TimelineState> RawStates { get; set; }
         public List<int> MarkovSequence { get; set; }
+        public List<TimelineState> MarkovStates { get; set; }
         public List<List<int>> FilteredMarkovSequence { get; set; }
 
         public Dictionary<string, double> Grades { get; set; }
@@ -21,6 +23,8 @@ namespace OSBIDE.Analytics.Terminal.Models
         public StudentTimeline()
         {
             FilteredMarkovSequence = new List<List<int>>();
+            MarkovStates = new List<TimelineState>();
+            TransitionCounts = new Dictionary<string, int>();
             RawStates = new List<TimelineState>();
             MarkovSequence = new List<int>();
             Grades = new Dictionary<string, double>();

@@ -84,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\PatternParserResult.cs" />
+    <Compile Include="Models\StatePatternParser.cs" />
     <Compile Include="Models\UserAccessLog.cs" />
     <Compile Include="Models\StudentTimeline.cs" />
     <Compile Include="Models\TimelineState.cs" />

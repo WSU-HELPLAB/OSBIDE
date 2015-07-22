@@ -168,6 +168,7 @@
     <Compile Include="CSV\EndState.cs" />
     <Compile Include="CSV\QuoteState.cs" />
     <Compile Include="CSV\SecondQuoteState.cs" />
+    <Compile Include="DisjointSet.cs" />
     <Compile Include="Events\AskForHelpEvent.cs" />
     <Compile Include="Events\BreakpointToggleEvent.cs" />
     <Compile Include="Events\BuildEvent.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Models\Triggers\ModelTrigger.cs" />
     <Compile Include="Models\UserPassword.cs" />
     <Compile Include="Models\WhatsNewItem.cs" />
+    <Compile Include="NeedlemanWunsch.cs" />
     <Compile Include="NTree.cs" />
     <Compile Include="OsbideDeserializationBinder.cs" />
     <Compile Include="OsbideVsComponent.cs" />
