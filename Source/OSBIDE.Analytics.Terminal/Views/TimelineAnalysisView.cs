@@ -1,5 +1,6 @@
 ﻿using OSBIDE.Analytics.Terminal.Models;
 using OSBIDE.Analytics.Terminal.ViewModels;
+using OSBIDE.Library;
 using OSBIDE.Library.CSV;
 using System;
 using System.Collections.Generic;
@@ -79,6 +80,8 @@ namespace OSBIDE.Analytics.Terminal.Views
              *      Determine if similar to other known sequences.  If so, combine into same set. (disjoint set?)
              * */
 
+            Dictionary<int, Dictionary<string, int>> allTransitions = new Dictionary<int, Dictionary<string, int>>();
+
             //begin file processing
             for (int sequenceLength = startingSequenceLength; sequenceLength <= endingSequenceLength; sequenceLength++)
             {
@@ -90,6 +93,13 @@ namespace OSBIDE.Analytics.Terminal.Views
 
                 //figure out sequence distribution for entire data set and for individual students
                 Dictionary<string, int> transitions = vm.GetAllTransitionCombinations(sequenceLength);
+
+                //save for future use
+                allTransitions.Add(sequenceLength, transitions);
+
+                
+
+                /*
 
                 //interesting transitions are those in which we have at least 5 occurrances 
                 var interestingTransitions = transitions.Where(t => t.Value > 5).OrderBy(t => t.Value).ToList();
@@ -162,8 +172,60 @@ namespace OSBIDE.Analytics.Terminal.Views
                 {
                     tw.Write(writer.ToString());
                 }
-
+                */
             }
+
+            //use Needleman-Wunsch algorithm and disjoint sets to combine similar sequences
+            DisjointSet<string> matches = new DisjointSet<string>();
+
+            //start with large sequences as it will make it more likely that these will be the "top" of the disjoint set
+            for (int sequenceLength = endingSequenceLength; sequenceLength >= startingSequenceLength; sequenceLength--)
+            {
+
+                //Needleman-Wunsch works on single characters, so we need to transform Markov-like numbers to letters
+                Dictionary<string, int> originalSequences = allTransitions[sequenceLength];
+                Dictionary<string, int> modifiedSequences = new Dictionary<string, int>();
+                int startingNumber = (int)'a';
+                foreach(var kvp in originalSequences)
+                {
+                    //convert into numbers
+                    int[] pieces = kvp.Key.Split('_').Select(k => Convert.ToInt32(k) + startingNumber).ToArray();
+
+                    //then, convert back to characters
+                    char[] sequence = pieces.Select(p => Convert.ToChar(p)).ToArray();
+
+                    //and finally into a string
+                    string charSequence = new string(sequence);
+
+                    //lastly, remember this sequence
+                    modifiedSequences.Add(charSequence, kvp.Value);
+                }
+
+                //prime the disjoint set
+                foreach(string key in modifiedSequences.Keys)
+                {
+                    matches.Find(key);
+                }
+
+                //having converted to character state representations, now run the Needleman-Wunsch algorithm
+                List<string> sequences = modifiedSequences.Keys.ToList();
+                for(int i = 0; i < sequenceLength + 1; i += 2)
+                {
+                    string first = matches.Find(sequences[i]);
+                    string second = matches.Find(sequences[i + 1]);
+
+                    //align the two sequences
+                    var result = NeedlemanWunsch.Align(first, second);
+
+                    //if score is less than 1/3 of total length of string, then count the sequences as the same (union)
+                    if((double)NeedlemanWunsch.ScoreNpsmSequence(result.Item1, result.Item2) <= sequenceLength / 3)
+                    {
+                        matches.UnionWith(first, second);
+                    }
+
+                }
+            }
+
         }
 
         /*

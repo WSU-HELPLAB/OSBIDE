@@ -24,11 +24,11 @@ namespace OSBIDE.Library
         /// </summary>
         /// <param name="first"></param>
         /// <param name="second"></param>
-        void UnionWith(T first, T second)
+        public void UnionWith(T first, T second)
         {
             //find roots of both sets
-            T firstRoot = find(first);
-            T secondRoot = find(second);
+            T firstRoot = Find(first);
+            T secondRoot = Find(second);
 
             //if the items aren't already in the set, perform a union
             if (firstRoot.CompareTo(secondRoot) != 0)
@@ -73,7 +73,7 @@ namespace OSBIDE.Library
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        T find(T item)
+        public T Find(T item)
         {
             //keeps pointer to "top" item in set
             Tuple<int, T> top = null;
