@@ -258,7 +258,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         {
             //TODO: allow custom timespan inputs
             DateTime startDate = new DateTime(2014, 01, 01);
-            DateTime endDate = new DateTime(2015, 01, 01);
+            DateTime endDate = new DateTime(2014, 05, 14);
 
             var query = from user in _db.Users
                         join log in _db.EventLogs on user.Id equals log.SenderId
@@ -282,6 +282,8 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                             UserId = user.Id
                             ,
                             User = user
+                            ,
+                            HelpfulMarks = post.HelpfulMarks.Count
                         };
             List<Comment> comments = query.ToList();
             return comments;
@@ -291,7 +293,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         {
             //TODO: allow custom timespan inputs
             DateTime startDate = new DateTime(2014, 01, 01);
-            DateTime endDate = new DateTime(2015, 01, 01);
+            DateTime endDate = new DateTime(2014, 05, 14);
 
             var query = from user in _db.Users
                         join log in _db.EventLogs on user.Id equals log.SenderId
@@ -319,6 +321,8 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                             UserId = user.Id
                             ,
                             User = user
+                            ,
+                            HelpfulMarks = -1
                         };
             List<Comment> comments = query.ToList();
             return comments;
@@ -339,6 +343,8 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             csvWriter.AddToCurrentLine("Content");
             csvWriter.AddToCurrentLine("Reading Ease");
             csvWriter.AddToCurrentLine("Reading Grade Level");
+            csvWriter.AddToCurrentLine("# Helpful Marks");
+            csvWriter.AddToCurrentLine("Time to first reply (minutes)");
             csvWriter.CreateNewRow();
 
             //write entries
@@ -346,6 +352,14 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             foreach(int key in keys)
             {
                 Comment rootComment = _threadedComments[key];
+
+                //calculate time to first reply
+                double numMinutes = -1;
+                if(rootComment.ChildComments.Count > 0)
+                {
+                    numMinutes = (rootComment.ChildComments[0].DateReceived - rootComment.DateReceived).TotalMinutes;
+                    numMinutes = Math.Round(numMinutes, 2);
+                }
 
                 //write root, then all child comments
                 csvWriter.AddToCurrentLine(commentCounter.ToString());
@@ -355,6 +369,8 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                 csvWriter.AddToCurrentLine(rootComment.Content);
                 csvWriter.AddToCurrentLine(rootComment.FleschReadingEase.ToString());
                 csvWriter.AddToCurrentLine(rootComment.FleschKincaidGradeLevel.ToString());
+                csvWriter.AddToCurrentLine(rootComment.HelpfulMarks);
+                csvWriter.AddToCurrentLine(numMinutes);
                 csvWriter.CreateNewRow();
 
                 //now do all children
@@ -368,6 +384,8 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     csvWriter.AddToCurrentLine(child.Content);
                     csvWriter.AddToCurrentLine(child.FleschReadingEase.ToString());
                     csvWriter.AddToCurrentLine(child.FleschKincaidGradeLevel.ToString());
+                    csvWriter.AddToCurrentLine(child.HelpfulMarks);
+                    csvWriter.AddToCurrentLine(-1);
                     csvWriter.CreateNewRow();
                     childCounter++;
                 }

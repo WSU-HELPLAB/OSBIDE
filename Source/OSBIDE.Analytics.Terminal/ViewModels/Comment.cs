@@ -22,6 +22,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
         public double AverageSyllablesPerWord { get; set; }
         public double FleschReadingEase { get; set; }
         public double FleschKincaidGradeLevel { get; set; }
+        public int HelpfulMarks { get; set; }
         public OsbideUser User { get; set; }
 
         public List<Comment> ChildComments { get; set; }

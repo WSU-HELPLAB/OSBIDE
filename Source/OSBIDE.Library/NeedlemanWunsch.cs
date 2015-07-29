@@ -34,9 +34,14 @@ namespace OSBIDE.Library
                 //mismatch / indel?
                 if (s1[i].CompareTo(s2[i]) != 0)
                 {
-                    //only penalize mismatch
+                    //mismatch gets a penalty of 2
                     if (s1[i].CompareTo('-') != 0 && s2[i].CompareTo('-') != 0)
                     {
+                        score += 2;
+                    }
+                    else
+                    {
+                        //indel gets a penalty of 1
                         score += 1;
                     }
                 }
@@ -89,6 +94,7 @@ namespace OSBIDE.Library
             }
 
             //Display the matrix
+            /*
             for (int i = 0; i < s2Length; i++)
             {
                 for (int j = 0; j < s1Length; j++)
@@ -99,7 +105,7 @@ namespace OSBIDE.Library
                 }
                 Console.Write(Environment.NewLine);
             }
-
+            */
             //Console.ReadLine();
 
             //Traceback Step

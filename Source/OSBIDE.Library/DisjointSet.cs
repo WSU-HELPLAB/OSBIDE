@@ -20,6 +20,24 @@ namespace OSBIDE.Library
         }
 
         /// <summary>
+        /// Returns all current sets as a list 
+        /// </summary>
+        /// <returns></returns>
+        public List<List<T>> AllSets()
+        {
+            Dictionary<T, List<T>> sets = new Dictionary<T, List<T>>();
+            foreach(var item in _sets)
+            {
+                if(sets.ContainsKey(item.Value.Item2) == false)
+                {
+                    sets.Add(item.Value.Item2, new List<T>());
+                }
+                sets[item.Value.Item2].Add(item.Key);
+            }
+            return sets.Values.ToList();
+        }
+
+        /// <summary>
         /// Performs a union between two sets
         /// </summary>
         /// <param name="first"></param>
@@ -80,6 +98,14 @@ namespace OSBIDE.Library
 
             //bubble up until we find the top of the set
             T toFind = item;
+
+            //allow for the case that we already are at the top of the set
+            if(_sets.ContainsKey(toFind))
+            {
+                top = _sets[toFind];
+            }
+
+            //if we are not at the top of the set, find the top
             while (_sets.ContainsKey(toFind) && _sets[toFind].Item1 > 0)
             {
                 top = _sets[toFind];

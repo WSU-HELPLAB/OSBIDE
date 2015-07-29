@@ -42,6 +42,60 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             Timeline = new Dictionary<int, StudentTimeline>();
         }
 
+        public string[][] InterestingSequences = { 
+                                               //four possible editing / running cycles
+                                               new string[]{"Y?", "R?"},
+                                               new string[]{"YN", "RN"},
+                                               new string[]{"N?", "R/"},
+                                               new string[]{"NN", "R/"},
+
+                                               //two possible editing / debugging cycles
+                                               new string[]{"Y?", "D?"},
+                                               new string[]{"YN", "DN"},
+
+                                               //moving between syntactically correct / incorrect
+                                               new string[]{"Y?", "N?"},
+
+                                               //encountering debugging errors
+                                               new string[]{"Y?", "D?", "Y?", "YN" },
+
+                                               //fixing debug errors
+                                               new string[]{"YN", "DN", "Y?" },
+
+                                               //top sequences as identified by algorithm
+                                               new string[]{"--", "YN"},
+                                               new string[]{"--", "Y?"},
+                                               new string[]{"N?", "R/", "Y?"},
+                                               new string[]{"--", "N?"},
+                                               new string[]{"--", "??"},
+                                               new string[]{"RN", "DN", "YN"},
+                                               new string[]{"Y?", "R?", "D?"},
+                                               new string[]{"DN", "Y?", "D?"},
+                                               new string[]{"YN", "DN", "Y?", "D?"}
+                                           };
+
+        private Dictionary<int, Dictionary<string, List<PatternParserResult>>> _statesByUser;
+
+        /// <summary>
+        /// GET: gets states by user
+        /// SET: recalcuates user states
+        /// </summary>
+        public Dictionary<int, Dictionary<string, List<PatternParserResult>>> StatesByUser
+        {
+            get 
+            {
+                if(_statesByUser == null)
+                {
+                    _statesByUser = LocateCycles();
+                }
+                return _statesByUser;
+            }
+            set
+            {
+                _statesByUser = LocateCycles();
+            }
+        }
+
         /// <summary>
         /// Returns all states present in the currently loaded Timeline
         /// </summary>
@@ -78,6 +132,195 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             List<string> result = allGrades.Keys.ToList();
             result.Sort();
             return result;
+        }
+
+        private Dictionary<int, Dictionary<string, List<PatternParserResult>>> LocateCycles()
+        {
+
+            //build markov states
+            BuildDefaultMarkovStates();
+
+            //captures the final output by user and by sequence
+            Dictionary<int, Dictionary<string, List<PatternParserResult>>> statesByUser = new Dictionary<int, Dictionary<string, List<PatternParserResult>>>();
+
+            //for each student, locate desired sequences
+            foreach (var user in Timeline.Values)
+            {
+                //add record for user
+                statesByUser.Add(user.OsbideId, new Dictionary<string, List<PatternParserResult>>());
+
+                foreach (string[] sequence in InterestingSequences)
+                {
+
+                    //create new parser, prime parser with states to locate
+                    StatePatternParser parser = new StatePatternParser();
+                    foreach (string state in sequence)
+                    {
+                        parser.Sequence.Add(new TimelineState { State = state });
+                    }
+
+                    //find cycles
+                    List<PatternParserResult> result = parser.ParseTimelineSequence(user.MarkovStates);
+
+                    //remove all cycles whose lenght is equal to the sequence length as they're not really cycles
+                    //(e.g. cycle: Y? -> R? really needs to be Y? -> R? -> Y? to be a cycle)
+                    //List<int> indicesToRemove = new List<int>();
+                    //for (int i = 0; i < result.Count; i++)
+                    //{
+                    //    if (result[i].StateSequence.Count == sequence.Length)
+                    //    {
+                    //        indicesToRemove.Add(i);
+                    //    }
+                    //}
+                    //for (int i = indicesToRemove.Count - 1; i >= 0; i--)
+                    //{
+                    //    int index = indicesToRemove[i];
+                    //    result.RemoveAt(indicesToRemove[i]);
+                    //}
+
+                    //add surviving records for particular sequence
+                    string sequenceAsString = String.Join("_", sequence);
+                    statesByUser[user.OsbideId].Add(sequenceAsString, result);
+                }
+            }
+            return statesByUser;
+        }
+
+        /// <summary>
+        /// Orders transitions by proximity to due date.  0 = due date, -1 = day before due date, etc.
+        /// </summary>
+        /// <returns></returns>
+        public Tuple<Dictionary<int, Dictionary<string, List<TimelineState>>>, Dictionary<int, Dictionary<int, Dictionary<string, List<TimelineState>>>>> OrderTransitionsByDate()
+        {
+            //clear out states by user
+            _statesByUser = null;
+
+            //get new states for users
+            Dictionary<int, Dictionary<string, List<PatternParserResult>>> cycles = StatesByUser;
+            Dictionary<int, Dictionary<DateTime, Dictionary<string, List<TimelineState>>>> cyclesByDate = new Dictionary<int, Dictionary<DateTime, Dictionary<string, List<TimelineState>>>>();
+
+            //keeps track of all possible dates in the class
+            List<DateTime> validDates = new List<DateTime>();
+            DateTime endDate = new DateTime(2014, 5, 14);
+            for (DateTime startDate = new DateTime(2014, 1, 15); startDate <= endDate; startDate = startDate.AddDays(1))
+            {
+                validDates.Add(startDate);
+            }
+
+            /*
+             * Algorithm:
+             *  1.  For each student, record activity on that date
+             *  * */
+
+            foreach (int userId in cycles.Keys)
+            {
+                //1. prime user with a bunch of empty data for all valid dates
+                foreach (DateTime currentDate in validDates)
+                {
+                    if(cyclesByDate.ContainsKey(userId) == false)
+                    {
+                        cyclesByDate.Add(userId, new Dictionary<DateTime, Dictionary<string, List<TimelineState>>>());
+                    }
+                    cyclesByDate[userId].Add(currentDate, new Dictionary<string, List<TimelineState>>());
+                }
+
+                //2. cycles by date orders information by cycle, so we have to manually go through each pattern to aggregate by date
+                Dictionary<DateTime, Dictionary<string, List<TimelineState>>> dailyCycles = new Dictionary<DateTime, Dictionary<string, List<TimelineState>>>();
+                foreach (string cycle in cycles[userId].Keys)
+                {
+                    foreach (PatternParserResult patterns in cycles[userId][cycle])
+                    {
+                        foreach (TimelineState state in patterns.StateSequence)
+                        {
+                            //add date if we haven't seen it before
+                            if (dailyCycles.ContainsKey(state.StartTime.Date) == false)
+                            {
+                                dailyCycles.Add(state.StartTime.Date, new Dictionary<string, List<TimelineState>>());
+                            }
+
+                            //add particular cycle if we haven't seen it before
+                            if (dailyCycles[state.StartTime.Date].ContainsKey(cycle) == false)
+                            {
+                                dailyCycles[state.StartTime.Date].Add(cycle, new List<TimelineState>());
+                            }
+
+                            //record this particular state
+                            dailyCycles[state.StartTime.Date][cycle].Add(state);
+                        }
+                    }
+                }
+
+                //3. Update blanks generated in #1 with real data
+                foreach (var item in dailyCycles)
+                {
+                    cyclesByDate[userId][item.Key] = item.Value;
+                }
+            }
+
+            //break cycles based on assignment due date.  Look at change over time
+            DateTime[] dueDates = new DateTime[] { 
+                new DateTime(2014, 1, 14)       //1st homework assigned
+                , new DateTime(2014, 2, 7)      //1st homework due
+                , new DateTime(2014, 2, 21)     //2nd homework due
+                , new DateTime(2014, 3, 7)      //hw 3 due
+                , new DateTime(2014, 3, 16)     //hw4 due
+                , new DateTime(2014, 4, 7)      //hw5 due
+                , new DateTime(2014, 4, 18)     //hw6 due
+                , new DateTime(2014, 5, 4)      //hw7 due
+            };
+
+            Dictionary<int, Dictionary<string, List<TimelineState>>> statesByDueDate = new Dictionary<int, Dictionary<string, List<TimelineState>>>();
+            Dictionary<int, Dictionary<int, Dictionary<string, List<TimelineState>>>> statesByUserByDate = new Dictionary<int, Dictionary<int, Dictionary<string, List<TimelineState>>>>();
+            foreach (int userId in cyclesByDate.Keys)
+            {
+                statesByUserByDate.Add(userId, new Dictionary<int, Dictionary<string, List<TimelineState>>>());
+
+                //pull all activity, organize by due date
+                for (int i = 0; i < dueDates.Length - 1; i += 2)
+                {
+                    //figure out assigned / due date
+                    DateTime hwAssignedDate = dueDates[i];
+                    DateTime hwDueDate = dueDates[i + 1];
+
+                    int daysToDueDate = 0;
+                    for (DateTime currentDate = hwDueDate; currentDate > hwAssignedDate; currentDate = currentDate.AddDays(-1))
+                    {
+                        if(statesByDueDate.ContainsKey(daysToDueDate) == false)
+                        {
+                            statesByDueDate.Add(daysToDueDate, new Dictionary<string, List<TimelineState>>());
+                        }
+                        if(statesByUserByDate[userId].ContainsKey(daysToDueDate) == false)
+                        {
+                            statesByUserByDate[userId].Add(daysToDueDate, new Dictionary<string, List<TimelineState>>());
+                        }
+
+                        //activity for this user on this day?
+                        if (cyclesByDate[userId].ContainsKey(currentDate))
+                        {
+                            //transfer over
+                            foreach (var cycle in cyclesByDate[userId][currentDate])
+                            {
+                                if (statesByDueDate[daysToDueDate].ContainsKey(cycle.Key) == false)
+                                {
+                                    statesByDueDate[daysToDueDate].Add(cycle.Key, new List<TimelineState>());
+                                }
+                                if(statesByUserByDate[userId][daysToDueDate].ContainsKey(cycle.Key) == false)
+                                {
+                                    statesByUserByDate[userId][daysToDueDate].Add(cycle.Key, new List<TimelineState>());
+                                }
+                                foreach (var state in cycle.Value)
+                                {
+                                    statesByDueDate[daysToDueDate][cycle.Key].Add(state);
+                                    statesByUserByDate[userId][daysToDueDate][cycle.Key].Add(state);
+                                }
+                            }
+                        }
+
+                        daysToDueDate--;
+                    }
+                }
+            }
+            return new Tuple<Dictionary<int,Dictionary<string,List<TimelineState>>>,Dictionary<int,Dictionary<int,Dictionary<string,List<TimelineState>>>>>(statesByDueDate, statesByUserByDate);
         }
 
         /// <summary>
@@ -140,6 +383,15 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     Timeline[item.UserId].Grades[item.Deliverable] = item.Grade;
                 }
             }
+        }
+
+        public string StateNumberToNpsmString(int state)
+        {
+            if(state >= _intersting_states.Length)
+            {
+                return "--";
+            }
+            return _intersting_states[state];
         }
 
         /// <summary>

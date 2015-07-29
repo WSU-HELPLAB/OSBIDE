@@ -26,6 +26,7 @@ namespace OSBIDE.Analytics.Terminal.Views
             BuildTransitionFrequencyCounts,
             BuildAggregateTransitionCounts,
             LocateTransitionCycles,
+            OrderTransitionCyclesByDate,
             WriteAggregateToFile,
             WriteTransitionsToFile,
             WriteDataToCsv,
@@ -94,99 +95,33 @@ namespace OSBIDE.Analytics.Terminal.Views
                 //figure out sequence distribution for entire data set and for individual students
                 Dictionary<string, int> transitions = vm.GetAllTransitionCombinations(sequenceLength);
 
+                //filter out singletons
+                var smallKeys = transitions.Where(t => t.Value < 5).Select(t => t.Key).ToList();
+                foreach (string key in smallKeys)
+                {
+                    transitions.Remove(key);
+                }
+
                 //save for future use
                 allTransitions.Add(sequenceLength, transitions);
 
-                
-
-                /*
-
-                //interesting transitions are those in which we have at least 5 occurrances 
-                var interestingTransitions = transitions.Where(t => t.Value > 5).OrderBy(t => t.Value).ToList();
-
-                //write this information to a file
-                CsvWriter writer = new CsvWriter();
-
-                //aggregate class results
-                Console.WriteLine("Processing transition sequences of length {0}...", sequenceLength);
-                foreach (KeyValuePair<string, int> kvp in interestingTransitions)
-                {
-                    writer.AddToCurrentLine(kvp.Key);
-                    writer.AddToCurrentLine(kvp.Value.ToString());
-                    writer.CreateNewRow();
-                }
-                using (TextWriter tw = File.CreateText(string.Format("{0}/aggregate_{1}.csv", outputDirectory, sequenceLength)))
-                {
-                    tw.Write(writer.ToString());
-                }
-
-                //individual students
-                //add header data
-                writer = new CsvWriter();
-                writer.AddToCurrentLine("UserId");
-                List<string> grades = vm.GetAllGrades();
-                foreach (string grade in grades)
-                {
-                    writer.AddToCurrentLine(grade);
-                }
-                foreach (var kvp in interestingTransitions)
-                {
-                    writer.AddToCurrentLine(kvp.Key);
-                }
-
-                writer.CreateNewRow();
-
-                foreach (var user in vm.Timeline.Values)
-                {
-                    //first row for users is raw values
-                    writer.AddToCurrentLine(user.OsbideId);
-
-                    //add grade information
-                    foreach (string grade in grades)
-                    {
-                        if (user.Grades.ContainsKey(grade) == true)
-                        {
-                            writer.AddToCurrentLine(user.Grades[grade].ToString());
-                        }
-                        else
-                        {
-                            writer.AddToCurrentLine("0");
-                        }
-                    }
-
-                    //only use the interesting states as columns as identified in the aggregate analysis
-                    foreach (KeyValuePair<string, int> kvp in interestingTransitions)
-                    {
-                        if (user.TransitionCounts.ContainsKey(kvp.Key) == true)
-                        {
-                            writer.AddToCurrentLine(user.TransitionCounts[kvp.Key]);
-                        }
-                        else
-                        {
-                            writer.AddToCurrentLine("0");
-                        }
-                    }
-                    writer.CreateNewRow();
-                }
-                using (TextWriter tw = File.CreateText(string.Format("{0}/individual_{1}.csv", outputDirectory, sequenceLength)))
-                {
-                    tw.Write(writer.ToString());
-                }
-                */
+                Console.WriteLine("Loaded transitions of length {0}.", sequenceLength);
             }
 
             //use Needleman-Wunsch algorithm and disjoint sets to combine similar sequences
             DisjointSet<string> matches = new DisjointSet<string>();
+            int matchCount = 0;
 
             //start with large sequences as it will make it more likely that these will be the "top" of the disjoint set
+            int startingNumber = (int)'a';
             for (int sequenceLength = endingSequenceLength; sequenceLength >= startingSequenceLength; sequenceLength--)
             {
+                Console.WriteLine("Matching sequences of length {0}", sequenceLength);
 
                 //Needleman-Wunsch works on single characters, so we need to transform Markov-like numbers to letters
                 Dictionary<string, int> originalSequences = allTransitions[sequenceLength];
                 Dictionary<string, int> modifiedSequences = new Dictionary<string, int>();
-                int startingNumber = (int)'a';
-                foreach(var kvp in originalSequences)
+                foreach (var kvp in originalSequences)
                 {
                     //convert into numbers
                     int[] pieces = kvp.Key.Split('_').Select(k => Convert.ToInt32(k) + startingNumber).ToArray();
@@ -195,35 +130,95 @@ namespace OSBIDE.Analytics.Terminal.Views
                     char[] sequence = pieces.Select(p => Convert.ToChar(p)).ToArray();
 
                     //and finally into a string
-                    string charSequence = new string(sequence);
+                    string charSequence = string.Join("_", sequence);
 
                     //lastly, remember this sequence
                     modifiedSequences.Add(charSequence, kvp.Value);
                 }
 
                 //prime the disjoint set
-                foreach(string key in modifiedSequences.Keys)
+                foreach (string key in modifiedSequences.Keys)
                 {
                     matches.Find(key);
                 }
 
                 //having converted to character state representations, now run the Needleman-Wunsch algorithm
                 List<string> sequences = modifiedSequences.Keys.ToList();
-                for(int i = 0; i < sequenceLength + 1; i += 2)
+                for (int i = 0; i < sequences.Count; i++)
                 {
-                    string first = matches.Find(sequences[i]);
-                    string second = matches.Find(sequences[i + 1]);
-
-                    //align the two sequences
-                    var result = NeedlemanWunsch.Align(first, second);
-
-                    //if score is less than 1/3 of total length of string, then count the sequences as the same (union)
-                    if((double)NeedlemanWunsch.ScoreNpsmSequence(result.Item1, result.Item2) <= sequenceLength / 3)
+                    for (int j = i + 1; j < sequences.Count; j++)
                     {
-                        matches.UnionWith(first, second);
+                        string first = matches.Find(sequences[i]);
+                        string second = matches.Find(sequences[j]);
+
+                        //automatically count sequences as the same when one sequence is a complete substring of another sequence
+                        string firstSequence = sequences[i];
+                        string secondSequence = sequences[j];
+                        if (firstSequence.Replace(secondSequence, "").Length == 0
+                        || secondSequence.Replace(firstSequence, "").Length == 0
+                            )
+                        {
+                            matches.UnionWith(first, second);
+                            matchCount++;
+                        }
+                        else
+                        {
+                            //Use NW to check for alignment
+                            //align the two sequences
+                            var result = NeedlemanWunsch.Align(first, second);
+
+                            //if score is similar, then count the sequences as the same (union)
+                            if ((double)NeedlemanWunsch.ScoreNpsmSequence(result.Item1, result.Item2) < 3)
+                            {
+                                matches.UnionWith(first, second);
+                                matchCount++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //now, get all sets and figure out popularity of each set
+            Console.WriteLine("{0} unions performed.", matchCount);
+            List<List<string>> allSets = matches.AllSets();
+            List<List<string>> smallerSets = allSets.Where(s => s.Count > 1).ToList();
+            Dictionary<string, int> popularityDict = new Dictionary<string, int>();
+            Console.WriteLine("Calculating popularity of {0} sets...", allSets.Count);
+            foreach (List<string> set in allSets)
+            {
+                foreach (string item in set)
+                {
+                    //convert back to Markov-style transitions
+                    int[] pieces = item.Split('_').Select(c => Convert.ToChar(c)).Select(c => (int)c - startingNumber).ToArray();
+                    string key = string.Join("_", pieces);
+
+                    if (popularityDict.ContainsKey(key) == false)
+                    {
+                        popularityDict.Add(key, 0);
                     }
 
+                    //add in counts to the popularity dictionary
+                    popularityDict[key] += allTransitions[pieces.Length][key];
                 }
+            }
+
+            //write this information to a file
+            CsvWriter writer = new CsvWriter();
+
+            //aggregate class results
+            Console.WriteLine("Writing most popular sequences to file.");
+            foreach (KeyValuePair<string, int> kvp in popularityDict.OrderByDescending(p => p.Value))
+            {
+                int[] pieces = kvp.Key.Split('_').Select(c => Convert.ToInt32(c)).ToArray();
+                string npsmKey = string.Join("_", pieces.Select(p => vm.StateNumberToNpsmString(p)).ToArray());
+
+                writer.AddToCurrentLine(npsmKey);
+                writer.AddToCurrentLine(kvp.Value.ToString());
+                writer.CreateNewRow();
+            }
+            using (TextWriter tw = File.CreateText(string.Format("popular_sequences.csv")))
+            {
+                tw.Write(writer.ToString());
             }
 
         }
@@ -400,74 +395,7 @@ namespace OSBIDE.Analytics.Terminal.Views
         /// <param name="vm"></param>
         private void LocateCommonTransitionCycles(TimelineAnalysisViewModel vm)
         {
-            string[][] sequencesToLocate = { 
-                                               //four possible editing / running cycles
-                                               new string[]{"Y?", "R?", "Y?", "R?"},
-                                               new string[]{"YN", "RN", "YN", "RN"},
-                                               new string[]{"N?", "R/", "N?", "R/"},
-                                               new string[]{"NN", "R/", "NN", "R/"},
 
-                                               //two possible editing / debugging cycles
-                                               new string[]{"Y?", "D?", "Y?", "D?"},
-                                               new string[]{"YN", "DN", "YN", "DN"},
-
-                                               //moving between syntactically correct / incorrect
-                                               new string[]{"Y?", "N?", "Y?", "N?"},
-
-                                               //encountering debugging errors
-                                               new string[]{"Y?", "D?", "YN" },
-
-                                               //fixing debug errors
-                                               new string[]{"YN", "DN", "Y?" },
-                                           };
-
-            //build markov states
-            vm.BuildDefaultMarkovStates();
-
-            //captures the final output by user and by sequence
-            Dictionary<int, Dictionary<string, List<PatternParserResult>>> statesByUser = new Dictionary<int, Dictionary<string, List<PatternParserResult>>>();
-
-            //for each student, locate desired sequences
-            foreach (var user in vm.Timeline.Values)
-            {
-                //add record for user
-                statesByUser.Add(user.OsbideId, new Dictionary<string, List<PatternParserResult>>());
-
-                foreach (string[] sequence in sequencesToLocate)
-                {
-
-                    //create new parser, prime parser with states to locate
-                    StatePatternParser parser = new StatePatternParser();
-                    foreach (string state in sequence)
-                    {
-                        parser.Sequence.Add(new TimelineState { State = state });
-                    }
-
-                    //find cycles
-                    List<PatternParserResult> result = parser.ParseTimelineSequence(user.MarkovStates);
-
-                    //remove all cycles whose lenght is equal to the sequence length as they're not really cycles
-                    //(e.g. cycle: Y? -> R? really needs to be Y? -> R? -> Y? to be a cycle)
-
-                    //List<int> indicesToRemove = new List<int>();
-                    //for(int i = 0; i < result.Count; i++)
-                    //{
-                    //    if(result[i].StateSequence.Count == sequence.Length)
-                    //    {
-                    //        indicesToRemove.Add(i);
-                    //    }
-                    //}
-                    //for(int i = indicesToRemove.Count - 1; i >= 0; i--)
-                    //{
-                    //    int index = indicesToRemove[i];
-                    //    result.RemoveAt(indicesToRemove[i]);
-                    //}
-
-                    //add surviving records for particular sequence
-                    string sequenceAsString = String.Join("_", sequence);
-                    statesByUser[user.OsbideId].Add(sequenceAsString, result);
-                }
-            }
 
             //write results to a file
             vm.NormalizeProgrammingStates();
@@ -477,11 +405,14 @@ namespace OSBIDE.Analytics.Terminal.Views
             //build header
             writer.AddToCurrentLine("UserId");
             writer.AddToCurrentLine("TotalTimeProgramming");
-            foreach (string[] sequence in sequencesToLocate)
+            writer.AddToCurrentLine("NumberOfCycles");
+            foreach (string[] sequence in vm.InterestingSequences)
             {
                 string sequenceHeader = String.Join("_", sequence);
                 writer.AddToCurrentLine("Time_" + sequenceHeader);
+                writer.AddToCurrentLine("NormalizedTime_" + sequenceHeader);
                 writer.AddToCurrentLine("Count_" + sequenceHeader);
+                writer.AddToCurrentLine("NormalizedCount_" + sequenceHeader);
             }
             writer.AddToCurrentLine("CycleTime");
             writer.AddToCurrentLine("PercentTimeAccountedFor");
@@ -496,8 +427,9 @@ namespace OSBIDE.Analytics.Terminal.Views
             writer.CreateNewRow();
 
             //write data cells
-            foreach (int userId in statesByUser.Keys)
+            foreach (int userId in vm.StatesByUser.Keys)
             {
+
                 writer.AddToCurrentLine(userId);
 
                 //get total time spent programming
@@ -507,12 +439,21 @@ namespace OSBIDE.Analytics.Terminal.Views
                 writer.AddToCurrentLine(totalTime.TotalMinutes);
                 TimeSpan cycleTime = new TimeSpan();
 
+                //and total number of cycles
+                int totalCycles = 0;
+                foreach (string[] sequence in vm.InterestingSequences)
+                {
+                    string sequenceKey = String.Join("_", sequence);
+                    totalCycles += vm.StatesByUser[userId][sequenceKey].Count;
+                }
+                writer.AddToCurrentLine(totalCycles);
+
                 //write total time spent in cycle
-                foreach (string[] sequence in sequencesToLocate)
+                foreach (string[] sequence in vm.InterestingSequences)
                 {
                     string sequenceKey = String.Join("_", sequence);
                     TimeSpan sequenceTime = new TimeSpan();
-                    foreach (PatternParserResult pattern in statesByUser[userId][sequenceKey])
+                    foreach (PatternParserResult pattern in vm.StatesByUser[userId][sequenceKey])
                     {
                         foreach (TimelineState state in pattern.StateSequence)
                         {
@@ -524,8 +465,19 @@ namespace OSBIDE.Analytics.Terminal.Views
                         }
                     }
                     cycleTime += sequenceTime;
+
+                    //total time
                     writer.AddToCurrentLine(sequenceTime.TotalMinutes);
-                    writer.AddToCurrentLine(statesByUser[userId][sequenceKey].Count);
+
+                    //normalized time
+                    writer.AddToCurrentLine(Math.Round((sequenceTime.TotalMinutes / totalTime.TotalMinutes) * 100, 2));
+
+                    //count
+                    writer.AddToCurrentLine(vm.StatesByUser[userId][sequenceKey].Count);
+
+                    //normalized count
+                    double normalizedCount = ((vm.StatesByUser[userId][sequenceKey].Count) / (double)totalCycles) * 100;
+                    writer.AddToCurrentLine(Math.Round(normalizedCount, 2));
                 }
                 writer.AddToCurrentLine(cycleTime.TotalMinutes);
                 writer.AddToCurrentLine(Math.Round((cycleTime.TotalMinutes / totalTime.TotalMinutes) * 100, 2));
@@ -552,6 +504,122 @@ namespace OSBIDE.Analytics.Terminal.Views
             }
 
             Console.WriteLine("Finished locating sequences.");
+        }
+
+        /// <summary>
+        /// Creates a matrix of cycle activity for each student 
+        /// </summary>
+        /// <param name="vm"></param>
+        private void OrderTransitionsByDate(TimelineAnalysisViewModel vm)
+        {
+
+            //step 1: get list of files to process
+            List<string> filesToProcess = new List<string>();
+            string fileName = "a";
+            Console.WriteLine("Enter files to process (-1 to stop)");
+            while ((fileName = GetFile()).Length > 0)
+            {
+                filesToProcess.Add(fileName);
+            }
+
+            //step 2: setup grade-bands (e.g. A, B, C, etc.)  Hard coded for now as this is just for a
+            //single class
+            double maxScore = 200;
+            double[] gradeRanges = { 90, 78, 69, 60, 0 };
+            string[] gradeMap = { "A", "B", "C", "D", "F" };
+
+            //this produces a lot of files, so create a separate directory for the output
+            string outputDirectory = "TransitionsByDate";
+            if (Directory.Exists(outputDirectory) == false)
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            //finally, begin processing
+            //reset max score for A students
+            maxScore = 200;
+
+            //based on currently existing code, it is easier to reopen the file for
+            //each grade range
+            for (int i = 0; i < gradeRanges.Length; i++)
+            {
+                double bound = gradeRanges[i];
+
+                //reload the files
+                LoadFile(filesToProcess[0]);
+                for (int j = 1; j < filesToProcess.Count; j++)
+                {
+                    vm.AppendTimeline(filesToProcess[j]);
+                }
+
+                //get grade data
+                vm.AttachGrades();
+
+                //filter based on grade data
+                vm.FilterByGrade("Assignment AVG", bound, maxScore);
+
+                //get transitions for this grade level
+                var result = vm.OrderTransitionsByDate();
+                var byDate = result.Item1;
+
+                //update scores for next grade boundary
+                maxScore = bound - 0.01;
+
+                //hold all day keys for easier access
+                int[] keys = byDate.Keys.OrderBy(k => k).ToArray();
+
+                //figure out all transitions
+                Dictionary<string, string> transitionsDict =  new Dictionary<string, string>();
+                foreach(int key in keys)
+                {
+                    foreach (string transition in byDate[key].Keys)
+                    {
+                        transitionsDict[transition] = transition;
+                    }
+                }
+                string[] transitions = transitionsDict.Keys.ToArray();
+
+                //write this information to a file
+                CsvWriter writer = new CsvWriter();
+
+                //blank line for transitions
+                writer.AddToCurrentLine("");
+
+                //add in header row
+                foreach(int key in keys)
+                {
+                    writer.AddToCurrentLine(key);
+                }
+                writer.CreateNewRow();
+
+                //add in data
+                foreach(string transition in transitions)
+                {
+                    //data for given transition
+                    writer.AddToCurrentLine("T: " + transition);
+                    foreach(int key in keys)
+                    {
+                        if(byDate[key].ContainsKey(transition))
+                        {
+                            //add in data for given transition
+                            writer.AddToCurrentLine(byDate[key][transition].Count);
+                        }
+                        else
+                        {
+                            //no data, add a 0
+                            writer.AddToCurrentLine(0);
+                        }
+                    }
+                    writer.CreateNewRow();
+                }
+
+                //aggregate class results
+                using (TextWriter tw = File.CreateText(string.Format("{0}/transitions_{1}.csv", outputDirectory, gradeMap[i])))
+                {
+                    tw.Write(writer.ToString());
+                    Console.WriteLine("Created file transitions_{0}.csv", gradeMap[i]);
+                }
+            }
         }
 
         /// <summary>
@@ -643,11 +711,13 @@ namespace OSBIDE.Analytics.Terminal.Views
 
         private void AppendFile()
         {
-            string file = GetFile();
-            if (file.Length > 0)
+            Console.WriteLine("Enter files to process (-1 to stop)");
+            string fileName = "";
+            while ((fileName = GetFile()).Length > 0)
             {
-                Vm.AppendTimeline(file);
-            }
+                Vm.AppendTimeline(fileName);
+            };
+
         }
 
         public void Run()
@@ -666,6 +736,7 @@ namespace OSBIDE.Analytics.Terminal.Views
                 Console.WriteLine((int)MenuOption.BuildTransitionFrequencyCounts + ". Build transition frequency counts");
                 Console.WriteLine((int)MenuOption.BuildAggregateTransitionCounts + ". Build aggregate transition frequency counts");
                 Console.WriteLine((int)MenuOption.LocateTransitionCycles + ". Locate transition cycles");
+                Console.WriteLine((int)MenuOption.OrderTransitionCyclesByDate + ". Order transition cycles by date");
                 Console.WriteLine((int)MenuOption.WriteAggregateToFile + ". Write aggregate results to CSV");
                 Console.WriteLine((int)MenuOption.WriteTransitionsToFile + ". Write transition results to CSV");
                 Console.WriteLine((int)MenuOption.WriteDataToCsv + ". Write data back to CSV");
@@ -718,6 +789,9 @@ namespace OSBIDE.Analytics.Terminal.Views
                             break;
                         case MenuOption.LocateTransitionCycles:
                             LocateCommonTransitionCycles(Vm);
+                            break;
+                        case MenuOption.OrderTransitionCyclesByDate:
+                            OrderTransitionsByDate(Vm);
                             break;
                         case MenuOption.WriteAggregateToFile:
                             Console.Write("Enter destination file: ");
