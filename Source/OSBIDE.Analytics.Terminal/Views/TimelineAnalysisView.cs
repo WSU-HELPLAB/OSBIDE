@@ -579,11 +579,11 @@ namespace OSBIDE.Analytics.Terminal.Views
                 }
                 string[] transitions = transitionsDict.Keys.ToArray();
 
-                //write this information to a file
+                //write aggregate information to a file
                 CsvWriter writer = new CsvWriter();
 
                 //blank line for transitions
-                writer.AddToCurrentLine("");
+                writer.AddToCurrentLine("Transition");
 
                 //add in header row
                 foreach(int key in keys)
@@ -614,10 +614,59 @@ namespace OSBIDE.Analytics.Terminal.Views
                 }
 
                 //aggregate class results
-                using (TextWriter tw = File.CreateText(string.Format("{0}/transitions_{1}.csv", outputDirectory, gradeMap[i])))
+                using (TextWriter tw = File.CreateText(string.Format("{0}/aggregate_{1}.csv", outputDirectory, gradeMap[i])))
                 {
                     tw.Write(writer.ToString());
-                    Console.WriteLine("Created file transitions_{0}.csv", gradeMap[i]);
+                    Console.WriteLine("Created file aggregate_{0}.csv", gradeMap[i]);
+                }
+
+                //write individual student information to file
+                writer = new CsvWriter();
+
+                writer.AddToCurrentLine("UserID");
+
+                //blank line for transitions
+                writer.AddToCurrentLine("Transition");
+
+                //add in header row
+                foreach (int key in keys)
+                {
+                    writer.AddToCurrentLine(key);
+                }
+                writer.CreateNewRow();
+
+                //add in data
+                var userData = result.Item2;
+                foreach(int userId in userData.Keys)
+                {
+                    foreach (string transition in transitions)
+                    {
+                        //user id
+                        writer.AddToCurrentLine(userId);
+
+                        //data for given transition
+                        writer.AddToCurrentLine("T: " + transition);
+                        foreach (int key in keys)
+                        {
+                            if (userData[userId][key].ContainsKey(transition))
+                            {
+                                //add in data for given transition
+                                writer.AddToCurrentLine(userData[userId][key][transition].Count);
+                            }
+                            else
+                            {
+                                //no data, add a 0
+                                writer.AddToCurrentLine(0);
+                            }
+                        }
+                        writer.CreateNewRow();
+                    }
+                }
+
+                using (TextWriter tw = File.CreateText(string.Format("{0}/students_{1}.csv", outputDirectory, gradeMap[i])))
+                {
+                    tw.Write(writer.ToString());
+                    Console.WriteLine("Created file students_{0}.csv", gradeMap[i]);
                 }
             }
         }

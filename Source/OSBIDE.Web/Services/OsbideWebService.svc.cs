@@ -244,7 +244,6 @@ namespace OSBIDE.Web.Services
         public int SubmitAssignment(int assignmentId, EventLog assignmentLog, string authToken)
         {
             int result = -1;
-
             Authentication auth = new Authentication();
             if (auth.IsValidKey(authToken) == true)
             {
@@ -335,6 +334,11 @@ namespace OSBIDE.Web.Services
 
         public EventLog SubmitLog(EventLog log, OsbideUser user)
         {
+            LocalErrorLog errorLogger = new LocalErrorLog();
+            errorLogger.SenderId = user.Id;
+            errorLogger.Content = "About to save log " + log.LogType + " to DB.  ";
+            errorLogger.LogDate = DateTime.Now;
+
             log.Sender = null;
             log.SenderId = user.Id;
             log.DateReceived = DateTime.UtcNow;
@@ -345,21 +349,29 @@ namespace OSBIDE.Web.Services
             try
             {
                 Db.SaveChanges();
+                errorLogger.Content += "Item saved.  ";
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
+                errorLogger.Content += "Error saving:  ";
                 foreach (var validationErrors in dbEx.EntityValidationErrors)
                 {
                     foreach (var validationError in validationErrors.ValidationErrors)
                     {
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        errorLogger.Content += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
+                Db.LocalErrorLogs.Add(errorLogger);
+                Db.SaveChanges();
                 return null;
             }
             catch (Exception ex)
             {
+                errorLogger.Content += "Error saving: " + ex.Message;
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
+                Db.LocalErrorLogs.Add(errorLogger);
+                Db.SaveChanges();
                 return null;
             }
 
@@ -367,11 +379,15 @@ namespace OSBIDE.Web.Services
             IOsbideEvent evt = null;
             try
             {
+                errorLogger.Content += "About to unzip event.";
                 evt = EventFactory.FromZippedBinary(log.Data.BinaryData, new OsbideDeserializationBinder());
                 evt.EventLogId = log.Id;
             }
             catch (Exception)
             {
+                errorLogger.Content += "Error unzipping event.";
+                Db.LocalErrorLogs.Add(errorLogger);
+                Db.SaveChanges();
                 return null;
             }
 
@@ -502,33 +518,48 @@ namespace OSBIDE.Web.Services
             }
             else if (log.LogType == SubmitEvent.Name)
             {
+                errorLogger.Content += "Submit event detected.  ";
                 Db.SubmitEvents.Add((SubmitEvent)evt);
             }
             try
             {
+                errorLogger.Content += "Attempting to save to DB.  ";
                 Db.SaveChanges();
+                /*
                 if(hashtags.Length >= 0 || usertags.Length >= 0 )
+                    
                 using (var context = new OsbideProcs())
                 {
                     context.InsertPostTags(log.Id, usertags, hashtags);
                 }
+                     * */
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
+                errorLogger.Content += "Error saving to DB:  ";
                 foreach (var validationErrors in dbEx.EntityValidationErrors)
                 {
                     foreach (var validationError in validationErrors.ValidationErrors)
                     {
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        errorLogger.Content += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
+                        Db.LocalErrorLogs.Add(errorLogger);
+                        Db.SaveChanges();
                     }
                 }
                 return null;
             }
             catch (Exception ex)
             {
+                errorLogger.Content += "Error saving to DB: " + ex.Message;
+                Db.LocalErrorLogs.Add(errorLogger);
+                Db.SaveChanges();
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
                 return null;
             }
+
+            //Db.LocalErrorLogs.Add(errorLogger);
+            //Db.SaveChanges();
             return log;
         }
 
