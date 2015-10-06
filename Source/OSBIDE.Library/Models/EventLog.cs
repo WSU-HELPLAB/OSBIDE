@@ -24,10 +24,6 @@ namespace OSBIDE.Library.Models
 
         [Required]
         [DataMember]
-        public int EventTypeId { get; set; }
-
-        [Required]
-        [DataMember]
         public DateTime DateReceived { get; set; }
 
         [Required]

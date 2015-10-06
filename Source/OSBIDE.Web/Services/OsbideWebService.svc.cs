@@ -1,5 +1,4 @@
-﻿using OSBIDE.Data.SQLDatabase.Edmx;
-using OSBIDE.Library;
+﻿using OSBIDE.Library;
 using OSBIDE.Library.Events;
 using OSBIDE.Library.Models;
 using OSBIDE.Web.Models;
@@ -26,9 +25,8 @@ namespace OSBIDE.Web.Services
         {
 #if DEBUG
             Db = new OsbideContext("OsbideDebugContext");
-            //Database.SetInitializer<OsbideContext>(new CreateDatabaseIfNotExists<OsbideContext>());
-            //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
             Database.SetInitializer<OsbideContext>(new CreateDatabaseIfNotExists<OsbideContext>());
+            //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 #else
             Db = new OsbideContext("OsbideReleaseContext");
 #endif
@@ -200,7 +198,7 @@ namespace OSBIDE.Web.Services
                         sorted.Add(c.Name, c);
                     }
                 }
-                foreach (KeyValuePair<string, Course> kvp in sorted)
+                foreach(KeyValuePair<string, Course> kvp in sorted)
                 {
                     courses.Add(new Course(kvp.Value));
                 }
@@ -225,7 +223,7 @@ namespace OSBIDE.Web.Services
                     .Where(a => a.CourseId == courseId)
                     .Where(a => a.IsDeleted == false)
                     .OrderBy(a => a.Name).ToList();
-                foreach (Assignment assignment in efAssignments)
+                foreach(Assignment assignment in efAssignments)
                 {
                     assignments.Add(new Assignment(assignment));
                 }
@@ -244,6 +242,7 @@ namespace OSBIDE.Web.Services
         public int SubmitAssignment(int assignmentId, EventLog assignmentLog, string authToken)
         {
             int result = -1;
+
             Authentication auth = new Authentication();
             if (auth.IsValidKey(authToken) == true)
             {
@@ -253,19 +252,13 @@ namespace OSBIDE.Web.Services
                 //log the last activity date
                 LogUserTransaction(authUser);
 
-                result = SubmitAssignment(assignmentId, assignmentLog, authUser);
+                EventLog submittedLog = SubmitLog(assignmentLog, authUser);
+                if (submittedLog != null)
+                {
+                    result = submittedLog.Id;
+                }
             }
             return result;
-        }
-
-        public int SubmitAssignment(int assignmentId, EventLog assignmentLog, OsbideUser currentUser)
-        {
-            EventLog submittedLog = SubmitLog(assignmentLog, currentUser);
-            if (submittedLog != null)
-            {
-                return submittedLog.Id;
-            }
-            return -1;
         }
 
         /// <summary>
@@ -334,44 +327,30 @@ namespace OSBIDE.Web.Services
 
         public EventLog SubmitLog(EventLog log, OsbideUser user)
         {
-            LocalErrorLog errorLogger = new LocalErrorLog();
-            errorLogger.SenderId = user.Id;
-            errorLogger.Content = "About to save log " + log.LogType + " to DB.  ";
-            errorLogger.LogDate = DateTime.Now;
-
             log.Sender = null;
             log.SenderId = user.Id;
             log.DateReceived = DateTime.UtcNow;
-            log.EventTypeId = Convert.ToInt32(Enum.Parse(typeof(EventTypes), log.LogType));
 
             //insert into the DB
             Db.EventLogs.Add(log);
             try
             {
                 Db.SaveChanges();
-                errorLogger.Content += "Item saved.  ";
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
-                errorLogger.Content += "Error saving:  ";
                 foreach (var validationErrors in dbEx.EntityValidationErrors)
                 {
                     foreach (var validationError in validationErrors.ValidationErrors)
                     {
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                        errorLogger.Content += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
-                Db.LocalErrorLogs.Add(errorLogger);
-                Db.SaveChanges();
                 return null;
             }
             catch (Exception ex)
             {
-                errorLogger.Content += "Error saving: " + ex.Message;
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
-                Db.LocalErrorLogs.Add(errorLogger);
-                Db.SaveChanges();
                 return null;
             }
 
@@ -379,20 +358,13 @@ namespace OSBIDE.Web.Services
             IOsbideEvent evt = null;
             try
             {
-                errorLogger.Content += "About to unzip event.";
                 evt = EventFactory.FromZippedBinary(log.Data.BinaryData, new OsbideDeserializationBinder());
                 evt.EventLogId = log.Id;
             }
             catch (Exception)
             {
-                errorLogger.Content += "Error unzipping event.";
-                Db.LocalErrorLogs.Add(errorLogger);
-                Db.SaveChanges();
                 return null;
             }
-
-            var hashtags = string.Empty;
-            var usertags = string.Empty;
             if (log.LogType == AskForHelpEvent.Name)
             {
                 Db.AskForHelpEvents.Add((AskForHelpEvent)evt);
@@ -500,8 +472,6 @@ namespace OSBIDE.Web.Services
             }
             else if (log.LogType == FeedPostEvent.Name)
             {
-                hashtags = string.Join(",", ParseHashtags(((FeedPostEvent)evt).Comment));
-                usertags = string.Join(",", ParseUserTags(((FeedPostEvent)evt).Comment));
                 Db.FeedPostEvents.Add((FeedPostEvent)evt);
             }
             else if (log.LogType == HelpfulMarkGivenEvent.Name)
@@ -518,63 +488,29 @@ namespace OSBIDE.Web.Services
             }
             else if (log.LogType == SubmitEvent.Name)
             {
-                errorLogger.Content += "Submit event detected.  ";
                 Db.SubmitEvents.Add((SubmitEvent)evt);
             }
             try
             {
-                errorLogger.Content += "Attempting to save to DB.  ";
                 Db.SaveChanges();
-                /*
-                if(hashtags.Length >= 0 || usertags.Length >= 0 )
-                    
-                using (var context = new OsbideProcs())
-                {
-                    context.InsertPostTags(log.Id, usertags, hashtags);
-                }
-                     * */
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {
-                errorLogger.Content += "Error saving to DB:  ";
                 foreach (var validationErrors in dbEx.EntityValidationErrors)
                 {
                     foreach (var validationError in validationErrors.ValidationErrors)
                     {
                         System.Diagnostics.Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                        errorLogger.Content += string.Format("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
-                        Db.LocalErrorLogs.Add(errorLogger);
-                        Db.SaveChanges();
                     }
                 }
                 return null;
             }
             catch (Exception ex)
             {
-                errorLogger.Content += "Error saving to DB: " + ex.Message;
-                Db.LocalErrorLogs.Add(errorLogger);
-                Db.SaveChanges();
                 System.Diagnostics.Trace.TraceInformation(ex.Message);
                 return null;
             }
-
-            //Db.LocalErrorLogs.Add(errorLogger);
-            //Db.SaveChanges();
             return log;
-        }
-
-        private List<string> ParseHashtags(string content)
-        {
-            string HashRegex = "#[A-Za-z][A-Za-z0-9]+";
-            MatchCollection matchList = Regex.Matches(content, HashRegex);
-            return matchList.Cast<Match>().Select(match => match.Value.Substring(1)).ToList();
-        }
-
-        private List<string> ParseUserTags(string content)
-        {
-            string HashRegex = "@[A-Za-z][A-Za-z0-9]+";
-            MatchCollection matchList = Regex.Matches(content, HashRegex);
-            return matchList.Cast<Match>().Select(match => match.Value.Substring(1)).ToList();
         }
 
         [OperationContract]
@@ -607,7 +543,7 @@ namespace OSBIDE.Web.Services
             //other: send only "ask for help" events
             if (authUser.Role != SystemRole.Student)
             {
-                if (log.LogType != AskForHelpEvent.Name)
+                if(log.LogType != AskForHelpEvent.Name)
                 {
                     return localId;
                 }

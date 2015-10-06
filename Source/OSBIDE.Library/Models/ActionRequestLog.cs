@@ -7,7 +7,6 @@ using System.Text;
 
 namespace OSBIDE.Library.Models
 {
-    [Serializable]
     public class ActionRequestLog
     {
         public const string ACTION_PARAMETER_DELIMITER = "|||";
@@ -34,19 +33,6 @@ namespace OSBIDE.Library.Models
         public ActionRequestLog()
         {
             AccessDate = DateTime.UtcNow;
-        }
-
-        public ActionRequestLog(ActionRequestLog other)
-        {
-            if(Creator != null)
-            {
-                Creator = new OsbideUser(other.Creator);
-            }
-            ActionName = other.ActionName;
-            ActionParameters = other.ActionParameters;
-            ControllerName = other.ControllerName;
-            IpAddress = other.IpAddress;
-            AccessDate = other.AccessDate;
         }
     }
 }

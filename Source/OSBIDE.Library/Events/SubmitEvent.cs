@@ -133,14 +133,6 @@ namespace OSBIDE.Library.Events
         }
 
         /// <summary>
-        /// Saves the binary of the submitted file.
-        /// </summary>
-        public void CreateSolutionBinary(byte[] fileData)
-        {
-            SolutionData = fileData;
-        }
-
-        /// <summary>
         /// Builds a list of solution files to be zipped.  This function skips 
         /// unnecessary files and folders.
         /// </summary>

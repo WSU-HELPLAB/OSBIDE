@@ -33,9 +33,6 @@ namespace OSBIDE.Library.Models
         [Required]
         public int UtcOffsetMinutes { get; set; }
 
-        [Required]
-        public bool AllowWebSubmit { get; set; }
-
         [NotMapped]
         [Display(Name = "Release Time")]
         [DataType(DataType.Time)]
@@ -82,7 +79,6 @@ namespace OSBIDE.Library.Models
             ReleaseDate = DateTime.UtcNow;
             DueDate = DateTime.UtcNow;
             UtcOffsetMinutes = 0;
-            AllowWebSubmit = false;
         }
 
         public Assignment(Assignment other)

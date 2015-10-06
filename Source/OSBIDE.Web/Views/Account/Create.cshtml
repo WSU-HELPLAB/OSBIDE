@@ -55,10 +55,7 @@
             <td>@Html.ValidationMessageFor(m => m.User.SchoolId)</td>
         </tr>
         <tr>
-            <th style="vertical-align:top">
-                @Html.LabelFor(m => m.User.InstitutionId):
-            <img id="gender-tooltip" src="~/Content/icons/help.png" alt="more information about ID number" title="For WSU students, this is your 8-digit student ID number" />
-        </th>
+            <th>@Html.LabelFor(m => m.User.InstitutionId):</th>
             <td>@Html.TextBoxFor(m => m.User.InstitutionId)</td>
             <td>@Html.ValidationMessageFor(m => m.User.InstitutionId)</td>
         </tr>

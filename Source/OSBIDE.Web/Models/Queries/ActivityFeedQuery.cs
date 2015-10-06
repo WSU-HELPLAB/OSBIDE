@@ -11,7 +11,7 @@ namespace OSBIDE.Web.Models.Queries
 {
     public class ActivityFeedQuery : IOsbideQuery<FeedItem>
     {
-        private readonly List<EventTypes> _eventSelectors = new List<EventTypes>();
+        private readonly List<IOsbideEvent> _eventSelectors = new List<IOsbideEvent>();
         protected List<OsbideUser> SubscriptionSubjects = new List<OsbideUser>();
         protected readonly List<int> EventIds = new List<int>();
 
@@ -19,7 +19,6 @@ namespace OSBIDE.Web.Models.Queries
         {
             StartDate = new DateTime(2010, 1, 1);
             EndDate = DateTime.Today.AddDays(3);
-            CommentFilter = string.Empty;
             MinLogId = -1;
             MaxLogId = -1;
             MaxQuerySize = 20;
@@ -70,23 +69,18 @@ namespace OSBIDE.Web.Models.Queries
         public Course CourseFilter { private get; set; }
 
         /// <summary>
-        /// Comment search token entered by the user
-        /// </summary>
-        public string CommentFilter { private get; set; }
-
-        /// <summary>
         /// returns a lits of all social events in OSBLE
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<EventTypes> GetSocialEvents()
+        public static IEnumerable<IOsbideEvent> GetSocialEvents()
         {
-            return new List<EventTypes>
+            return new List<IOsbideEvent>
             {
-                EventTypes.FeedPostEvent,
-                EventTypes.AskForHelpEvent,
-                EventTypes.LogCommentEvent,
-                EventTypes.HelpfulMarkGivenEvent,
-                EventTypes.SubmitEvent,
+                new FeedPostEvent(),
+                new AskForHelpEvent(),
+                new LogCommentEvent(),
+                new HelpfulMarkGivenEvent(),
+                new SubmitEvent(),
             };
         }
 
@@ -94,12 +88,12 @@ namespace OSBIDE.Web.Models.Queries
         /// returns a list of IDE-based events in OSBLE
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<EventTypes> GetIdeEvents()
+        public static IEnumerable<IOsbideEvent> GetIdeEvents()
         {
-            return new List<EventTypes>
+            return new List<IOsbideEvent>
             {
-                EventTypes.BuildEvent,
-                EventTypes.ExceptionEvent,
+                new BuildEvent(),
+                new ExceptionEvent(),
             };
         }
 
@@ -107,7 +101,7 @@ namespace OSBIDE.Web.Models.Queries
         /// returns a list of all possible events that a user can subscribe to
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<EventTypes> GetAllEvents()
+        public static IEnumerable<IOsbideEvent> GetAllEvents()
         {
             return GetIdeEvents().Concat(GetSocialEvents());
         }
@@ -116,9 +110,9 @@ namespace OSBIDE.Web.Models.Queries
         /// add user selected event types
         /// </summary>
         /// <param name="evt"></param>
-        public void AddEventType(EventTypes evt)
+        public void AddEventType(IOsbideEvent evt)
         {
-            if (_eventSelectors.All(e => e != evt))
+            if (_eventSelectors.All(e => String.Compare(e.EventName, evt.EventName, StringComparison.OrdinalIgnoreCase) != 0))
             {
                 _eventSelectors.Add(evt);
             }
@@ -127,7 +121,7 @@ namespace OSBIDE.Web.Models.Queries
         /// <summary>
         /// get user selected event types
         /// </summary>
-        public List<EventTypes> ActiveEvents
+        public List<IOsbideEvent> ActiveEvents
         {
             get
             {
@@ -182,10 +176,9 @@ namespace OSBIDE.Web.Models.Queries
             return EventLogsProc.GetActivityFeeds( StartDate
                                     , EndDate
                                     , EventIds.Select(eid => (int)eid).ToList()
-                                    , _eventSelectors.Select(e => (int)e)
+                                    , _eventSelectors.Select(e => e.EventName)
                                     , CourseFilter != null && CourseFilter.Id > 0 ? CourseFilter.Id : 0
                                     , (int)CourseRoleFilter
-                                    , CommentFilter
                                     , SubscriptionSubjects.Select(s => s.Id).ToList()
                                     , MinLogId
                                     , MaxLogId

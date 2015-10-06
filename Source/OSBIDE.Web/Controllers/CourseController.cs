@@ -1,10 +1,7 @@
-﻿using Ionic.Zip;
-using OSBIDE.Library.Events;
-using OSBIDE.Library.Models;
+﻿using OSBIDE.Library.Models;
 using OSBIDE.Web.Models.Attributes;
 using OSBIDE.Web.Models.FileSystem;
 using OSBIDE.Web.Models.ViewModels;
-using OSBIDE.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,7 +24,7 @@ namespace OSBIDE.Web.Controllers
             if (courseId <= 0)
             {
                 CourseUserRelationship cur = CurrentUser.CourseUserRelationships.FirstOrDefault();
-                if (cur != null)
+                if(cur != null)
                 {
                     courseId = cur.CourseId;
                     return RedirectToAction("Details", new { id = courseId });
@@ -55,7 +52,7 @@ namespace OSBIDE.Web.Controllers
         public ActionResult MakeDefault(int id)
         {
             Course defaultCourse = Db.Courses.Where(c => c.Id == id).FirstOrDefault();
-            if (defaultCourse != null)
+            if(defaultCourse != null)
             {
                 CurrentUser.DefaultCourseId = defaultCourse.Id;
             }
@@ -241,7 +238,7 @@ namespace OSBIDE.Web.Controllers
         public ActionResult DeleteAssignmentFile(int id, string file)
         {
             Assignment assignment = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
-            if (assignment == null)
+            if(assignment == null)
             {
                 //assignment not found
                 return RedirectToAction("MyCourses");
@@ -251,7 +248,7 @@ namespace OSBIDE.Web.Controllers
             CourseUserRelationship relationship = assignment.Course.CourseUserRelationships.Where(cu => cu.UserId == CurrentUser.Id).FirstOrDefault();
             if (relationship != null)
             {
-                if (relationship.Role == CourseRole.Coordinator)
+                if(relationship.Role == CourseRole.Coordinator)
                 {
                     //it's okay to delete files
                     FileSystem fs = new FileSystem();
@@ -294,7 +291,7 @@ namespace OSBIDE.Web.Controllers
             foreach (Assignment assignment in currentCourse.Assignments)
             {
                 //ignore "deleted" assignments
-                if (assignment.IsDeleted == true)
+                if(assignment.IsDeleted == true)
                 {
                     continue;
                 }
@@ -400,94 +397,14 @@ namespace OSBIDE.Web.Controllers
 
             foreach (Course course in vm.AllCourses)
             {
-                string key = string.Format("{0}_{1}_{2}", course.Prefix, course.CourseNumber, course.Season);
                 if (vm.CoursesByPrefix.ContainsKey(course.Prefix) == false)
                 {
                     vm.CoursesByPrefix.Add(course.Prefix, new SortedDictionary<string, Course>());
                 }
-                vm.CoursesByPrefix[course.Prefix].Add(key, course);
+                vm.CoursesByPrefix[course.Prefix].Add(course.CourseNumber, course);
             }
             return vm;
         }
 
-        // <summary>
-        /// Submits one or more files to the specified assignment
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ActionResult SubmitAssignmentFile(int id)
-        {
-            Assignment vm = Db.Assignments.Where(a => a.Id == id).FirstOrDefault();
-            return View(vm);
-        }
-
-        /// <summary>
-        /// Attaches one or more files to the specified assignment
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult SubmitAssignmentFile(HttpPostedFileBase file)
-        {
-            //make sure that we have both a course id and assignment id
-            int assignmentId = 0;
-            int courseId = 0;
-            Int32.TryParse(Request.Form["AssignmentId"], out assignmentId);
-            Int32.TryParse(Request.Form["CourseId"], out courseId);
-
-            if (courseId < 1 || assignmentId < 1)
-            {
-                return RedirectToAction("MyCourses");
-            }
-            
-            //get file information and continue if not null
-            if (file != null)
-            {
-                //create submit event
-                SubmitEvent submitEvent = new SubmitEvent();
-
-                if (file.ContentLength > 0 && file.ContentLength < 5000000) //limit size to 5 MB
-                {                    
-                    submitEvent.SolutionName = Path.GetFileName(file.FileName);
-
-                    byte[] fileData = null;
-                    using (var binaryReader = new BinaryReader(file.InputStream))
-                    {
-                        fileData = binaryReader.ReadBytes(file.ContentLength);
-                    }
-
-                    MemoryStream stream = new MemoryStream();
-                    using (ZipFile zip = new ZipFile())
-                    {                           
-                        zip.AddEntry(submitEvent.SolutionName, fileData);
-                        zip.Save(stream);
-                        stream.Position = 0;
-                    }                    
-                    //add the solution data to the event
-                    submitEvent.CreateSolutionBinary(stream.ToArray());
-                }
-                else
-                {
-                    //TODO: handle specific errors
-                    return RedirectToAction("GenericError", "Error");
-                }
-
-                submitEvent.AssignmentId = assignmentId;
-                //create event log with solution to submit
-                EventLog eventLog = new EventLog(submitEvent);
-                eventLog.Sender = CurrentUser;
-                eventLog.SenderId = CurrentUser.Id;
-                //create client to submit assignment to the db
-                OsbideWebService client = new OsbideWebService();
-                client.SubmitAssignment(assignmentId, eventLog, CurrentUser);
-
-                return RedirectToAction("Details", new { id = courseId });
-
-            }  
-            else
-            {
-                //TODO: handle specific errors
-                return RedirectToAction("GenericError", "Error");
-            }
-        }
     }
 }

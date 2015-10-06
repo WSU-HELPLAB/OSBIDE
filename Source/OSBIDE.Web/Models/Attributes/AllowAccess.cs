@@ -35,7 +35,7 @@ namespace OSBIDE.Web.Models.Attributes
             }
             if (hasValidRole == false)
             {
-                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Profile", action = "Index" }));
+                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Feed", action = "Index" }));
             }
         }
     }

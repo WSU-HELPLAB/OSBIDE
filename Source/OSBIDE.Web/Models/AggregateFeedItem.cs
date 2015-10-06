@@ -50,7 +50,11 @@ namespace OSBIDE.Web.Models
             HelpfulMarks = item.HelpfulComments;
 
             //IDE events are anonymized
-            if (ActivityFeedQuery.GetIdeEvents().Any(e => (int)e == item.Log.EventTypeId))
+            var ideEvents = ActivityFeedQuery.GetIdeEvents();
+            bool isIde = (from evt in ideEvents
+                          where evt.EventName == item.Event.EventName
+                          select evt).FirstOrDefault() != null;
+            if (isIde)
             {
                 IsAnonymous = true;
             }

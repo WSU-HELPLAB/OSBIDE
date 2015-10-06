@@ -25,18 +25,9 @@ namespace OSBIDE.Web.Models
 
             MailAddress fromAddress = new MailAddress(ConfigurationManager.AppSettings["OsbideFromEmail"], "OSBIDE");
             var credentials = new NetworkCredential(ConfigurationManager.AppSettings["EmailUser"], ConfigurationManager.AppSettings["EmailPassword"]);
-            //var transportSMTP = SMTP.GetInstance(credentials); 
+            var transportSMTP = SMTP.GetInstance(credentials); 
             foreach (MailAddress recipient in to)
             {
-                MailMessage mm = new MailMessage();
-
-                mm.From = fromAddress;
-                mm.To.Add(recipient);
-                mm.Subject = subject;
-                mm.Body = message;
-                mm.IsBodyHtml = true;
-                mailClient.Send(mm);
-                /*
                 SendGrid gridMessage = SendGrid.GetInstance(
                     fromAddress, 
                     new MailAddress[] { recipient }, 
@@ -50,7 +41,6 @@ namespace OSBIDE.Web.Models
 
                 //bomb's away!
                 transportSMTP.Deliver(gridMessage);
-                 * */
             }
 
             mailClient.Dispose();

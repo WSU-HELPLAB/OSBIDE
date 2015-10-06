@@ -28,12 +28,10 @@
         {
         <header>
             <ul>
-                <li data-tab="ActivityFeed">@Html.ActionLink("Activity Feed", "Index", "Feed", new { component = OsbideVsComponent.FeedOverview }, new { })</li>
-                <li data-tab="Courses">@Html.ActionLink("Courses", "Index", "Course", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
-                <li data-tab="Grades">@Html.ActionLink("Grades", "Index", "Gradebook", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
-                <li data-tab="Profile">@Html.ActionLink("Profile", "Index", "Profile", new { component = OsbideVsComponent.UserProfile, id = ViewBag.CurrentUser.Id }, new { })</li>
-                <li data-tab="Admin"><a href="@Url.Content("~/Admin")">Admin</a></li>
-                <li data-tab="Analytics"><a href="@Url.Content("~/Analytics/Criteria")">Analytics</a></li>
+                <li>@Html.ActionLink("Activity Feed", "Index", "Feed", new { component = OsbideVsComponent.FeedOverview }, new { })</li>
+                <li>@Html.ActionLink("Courses", "Index", "Course", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
+                <li>@Html.ActionLink("Grades", "Index", "Gradebook", new { component = OsbideVsComponent.GenericComponent }, new { })</li>
+                <li>@Html.ActionLink("Profile", "Index", "Profile", new { component = OsbideVsComponent.UserProfile, id = ViewBag.CurrentUser.Id }, new { })</li>
             </ul>
             <!--
             <div class="content-wrapper">
@@ -57,7 +55,7 @@
                 @RenderBody()
             </section>
         </div>
-        <footer style="clear:both; padding-left:10px;margin-top:50px;">
+        <footer style="clear:both;">
             <div class="content-wrapper">
                 <div class="float-left">
                     <p>&copy; @DateTime.UtcNow.Year - Washington State University</p>

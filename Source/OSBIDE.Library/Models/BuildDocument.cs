@@ -24,20 +24,5 @@ namespace OSBIDE.Library.Models
 
         [ForeignKey("DocumentId")]
         public virtual CodeDocument Document { get; set; }
-
-        public int? NumberOfInserted { get; set; }
-
-        public int? NumberOfModified { get; set; }
-
-        public int? NumberOfDeleted { get; set; }
-
-        public string ModifiedLines { get; set; }
-
-        public DateTime? UpdatedOn { get; set; }
-
-        public int? UpdatedBy { get; set; }
-
-        [ForeignKey("UpdatedBy")]
-        public virtual OsbideUser UpdatedByUser { get; set; }
     }
 }

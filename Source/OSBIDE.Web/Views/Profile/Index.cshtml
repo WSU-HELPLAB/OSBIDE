@@ -10,7 +10,7 @@
     OsbideUser currentUser = ViewBag.CurrentUser;
 }
 
-<section data-tab="Profile">
+<section>
     <div class="feed-item-single-left">
         <img src="@Url.Action("Picture", "Profile", new { id = Model.User.Id })" title="profile image" alt="profile image" />
     </div>
@@ -120,7 +120,7 @@
                     //is the user commenting on an anymous event?
                     var ideEvents = OSBIDE.Web.Models.Queries.ActivityFeedQuery.GetIdeEvents();
                     EventLog sourceEvent = socialLogs[0].LogCommentEvent.SourceEventLog;
-                    if (ideEvents.Where(e => (int)e == sourceEvent.EventTypeId).FirstOrDefault() != null)
+                    if (ideEvents.Where(e => e.EventName == sourceEvent.LogType).FirstOrDefault() != null)
                     {
                         //Is the user the target of an IDE event?  For example, did someone comment on this user's build event?
                         //If so, we don't want to show this as it would ruin the anonymity

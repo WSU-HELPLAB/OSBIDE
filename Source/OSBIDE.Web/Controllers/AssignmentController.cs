@@ -13,7 +13,6 @@ using System.Web.Mvc;
 namespace OSBIDE.Web.Controllers
 {
     [OsbideAuthorize]
-    [DenyAccess(SystemRole.Student)]
     public class AssignmentController : ControllerBase
     {
         //
@@ -22,12 +21,12 @@ namespace OSBIDE.Web.Controllers
         public ActionResult Index(int assignmentId = -1)
         {
             Assignment currentAssignment = Db.Assignments.Where(a => a.Id == assignmentId).FirstOrDefault();
-            if (currentAssignment == null)
+            if(currentAssignment == null)
             {
                 return RedirectToAction("Index", "Feed");
             }
             List<Assignment> allAssignments = Db.Assignments.Where(a => a.CourseId == currentAssignment.CourseId).ToList();
-
+            
             //build the view model and return
             AssignmentsViewModel vm = new AssignmentsViewModel();
             vm.Assignments = allAssignments;
@@ -37,8 +36,11 @@ namespace OSBIDE.Web.Controllers
             return View(vm);
         }
 
-        private FileStreamResult PackageFiles(List<SubmitEvent> submits, bool useStudentId = false)
+        [NotForStudents]
+        public FileStreamResult Download(int id)
         {
+            List<SubmitEvent> submits = GetMostRecentSubmissions(id);
+
             //AC: for some reason, I can't use a USING statement for automatic closure.  Is this 
             //    a potential memory leak?
             MemoryStream finalZipStream = new MemoryStream();
@@ -58,13 +60,9 @@ namespace OSBIDE.Web.Controllers
                                 {
                                     using (MemoryStream entryStream = new MemoryStream())
                                     {
-                                        string entryName = string.Format("{0}/{1}", submit.EventLog.Sender.FullName, entry.FileName);
-                                        if(useStudentId)
-                                        {
-                                            entryName = string.Format("{0}/{1}", submit.EventLog.Sender.InstitutionId + "_" + submit.EventLog.Sender.FullName, entry.FileName);
-                                        }
                                         entry.Extract(entryStream);
                                         entryStream.Position = 0;
+                                        string entryName = string.Format("{0}/{1}", submit.EventLog.Sender.FullName, entry.FileName);
                                         finalZipFile.AddEntry(entryName, entryStream.ToArray());
                                     }
                                 }
@@ -82,33 +80,19 @@ namespace OSBIDE.Web.Controllers
                 finalZipStream.Position = 0;
             }
 
-            string assignmentName = "Unknown.zip";
-            if (submits.Count > 0)
+            string assignmentName = "Unknown";
+            if(submits.Count > 0)
             {
-                assignmentName = submits.FirstOrDefault().Assignment.Name + ".zip";
+                assignmentName = submits.FirstOrDefault().Assignment.Name;
             }
             return new FileStreamResult(finalZipStream, "application/zip") { FileDownloadName = assignmentName };
-        }
-
-        [NotForStudents]
-        public FileStreamResult Download(int id)
-        {
-            List<SubmitEvent> submits = GetMostRecentSubmissions(id);
-            return PackageFiles(submits);
-        }
-
-        [NotForStudents]
-        public FileStreamResult DownloadWithIds(int id)
-        {
-            List<SubmitEvent> submits = GetMostRecentSubmissions(id);
-            return PackageFiles(submits, true);
         }
 
         public FileStreamResult DownloadStudentAssignment(int id)
         {
             //students can only download their own work
             SubmitEvent submit = Db.SubmitEvents.Where(s => s.EventLogId == id).FirstOrDefault();
-            if (submit != null && submit.EventLog.SenderId == CurrentUser.Id)
+            if(submit != null && submit.EventLog.SenderId == CurrentUser.Id)
             {
                 return DownloadSingle(id);
             }
@@ -128,7 +112,7 @@ namespace OSBIDE.Web.Controllers
             {
                 stream.Write(submit.SolutionData, 0, submit.SolutionData.Length);
                 stream.Position = 0;
-                fileName = string.Format("{0} - {1}.zip", submit.Assignment.Name, submit.EventLog.Sender.FullName);
+                fileName = string.Format("{0} - {1}", submit.Assignment.Name, submit.EventLog.Sender.FullName);
             }
             return new FileStreamResult(stream, "application/zip") { FileDownloadName = fileName };
         }
@@ -171,28 +155,6 @@ namespace OSBIDE.Web.Controllers
             //order by last name
             submits = submits.OrderBy(s => s.EventLog.Sender.FullName).ToList();
             return submits;
-        }
-
-        //
-        // Get latest submission time (if any)
-        public DateTime LatestSubmissionTime(int assignmentId, int currentUserId)
-        {
-            //get the newest submit event for this assignment and user
-            SubmitEvent submitEvent = Db.SubmitEvents
-                                        .Where(se => se.AssignmentId == assignmentId)
-                                        .Where(s => s.EventLog.SenderId == currentUserId)
-                                        .OrderByDescending(se => se.EventLog.DateReceived)
-                                        .FirstOrDefault();
-
-            if (submitEvent != null)
-            {
-                return submitEvent.EventLog.DateReceived;                
-            }
-            else
-            {
-                //return default date value
-                return new DateTime();
-            }
         }
 
     }

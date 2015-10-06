@@ -165,7 +165,7 @@ namespace OSBIDE.Library.Models
         /// I know this is confusing :(
         /// </summary>
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please enter your school or institution ID.")]
-        [Display(Name = "School / Institution / Student ID")]
+        [Display(Name = "School / Institution ID")]
         [DataMember]
         public int InstitutionId
         {

@@ -16,7 +16,6 @@ namespace OSBIDE.Library.Models
 {
     public class OsbideContext : DbContext
     {
-        public DbSet<CodedOsbideFeedItem> CodedOsbideFeedItems { get; set; }
         public DbSet<EventLog> EventLogs { get; set; }
         public DbSet<EventLogData> EventLogData { get; set; }
         public DbSet<OsbideUser> Users { get; set; }
@@ -41,7 +40,7 @@ namespace OSBIDE.Library.Models
         public DbSet<ChatRoomUser> ChatRoomUsers { get; set; }
         public DbSet<CommentActivityLog> CommentActivityLogs { get; set; }
         public DbSet<WhatsNewItem> WhatsNewItems { get; set; }
-        public DbSet<ActionRequestLog> ActionRequestLogs { get; set; }
+
         public DbSet<AskForHelpEvent> AskForHelpEvents { get; set; }
         public DbSet<BuildEvent> BuildEvents { get; set; }
         public DbSet<BuildEventBreakPoint> BuildEventBreakPoints { get; set; }
@@ -63,8 +62,6 @@ namespace OSBIDE.Library.Models
         public DbSet<FeedPostEvent> FeedPostEvents { get; set; }
         public DbSet<LogCommentEvent> LogCommentEvents { get; set; }
         public DbSet<HelpfulMarkGivenEvent> HelpfulMarkGivenEvents { get; set; }
-        public DbSet<Syllable> Syllables { get; set; }
-        public DbSet<StudentGrade> StudentGrades { get; set; }
 
         public OsbideContext()
             : base()
@@ -120,20 +117,13 @@ namespace OSBIDE.Library.Models
             {
                 OsbideContext _db;
 #if DEBUG
-                try
-                {
-                    _db = new OsbideContext("OsbideDebugContext");
-                    Database.SetInitializer<OsbideContext>(new OsbideContextIfNotExistsInitializer());
-                    //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
+                _db = new OsbideContext("OsbideDebugContext");
+                Database.SetInitializer<OsbideContext>(new OsbideContextIfNotExistsInitializer());
+                //Database.SetInitializer<OsbideContext>(new OsbideContextModelChangeInitializer());
 
-                    //uncomment this line (and comment out the one above) when VS is acting stupid and won't
-                    //recreate the database on model change.
-                    //Database.SetInitializer<OsbideContext>(new OsbideContextAlwaysCreateInitializer());
-                }
-                catch
-                {
-                    _db = new OsbideContext("OsbideDebugContext");
-                }
+                //uncomment this line (and comment out the one above) when VS is acting stupid and won't
+                //recreate the database on model change.
+                //Database.SetInitializer<OsbideContext>(new OsbideContextAlwaysCreateInitializer());
 #else
             _db = new OsbideContext("OsbideReleaseContext");
 #endif

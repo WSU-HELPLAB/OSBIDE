@@ -31,7 +31,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,9 +47,6 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.0.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus">
-      <HintPath>..\..\packages\EPPlus.3.1.3.3\lib\net35\EPPlus.dll</HintPath>
-    </Reference>
     <Reference Include="FileCache, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FileCache.1.4.0\lib\FileCache.dll</HintPath>
@@ -65,10 +61,6 @@
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks.Extensions">
       <HintPath>..\..\packages\Microsoft.Bcl.Async.1.0.16\lib\net45\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SendGridMail">
       <HintPath>..\..\packages\SendGrid.1.2.1\lib\SendGridMail.dll</HintPath>
@@ -136,6 +128,10 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <Private>True</Private>
+      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -147,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\File\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
@@ -154,14 +151,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\AnalyticsController.cs" />
     <Compile Include="Controllers\AssignmentController.cs" />
     <Compile Include="Controllers\BuildEventController.cs" />
-    <Compile Include="Controllers\CalendarVisualizationController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\CourseController.cs" />
-    <Compile Include="Controllers\DataVisualizationController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FeedController.cs" />
     <Compile Include="Controllers\FileController.cs" />
@@ -171,17 +165,6 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Controllers\WhatsNewController.cs" />
-    <Compile Include="Helpers\ActionSelectorAttribute.cs" />
-    <Compile Include="Helpers\JsonSerializerExtensions.cs" />
-    <Compile Include="Models\AdminDataImport.cs" />
-    <Compile Include="Models\Analytics\Analytics.cs" />
-    <Compile Include="Models\Analytics\CalendarSettings.cs" />
-    <Compile Include="Models\Analytics\CriteriaLookups.cs" />
-    <Compile Include="Models\Analytics\ProcedureDataItem.cs" />
-    <Compile Include="Models\Analytics\ProcedureResults.cs" />
-    <Compile Include="Models\Analytics\ProcedureSettings.cs" />
-    <Compile Include="Models\Analytics\WizardSteps.cs" />
-    <Compile Include="Models\DiffMatchPatch.cs" />
     <Compile Include="Models\FileSystem\AssignmentFilePath.cs" />
     <Compile Include="Models\FileSystem\CourseFilePath.cs" />
     <Compile Include="Models\FileSystem\EmptyFilePathDecorator.cs" />
@@ -205,6 +188,7 @@
     <Compile Include="Models\Attributes\RequiresVisualStudioConnection.cs" />
     <Compile Include="Models\Authentication.cs" />
     <Compile Include="Models\BuildDiffLine.cs" />
+    <Compile Include="Models\DiffMatchPatch.cs" />
     <Compile Include="Models\DocumentError.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\ExceptionEventHelpers.cs" />
@@ -243,7 +227,6 @@
     <Content Include="Content\Gradebook.css" />
     <Content Include="Content\icons\add_up.png" />
     <Content Include="Content\icons\anonymous.png" />
-    <Content Include="Content\icons\chartsample.png" />
     <Content Include="Content\icons\delete_up.png" />
     <Content Include="Content\icons\edit_up.png" />
     <Content Include="Content\icons\follow.png" />
@@ -253,7 +236,6 @@
     <Content Include="Content\icons\unfollow.png" />
     <Content Include="Content\icons\users_16.png" />
     <Content Include="Content\icons\users_24.png" />
-    <Content Include="Content\jquery.datetimepicker.css" />
     <Content Include="Content\Reset.css" />
     <Content Include="Content\tablesorter\asc.gif" />
     <Content Include="Content\tablesorter\bg.gif" />
@@ -361,32 +343,17 @@
     <Content Include="Content\icons\unfollow.pdn" />
     <None Include="Properties\PublishProfiles\filesystem.pubxml" />
     <None Include="Properties\PublishProfiles\osbide.pubxml" />
-    <None Include="Properties\PublishProfiles\osbideanalytics - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\osbideanalytics - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestaging - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\osbidestaging - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestagingws - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\osbidestagingws - Web Deploy %282%29.pubxml" />
     <None Include="Scripts\jquery-2.0.3.intellisense.js" />
-    <Content Include="Scripts\Calendar\Calendar.js" />
-    <Content Include="Scripts\Calendar\TrendingCalendar.js" />
-    <Content Include="Scripts\Charts\bullet.js" />
-    <Content Include="Scripts\Charts\d3.js" />
-    <Content Include="Scripts\Charts\data-visualization.js" />
-    <Content Include="Scripts\exporting.js" />
-    <Content Include="Scripts\highcharts.js" />
-    <Content Include="Scripts\highcharts-more.js" />
     <Content Include="Scripts\highlight.pack.js" />
     <Content Include="Scripts\jquery-2.0.3.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.js" />
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
-    <Content Include="Scripts\jquery.datetimepicker.js" />
     <Content Include="Scripts\jquery.metadata.js" />
     <Content Include="Scripts\jquery.tablesorter.js" />
     <Content Include="Scripts\jquery.tablesorter.min.js" />
@@ -408,10 +375,6 @@
     <Content Include="Scripts\Osbide.Default.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\Typeahead\jquery.overlay.js" />
-    <Content Include="Scripts\Typeahead\jquery.textcomplete.js" />
-    <Content Include="Scripts\Typeahead\osbide-posts.js" />
-    <Content Include="Scripts\Typeahead\typeahead-0.10.4.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Services\OsbideWebService.svc" />
     <Content Include="Web.config">
@@ -423,9 +386,7 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -496,20 +457,7 @@
     <Content Include="Views\Error\FeedDown.cshtml" />
     <Content Include="Views\Gradebook\GradebookHelp.cshtml" />
     <Content Include="Views\Gradebook\Index.cshtml" />
-    <Content Include="Views\Analytics\Refine.cshtml" />
-    <Content Include="Views\Analytics\Procedure.cshtml" />
-    <Content Include="Views\Analytics\Results.cshtml" />
-    <Content Include="Views\Analytics\ErrorQuotient.cshtml" />
-    <Content Include="Views\Analytics\Criteria.cshtml" />
-    <Content Include="Views\Analytics\Results\Bar.cshtml" />
-    <Content Include="Views\Analytics\Results\Tabular.cshtml" />
-    <Content Include="Views\Analytics\Results\Scatter.cshtml" />
-    <Content Include="Views\Analytics\Results\Bubble.cshtml" />
-    <Content Include="Views\Analytics\WatwinScoring.cshtml" />
-    <Content Include="Views\Analytics\DataVisualization.cshtml" />
-    <Content Include="Views\Analytics\DataVisualizationLegendDetails.cshtml" />
-    <Content Include="Views\Analytics\DataVisualizationLegend.cshtml" />
-    <Content Include="Views\Analytics\CalendarVisualization.cshtml" />
+    <Content Include="Views\Error\GenericError.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OSBIDE.Data\OSBIDE.Data.csproj">
@@ -544,7 +492,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>3607</DevelopmentServerPort>
+          <DevelopmentServerPort>62129</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:24867/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

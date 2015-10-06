@@ -42,7 +42,6 @@ namespace OSBIDE.Library.CSV
         {
             //escape quote marks
             text = text.Replace("\"", "\"\"");
-            text = string.Format("\"{0}\"", text);
 
             //Optional: add other escapes as necessary
             return text;

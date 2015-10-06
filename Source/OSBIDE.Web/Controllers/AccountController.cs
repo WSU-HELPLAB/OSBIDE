@@ -93,7 +93,7 @@ namespace OSBIDE.Web.Controllers
                     //add default feed options
                     UserFeedSetting feedSetting = new UserFeedSetting();
                     feedSetting.UserId = vm.User.Id;
-                    foreach (var evt in ActivityFeedQuery.GetSocialEvents())
+                    foreach (IOsbideEvent evt in ActivityFeedQuery.GetSocialEvents())
                     {
                         feedSetting.SetSetting(evt, true);
                     }

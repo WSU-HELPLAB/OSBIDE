@@ -38,6 +38,10 @@
   <ItemGroup>
     <Reference Include="Awesomium.Core, Version=1.7.3.0, Culture=neutral, PublicKeyToken=e1a0d7c8071a5214, processorArchitecture=x86" />
     <Reference Include="awesomium.windows.controls, Version=1.7.3.0, Culture=neutral, PublicKeyToken=7a34e179b8b61c39, processorArchitecture=x86" />
+    <Reference Include="FileCache.Signed, Version=1.4.0.0, Culture=neutral, PublicKeyToken=7542c4e7f6a4d381, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\FileCache.Signed.1.4.0\lib\FileCache.Signed.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Shell.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -81,10 +85,6 @@
     <Compile Include="UserProfileToolWindow.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache.Signed\FileCache.Signed.csproj">
-      <Project>{5baf5dcf-5de1-4806-b7e3-7ef0894a09e6}</Project>
-      <Name>FileCache.Signed</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
       <Project>{9ea09e78-0541-4233-b189-ee1dbd56520d}</Project>
       <Name>OSBIDE.Controls</Name>

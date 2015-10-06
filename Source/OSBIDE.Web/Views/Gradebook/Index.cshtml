@@ -15,21 +15,24 @@
     }
     List<int> globalRowIndicies = ViewBag.GlobalRows;
 }
+@section scripts
+{
+    <link rel="stylesheet" type="text/css" href="~/Content/Gradebook.css" />
+}
 
-<section data-tab="Grades">
     @if (IsInstructorOrTa)
     {
         <!--Upload Gradebook Form-->
         <form id="upload_gradebook" enctype="multipart/form-data" method="post" action="/Gradebook/UploadGradebook">
             <legend>@ViewBag.LastUploadMessage</legend>
             <select name="courseId">
-                @foreach (OSBIDE.Library.Models.Course c in ViewBag.Courses)
+                @foreach(OSBIDE.Library.Models.Course c in ViewBag.Courses)
                 {
                     <option value="@c.Id">@c.Name</option>
                 }
             </select>
-            <input type="file" id="file" name="file"><br />
-            <input id="upload" type="submit" value="Upload" disabled="disabled" />
+            <input type="file" id="file" name="file"/ onchange="check_extension(this.value)"><br />
+            <input id="upload" type="submit" value="Upload" disabled="disabled"/> 
             @{string helpLink = Url.Action("GradebookHelp", "Gradebook", new { area = "" });}
             <a style="font-size:small; text-decoration:none" href="@helpLink">Learn More...</a>
             <br />
@@ -41,13 +44,13 @@
     {
         @:<text id="upload_gradebook">@ViewBag.LastUploadMessage</text>
     }
-
-
+    
+    
     <h1>@ViewBag.Title </h1>
 
     <article>
         <h2>Select Course</h2>
-        @using (Html.BeginForm("Index", "Gradebook", FormMethod.Get))
+        @using(Html.BeginForm("Index", "Gradebook", FormMethod.Get))
         {
             <select name="courseId">
                 @foreach (OSBIDE.Library.Models.Course c in ViewBag.EnrolledCourses)
@@ -90,15 +93,15 @@
         </ul>
         <br />
         <div>
-            @if (DisplaySearch)
-            {
-                <span>Search by name:</span>
-                <input id="search"></input>
-                <br />
-            }
+                @if (DisplaySearch)
+                {
+                    <span>Search by name:</span>
+                    <input id="search"></input>
+                    <br />
+                }
 
-            <!--table here-->
-            <table id="Gradebook">
+                <!--table here-->
+                <table id="Gradebook">
                 @for (int i = 0; i < Table.Count; i++)
                 {
                     string rowClass = "";
@@ -112,7 +115,7 @@
                         rowClass += " GlobalRow";
                     }
                     <tr class="@rowClass">
-
+                        
                         @for (int j = 0; j < Table[i].Count; j++)
                         {
                             if (hiddenColumnIndicies == null || hiddenColumnIndicies.Contains(j) == false)
@@ -133,12 +136,12 @@
 
                                 if (globalRowIndicies.Contains(i) || i == 0)
                                 {
-                                    <th>@displayValue</th>
+                                <th>@displayValue</th>
                                 }
                                 else
                                 {
-                                    <td class="@tdClass" id="@tdId">@displayValue</td>
-
+                                <td class="@tdClass" id="@tdId">@displayValue</td>
+                                
                                 }
                             }
 
@@ -146,35 +149,56 @@
                     </tr>
                 }
 
-            </table>
+                </table>
         </div>
     }
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        $('#search').keyup(function (event) {
-            if (event.keyCode == 13) {
-                filterTable($('#search').val().toLowerCase());
+    $('#search').keyup(function (event) {
+        if (event.keyCode == 13) {
+            filterTable($('#search').val().toLowerCase());
+        }
+        
+    });
+
+    function filterTable(input) {
+        $('.searchableName').each(function () {
+            var parentRow = this.parentElement;
+            if ($(parentRow).hasClass("GlobalRow") == false) {
+                $(parentRow).hide();
             }
-
+            
         });
 
-        function filterTable(input) {
-            $('.searchableName').each(function () {
-                var parentRow = this.parentElement;
-                if ($(parentRow).hasClass("GlobalRow") == false) {
-                    $(parentRow).hide();
-                }
+        var selector = ".searchableName[id*=\"" + input + "\"]'";
+        $(selector).each(function () {
 
-            });
+            var parentRow = this.parentElement;
+            $(parentRow).show();
+        });
+    }
 
-            var selector = ".searchableName[id*=\"" + input + "\"]'";
-            $(selector).each(function () {
+    
+    var hash = {
+    '.csv' : 1,
+    '.zip' : 1,
+    '.zip.zip' : 1, //accept ".zip.zip" and ".csv.csv" because they are valid types, the user just named them with extension as well
+    '.csv.csv' : 1
+    };
 
-                var parentRow = this.parentElement;
-                $(parentRow).show();
-            });
+    function check_extension(filename) {
+        var re = /\..+$/;
+        var ext = filename.match(re);
+        if (hash[ext] ==  1) {
+            $('#upload').removeAttr("disabled");
+            $("#errorMsg").text("");
+            return true;
+        } 
+        else {
+            $("#errorMsg").text("Invalid File Type");
+            $('#upload').attr("disabled", "disabled");
+            return false;
         }
-
-    </script>
-</section>
+    }
+</script>

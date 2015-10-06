@@ -82,7 +82,7 @@ namespace OSBIDE.Web.Controllers
             }
             if (needsScoreUpdate == true)
             {
-                //UpdateUserScores();
+                UpdateUserScores();
                 GlobalCache["lastScoreUpdate"] = DateTime.UtcNow;
             }
 
@@ -395,11 +395,6 @@ namespace OSBIDE.Web.Controllers
         public void LogErrorMessage(Exception ex)
         {
             var msg = string.Format("message: {0}, source: {1}, stack trace: {2}, TargetSite: {3}", ex.Message, ex.Source, ex.StackTrace, ex.TargetSite);
-
-            if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
-            {
-                msg = string.Format("{0} {1}Inner Exception: {2}", msg, Environment.NewLine, ex.InnerException.Message);
-            }
 
             if (ex.Data != null && ex.Data.Keys != null)
             {
