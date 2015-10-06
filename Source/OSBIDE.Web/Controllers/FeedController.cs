@@ -448,7 +448,7 @@ namespace OSBIDE.Web.Controllers
                 {
                     //if we've received a log comment event or a helpful mark event, we have to reroute to the original event
                     EventLog log = Db.EventLogs.Where(e => e.Id == idAsInt).FirstOrDefault();
-                    MarkReadProc.Update(idAsInt, CurrentUser.Id , true);
+                    //MarkReadProc.Update(idAsInt, CurrentUser.Id , true);
                     if (log != null)
                     {
                         if (log.LogType == LogCommentEvent.Name)

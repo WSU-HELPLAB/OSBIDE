@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics", "Source\OSBIDE.Analytics\OSBIDE.Analytics.csproj", "{9061DC43-536C-47FE-A0E4-BEECE73B763B}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics.Terminal", "Source\OSBIDE.Analytics.Terminal\OSBIDE.Analytics.Terminal.csproj", "{0B410DF4-92E1-48F8-BCC2-F9125CF4F1AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCache", "..\..\fc\Main\Source\FileCache\FileCache.csproj", "{E13FD5FE-7D45-4A90-8FBB-C498BD144940}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics.Web", "Source\OSBIDE.Analytics.Web\OSBIDE.Analytics.Web.csproj", "{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSBIDE.Analytics.Library", "Source\OSBIDE.Analytics.Library\OSBIDE.Analytics.Library.csproj", "{C6992B47-B8B3-4365-9F49-B3209549C9E3}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -91,6 +95,24 @@ Global
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E13FD5FE-7D45-4A90-8FBB-C498BD144940}.Release|x86.ActiveCfg = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.OSBIDE Deployment|Any CPU.ActiveCfg = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.OSBIDE Deployment|Any CPU.Build.0 = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.OSBIDE Deployment|x86.ActiveCfg = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B29E3CFD-3DB8-4DF7-80C1-406CEA5EECBE}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.OSBIDE Deployment|Any CPU.ActiveCfg = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.OSBIDE Deployment|Any CPU.Build.0 = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.OSBIDE Deployment|x86.ActiveCfg = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6992B47-B8B3-4365-9F49-B3209549C9E3}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

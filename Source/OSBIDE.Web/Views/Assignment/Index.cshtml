@@ -51,6 +51,8 @@
     <tr>
         <td colspan="3">
             @Html.ActionLink("Download All", "Download", new { id = Model.CurrentAssignment.Id }, new { })
+            <br />
+            @Html.ActionLink("Download With Student Ids", "DownloadWithIds", new { id = Model.CurrentAssignment.Id }, new { })
         </td>
     </tr>
 </table>
