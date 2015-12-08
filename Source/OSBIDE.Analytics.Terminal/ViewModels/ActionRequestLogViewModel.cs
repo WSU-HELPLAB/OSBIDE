@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OSBIDE.Analytics.Terminal.ViewModels
@@ -68,8 +69,119 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             ((IObjectContextAdapter)_db).ObjectContext.CommandTimeout = 60 * 60 * 24;
             WeeklyAggregate = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<int, int>>>>();
         }
+        private List<ActionRequestLog> _rawLogs = new List<ActionRequestLog>();
 
-        public void LoadAllLogs()
+        public Dictionary<string, List<ActionRequestLog>> GenerateDetailsViewStatistics()
+        {
+            Dictionary<string, List<ActionRequestLog>> viewCounts = new Dictionary<string,List<ActionRequestLog>>();
+            Dictionary<int, EventLog> loadedLogs = new Dictionary<int,EventLog>();
+
+            //min and max log IDs pulled from DB query
+            int minLogId = 2308;
+            int maxLogId = 41065355;
+            int increment = 50000;
+            int currentId = minLogId;
+
+            //pull all records from DB.  Note that there's a lot of records and EF is slow so
+            //I'm only pulling a few at a time.
+            while (currentId + increment < maxLogId + increment)
+            {
+                List<ActionRequestLog> logs = GetLogs(currentId, currentId + increment);
+                
+                //go up by one so we don't double count
+                currentId += increment + 1;
+
+                foreach (ActionRequestLog arl in logs)
+                {
+                    //ignore everything but details view
+                    if (arl.ControllerName.CompareTo("Feed") != 0)
+                    {
+                        continue;
+                    }
+                    if (arl.ActionName.CompareTo("Details") != 0)
+                    {
+                        continue;
+                    }
+
+                    Regex reg = new Regex(@"id=(\d+)", RegexOptions.IgnoreCase);
+                    Match match = reg.Match(arl.ActionParameters);
+                    if (match.Success)
+                    {
+                        
+                        int key = -1;
+                        string keyString = match.Groups[1].ToString();
+                        if (Int32.TryParse(keyString, out key) == true)
+                        {
+                            //log already loaded?
+                            EventLog log = null;
+                            if (loadedLogs.ContainsKey(key))
+                            {
+                                log = loadedLogs[key];
+                            }
+                            else
+                            {
+                                log = _db.EventLogs.Where(l => l.Id == key).FirstOrDefault();
+                                loadedLogs[key] = log;
+                            }
+                            if (viewCounts.ContainsKey(log.LogType) == false)
+                            {
+                                viewCounts.Add(log.LogType, new List<ActionRequestLog>());
+                            }
+                            viewCounts[log.LogType].Add(arl);
+                        }
+                    }
+                }
+
+            }
+            return viewCounts;
+        }
+
+        public void LoadRawLogsFromCache()
+        {
+            _rawLogs.Clear();
+            string[] keys = _cache.GetKeys();
+            foreach(string key in keys)
+            {
+                string[] pieces = key.Split('_');
+                if(pieces.Length == 3)
+                {
+                    if(pieces[0] == "RawLogs")
+                    {
+                        //key found, open and add to list of raw logs
+                        List<ActionRequestLog> chunk = _cache[key] as List<ActionRequestLog>;
+                        if(chunk != null)
+                        {
+                            _rawLogs.AddRange(chunk);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void LoadRawLogsFromDb()
+        {
+            //min and max log IDs pulled from DB query
+            int minLogId = 2308;
+            int maxLogId = 41065355;
+            int increment = 50000;
+            int currentId = minLogId;
+
+            //pull all records from DB.  Note that there's a lot of records and EF is slow so
+            //I'm only pulling a few at a time.
+            while (currentId + increment < maxLogId + increment)
+            {
+                List<ActionRequestLog> logs = GetLogs(currentId, currentId + increment);
+                string key = string.Format("RawLogs_{0}_{1}", currentId, currentId + increment);
+
+                //go up by one so we don't double count
+                currentId += increment + 1;
+
+                //write logs to the cache
+                _cache[key] = logs;
+            }
+        }
+
+        public void LoadLogsByDate()
         {
             //min and max log IDs pulled from DB query
             int minLogId = 2308;
@@ -120,7 +232,9 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                     }
                     activityByDate[log.AccessDate.Date][log.ControllerName][log.ActionName][log.CreatorId] += 1;
                 }
-                currentId += increment;
+
+                //go up by one so we don't double count
+                currentId += increment + 1;
             }
 
             //save data to cache
@@ -251,6 +365,53 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
             return spreadsheet;
         }
 
+        public void GroupDetailsViewByEventType()
+        {
+            
+        }
+
+        /// <summary>
+        /// Attempts to calculate the number of profile visits made.  Differentiates between viewing own
+        /// profile and viewing others' profile.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string,int> CountProfileVisits()
+        {
+            //pull all action requests from the DB in which 
+            var query = from actionRequest in _db.ActionRequestLogs
+                        join user in _db.Users on actionRequest.CreatorId equals user.Id
+                        join cur in _db.CourseUserRelationships on user.Id equals cur.UserId
+                        join course in _db.Courses on cur.CourseId equals course.Id
+                        where actionRequest.ActionName == "Index"
+                        && actionRequest.ControllerName == "Profile"
+                        && user.HasInformedConsent == true
+                        && cur.CourseId == 3
+                        select actionRequest;
+
+            int selfCounter = 0;
+            int otherCounter = 0;
+            foreach (var log in query)
+            {
+                //count "self" views as logs that have no ID (null) or their own ID
+                if(log.ActionParameters.Contains("null"))
+                {
+                    selfCounter++;
+                }
+                else if(log.ActionParameters.Contains(log.CreatorId.ToString()))
+                {
+                    selfCounter++;
+                }
+                else
+                {
+                    otherCounter++;
+                }
+            }
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            result["self"] = selfCounter;
+            result["other"] = otherCounter;
+            return result;
+        }
+
         public List<List<string>> FilterActivity(string controller, string action)
         {
             List<List<string>> spreadsheet = new List<List<string>>();
@@ -367,6 +528,7 @@ namespace OSBIDE.Analytics.Terminal.ViewModels
                           && log.AccessDate <= endDate
                           && log.Id >= startingId
                           && log.Id <= endingId
+                          && user.HasInformedConsent == true
                           select log;
                 return sql.ToList();
             }

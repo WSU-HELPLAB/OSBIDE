@@ -471,7 +471,23 @@ namespace OSBIDE.Web.Controllers
                 {
                     query.AddEventId(logId);
                 }
+                int testid = ids[0];
+                
                 List<FeedItem> feedItems = query.Execute().ToList();
+                EventLog el = Db.EventLogs.Where(e => e.Id == testid).FirstOrDefault();
+                ExceptionEvent evt = Db.ExceptionEvents.Where(e => e.EventLogId == testid).FirstOrDefault();
+                FeedItem fi = new FeedItem()
+                {
+                    Comments = new List<LogCommentEvent>(),
+                    //Creator = el.Sender,
+                    Event = evt,
+                    EventId = el.Id,
+                    HelpfulComments = 0,
+                   //Creator ItemDate = el.DateReceived,
+                   Log = el
+                };
+                feedItems.Clear();
+                feedItems.Add(fi);
                 List<AggregateFeedItem> aggregateItems = AggregateFeedItem.FromFeedItems(feedItems);
 
                 //build the "you and 5 others got this error"-type messages

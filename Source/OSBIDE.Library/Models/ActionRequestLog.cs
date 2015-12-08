@@ -7,11 +7,14 @@ using System.Text;
 
 namespace OSBIDE.Library.Models
 {
-    [Serializable]
+    [Serializable()]
     public class ActionRequestLog
     {
         public const string ACTION_PARAMETER_DELIMITER = "|||";
         public const string ACTION_PARAMETER_NULL_VALUE = "[null]";
+
+        [NonSerialized]
+        private OsbideUser _creator;
 
         [Key]
         public int Id { get; set; }
@@ -19,7 +22,17 @@ namespace OSBIDE.Library.Models
         public int CreatorId { get; set; }
 
         [ForeignKey("CreatorId")]
-        public OsbideUser Creator { get; set; }
+        public OsbideUser Creator
+        {
+            get
+            {
+                return _creator;
+            }
+            set
+            {
+                _creator = value;
+            }
+        }
 
         public string ActionName { get; set; }
 
@@ -34,6 +47,7 @@ namespace OSBIDE.Library.Models
         public ActionRequestLog()
         {
             AccessDate = DateTime.UtcNow;
+            Creator = new OsbideUser();
         }
 
         public ActionRequestLog(ActionRequestLog other)

@@ -43,6 +43,7 @@ namespace OSBIDE.Library.Models
         private bool _receiveEmailOnNewAskForHelp = false;
         private bool _receiveEmailOnNewFeedPost = false;
         private int _defaultCourseId;
+        private bool _hasInformedConsent = false;
         private DateTime _lastVsActivity;
 
         [NonSerialized]
@@ -312,6 +313,19 @@ namespace OSBIDE.Library.Models
             set
             {
                 _receiveEmailOnNewFeedPost = value;
+                OnPropertyChanged("ReceiveEmailOnNewFeedPost");
+            }
+        }
+
+        public bool HasInformedConsent
+        {
+            get
+            {
+                return _hasInformedConsent;
+            }
+            set
+            {
+                _hasInformedConsent = value;
                 OnPropertyChanged("ReceiveEmailOnNewFeedPost");
             }
         }
