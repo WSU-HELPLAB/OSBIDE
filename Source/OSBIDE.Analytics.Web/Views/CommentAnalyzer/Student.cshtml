@@ -1,0 +1,36 @@
+﻿@using OSBIDE.Analytics.Web.ViewModels
+@using OSBIDE.Analytics.Library.Models
+@using OSBIDE.Library.Models
+@model List<StudentCommentTimeline>
+@{
+    ViewBag.Title = "Student Comments";
+    List<StudentCommentTimeline> comments = Model;
+    OsbideUser student = new OsbideUser();
+    if(comments.Count > 0)
+    {
+        student = comments.First().Author;
+    }
+}
+
+<h1>Comments for @student.FirstAndLastName</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(StudentCommentTimeline comment in comments)
+        {
+            <tr>
+                <td>
+                    @comment.Log.DateReceived.ToLongDateString()
+                </td>
+                <td>
+                    @comment.Comment
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

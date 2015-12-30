@@ -16,6 +16,9 @@ namespace OSBIDE.Analytics.Library.Models
         public DbSet<Post> Posts { get; set; }
         public DbSet<QuestionResponseCount> QuestionResponseCounts { get; set; }
         public DbSet<QuestionCoding> QuestionCodings { get; set; }
+        public DbSet<ContentCoding> ContentCodings { get; set; }
+        public DbSet<TimelineState> TimelineStates { get; set; }
+        public DbSet<AnswerCoding> AnswerCodings { get; set; }
         public AnalyticsDbContext()
             : base()
         {

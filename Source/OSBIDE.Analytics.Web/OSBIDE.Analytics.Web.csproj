@@ -52,8 +52,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.8.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -161,6 +161,7 @@
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\SetupController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -170,6 +171,8 @@
     <Compile Include="Models\ViewModels\CommentAnalyzer\IndexViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\GetNextQuestionViewModel.cs" />
+    <Compile Include="ViewModels\PostCoding.cs" />
+    <Compile Include="ViewModels\StudentCommentTimeline.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -236,7 +239,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="pager\first.png" />
@@ -248,11 +253,11 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\jquery.tablesorter.min.js" />
     <Content Include="Scripts\jquery.tablesorter.pager.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -286,6 +291,8 @@
     <Content Include="Views\Question\Index.cshtml" />
     <Content Include="Views\Question\GetNextQuestion.cshtml" />
     <Content Include="Views\CommentAnalyzer\Index.cshtml" />
+    <Content Include="Views\CommentAnalyzer\Student.cshtml" />
+    <Content Include="Views\Setup\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache\FileCache.csproj">

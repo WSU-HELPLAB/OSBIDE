@@ -1,5 +1,6 @@
 ﻿using Accord.Statistics.Models.Markov;
 using Accord.Statistics.Models.Markov.Learning;
+using OSBIDE.Analytics.Library.Models;
 using OSBIDE.Analytics.Terminal.Models;
 using OSBIDE.Library.CSV;
 using OSBIDE.Library.Models;

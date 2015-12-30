@@ -88,8 +88,6 @@
     <Compile Include="Models\PatternParserResult.cs" />
     <Compile Include="Models\StatePatternParser.cs" />
     <Compile Include="Models\UserAccessLog.cs" />
-    <Compile Include="Models\StudentTimeline.cs" />
-    <Compile Include="Models\TimelineState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\ActionRequestLogViewModel.cs" />
@@ -110,6 +108,10 @@
     <ProjectReference Include="..\..\..\..\fc\Main\Source\FileCache\FileCache.csproj">
       <Project>{e13fd5fe-7d45-4a90-8fbb-c498bd144940}</Project>
       <Name>FileCache</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OSBIDE.Analytics.Library\OSBIDE.Analytics.Library.csproj">
+      <Project>{c6992b47-b8b3-4365-9f49-b3209549c9e3}</Project>
+      <Name>OSBIDE.Analytics.Library</Name>
     </ProjectReference>
     <ProjectReference Include="..\OSBIDE.Controls\OSBIDE.Controls.csproj">
       <Project>{9ea09e78-0541-4233-b189-ee1dbd56520d}</Project>

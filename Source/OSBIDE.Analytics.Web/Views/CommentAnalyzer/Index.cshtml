@@ -56,7 +56,7 @@
             }
             <tr>
                 <td>
-                    @user.Id
+                    @Html.ActionLink(user.Id.ToString(), "Student", new { id = user.Id})
                 </td>
                 <td>
                     @user.InstitutionId

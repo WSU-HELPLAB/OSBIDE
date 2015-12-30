@@ -52,11 +52,15 @@
     <Compile Include="Models\AnalyticsDbContextSeeder.cs" />
     <Compile Include="Models\AnalyticsDbContext.cs" />
     <Compile Include="Models\AnalyticsDbContextIfNotExistsInitializer.cs" />
+    <Compile Include="Models\AnswerCoding.cs" />
+    <Compile Include="Models\ContentCoding.cs" />
     <Compile Include="Models\IModelBuilderExtender.cs" />
     <Compile Include="Models\Post.cs" />
     <Compile Include="Models\QuestionCoding.cs" />
     <Compile Include="Models\QuestionResponseCount.cs" />
     <Compile Include="Models\Reply.cs" />
+    <Compile Include="Models\StudentTimeline.cs" />
+    <Compile Include="Models\TimelineState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -64,7 +68,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OsbideImports.sql" />
+    <Content Include="Scripts\DissertationImports.sql" />
+    <Content Include="Scripts\OsbideImports.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

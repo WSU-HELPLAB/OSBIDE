@@ -1,4 +1,5 @@
-﻿using OSBIDE.Analytics.Terminal.Models;
+﻿using OSBIDE.Analytics.Library.Models;
+using OSBIDE.Analytics.Terminal.Models;
 using OSBIDE.Analytics.Terminal.ViewModels;
 using OSBIDE.Library;
 using OSBIDE.Library.CSV;
