@@ -19,7 +19,17 @@ namespace OSBIDE.Analytics.Web.Controllers
         {
             Db = AnalyticsDbContext.DefaultWebConnection;
             OsbideDb = OsbideContext.DefaultWebConnection;
-            GlobalCache = new FileCache();
+            GlobalCache = new FileCache(HttpContext.Server.MapPath("~/App_Data/Cache/"));
+        }
+
+        public new HttpContextBase HttpContext
+        {
+            get
+            {
+                HttpContextWrapper context =
+                    new HttpContextWrapper(System.Web.HttpContext.Current);
+                return (HttpContextBase)context;
+            }
         }
     }
 }

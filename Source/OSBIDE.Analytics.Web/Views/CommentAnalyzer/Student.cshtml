@@ -17,19 +17,51 @@
     <thead>
         <tr>
             <th>Date</th>
+            <th>Type</th>
             <th>Comment</th>
+            <th>Programming State</th>
+            <th>CodeDiff</th>
+            <th>C Is Question</th>
+            <th>E Help Acknowledged</th>
+            <th>C Help Acknowledged</th>
+            <th>C # Responses</th>
+            <th>E Category</th>
+            <th>E SubCategory</th>
+            <th>E 1st Modifier</th>
+            <th>E 2nd Modifier</th>
+            <th>E 3rd Modifier</th>
+            <th>E Code Modifier</th>
         </tr>
     </thead>
     <tbody>
         @foreach(StudentCommentTimeline comment in comments)
         {
+            DateTime commentDate = comment.Log.DateReceived;
+            DateTime rawUtc = new DateTime(commentDate.Year, commentDate.Month, commentDate.Day, commentDate.Hour, commentDate.Minute, commentDate.Second, DateTimeKind.Utc);
             <tr>
                 <td>
-                    @comment.Log.DateReceived.ToLongDateString()
+                    @rawUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                </td>
+                <td>
+                    @comment.Log.LogType.Replace("Event", "")
                 </td>
                 <td>
                     @comment.Comment
                 </td>
+                <td>
+                    @comment.ProgrammingState.State (@(Math.Round((comment.ProgrammingState.EndTime - comment.ProgrammingState.StartTime).TotalMinutes, 2))m)
+                </td>
+                <td>@comment.CodeDiff</td>
+                <td>@comment.CrowdQuestionCount / @comment.CrowdCodings.Codings.Count</td>
+                <td>@comment.ExpertCoding.HelpAcknowledged</td>
+                <td>@comment.CrowdHelpAcknowledged</td>
+                <td>@comment.CrowdCodings.Responses.Count</td>
+                <td>@comment.ExpertCoding.Category</td>
+                <td>@comment.ExpertCoding.SubCategory</td>
+                <td>@comment.ExpertCoding.PrimaryModifier</td>
+                <td>@comment.ExpertCoding.SecondaryModifier</td>
+                <td>@comment.ExpertCoding.TertiaryModifier</td>
+                <td>@comment.ExpertCoding.CodeModifier</td>
             </tr>
         }
     </tbody>
