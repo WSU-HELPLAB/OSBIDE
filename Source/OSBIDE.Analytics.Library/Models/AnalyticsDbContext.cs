@@ -19,6 +19,10 @@ namespace OSBIDE.Analytics.Library.Models
         public DbSet<ContentCoding> ContentCodings { get; set; }
         public DbSet<TimelineState> TimelineStates { get; set; }
         public DbSet<AnswerCoding> AnswerCodings { get; set; }
+        public DbSet<CommentTimeline> CommentTimelines { get; set; }
+        public DbSet<TimelineQuestionCoding> TimelineQuestionCodings { get; set; }
+        public DbSet<TimelineAnswerCoding> TimelineAnswerCodings { get; set; }
+        public DbSet<TimelineCodeDocument> TimelineCodeDocuments { get; set; }
         public AnalyticsDbContext()
             : base()
         {

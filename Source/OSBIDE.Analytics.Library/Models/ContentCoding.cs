@@ -27,6 +27,10 @@ namespace OSBIDE.Analytics.Library.Models
         public string CodeModifier { get; set; }
         public bool HelpAcknowledged { get; set; }
 
+        public ContentCoding()
+        {
+            Date = DateTime.Now;
+        }
 
         public int Compare(ContentCoding x, ContentCoding y)
         {

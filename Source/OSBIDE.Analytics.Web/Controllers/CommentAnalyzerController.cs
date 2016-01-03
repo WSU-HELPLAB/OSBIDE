@@ -100,7 +100,7 @@ namespace OSBIDE.Analytics.Web.Controllers
              *      time of prevous /  last save
              *      NPSM state
              * */
-            List<StudentCommentTimeline> viewModel = new List<StudentCommentTimeline>();
+            List<CommentTimelineViewModel> viewModel = new List<CommentTimelineViewModel>();
 
             //id is nice for MVC, but not very descriptive, switch to studentId in body.
             int studentId = id;
@@ -113,304 +113,432 @@ namespace OSBIDE.Analytics.Web.Controllers
                 , 10 //save
             };
 
-            //this query pulls most questions (ask for help excluded?) from the analytics DB
-            //and should be faster than loading all questions from the OSBIDE DB
-            var commentQuery = from comment in Db.Posts
-                               where comment.AuthorId == studentId
-                               select comment;
+            //only social events
+            int[] socialEventIds = {1, 7, 9};
 
-            //convert into dictionary for lookup by logsQuery
-            Dictionary<int, Post> posts = new Dictionary<int, Post>();
-            foreach (Post post in commentQuery)
+            //check to see if we have cached results in the DB
+            var cachedResults = Db
+                .CommentTimelines
+                .Include(c => c.ProgrammingState)
+                .Include(c => c.QuestionCodings.Select(q => q.QuestionCoding.Post))
+                .Include(c => c.AnswerCodings.Select(q => q.AnswerCoding.Answer))
+                .Include(c => c.ExpertCoding)
+                .Include(c => c.TimelineCodeDocuments)
+                .Where(c => c.AuthorId == studentId)
+                ;
+            if (cachedResults.Count() > 0)
             {
-                posts.Add(post.OsbideId, post);
-            }
+                var authorQuery = from user in OsbideDb.Users
+                                  where user.Id == studentId
+                                  select user;
+                OsbideUser student = authorQuery.FirstOrDefault();
+                student = (student == null) ? new OsbideUser() : student;
 
-            //This query will pull down all content coding questions, organized by Osbide user ID
-            var contentCodingQuery = from code in Db.ContentCodings
-                                     where code.AuthorId == studentId
-                                     select code;
-            SortedList<DateTime, ContentCoding> expertCodings = new SortedList<DateTime, ContentCoding>();
-            foreach (ContentCoding coding in contentCodingQuery)
-            {
-                //I was getting key mismatch (probably difference in milliseconds).  My solution was to create
-                //a new date using only coarser measures
-                DateTime dateKey = new DateTime(coding.Date.Year, coding.Date.Month, coding.Date.Day, coding.Date.Hour, coding.Date.Minute, coding.Date.Second, DateTimeKind.Utc);
-                expertCodings.Add(dateKey, coding);
-            }
-
-            //This query will pull down information obtained from my crowd-sourced content coding.
-            //AnswerCodings have FK reference to the original question as well as the answer.  If a Post
-            //is in the AnswerCodings table, it must be an answer
-            var answeredQuestionsQuery = from answer in Db.AnswerCodings
-                                       .Include(c => c.Answer)
-                                       .Include(c => c.Question)
-                                         where answer.Answer.AuthorId == studentId || answer.Question.AuthorId == studentId
-                                         select answer;
-
-            var allPostsQuery = from question in Db.QuestionCodings
-                                    .Include(c => c.Post)
-                                where question.Post.AuthorId == studentId
-                                select question;
-            Dictionary<int, PostCoding> crowdCodings = new Dictionary<int, PostCoding>();
-            foreach (QuestionCoding coding in allPostsQuery)
-            {
-                if (crowdCodings.ContainsKey(coding.Post.OsbideId) == false)
+                var eventLogQuery = from log in OsbideDb.EventLogs
+                                    where log.SenderId == studentId
+                                    && socialEventIds.Contains(log.EventTypeId)
+                                    select log;
+                Dictionary<int, EventLog> allEventLogs = new Dictionary<int, EventLog>();
+                foreach(EventLog log in eventLogQuery)
                 {
-                    crowdCodings.Add(coding.Post.OsbideId, new PostCoding());
-                    crowdCodings[coding.Post.OsbideId].OsbidePostId = coding.Post.OsbideId;
+                    allEventLogs.Add(log.Id, log);
                 }
-                crowdCodings[coding.Post.OsbideId].Codings.Add(coding);
-            }
-            foreach (AnswerCoding coding in answeredQuestionsQuery)
-            {
-                if (crowdCodings.ContainsKey(coding.Question.OsbideId) == false)
+
+                foreach(CommentTimeline timeline in cachedResults)
                 {
-                    crowdCodings.Add(coding.Question.OsbideId, new PostCoding());
-                    crowdCodings[coding.Question.OsbideId].OsbidePostId = coding.Question.OsbideId;
-                }
-                crowdCodings[coding.Question.OsbideId].Responses.Add(coding);
-            }
-
-            //grab all save and build events for this user
-            Dictionary<int, SaveEvent> allSaves = new Dictionary<int, SaveEvent>();
-            Dictionary<int, BuildEvent> allBuilds = new Dictionary<int, BuildEvent>();
-            var savesQuery = from save in OsbideDb.SaveEvents
-                             .Include(s => s.Document)
-                             join log in OsbideDb.EventLogs on save.EventLogId equals log.Id
-                             where log.SenderId == studentId
-                             select save;
-            foreach (SaveEvent saveEvent in savesQuery)
-            {
-                allSaves[saveEvent.EventLogId] = saveEvent;
-            }
-            var buildsQuery = from build in OsbideDb.BuildEvents
-                             .Include(b => b.Documents.Select(d => d.Document))
-                              join log in OsbideDb.EventLogs on build.EventLogId equals log.Id
-                              where log.SenderId == studentId
-                              select build;
-            foreach (BuildEvent buildEvent in buildsQuery)
-            {
-                allBuilds[buildEvent.EventLogId] = buildEvent;
-            }
-
-            //this query pulls data directly from event logs.
-            var logsQuery = from log in OsbideDb.EventLogs
-                            where log.SenderId == studentId && interestingEventIds.Contains(log.EventTypeId)
-                            select log;
-            List<EventLog> eventLogs = logsQuery.ToList();
-
-            Stack<EventLog> saveEvents = new Stack<EventLog>();
-            List<EventLog> socialEvents = new List<EventLog>();
-
-            foreach (EventLog log in eventLogs)
-            {
-                //holds the next entry into the view model
-                StudentCommentTimeline nextViewModel = new StudentCommentTimeline();
-
-                //if we have a document save event, remember for later until we get a social event
-                if (log.LogType == SaveEvent.Name || log.LogType == BuildEvent.Name)
-                {
-                    saveEvents.Push(log);
-                }
-                else
-                {
-                    //social event detected
-
-                    //1: grab previous edit information
-                    string solutionName = "";
-                    Dictionary<string, CodeDocument> previousDocuments = new Dictionary<string, CodeDocument>();
-
-                    //Start with saves as they will contain more up-to-date information than last build
-                    while (saveEvents.Count > 0 && saveEvents.Peek().LogType != BuildEvent.Name)
+                    CommentTimelineViewModel nextViewModel = new CommentTimelineViewModel(timeline);
+                    nextViewModel.Log = allEventLogs[timeline.EventLogId];
+                    nextViewModel.Author = student;
+                    List<TimelineCodeDocument> beforeDocuments = timeline.TimelineCodeDocuments.Where(t => t.isBeforeComment == true).ToList();
+                    List<TimelineCodeDocument> afterDocuments = timeline.TimelineCodeDocuments.Where(t => t.isBeforeComment == false).ToList();
+                    nextViewModel.CodeBeforeComment = new Dictionary<string, TimelineCodeDocument>();
+                    nextViewModel.CodeAfterComment = new Dictionary<string, TimelineCodeDocument>();
+                    foreach(TimelineCodeDocument tcd in beforeDocuments)
                     {
-                        EventLog next = saveEvents.Pop();
-                        if(allSaves.ContainsKey(next.Id))
-                        {
-                            SaveEvent save = allSaves[next.Id];
-                            if (solutionName.Length == 0)
-                            {
-                                solutionName = save.SolutionName;
-                            }
-                            if (save.SolutionName == solutionName)
-                            {
-                                if (previousDocuments.ContainsKey(save.Document.FileName) == false)
-                                {
-                                    previousDocuments[save.Document.FileName] = save.Document;
-                                }
-                            }
-                        }
+                        nextViewModel.CodeBeforeComment.Add(tcd.DocumentName, tcd);
                     }
-
-                    //at this point, saveEvents should be empty or we should be at a build event.
-                    //Finish off the snapshot with documents transferred with last build
-                    if (saveEvents.Count > 0)
+                    foreach(TimelineCodeDocument tcd in afterDocuments)
                     {
-                        EventLog top = saveEvents.Pop();
-                        if(allBuilds.ContainsKey(top.Id))
-                        {
-                            BuildEvent build = allBuilds[top.Id];
-
-                            if (solutionName.Length == 0)
-                            {
-                                solutionName = build.SolutionName;
-                            }
-                            if (build.SolutionName == solutionName)
-                            {
-                                foreach (BuildDocument doc in build.Documents)
-                                {
-                                    if (previousDocuments.ContainsKey(doc.Document.FileName) == false)
-                                    {
-                                        previousDocuments[doc.Document.FileName] = doc.Document;
-                                    }
-                                }
-                            }
-                        }
+                        nextViewModel.CodeAfterComment.Add(tcd.DocumentName, tcd);
                     }
-
-
-                    //store final result in view model
-                    nextViewModel.CodeBeforeComment = previousDocuments;
-
-                    //2: grab next edit information (will have to be done on 2nd pass)
-
-                    //grab expert content coding info
-                    DateTime dateKey = new DateTime(log.DateReceived.Year,
-                                                    log.DateReceived.Month,
-                                                    log.DateReceived.Day,
-                                                    log.DateReceived.Hour,
-                                                    log.DateReceived.Minute,
-                                                    log.DateReceived.Second,
-                                                    DateTimeKind.Utc);
-                    //I was getting key mismatch (probably difference in milliseconds).  My solution was to create
-                    //a new date using only coarser measures
-                    if (expertCodings.ContainsKey(dateKey))
-                    {
-                        nextViewModel.ExpertCoding = expertCodings[dateKey];
-                    }
-
-                    //grab crowd coding info
-                    var crowd = crowdCodings.Where(cc => cc.Key == log.Id).Select(k => k.Value).FirstOrDefault();
-                    if(crowd != null)
-                    {
-                        nextViewModel.CrowdCodings = crowd;
-                    }
-
-                    //grab NPSM state info
-                    var npsmQuery = from npsm in Db.TimelineStates
-                                    where npsm.EndTime <= log.DateReceived && npsm.IsSocialEvent == false
-                                    orderby npsm.Id descending
-                                    select npsm;
-                    TimelineState state = npsmQuery.Take(1).FirstOrDefault();
-                    if (state != null)
-                    {
-                        nextViewModel.ProgrammingState = state;
-                    }
-
-
-                    //add in comment information
-                    if (posts.ContainsKey(log.Id) == true)
-                    {
-                        nextViewModel.Comment = posts[log.Id].Content;
-                    }
-                    else
-                    {
-                        //not found in pre-query.  Pull manually
-                        if (log.LogType == FeedPostEvent.Name)
-                        {
-                            FeedPostEvent feedPost = OsbideDb.FeedPostEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
-                            if (feedPost != null)
-                            {
-                                nextViewModel.Comment = feedPost.Comment;
-                            }
-                        }
-                        else if (log.LogType == LogCommentEvent.Name)
-                        {
-                            LogCommentEvent logComment = OsbideDb.LogCommentEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
-                            if (logComment != null)
-                            {
-                                nextViewModel.Comment = logComment.Content;
-                            }
-                        }
-                        else if (log.LogType == AskForHelpEvent.Name)
-                        {
-                            AskForHelpEvent ask = OsbideDb.AskForHelpEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
-                            if (ask != null)
-                            {
-                                nextViewModel.Comment = ask.UserComment + "\n" + ask.Code;
-                            }
-                        }
-                    }
-                    nextViewModel.Log = log;
-                    nextViewModel.Author = log.Sender;
                     viewModel.Add(nextViewModel);
                 }
             }
-
-            //2nd pass: find code modifications made after comment.  
-            for (int i = 0; i < viewModel.Count; i++)
+            else
             {
-                StudentCommentTimeline current = viewModel[i];
-                StudentCommentTimeline next = new StudentCommentTimeline();
-                if(i + 1 < viewModel.Count)
+                //no cached results, do it the long way...
+
+                //this query pulls most questions (ask for help excluded?) from the analytics DB
+                //and should be faster than loading all questions from the OSBIDE DB
+                var commentQuery = from comment in Db.Posts
+                                   where comment.AuthorId == studentId
+                                   select comment;
+
+                //convert into dictionary for lookup by logsQuery
+                Dictionary<int, Post> posts = new Dictionary<int, Post>();
+                foreach (Post post in commentQuery)
                 {
-                    next = viewModel[i + 1];
-                }
-                else
-                {
-                    next.Log = eventLogs.Last();
+                    posts.Add(post.OsbideId, post);
                 }
 
-                List<EventLog> logsBetween = eventLogs
-                    .Where(l => l.DateReceived >= current.Log.DateReceived)
-                    .Where(l => l.DateReceived <= next.Log.DateReceived)
-                    .ToList();
-
-                Dictionary<string, CodeDocument> nextDocuments = new Dictionary<string, CodeDocument>();
-                string solutionName = "";
-                foreach (EventLog log in logsBetween)
+                //This query will pull down all content coding questions, organized by Osbide user ID
+                var contentCodingQuery = from code in Db.ContentCodings
+                                         where code.AuthorId == studentId
+                                         select code;
+                SortedList<DateTime, ContentCoding> expertCodings = new SortedList<DateTime, ContentCoding>();
+                foreach (ContentCoding coding in contentCodingQuery)
                 {
-                    if (log.LogType == SaveEvent.Name)
+                    //I was getting key mismatch (probably difference in milliseconds).  My solution was to create
+                    //a new date using only coarser measures
+                    DateTime dateKey = new DateTime(coding.Date.Year, coding.Date.Month, coding.Date.Day, coding.Date.Hour, coding.Date.Minute, coding.Date.Second, DateTimeKind.Utc);
+                    expertCodings.Add(dateKey, coding);
+                }
+
+                //This query will pull down information obtained from my crowd-sourced content coding.
+                //AnswerCodings have FK reference to the original question as well as the answer.  If a Post
+                //is in the AnswerCodings table, it must be an answer
+                var answeredQuestionsQuery = from answer in Db.AnswerCodings
+                                           .Include(c => c.Answer)
+                                           .Include(c => c.Question)
+                                             where answer.Answer.AuthorId == studentId || answer.Question.AuthorId == studentId
+                                             select answer;
+
+                var allPostsQuery = from question in Db.QuestionCodings
+                                        .Include(c => c.Post)
+                                    where question.Post.AuthorId == studentId
+                                    select question;
+                Dictionary<int, PostCoding> crowdCodings = new Dictionary<int, PostCoding>();
+                foreach (QuestionCoding coding in allPostsQuery)
+                {
+                    if (crowdCodings.ContainsKey(coding.Post.OsbideId) == false)
                     {
-                        if(allSaves.ContainsKey(log.Id))
+                        crowdCodings.Add(coding.Post.OsbideId, new PostCoding());
+                        crowdCodings[coding.Post.OsbideId].OsbidePostId = coding.Post.OsbideId;
+                    }
+                    crowdCodings[coding.Post.OsbideId].Codings.Add(coding);
+                }
+                foreach (AnswerCoding coding in answeredQuestionsQuery)
+                {
+                    if (crowdCodings.ContainsKey(coding.Question.OsbideId) == false)
+                    {
+                        crowdCodings.Add(coding.Question.OsbideId, new PostCoding());
+                        crowdCodings[coding.Question.OsbideId].OsbidePostId = coding.Question.OsbideId;
+                    }
+                    crowdCodings[coding.Question.OsbideId].Responses.Add(coding);
+                }
+
+                //grab all save and build events for this user
+                Dictionary<int, SaveEvent> allSaves = new Dictionary<int, SaveEvent>();
+                Dictionary<int, BuildEvent> allBuilds = new Dictionary<int, BuildEvent>();
+                var savesQuery = from save in OsbideDb.SaveEvents
+                                 .Include(s => s.Document)
+                                 join log in OsbideDb.EventLogs on save.EventLogId equals log.Id
+                                 where log.SenderId == studentId
+                                 select save;
+                foreach (SaveEvent saveEvent in savesQuery)
+                {
+                    allSaves[saveEvent.EventLogId] = saveEvent;
+                }
+                var buildsQuery = from build in OsbideDb.BuildEvents
+                                 .Include(b => b.Documents.Select(d => d.Document))
+                                  join log in OsbideDb.EventLogs on build.EventLogId equals log.Id
+                                  where log.SenderId == studentId
+                                  select build;
+                foreach (BuildEvent buildEvent in buildsQuery)
+                {
+                    allBuilds[buildEvent.EventLogId] = buildEvent;
+                }
+
+                //this query pulls data directly from event logs.
+                var logsQuery = from log in OsbideDb.EventLogs
+                                where log.SenderId == studentId && interestingEventIds.Contains(log.EventTypeId)
+                                select log;
+                List<EventLog> eventLogs = logsQuery.ToList();
+
+                Stack<EventLog> saveEvents = new Stack<EventLog>();
+                List<EventLog> socialEvents = new List<EventLog>();
+
+                foreach (EventLog log in eventLogs)
+                {
+                    //holds the next entry into the view model
+                    CommentTimelineViewModel nextViewModel = new CommentTimelineViewModel();
+
+                    //if we have a document save event, remember for later until we get a social event
+                    if (log.LogType == SaveEvent.Name || log.LogType == BuildEvent.Name)
+                    {
+                        saveEvents.Push(log);
+                    }
+                    else
+                    {
+                        //social event detected
+
+                        //1: grab previous edit information
+                        string solutionName = "";
+                        Dictionary<string, CodeDocument> previousDocuments = new Dictionary<string, CodeDocument>();
+
+                        //Start with saves as they will contain more up-to-date information than last build
+                        while (saveEvents.Count > 0 && saveEvents.Peek().LogType != BuildEvent.Name)
                         {
-                            SaveEvent save = allSaves[log.Id];
-                            if (solutionName.Length == 0)
+                            EventLog next = saveEvents.Pop();
+                            if (allSaves.ContainsKey(next.Id))
                             {
-                                solutionName = save.SolutionName;
-                            }
-                            if (save.SolutionName == solutionName)
-                            {
-                                if (nextDocuments.ContainsKey(save.Document.FileName) == false)
+                                SaveEvent save = allSaves[next.Id];
+                                if (solutionName.Length == 0)
                                 {
-                                    nextDocuments[save.Document.FileName] = save.Document;
+                                    solutionName = save.SolutionName;
+                                }
+                                if (save.SolutionName == solutionName)
+                                {
+                                    if (previousDocuments.ContainsKey(save.Document.FileName) == false)
+                                    {
+                                        previousDocuments[save.Document.FileName] = save.Document;
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if (log.LogType == BuildEvent.Name)
-                    {
-                        if(allBuilds.ContainsKey(log.Id))
+
+                        //at this point, saveEvents should be empty or we should be at a build event.
+                        //Finish off the snapshot with documents transferred with last build
+                        if (saveEvents.Count > 0)
                         {
-                            BuildEvent build = allBuilds[log.Id];
-                            if (solutionName.Length == 0)
+                            EventLog top = saveEvents.Pop();
+                            if (allBuilds.ContainsKey(top.Id))
                             {
-                                solutionName = build.SolutionName;
-                            }
-                            if (build.SolutionName == solutionName)
-                            {
-                                foreach (BuildDocument doc in build.Documents)
+                                BuildEvent build = allBuilds[top.Id];
+
+                                if (solutionName.Length == 0)
                                 {
-                                    if (nextDocuments.ContainsKey(doc.Document.FileName) == false)
+                                    solutionName = build.SolutionName;
+                                }
+                                if (build.SolutionName == solutionName)
+                                {
+                                    foreach (BuildDocument doc in build.Documents)
                                     {
-                                        nextDocuments[doc.Document.FileName] = doc.Document;
+                                        if (previousDocuments.ContainsKey(doc.Document.FileName) == false)
+                                        {
+                                            previousDocuments[doc.Document.FileName] = doc.Document;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                        //store final result in view model
+                        foreach(CodeDocument document in previousDocuments.Values)
+                        {
+                            TimelineCodeDocument tcd = new TimelineCodeDocument()
+                            {
+                                CodeDocumentId = document.Id,
+                                CommentTimeline = nextViewModel.Timeline,
+                                DocumentContent = document.Content,
+                                DocumentName = document.FileName,
+                                isBeforeComment = true
+                            };
+                            if(nextViewModel.Timeline.TimelineCodeDocuments == null)
+                            {
+                                nextViewModel.Timeline.TimelineCodeDocuments = new List<TimelineCodeDocument>();
+                            }
+                            nextViewModel.Timeline.TimelineCodeDocuments.Add(tcd);
+                        }
+
+                        //2: grab next edit information (will have to be done on 2nd pass)
+
+                        //grab expert content coding info
+                        DateTime dateKey = new DateTime(log.DateReceived.Year,
+                                                        log.DateReceived.Month,
+                                                        log.DateReceived.Day,
+                                                        log.DateReceived.Hour,
+                                                        log.DateReceived.Minute,
+                                                        log.DateReceived.Second,
+                                                        DateTimeKind.Utc);
+                        //I was getting key mismatch (probably difference in milliseconds).  My solution was to create
+                        //a new date using only coarser measures
+                        if (expertCodings.ContainsKey(dateKey))
+                        {
+                            nextViewModel.Timeline.ExpertCoding = expertCodings[dateKey];
+                            nextViewModel.Timeline.ExpertCodingId = expertCodings[dateKey].Id;
+                        }
+
+                        //grab crowd coding info
+                        var crowd = crowdCodings.Where(cc => cc.Key == log.Id).Select(k => k.Value).FirstOrDefault();
+                        if (crowd != null)
+                        {
+                            foreach (var question in crowd.Codings)
+                            {
+                                TimelineQuestionCoding questionCode = new TimelineQuestionCoding()
+                                {
+                                    CommentTimeline = nextViewModel.Timeline,
+                                    QuestionCoding = question,
+                                    QuestionCodingId = question.Id
+                                };
+                                nextViewModel.Timeline.QuestionCodings.Add(questionCode);
+                            }
+                            foreach (var answer in crowd.Responses)
+                            {
+                                TimelineAnswerCoding responseCoding = new TimelineAnswerCoding()
+                                {
+                                    CommentTimeline = nextViewModel.Timeline,
+                                    AnswerCoding = answer,
+                                    AnswerCodingId = answer.Id
+                                };
+                                nextViewModel.Timeline.AnswerCodings.Add(responseCoding);
+                            }
+                        }
+
+                        //grab NPSM state info
+                        var npsmQuery = from npsm in Db.TimelineStates
+                                        where npsm.EndTime <= log.DateReceived && npsm.IsSocialEvent == false
+                                        orderby npsm.Id descending
+                                        select npsm;
+                        TimelineState state = npsmQuery.Take(1).FirstOrDefault();
+                        if (state != null)
+                        {
+                            nextViewModel.Timeline.ProgrammingState = state;
+                            nextViewModel.Timeline.ProgrammingStateId = state.Id;
+                        }
+
+
+                        //add in comment information
+                        if (posts.ContainsKey(log.Id) == true)
+                        {
+                            nextViewModel.Timeline.Comment = posts[log.Id].Content;
+                        }
+                        else
+                        {
+                            //not found in pre-query.  Pull manually
+                            if (log.LogType == FeedPostEvent.Name)
+                            {
+                                FeedPostEvent feedPost = OsbideDb.FeedPostEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
+                                if (feedPost != null)
+                                {
+                                    nextViewModel.Timeline.Comment = feedPost.Comment;
+                                }
+                            }
+                            else if (log.LogType == LogCommentEvent.Name)
+                            {
+                                LogCommentEvent logComment = OsbideDb.LogCommentEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
+                                if (logComment != null)
+                                {
+                                    nextViewModel.Timeline.Comment = logComment.Content;
+                                }
+                            }
+                            else if (log.LogType == AskForHelpEvent.Name)
+                            {
+                                AskForHelpEvent ask = OsbideDb.AskForHelpEvents.Where(fpe => fpe.EventLogId == log.Id).FirstOrDefault();
+                                if (ask != null)
+                                {
+                                    nextViewModel.Timeline.Comment = ask.UserComment + "\n" + ask.Code;
+                                }
+                            }
+                        }
+                        nextViewModel.Log = log;
+                        nextViewModel.Timeline.EventLogId = log.Id;
+                        nextViewModel.Timeline.AuthorId = log.SenderId;
+                        nextViewModel.Author = log.Sender;
+                        if(nextViewModel.Timeline.ExpertCoding == null)
+                        {
+                            nextViewModel.Timeline.ExpertCoding = new ContentCoding();
+                        }
+                        if(nextViewModel.Timeline.ProgrammingState == null)
+                        {
+                            nextViewModel.Timeline.ProgrammingState = new TimelineState()
+                            {
+                                EndTime = new DateTime(2016, 01, 01),
+                                StartTime = new DateTime(2016, 01, 01),
+                                State = "not available"
+                            };
+                        }
+                        viewModel.Add(nextViewModel);
+                    }
+                }
+
+                //2nd pass: find code modifications made after comment.  
+                for (int i = 0; i < viewModel.Count; i++)
+                {
+                    CommentTimelineViewModel current = viewModel[i] as CommentTimelineViewModel;
+                    CommentTimelineViewModel next = new CommentTimelineViewModel();
+                    if (i + 1 < viewModel.Count)
+                    {
+                        next = viewModel[i + 1] as CommentTimelineViewModel;
+                    }
+                    else
+                    {
+                        next.Log = eventLogs.Last();
+                    }
+
+                    List<EventLog> logsBetween = eventLogs
+                        .Where(l => l.DateReceived >= current.Log.DateReceived)
+                        .Where(l => l.DateReceived <= next.Log.DateReceived)
+                        .ToList();
+
+                    Dictionary<string, CodeDocument> nextDocuments = new Dictionary<string, CodeDocument>();
+                    string solutionName = "";
+                    foreach (EventLog log in logsBetween)
+                    {
+                        if (log.LogType == SaveEvent.Name)
+                        {
+                            if (allSaves.ContainsKey(log.Id))
+                            {
+                                SaveEvent save = allSaves[log.Id];
+                                if (solutionName.Length == 0)
+                                {
+                                    solutionName = save.SolutionName;
+                                }
+                                if (save.SolutionName == solutionName)
+                                {
+                                    if (nextDocuments.ContainsKey(save.Document.FileName) == false)
+                                    {
+                                        nextDocuments[save.Document.FileName] = save.Document;
+                                    }
+                                }
+                            }
+                        }
+                        else if (log.LogType == BuildEvent.Name)
+                        {
+                            if (allBuilds.ContainsKey(log.Id))
+                            {
+                                BuildEvent build = allBuilds[log.Id];
+                                if (solutionName.Length == 0)
+                                {
+                                    solutionName = build.SolutionName;
+                                }
+                                if (build.SolutionName == solutionName)
+                                {
+                                    foreach (BuildDocument doc in build.Documents)
+                                    {
+                                        if (nextDocuments.ContainsKey(doc.Document.FileName) == false)
+                                        {
+                                            nextDocuments[doc.Document.FileName] = doc.Document;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+
+                    //store after documents
+                    foreach (CodeDocument document in nextDocuments.Values)
+                    {
+                        TimelineCodeDocument tcd = new TimelineCodeDocument()
+                        {
+                            CodeDocumentId = document.Id,
+                            CommentTimeline = current.Timeline,
+                            DocumentContent = document.Content,
+                            DocumentName = document.FileName,
+                            isBeforeComment = false
+                        };
+                        if(current.Timeline.TimelineCodeDocuments == null)
+                        {
+                            current.Timeline.TimelineCodeDocuments = new List<TimelineCodeDocument>();
+                        }
+                        current.Timeline.TimelineCodeDocuments.Add(tcd);
+                    }
                 }
-                current.CodeAfterComment = nextDocuments;
+
+                //try jamming all this crap into DB
+                Db.CommentTimelines.AddRange(viewModel.Select(m => m.Timeline).ToList());
+                Db.SaveChanges();
             }
 
             return View(viewModel);

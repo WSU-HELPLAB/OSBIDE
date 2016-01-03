@@ -53,6 +53,7 @@
     <Compile Include="Models\AnalyticsDbContext.cs" />
     <Compile Include="Models\AnalyticsDbContextIfNotExistsInitializer.cs" />
     <Compile Include="Models\AnswerCoding.cs" />
+    <Compile Include="Models\CommentTimeline.cs" />
     <Compile Include="Models\ContentCoding.cs" />
     <Compile Include="Models\IModelBuilderExtender.cs" />
     <Compile Include="Models\Post.cs" />
@@ -60,6 +61,9 @@
     <Compile Include="Models\QuestionResponseCount.cs" />
     <Compile Include="Models\Reply.cs" />
     <Compile Include="Models\StudentTimeline.cs" />
+    <Compile Include="Models\TimelineAnswerCoding.cs" />
+    <Compile Include="Models\TimelineCodeDocument.cs" />
+    <Compile Include="Models\TimelineQuestionCoding.cs" />
     <Compile Include="Models\TimelineState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

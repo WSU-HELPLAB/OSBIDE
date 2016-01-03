@@ -21,7 +21,7 @@ namespace OSBIDE.Analytics.Library.Models
         public int AuthorStudentId { get; set; }
         [ForeignKey("Post")]
         public int PostId { get; set; }
-        public Post Post { get; set; }
+        public virtual Post Post { get; set; }
         public bool IsQuestion { get; set; }
     }
 }
