@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
 using OSBIDE.Analytics.Web.ViewModels;
+using System.Data.Linq.SqlClient;
 
 namespace OSBIDE.Analytics.Web.Controllers
 {
@@ -389,6 +390,7 @@ namespace OSBIDE.Analytics.Web.Controllers
                         //grab NPSM state info
                         var npsmQuery = from npsm in Db.TimelineStates
                                         where npsm.EndTime <= log.DateReceived && npsm.IsSocialEvent == false
+                                        && npsm.UserId == log.SenderId
                                         orderby npsm.Id descending
                                         select npsm;
                         TimelineState state = npsmQuery.Take(1).FirstOrDefault();
@@ -541,6 +543,137 @@ namespace OSBIDE.Analytics.Web.Controllers
                 Db.SaveChanges();
             }
 
+            return View(viewModel);
+        }
+
+        public ActionResult QuestionsWithResponses()
+        {
+            //pull everything that has been coded as a question by an expert
+            var questionsQuery = (from comment in Db.CommentTimelines
+                                 .Include(c => c.ExpertCoding)
+                                 .Include(c => c.AnswerCodings)
+                                 .Include(c => c.ProgrammingState)
+                                 .Include(c => c.QuestionCodings)
+                                 .Include(c => c.TimelineCodeDocuments)
+                                 where
+                                    comment.ExpertCoding.PrimaryModifier == "Question"
+                                    || comment.ExpertCoding.SecondaryModifier == "Question"
+                                    || comment.ExpertCoding.TertiaryModifier == "Question"
+                                  
+                                    orderby comment.ExpertCoding.Date
+                                 select comment).ToList();
+
+            List<CommentTimelineViewModel> viewModel = new List<CommentTimelineViewModel>();
+            int[] userIds = questionsQuery.Select(q => q.AuthorId).Distinct().ToArray();
+            int[] eventIds = questionsQuery.Select(q => q.EventLogId).Distinct().ToArray();
+            var users = (from user in OsbideDb.Users
+                         where userIds.Contains(user.Id)
+                                      select user).ToDictionary(u => u.Id, u => u);
+            var logs = (from log in OsbideDb.EventLogs
+                        where eventIds.Contains(log.Id)
+                        select log).ToDictionary(l => l.Id, l => l);
+            foreach(CommentTimeline timeline in questionsQuery)
+            {
+                CommentTimelineViewModel current = new CommentTimelineViewModel(timeline);
+                current.Author = users[timeline.AuthorId];
+                current.Log = logs[timeline.EventLogId];
+                current.CodeBeforeComment = timeline.TimelineCodeDocuments.Where(d => d.isBeforeComment == true).ToDictionary(d => d.DocumentName, d => d);
+                current.CodeAfterComment = timeline.TimelineCodeDocuments.Where(d => d.isBeforeComment == false).ToDictionary(d => d.DocumentName, d => d);
+                viewModel.Add(current);
+            }
+
+            return View(viewModel);
+        }
+
+        /// <summary>
+        /// Generates a list of document saves centered around a particular point of interest
+        /// </summary>
+        /// <param name="id">The id of the <see cref="CommentTimeline"/> to use as an anchor</param>
+        /// <returns></returns>
+        public ActionResult DocumentSaveTimeline(int id)
+        {
+            CommentTimeline timeline = Db.CommentTimelines.Where(t => t.Id == id).FirstOrDefault();
+            EventLog commentLog = OsbideDb.EventLogs.Include(u => u.Sender).Where(el => el.Id == timeline.EventLogId).FirstOrDefault();
+
+            //get all posts in the conversation
+            Post userPost = Db.Posts.Where(p => p.OsbideId == commentLog.Id).FirstOrDefault();
+            List<Post> entireDiscussion = new List<Post>(); 
+            if(userPost.ParentId > 0)
+            {
+                entireDiscussion = (from post in Db.Posts
+                                    where (post.ParentId == userPost.ParentId || post.Id == userPost.ParentId)
+                                    orderby post.OsbideId
+                                    select post).ToList();
+            }
+            else
+            {
+                entireDiscussion = (from post in Db.Posts
+                                    where (post.ParentId == userPost.Id || post.Id == userPost.Id)
+                                    orderby post.OsbideId
+                                    select post).ToList();
+            }
+
+            //for each post in the discussion, grab a snapshot of the user's code
+            Dictionary<int, BuildEvent> beforeBuildEvents = new Dictionary<int, BuildEvent>();
+            Dictionary<int, BuildEvent> afterBuildEvents = new Dictionary<int, BuildEvent>();
+            Dictionary<int, TimelineState> statesBefore = new Dictionary<int, TimelineState>();
+            Dictionary<int, TimelineState> statesAfter = new Dictionary<int, TimelineState>();
+            foreach(Post post in entireDiscussion)
+            {
+                //get prior build event
+                BuildEvent priorBuildEvent = (from el in OsbideDb.EventLogs
+                                              join be in OsbideDb.BuildEvents 
+                                              .Include(b => b.Documents.Select(d => d.Document))
+                                              .Include(b => b.EventLog)
+                                              on el.Id equals be.EventLogId
+                                              where el.Id <= commentLog.Id
+                                              && el.SenderId == commentLog.SenderId
+                                              orderby el.Id descending
+                                              select be).Take(1).FirstOrDefault();
+                beforeBuildEvents.Add(post.Id, priorBuildEvent);
+
+                //grab next build event
+                BuildEvent nextBuildEvent = (from el in OsbideDb.EventLogs
+                                              join be in OsbideDb.BuildEvents
+                                              .Include(b => b.Documents.Select(d => d.Document))
+                                              .Include(b => b.EventLog)
+                                              on el.Id equals be.EventLogId
+                                              where el.Id >= commentLog.Id
+                                              && el.SenderId == commentLog.SenderId
+                                              orderby el.Id ascending
+                                              select be).Take(1).FirstOrDefault();
+                afterBuildEvents.Add(post.Id, nextBuildEvent);
+
+                //grab NPSM state of before and after
+                TimelineState priorBuildState = (from npsm in Db.TimelineStates
+                                        where npsm.EndTime <= priorBuildEvent.EventLog.DateReceived 
+                                        && npsm.IsSocialEvent == false
+                                        && npsm.UserId == commentLog.SenderId
+                                        orderby npsm.Id descending
+                                        select npsm).Take(1).FirstOrDefault();
+                statesBefore.Add(post.Id, priorBuildState);
+
+                TimelineState afterBuildState = (from npsm in Db.TimelineStates
+                                                 where npsm.EndTime >= nextBuildEvent.EventLog.DateReceived && npsm.IsSocialEvent == false
+                                                 && npsm.UserId == commentLog.SenderId
+                                                 orderby npsm.Id ascending
+                                                 select npsm).Take(1).FirstOrDefault();
+                statesAfter.Add(post.Id, afterBuildState);
+            }
+
+            //construct final VM
+            DocumentSaveTimelineViewModel viewModel = new DocumentSaveTimelineViewModel()
+            {
+                BuildsAfter = afterBuildEvents,
+                BuildsBefore = beforeBuildEvents,
+                Discussion = entireDiscussion,
+                StatesAfter = statesAfter,
+                StatesBefore = statesBefore,
+                Timeline = timeline,
+                TimelineLog = commentLog,
+                User = commentLog.Sender
+            };
+            
             return View(viewModel);
         }
     }

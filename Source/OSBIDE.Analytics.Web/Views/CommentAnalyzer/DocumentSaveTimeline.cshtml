@@ -1,0 +1,97 @@
+﻿@using OSBIDE.Analytics.Web.ViewModels
+@using OSBIDE.Analytics.Library.Models
+@using OSBIDE.Library.Events
+@using OSBIDE.Library.Models
+@model DocumentSaveTimelineViewModel
+@{
+    ViewBag.Title = "Discussion Timeline";
+    DocumentSaveTimelineViewModel discussion = Model;
+
+}
+@section header
+{
+    <style type="text/css">
+        #activityTable, #activityTable th, #activityTable td {
+            border: 1px solid black;
+            padding: 3px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#activityTable").tablesorter();
+        }
+);
+    </script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/tablesorter")
+}
+<h1>Discussion timeline for @discussion.User.FirstAndLastName (@discussion.User.Id)</h1>
+<table id="activityTable" class="tablesorter">
+    <thead>
+        <tr>
+            <th>Author ID</th>
+            <th>Comment</th>
+            <th>Date of Comment</th>
+            <th>Files before comment</th>
+            <th>NPSM state before comment</th>
+            <th>Files after comment</th>
+            <th>NPSM state after comment</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Post item in discussion.Discussion)
+        {
+            BuildEvent priorBuildEvent = new BuildEvent();
+            BuildEvent nextBuildEvent = new BuildEvent();
+            TimelineState priorBuildState = new TimelineState();
+            TimelineState nextBuildState = new TimelineState();
+            if(discussion.BuildsBefore.ContainsKey(item.Id))
+            {
+                priorBuildEvent = discussion.BuildsBefore[item.Id];
+            }
+            if(discussion.BuildsAfter.ContainsKey(item.Id))
+            {
+                nextBuildEvent = discussion.BuildsAfter[item.Id];
+            }
+            if(discussion.StatesBefore.ContainsKey(item.Id))
+            {
+                priorBuildState = discussion.StatesBefore[item.Id];
+            }
+            if(discussion.StatesAfter.ContainsKey(item.Id))
+            {
+                nextBuildState = discussion.StatesAfter[item.Id];
+            }
+            <tr>
+                <td>@item.AuthorId</td>
+                <td>@item.Content</td>
+                <td>@item.DatePosted.ToShortDateString() at @item.DatePosted.ToLongTimeString()</td>
+                <td>
+                    @priorBuildEvent.EventLog.DateReceived.ToShortDateString() at @priorBuildEvent.EventLog.DateReceived.ToLongTimeString()
+                    <ul>
+                        @foreach(CodeDocument codeDocument in priorBuildEvent.Documents.Select(d => d.Document).ToList())
+                        {
+                            <li>@codeDocument.FileName (@codeDocument.Lines.Count)</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @priorBuildState.State (@(Math.Round(priorBuildState.TimeInState.TotalMinutes,2))m)
+                </td>
+                <td>
+                    @nextBuildEvent.EventLog.DateReceived.ToShortDateString() at @nextBuildEvent.EventLog.DateReceived.ToLongTimeString()
+                    <ul>
+                        @foreach (CodeDocument codeDocument in nextBuildEvent.Documents.Select(d => d.Document).ToList())
+                        {
+                            <li>@codeDocument.FileName (@codeDocument.Lines.Count)</li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @nextBuildState.State (@(Math.Round(nextBuildState.TimeInState.TotalMinutes, 2))m)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
