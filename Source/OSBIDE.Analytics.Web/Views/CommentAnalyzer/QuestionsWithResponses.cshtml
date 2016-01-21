@@ -10,6 +10,7 @@
     {
         student = comments.First().Author;
     }
+    int rowCounter = 0;
 }
 @section header
 {
@@ -34,8 +35,10 @@
 <table id="activityTable" class="tablesorter">
     <thead>
         <tr>
+            <th>#</th>
             <th>Comemnt ID</th>
             <th>Student</th>
+            <th>User ID</th>
             <th>Date</th>
             <th>Type</th>
             <th>Comment</th>
@@ -56,11 +59,14 @@
     <tbody>
         @foreach (CommentTimelineViewModel comment in comments)
         {
+            rowCounter++;
             DateTime commentDate = comment.Log.DateReceived;
             DateTime rawUtc = new DateTime(commentDate.Year, commentDate.Month, commentDate.Day, commentDate.Hour, commentDate.Minute, commentDate.Second, DateTimeKind.Utc);
             <tr>
-                <td>@comment.Timeline.Id</td>
+                <td>@rowCounter</td>
+                <td>@Html.ActionLink(comment.Timeline.Id.ToString(), "DocumentSaveTimeline", "CommentAnalyzer", new { id = comment.Timeline.Id }, new { }) </td>
                 <td>@comment.Author.FirstAndLastName</td>
+                <td>@comment.Author.Id</td>
                 <td>
                     @rawUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
                 </td>

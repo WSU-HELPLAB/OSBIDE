@@ -388,10 +388,12 @@ namespace OSBIDE.Analytics.Web.Controllers
                         }
 
                         //grab NPSM state info
+                        //we want the most recent NPSM state that occurred before the comment was made
                         var npsmQuery = from npsm in Db.TimelineStates
-                                        where npsm.EndTime <= log.DateReceived && npsm.IsSocialEvent == false
+                                        where npsm.StartTime <= log.DateReceived && npsm.IsSocialEvent == false
                                         && npsm.UserId == log.SenderId
-                                        orderby npsm.Id descending
+                                        && npsm.State != "--"
+                                        orderby npsm.Id ascending
                                         select npsm;
                         TimelineState state = npsmQuery.Take(1).FirstOrDefault();
                         if (state != null)
@@ -556,9 +558,15 @@ namespace OSBIDE.Analytics.Web.Controllers
                                  .Include(c => c.QuestionCodings)
                                  .Include(c => c.TimelineCodeDocuments)
                                  where
+                                  (
                                     comment.ExpertCoding.PrimaryModifier == "Question"
                                     || comment.ExpertCoding.SecondaryModifier == "Question"
                                     || comment.ExpertCoding.TertiaryModifier == "Question"
+                                    )
+                                    &&
+                                    (
+                                    comment.ExpertCoding.Category == "Code"
+                                    )
                                   
                                     orderby comment.ExpertCoding.Date
                                  select comment).ToList();
@@ -626,39 +634,47 @@ namespace OSBIDE.Analytics.Web.Controllers
                                               .Include(b => b.Documents.Select(d => d.Document))
                                               .Include(b => b.EventLog)
                                               on el.Id equals be.EventLogId
-                                              where el.Id <= commentLog.Id
+                                              where el.Id < post.OsbideId
                                               && el.SenderId == commentLog.SenderId
                                               orderby el.Id descending
                                               select be).Take(1).FirstOrDefault();
-                beforeBuildEvents.Add(post.Id, priorBuildEvent);
-
                 //grab next build event
                 BuildEvent nextBuildEvent = (from el in OsbideDb.EventLogs
-                                              join be in OsbideDb.BuildEvents
-                                              .Include(b => b.Documents.Select(d => d.Document))
-                                              .Include(b => b.EventLog)
-                                              on el.Id equals be.EventLogId
-                                              where el.Id >= commentLog.Id
-                                              && el.SenderId == commentLog.SenderId
-                                              orderby el.Id ascending
-                                              select be).Take(1).FirstOrDefault();
-                afterBuildEvents.Add(post.Id, nextBuildEvent);
+                                             join be in OsbideDb.BuildEvents
+                                             .Include(b => b.Documents.Select(d => d.Document))
+                                             .Include(b => b.EventLog)
+                                             on el.Id equals be.EventLogId
+                                             where el.Id > post.OsbideId
+                                             && el.SenderId == commentLog.SenderId
+                                             orderby el.Id ascending
+                                             select be).Take(1).FirstOrDefault();
 
-                //grab NPSM state of before and after
-                TimelineState priorBuildState = (from npsm in Db.TimelineStates
-                                        where npsm.EndTime <= priorBuildEvent.EventLog.DateReceived 
-                                        && npsm.IsSocialEvent == false
-                                        && npsm.UserId == commentLog.SenderId
-                                        orderby npsm.Id descending
-                                        select npsm).Take(1).FirstOrDefault();
-                statesBefore.Add(post.Id, priorBuildState);
-
-                TimelineState afterBuildState = (from npsm in Db.TimelineStates
-                                                 where npsm.EndTime >= nextBuildEvent.EventLog.DateReceived && npsm.IsSocialEvent == false
-                                                 && npsm.UserId == commentLog.SenderId
-                                                 orderby npsm.Id ascending
-                                                 select npsm).Take(1).FirstOrDefault();
-                statesAfter.Add(post.Id, afterBuildState);
+                if (priorBuildEvent != null)
+                {
+                    //we want the NPSM state that resulted from this build
+                    TimelineState priorBuildState = (from npsm in Db.TimelineStates
+                                                     where npsm.StartTime >= priorBuildEvent.EventLog.DateReceived
+                                                     && npsm.IsSocialEvent == false
+                                                     && npsm.UserId == commentLog.SenderId
+                                                     && npsm.State != "--"
+                                                     orderby npsm.Id ascending
+                                                     select npsm).Take(1).FirstOrDefault();
+                    statesBefore.Add(post.Id, priorBuildState);
+                    beforeBuildEvents.Add(post.Id, priorBuildEvent);
+                }
+                if(nextBuildEvent != null)
+                {
+                    //we want the NPSM state that resulted from this build
+                    TimelineState afterBuildState = (from npsm in Db.TimelineStates
+                                                     where npsm.StartTime >= nextBuildEvent.EventLog.DateReceived
+                                                     && npsm.IsSocialEvent == false
+                                                     && npsm.UserId == commentLog.SenderId
+                                                     && npsm.State != "--"
+                                                     orderby npsm.Id ascending
+                                                     select npsm).Take(1).FirstOrDefault();
+                    statesAfter.Add(post.Id, afterBuildState);
+                    afterBuildEvents.Add(post.Id, nextBuildEvent);
+                }
             }
 
             //construct final VM

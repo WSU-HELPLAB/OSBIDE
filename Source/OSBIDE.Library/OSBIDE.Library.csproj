@@ -177,6 +177,7 @@
     <Compile Include="Events\FeedPostEvent.cs" />
     <Compile Include="Events\HelpfulMarkGivenEvent.cs" />
     <Compile Include="Events\LogCommentEvent.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="IconConverter.cs">
       <SubType>Component</SubType>
     </Compile>
